@@ -25,7 +25,7 @@ namespace Weavers.Api {
 
       builder.Services.AddWeaversCore<FabricDbContext>(builder.Configuration);
      // builder.Services.AddMediatR(cfg => {
-     //   cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);   // Storytime.Api handlers                                                                      
+     //   cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);   
      // });
 
       builder.Services.AddSwaggerGen(options => {

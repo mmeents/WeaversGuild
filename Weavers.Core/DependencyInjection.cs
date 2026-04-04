@@ -10,7 +10,7 @@ namespace Weavers.Core {
         options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
       services.AddMediatR(cfg => {
-        cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);  // Storytime.Core    
+        cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);  
       });
       return services;
     }

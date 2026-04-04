@@ -8,20 +8,18 @@ namespace Weavers.Core.Constants {
   public static class Cx {
     public static string AppName => "Weavers";
     public static string McpAppName => "WeaversMCP";
-    public static string AppVersion => "0.0.1";
+    public static string AppVersion => "0.0.2";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
 
+    public const int DefaultLmStudioContextLength = 8000;
     public const string LMStudioUrl = "http://10.0.0.118:8669";
     public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
-    public const string LMStudioStorytimeMcpToolName = "mcp/storytime-mcp";
+    public const string LMStudioMcpToolName = "mcp/weavers-mcp";
     public const string LMStudioDefaultModel = "nvidia/nemotron-3-nano-4b";
+
     public const string ClaudeDefaultModel = "sonnet";
-    public const int DefaultLmStudioContextLength = 8000;
-
-        
-
-
+    
     public static char[] InvalidFileNameChars() => Path.GetInvalidFileNameChars()
       .Concat(MyInvalidList()).ToArray();
     public static char[] MyInvalidList() => " `~!@#$%^&*()_-+=[]{},.;'".ToCharArray();
