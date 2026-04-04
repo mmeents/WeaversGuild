@@ -19,7 +19,20 @@ namespace Weavers.Core.Constants {
     public const string LMStudioDefaultModel = "nvidia/nemotron-3-nano-4b";
 
     public const string ClaudeDefaultModel = "sonnet";
-    
+
+    public const string CmdGetById = "get-item-by-id";
+    public const string CmdGetSubgraph = "get-subgraph";
+    public const string CmdAddRelationItem = "create-related-item";
+    public const string CmdAddItem = "create-item";
+    public const string CmdUpdateItem = "update-item";
+    public const string CmdGetRelationById = "get-relation-by-id";
+    public const string CmdAddRelation = "create-relation";
+    public const string CmdUpdateRelation = "update-relation";
+
+    public const string ValidRelationTypes = "Relation type ";
+    public const string ValidItemTypes = "Item types Id ";
+
+
     public static char[] InvalidFileNameChars() => Path.GetInvalidFileNameChars()
       .Concat(MyInvalidList()).ToArray();
     public static char[] MyInvalidList() => " `~!@#$%^&*()_-+=[]{},.;'".ToCharArray();
@@ -53,11 +66,11 @@ namespace Weavers.Core.Constants {
       get {
         string claudePath = Path.Combine(CommonAppPath, "claude").ResolvePath();
         if (!Directory.Exists(claudePath)) Directory.CreateDirectory(claudePath);
-//        if (!File.Exists(Path.Combine(claudePath, ".mcp.json"))) {
-//          StringBuilder sb = new StringBuilder();
-//          sb.Append($"{{\r\n\t\"mcpServers\": {{\r\n\t  \"weavers-mcp\": {{\r\n\t\t\"type\": \"stdio\",\r\n\t\t\"command\": \"{claudePath}\\\\WeaversMCP.exe\",\r\n\t\t\"args\": []\r\n\t  }}\r\n\t}}\r\n}}");
-//          File.WriteAllText(Path.Combine(claudePath, ".mcp.json"), sb.ToString());
-//        }
+        if (!File.Exists(Path.Combine(claudePath, ".mcp.json"))) {
+          StringBuilder sb = new StringBuilder();
+          sb.Append($"{{\r\n\t\"mcpServers\": {{\r\n\t  \"weavers-mcp\": {{\r\n\t\t\"type\": \"stdio\",\r\n\t\t\"command\": \"{claudePath}\\\\WeaversMCP.exe\",\r\n\t\t\"args\": []\r\n\t  }}\r\n\t}}\r\n}}");
+          File.WriteAllText(Path.Combine(claudePath, ".mcp.json"), sb.ToString());
+        }
         return claudePath;
       }
     }

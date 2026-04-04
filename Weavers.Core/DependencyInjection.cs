@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Weavers.Core.Service;
+
 
 namespace Weavers.Core {
   public static class DependencyInjection {
@@ -14,5 +16,14 @@ namespace Weavers.Core {
       });
       return services;
     }
+
+    public static IServiceCollection AddWeaversMCPCore(this IServiceCollection services, IConfiguration configuration) {
+      AddWeaversCore<FabricDbContext>(services, configuration);
+
+      services.AddHostedService<WeaversMcpHostedService>();
+      return services;
+    }
+
   }
+
 }

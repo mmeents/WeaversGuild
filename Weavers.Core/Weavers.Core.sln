@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weavers.Core", "Weavers.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Weavers.Api", "..\Weavers.Api\Weavers.Api.csproj", "{F4176ECA-1344-4586-8EC2-5F40539EA077}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaversMCP", "..\WeaversMCP\WeaversMCP.csproj", "{BA595A44-3E51-4A22-B7ED-8A01792ECCDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F4176ECA-1344-4586-8EC2-5F40539EA077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4176ECA-1344-4586-8EC2-5F40539EA077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4176ECA-1344-4586-8EC2-5F40539EA077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA595A44-3E51-4A22-B7ED-8A01792ECCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA595A44-3E51-4A22-B7ED-8A01792ECCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA595A44-3E51-4A22-B7ED-8A01792ECCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA595A44-3E51-4A22-B7ED-8A01792ECCDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
