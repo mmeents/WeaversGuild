@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kb.Core" Version="1.0.6" />
     <PackageReference Include="MCPSharpMM" Version="1.0.14" />
     <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.3.6" />
@@ -28,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Handlers\NewFolder\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

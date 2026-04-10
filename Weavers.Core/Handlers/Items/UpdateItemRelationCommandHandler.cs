@@ -1,4 +1,5 @@
-﻿using KB.Core.Models;
+﻿using Weavers.Core.Models;
+using Weavers.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,14 +15,14 @@ namespace Weavers.Core.Handlers.Items {
       int RelationTypeId,
       int RelatedItemId,
       int? Rank = null
-  ) : IRequest<ItemRelationDto?>;
-  public class UpdateItemRelationCommandHandler : IRequestHandler<UpdateItemRelationCommand, ItemRelationDto?> {
+  ) : IRequest<RelationDto?>;
+  public class UpdateItemRelationCommandHandler : IRequestHandler<UpdateItemRelationCommand, RelationDto?> {
     private readonly FabricDbContext _context;
     public UpdateItemRelationCommandHandler(FabricDbContext context) {
       _context = context;
     }
-    public async Task<ItemRelationDto?> Handle(UpdateItemRelationCommand request, CancellationToken cancellationToken) {
-      var itemRelation = await _context.ItemRelations.FindAsync(request.Id);
+    public async Task<RelationDto?> Handle(UpdateItemRelationCommand request, CancellationToken cancellationToken) {
+      var itemRelation = await _context.Relations.FindAsync(request.Id);
       if (itemRelation == null) {
         throw new KeyNotFoundException("Item relation not found");
       }
@@ -31,7 +32,7 @@ namespace Weavers.Core.Handlers.Items {
       itemRelation.Rank = request.Rank;
       await _context.SaveChangesAsync(cancellationToken);
 
-      var query = _context.ItemRelations
+      var query = _context.Relations
        .Include(ir => ir.Item)
        .Include(ir => ir.RelatedItem)
        .Include(ir => ir.RelationType)

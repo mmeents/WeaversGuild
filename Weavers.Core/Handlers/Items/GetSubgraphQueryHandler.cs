@@ -1,5 +1,5 @@
-﻿using KB.Core.Entities;
-using KB.Core.Models;
+﻿using Weavers.Core.Entities;
+using Weavers.Core.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -72,7 +72,7 @@ namespace Weavers.Core.Handlers.Items {
 
   public class SubgraphNodeDto {
     public ItemDto Item { get; set; } = null!;
-    public ItemRelationDto Relation { get; set; } = null!;
+    public RelationDto Relation { get; set; } = null!;
     public int Level { get; set; }
     public ICollection<SubgraphNodeDto> Children { get; set; } = [];
   }

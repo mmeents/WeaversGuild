@@ -1,19 +1,19 @@
-﻿using KB.Core.Models;
+﻿using Weavers.Core.Models;
+using Weavers.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetItemRelationsQuery(int? Id, int? ItemId, int? ToItemId, int? RelationTypeId) : IRequest<IEnumerable<ItemRelationDto>>;
+  public record GetRelationsQuery(int? Id, int? ItemId, int? ToItemId, int? RelationTypeId) : IRequest<IEnumerable<RelationDto>>;
 
-  public class GetItemRelationsQueryHandler : IRequestHandler<GetItemRelationsQuery, IEnumerable<ItemRelationDto>> {
+  public class GetItemRelationsQueryHandler : IRequestHandler<GetRelationsQuery, IEnumerable<RelationDto>> {
     private readonly FabricDbContext _context;
     public GetItemRelationsQueryHandler(FabricDbContext context) {
       _context = context;
     }
 
-    public async Task<IEnumerable<ItemRelationDto>> Handle(GetItemRelationsQuery request, CancellationToken cancellationToken) {
-
-      var query = _context.ItemRelations
+    public async Task<IEnumerable<RelationDto>> Handle(GetRelationsQuery request, CancellationToken cancellationToken) {
+      var query = _context.Relations
         .Include(ir => ir.Item)
         .Include(ir => ir.RelatedItem)
         .Include(ir => ir.RelationType)

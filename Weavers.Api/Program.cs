@@ -3,6 +3,7 @@ using Serilog;
 using Serilog.Core;
 using Weavers.Core;
 using Weavers.Core.Constants;
+using Weavers.Core.Extensions;
 
 namespace Weavers.Api {
   public class Program {
@@ -66,7 +67,7 @@ namespace Weavers.Api {
 
     private static void ConfigureSerilog() {
       // Use the proper logs path from Cx.LogsAppPath
-      var logsPath = Cx.LogsAppPath;
+      var logsPath = WeaverExt.LogsAppPath;
 
       Log.Logger = new LoggerConfiguration()
           .MinimumLevel.Debug()

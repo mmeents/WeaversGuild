@@ -1,7 +1,7 @@
-﻿using KB.Core.Entities;
-using KB.Core.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Entities;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateRelatedItemCommand(
@@ -23,7 +23,7 @@ namespace Weavers.Core.Handlers.Items {
       if (!parentExists) throw new Exception($"Parent item with id {request.ParentItemId} not found");
 
 
-      var itemType = await _context.ItemTypes.FindAsync(new object[] { request.ItemTypeId }, cancellationToken);
+      var itemType = await _context.ItemTypes.FindAsync([request.ItemTypeId], cancellationToken);
       if (itemType == null) {
         throw new Exception($"ItemType with id {request.ItemTypeId} not found");
       }
@@ -41,11 +41,11 @@ namespace Weavers.Core.Handlers.Items {
         _context.Items.Add(newRelatedItem);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var nextRank = await _context.ItemRelations
+        var nextRank = await _context.Relations
           .Where(ir => ir.ItemId == request.ParentItemId)
           .CountAsync(cancellationToken) + 1;
 
-        _context.ItemRelations.Add(new ItemRelation {
+        _context.Relations.Add(new Relation {
           ItemId = request.ParentItemId,
           RelationTypeId = request.RelationTypeId,
           RelatedItemId = newRelatedItem.Id,

@@ -1,4 +1,4 @@
-﻿using KB.Core.Models;
+﻿using Weavers.Core.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

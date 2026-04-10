@@ -1,5 +1,5 @@
-﻿using KB.Core.Entities;
-using KB.Core.Models;
+﻿using Weavers.Core.Entities;
+using Weavers.Core.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

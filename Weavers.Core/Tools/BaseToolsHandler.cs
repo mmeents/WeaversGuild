@@ -18,14 +18,9 @@ namespace Weavers.Core.Tools {
   }
 
 
-  public class StorytimeToolsHandler : IStorytimeToolsHandler {
-    private IServiceScopeFactory _serviceScopeFactory;
-    private ILogger<StorytimeToolsHandler> _logger;
-
-    public StorytimeToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<StorytimeToolsHandler> logger) {
-      _serviceScopeFactory = serviceScopeFactory;
-      _logger = logger;
-    }
+  public class StorytimeToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<StorytimeToolsHandler> logger) : IStorytimeToolsHandler {
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly ILogger<StorytimeToolsHandler> _logger = logger;   
 
     public async Task<string> GetItemById(int id) {
       try {
@@ -91,7 +86,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var query = new GetItemRelationsQuery(id, null, null, null);
+        var query = new GetRelationsQuery(id, null, null, null);
         var result = await mediator.Send(query);
         var opResult = McpOpResult.CreateSuccess("get-relation-by-id", "Successfully retrieved relation", result);
         return JsonSerializer.Serialize(opResult);

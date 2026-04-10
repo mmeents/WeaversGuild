@@ -1,37 +1,37 @@
-﻿using KB.Core.Entities;
-using KB.Core.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Entities;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateItemRelationCommand(
       int ItemId,
       int RelationTypeId,
       int RelatedItemId
-  ) : IRequest<ItemRelationDto?>;
+  ) : IRequest<RelationDto?>;
 
-  public class CreateItemRelationCommandHandler : IRequestHandler<CreateItemRelationCommand, ItemRelationDto?> {
+  public class CreateItemRelationCommandHandler : IRequestHandler<CreateItemRelationCommand, RelationDto  ?> {
     private readonly FabricDbContext _context;
     public CreateItemRelationCommandHandler(FabricDbContext context) {
       _context = context;
     }
-    public async Task<ItemRelationDto?> Handle(CreateItemRelationCommand request, CancellationToken cancellationToken) {
+    public async Task<RelationDto?> Handle(CreateItemRelationCommand request, CancellationToken cancellationToken) {
 
-      var nextRank = await _context.ItemRelations
+      var nextRank = await _context.Relations
         .Where(ir => ir.ItemId == request.ItemId)
         .CountAsync(cancellationToken) + 1;
 
-      var itemRelation = new ItemRelation {
+      var itemRelation = new Relation {
         ItemId = request.ItemId,
         RelationTypeId = request.RelationTypeId,
         RelatedItemId = request.RelatedItemId,
         Rank = nextRank
       };
 
-      _context.ItemRelations.Add(itemRelation);
+      _context.Relations.Add(itemRelation);
       await _context.SaveChangesAsync(cancellationToken);
 
-      var result = await _context.ItemRelations
+      var result = await _context.Relations
         .Include(ir => ir.Item)
         .Include(ir => ir.RelatedItem)
         .Include(ir => ir.RelationType)
