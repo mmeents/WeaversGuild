@@ -604,6 +604,9 @@ namespace TheLoomApp {
     }
 
 
+
+
+
     private void miDeleteItem_Click(object sender, EventArgs e) {
       var itemNode = _selectedNode;
       if (itemNode == null || itemNode.Item == null) return;
