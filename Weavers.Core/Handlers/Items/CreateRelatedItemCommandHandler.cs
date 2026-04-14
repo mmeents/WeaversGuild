@@ -1,7 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
 using Weavers.Core.Models;
+using Microsoft.Extensions.Logging;
+
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateRelatedItemCommand(
@@ -13,18 +16,25 @@ namespace Weavers.Core.Handlers.Items {
      string ItemData
    ) : IRequest<ItemDto?>;
 
-  public class CreateRelatedItemCommandHandler(FabricDbContext context) : IRequestHandler<CreateRelatedItemCommand, ItemDto?> {
+  public class CreateRelatedItemCommandHandler(
+    FabricDbContext context,
+    ILogger<CreateRelatedItemCommandHandler> logger
+  ) : IRequestHandler<CreateRelatedItemCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;
+    private readonly ILogger<CreateRelatedItemCommandHandler> _logger = logger;
     public async Task<ItemDto?> Handle(CreateRelatedItemCommand request, CancellationToken cancellationToken) {
 
       if (request.ParentItemId <= 0) return null;
 
       var parentExists = await _context.Items.AnyAsync(i => i.Id == request.ParentItemId && i.IsActive, cancellationToken);
-      if (!parentExists) throw new Exception($"Parent item with id {request.ParentItemId} not found");
-
+      if (!parentExists) {
+        _logger.LogError("Parent item with id {ParentItemId} not found", request.ParentItemId);
+        throw new Exception($"Parent item with id {request.ParentItemId} not found");
+      }
 
       var itemType = await _context.ItemTypes.FindAsync([request.ItemTypeId], cancellationToken);
       if (itemType == null) {
+        _logger.LogError("ItemType with id {ItemTypeId} not found", request.ItemTypeId);
         throw new Exception($"ItemType with id {request.ItemTypeId} not found");
       }
 
@@ -40,10 +50,8 @@ namespace Weavers.Core.Handlers.Items {
       try {
         _context.Items.Add(newRelatedItem);
         await _context.SaveChangesAsync(cancellationToken);
-
-        var nextRank = await _context.Relations
-          .Where(ir => ir.ItemId == request.ParentItemId)
-          .CountAsync(cancellationToken) + 1;
+        await _context.SyncDefaultsByModelIdAsync(newRelatedItem.Id, newRelatedItem.ItemTypeId, cancellationToken);
+        var nextRank = await _context.GetItemsNextRankId(request.ParentItemId, cancellationToken);
 
         _context.Relations.Add(new Relation {
           ItemId = request.ParentItemId,
@@ -51,27 +59,22 @@ namespace Weavers.Core.Handlers.Items {
           RelatedItemId = newRelatedItem.Id,
           Rank = nextRank
         });
+
         await _context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
       } catch {
         await transaction.RollbackAsync(cancellationToken);
+        _logger.LogError("Failed to create related item for parent item {ParentItemId} with relation type {RelationTypeId}", request.ParentItemId, request.RelationTypeId);
         throw;
       }
 
-      return await _context.Items
-        .AsNoTracking()
-        .Where(i => i.Id == newRelatedItem.Id && i.IsActive)
-        .Include(i => i.ItemType)
-        .Include(i => i.Relations)
-            .ThenInclude(r => r.RelatedItem)
-        .Include(i => i.Relations)
-            .ThenInclude(r => r.RelationType)
-        .Include(i => i.IncomingRelations)
-            .ThenInclude(r => r.Item)
-        .Include(i => i.IncomingRelations)
-            .ThenInclude(r => r.RelationType)
-        .FirstOrDefaultAsync(cancellationToken)
-        .ContinueWith(t => t.Result?.ToDto(true), cancellationToken);
+      try {
+        return await _context.GetItemDtoById(newRelatedItem.Id, cancellationToken);
+      } catch (Exception ex) {
+        _logger.LogError(ex, "Failed to retrieve newly created related item with id {ItemId}", newRelatedItem.Id);
+        throw new Exception($"Failed to retrieve newly created related item with id {newRelatedItem.Id}");
+      }
+
     }
   }
 }

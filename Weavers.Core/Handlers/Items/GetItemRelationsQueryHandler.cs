@@ -1,10 +1,16 @@
-﻿using Weavers.Core.Models;
-using Weavers.Core.Entities;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Entities;
+using Weavers.Core.Enums;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetRelationsQuery(int? Id, int? ItemId, int? ToItemId, int? RelationTypeId) : IRequest<IEnumerable<RelationDto>>;
+  public record GetRelationsQuery(
+    int? Id, 
+    int? ItemId, 
+    int? ToItemId, 
+    int? RelationTypeId
+  ) : IRequest<IEnumerable<RelationDto>>;
 
   public class GetItemRelationsQueryHandler : IRequestHandler<GetRelationsQuery, IEnumerable<RelationDto>> {
     private readonly FabricDbContext _context;
@@ -35,7 +41,18 @@ namespace Weavers.Core.Handlers.Items {
 
       query = query.OrderByDescending(ir => ir.Id);
 
-      var result = await query.Select(ir => ir.ToDto()).ToListAsync(cancellationToken);
+      var result = await query.Select(r => new RelationDto {
+        Id = r.Id,
+        ItemId = r.ItemId,
+        ItemName = r.Item.Name,
+        RelatedItemId = r.RelatedItemId,
+        RelatedItemName = r.RelatedItem != null ? r.RelatedItem.Name : "",
+        RelationTypeId = r.RelationTypeId,
+        RelationTypeName = r.RelationType.Name ?? string.Empty,
+        Rank = r.Rank,
+        Established = r.Established,
+        RelatedItemHasChildren = r.RelatedItem != null && r.RelatedItem.Relations.Any(cr => cr.RelationTypeId == (int)WeRelationTypes.Contains)
+      }).ToListAsync(cancellationToken);
 
       return result;
     }

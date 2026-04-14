@@ -1,11 +1,7 @@
 ﻿using Weavers.Core.Models;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Weavers.Core.Extensions;
 
 namespace Weavers.Core.Handlers.Items {
   public record UpdateItemCommand(
@@ -18,19 +14,21 @@ namespace Weavers.Core.Handlers.Items {
    ) : IRequest<ItemDto?>;
 
 
-  public class UpdateItemCommandHandler : IRequestHandler<UpdateItemCommand, ItemDto?> {
-    private readonly FabricDbContext _context;
-
-    public UpdateItemCommandHandler(FabricDbContext context) {
-      _context = context;
-    }
+  public class UpdateItemCommandHandler(
+    FabricDbContext context, 
+    ILogger<UpdateItemCommandHandler> logger
+  ) : IRequestHandler<UpdateItemCommand, ItemDto?> {
+    private readonly FabricDbContext _context = context;
+    private readonly ILogger<UpdateItemCommandHandler> _logger = logger;
 
     public async Task<ItemDto?> Handle(UpdateItemCommand request, CancellationToken cancellationToken) {
 
       var item = await _context.Items.FindAsync(request.Id);
 
       if (item == null) {
-        throw new KeyNotFoundException("Item not found");
+        var error = new KeyNotFoundException($"Item with id {request.Id} not found");
+        _logger.LogError(error, "Failed to update item with id {ItemId}", request.Id);
+        throw error;
       }
 
       item.Name = request.Name;
@@ -40,25 +38,10 @@ namespace Weavers.Core.Handlers.Items {
       item.IsActive = request.IsActive;
 
       await _context.SaveChangesAsync(cancellationToken);
+      
+      var itemDto = await _context.GetItemDtoById(item.Id, cancellationToken);
 
-      var query = _context.Items
-        .AsNoTracking()
-        .Where(i => i.Id == item.Id && i.IsActive);
-
-      query = query
-          .Include(i => i.ItemType)
-          .Include(i => i.Relations)
-              .ThenInclude(r => r.RelatedItem)
-          .Include(i => i.Relations)
-              .ThenInclude(r => r.RelationType)
-          .Include(i => i.IncomingRelations)
-              .ThenInclude(r => r.Item)
-          .Include(i => i.IncomingRelations)
-              .ThenInclude(r => r.RelationType);
-
-      item = await query.FirstOrDefaultAsync(cancellationToken);
-
-      return item != null ? item.ToDto(true) : null;
+      return itemDto;
 
     }
   }

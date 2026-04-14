@@ -26,6 +26,16 @@ namespace Weavers.Core.Extensions {
       }
     }
 
+    public static string AppProjectsPath {
+      get {
+        string projectsPath = Path.Combine(CommonAppPath, "projects").ResolvePath();
+        if (!Directory.Exists(projectsPath)) {
+          Directory.CreateDirectory(projectsPath);
+        }
+        return projectsPath;
+      }
+    }
+
     public static string LogsAppPath {
       get {
         string logsPath = Path.Combine(CommonAppPath, "logs").ResolvePath();
@@ -65,6 +75,15 @@ namespace Weavers.Core.Extensions {
         return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
       }
       return Path.GetFullPath(path);
+    }
+
+    public static bool IsValidBrowserUrl(this string url) {
+      // 1. Try to create the Uri object
+      if (!Uri.TryCreate(url, UriKind.Absolute, out var result))
+        return false;
+
+      // 2. Ensure it's a web protocol (not file:// or mailto: unless intended)
+      return result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps;
     }
   }
 }

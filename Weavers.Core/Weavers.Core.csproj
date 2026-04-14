@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Handlers\NewFolder\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

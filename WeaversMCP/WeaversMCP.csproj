@@ -30,4 +30,8 @@
     <ProjectReference Include="..\Weavers.Core\Weavers.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PropertiesTab\" />
+  </ItemGroup>
+
 </Project>

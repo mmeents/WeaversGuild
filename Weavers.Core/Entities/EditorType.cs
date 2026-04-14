@@ -41,8 +41,11 @@ namespace Weavers.Core.Entities {
         new EditorType { Id = (int)WeEditorType.Decimal, Name = "Decimal", Description = "Decimal editor", IconName="pi-dollar" },
         new EditorType { Id = (int)WeEditorType.Password, Name = "Password", Description = "Password editor", IconName="pi-lock" },
         new EditorType { Id = (int)WeEditorType.LookupTypeEditor, Name = "Lookup Type Editor", Description = "Lookup type editor", IconName="pi-search" },
-        new EditorType { Id = (int)WeEditorType.LookupModelEditor, Name = "Lookup Model Editor", Description = "Lookup model editor", IconName="pi-search" },
-        new EditorType { Id = (int)WeEditorType.Memo, Name = "Memo", Description = "Memo editor", IconName="pi-pencil" }
+        new EditorType { Id = (int)WeEditorType.LookupItemEditor, Name = "Lookup Model Editor", Description = "Lookup model editor", IconName="pi-search" },
+        new EditorType { Id = (int)WeEditorType.Memo, Name = "Memo", Description = "Memo editor", IconName="pi-pencil" },
+        new EditorType { Id = (int)WeEditorType.Folder, Name = "Folder", Description = "Folder editor", IconName="pi-folder" },
+        new EditorType { Id = (int)WeEditorType.RelativeFolder, Name = "Relative Folder", Description = "Relative folder editor", IconName="pi-folder" },
+        new EditorType { Id = (int)WeEditorType.Url, Name = "URL", Description = "URL editor", IconName="pi-link" }
       );
     }
   }

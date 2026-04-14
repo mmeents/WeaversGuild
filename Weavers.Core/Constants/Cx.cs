@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Weavers.Core.Constants {
   public static class Cx {
-    public static string AppName => "Weavers";
+    public static string AppName => "WeaversGuild";  // org like name describes project off the app data folder.
+    public static string AppExeName => "TheLoomApp.exe";
+    public static string AppApiName => "Weavers.Api";
     public static string McpAppName => "WeaversMCP";
-    public static string AppVersion => "0.0.2";
+    public static string AppVersion => "0.1.2";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
 
@@ -31,6 +33,38 @@ namespace Weavers.Core.Constants {
 
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
+
+
+    public const int intPropertyLabelLeft = 116;
+
+    public const string ApsDefaultFolder = "AppDefaultFolder";
+
+
+    // itemProperty names constants
+    public const string ItRepoUrl = "RepositoryUrl";
+    public const string ItRootFolder = "RootFolder";    
+    public const string ItRelativeFolder = "RelativeFolder";
+    public const string ItFilePath = "FilePath";
+    public const string ItBaseType = "BaseType";
+    public const string ItPropertyType = "PropertyType";
+    public const string ItPropertyTypeRefName = "PropertyTypeRefName";
+    public const string ItIsNullable = "IsNullable";
+    public const string ItParameterType = "ParameterType";    
+    public const string ItNamespace = "Namespace";
+    public const string ItInterface = "Interface";
+    public const string ItRecordContent = "RecordContent";
+    public const string ItStructContent = "StructContent";
+    public const string ItReturnType = "ReturnType";
+    public const string ItReturnTypeRefName = "ReturnTypeRefName";
+    public const string ItIsAsync = "IsAsync";
+    public const string ItIsVirtual = "IsVirtual";
+    public const string ItIsStatic = "IsStatic";
+    public const string ItIsAbstract = "IsAbstract";
+    public const string ItIsSealed = "IsSealed";
+    public const string ItParameterTypeRefName = "ParameterTypeRefName";
+
+
+
 
 
 

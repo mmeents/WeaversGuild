@@ -101,7 +101,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var command = new CreateItemRelationCommand(fromItemId, relationTypeId, toItemId);
+        var command = new CreateRelationCommand(fromItemId, relationTypeId, toItemId);
         var result = await mediator.Send(command);
         var opResult = McpOpResult.CreateSuccess("create-relation", "Successfully created relation", result);
         return JsonSerializer.Serialize(opResult);
@@ -116,7 +116,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var command = new UpdateItemRelationCommand(relationId, fromItemId, relationTypeId, toItemId, rank);
+        var command = new UpdateRelationCommand(relationId, fromItemId, relationTypeId, toItemId, rank);
         var result = await mediator.Send(command);
         var opResult = McpOpResult.CreateSuccess("update-relation", "Successfully updated relation", result);
         return JsonSerializer.Serialize(opResult);

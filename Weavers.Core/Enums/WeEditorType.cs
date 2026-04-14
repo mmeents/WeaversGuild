@@ -18,8 +18,12 @@ namespace Weavers.Core.Enums {
     Decimal = 8,
     Password = 9,
     LookupTypeEditor = 10,
-    LookupModelEditor = 11,
-    Memo = 12
+    LookupItemEditor = 11,
+    Memo = 12,
+    Folder = 13,
+    RelativeFolder = 14,
+    Url = 15,
+
   }
 
 }

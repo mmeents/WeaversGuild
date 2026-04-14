@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Weavers.Core.Entities;
+﻿using Weavers.Core.Entities;
 
 namespace Weavers.Core.Models {
   public class RelationDto {

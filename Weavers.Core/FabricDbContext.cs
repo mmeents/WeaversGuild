@@ -6,7 +6,7 @@ namespace Weavers.Core {
     protected FabricDbContext(DbContextOptions options) : base(options) {}
     public FabricDbContext(DbContextOptions<FabricDbContext> options) : base(options) { }
 
-
+    public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     public DbSet<DataType> DataTypes => Set<DataType>();
     public DbSet<EditorType> EditorTypes => Set<EditorType>();
     public DbSet<Item> Items => Set<Item>();

@@ -13,6 +13,11 @@ namespace Weavers.Core {
       services.AddMediatR(cfg => {
         cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);  
       });
+
+      services.AddScoped<IAppSettingService, AppSettingService>();
+      services.AddScoped<IAppDataService, AppDataService>();
+      services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
+
       return services;
     }
 

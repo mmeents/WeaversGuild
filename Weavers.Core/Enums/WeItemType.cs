@@ -44,6 +44,7 @@ namespace Weavers.Core.Enums {
 
 
     ProjectFolderModel = 100,
+    RelativeFolderModel = 110,
     FileModel = 150,    
     LibraryModel = 200,
       DependencyInjectionModel = 300,

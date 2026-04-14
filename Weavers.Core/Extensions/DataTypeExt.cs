@@ -165,6 +165,15 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool AsBoolean(this string value) {
+      return value switch {
+        "1" => true,
+        "0" => false,
+        "true" => true,
+        "false" => false,
+        _ => throw new ArgumentException($"Cannot convert '{value}' to boolean. Expected '1', '0', 'true', or 'false'.")
+      };
 
+    }
   }
 }

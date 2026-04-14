@@ -8,11 +8,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInitialCreate : Migration
+    public partial class AddInitialCreateX3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AppSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Key = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    ValueInt = table.Column<int>(type: "int", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppSettings", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "DataTypes",
                 columns: table => new
@@ -298,7 +316,10 @@ namespace Weavers.Core.Migrations
                     { 9, "Password editor", "pi-lock", true, "Password" },
                     { 10, "Lookup type editor", "pi-search", true, "Lookup Type Editor" },
                     { 11, "Lookup model editor", "pi-search", true, "Lookup Model Editor" },
-                    { 12, "Memo editor", "pi-pencil", true, "Memo" }
+                    { 12, "Memo editor", "pi-pencil", true, "Memo" },
+                    { 13, "Folder editor", "pi-folder", true, "Folder" },
+                    { 14, "Relative folder editor", "pi-folder", true, "Relative Folder" },
+                    { 15, "URL editor", "pi-link", true, "URL" }
                 });
 
             migrationBuilder.InsertData(
@@ -318,7 +339,7 @@ namespace Weavers.Core.Migrations
                     { 10, "Owner Type of SQL Types", 10, "", true, "SqlTypes", null, 1 },
                     { 21, "sql float type", -1, "", true, "SqlFloatType", 21, 0 },
                     { 50, "Owner Type of C# Types", 10, "", true, "CSharpTypes", null, 1 },
-                    { 100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", null, 1 }
+                    { 100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", null, 100 }
                 });
 
             migrationBuilder.InsertData(
@@ -326,7 +347,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 1, "", 4, true, 100, "FilePath", 1, null, 6 },
+                    { 1, "", 13, true, 100, "RootFolder", 1, null, 6 },
                     { 2, "1", 4, true, 100, "RepositoryUrl", 2, null, 6 }
                 });
 
@@ -369,10 +390,21 @@ namespace Weavers.Core.Migrations
                     { 84, "C# DateTimeOffset Type", 4, "", true, "CSharpDateTimeOffsetType", 50, 19 },
                     { 86, "C# Byte Array Type", -1, "", true, "CSharpByteArrayType", 50, 20 },
                     { 88, "C# Guid Type", 4, "", true, "CSharpGuidType", 50, 21 },
-                    { 150, "File", 5, "pi pi-file", true, "FileModel", 100, 1 },
-                    { 200, "Library", 4, "pi pi-book", true, "LibraryModel", 100, 2 },
-                    { 400, "Namespace", 4, "pi pi-globe", true, "NamespaceModel", 100, 2 },
-                    { 700, "Handler", 4, "pi pi-shield", true, "HandlerModel", 100, 6 }
+                    { 110, "Relative Folder", 4, "pi pi-folder", true, "RelativeFolderModel", 100, 110 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemPropertyDefaults",
+                columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
+                values: new object[] { 3, "", 5, true, 110, "RelativeFolder", 1, null, 6 });
+
+            migrationBuilder.InsertData(
+                table: "ItemTypes",
+                columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
+                values: new object[,]
+                {
+                    { 150, "File", 5, "pi pi-file", true, "FileModel", 110, 150 },
+                    { 200, "Library", 4, "pi pi-book", true, "LibraryModel", 110, 200 }
                 });
 
             migrationBuilder.InsertData(
@@ -380,8 +412,8 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 3, "", 4, true, 150, "FilePath", 1, null, 6 },
-                    { 4, "", 4, true, 200, "FilePath", 1, null, 6 }
+                    { 4, "", 5, true, 150, "FilePath", 1, null, 6 },
+                    { 5, "", 4, true, 200, "FilePath", 1, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -389,15 +421,8 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 300, "Dependency Injection", 4, "pi pi-cog", true, "DependencyInjectionModel", 200, 1 },
-                    { 420, "Interface", 4, "pi pi-plug", true, "InterfaceModel", 400, 1 },
-                    { 440, "RecordModel", 4, "", true, "RecordModel", 400, 2 },
-                    { 460, "StructModel", 4, "", true, "StructModel", 400, 3 },
-                    { 500, "Class", 4, "pi pi-cubes", true, "ClassModel", 400, 4 },
-                    { 600, "Entity", 4, "", true, "EntityModel", 400, 5 },
-                    { 710, "Handler Response", 4, "pi pi-shield", true, "HandlerResponseModel", 700, 1 },
-                    { 720, "Handler Command", 4, "pi pi-shield", true, "HandlerCommandModel", 700, 2 },
-                    { 730, "Handler Class", 4, "pi pi-shield", true, "HandlerClassModel", 700, 3 }
+                    { 300, "Dependency Injection", 4, "pi pi-cog", true, "DependencyInjectionModel", 200, 300 },
+                    { 400, "Namespace", 4, "pi pi-globe", true, "NamespaceModel", 150, 400 }
                 });
 
             migrationBuilder.InsertData(
@@ -405,10 +430,8 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 5, "", 4, true, 420, "BaseType", 1, null, 6 },
-                    { 11, "", 4, true, 500, "Namespace", 1, null, 6 },
-                    { 12, "", 10, true, 500, "BaseType", 1, 50, 3 },
-                    { 13, "", 11, true, 500, "Interface", 1, 420, 3 }
+                    { 6, "", 4, true, 300, "FilePath", 1, null, 6 },
+                    { 7, "", 4, true, 400, "FilePath", 1, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -416,18 +439,14 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 302, "DI - DbContext", 4, "pi pi-database", true, "DiDbContextModel", 300, 1 },
-                    { 304, "DI - Mediator", 4, "pi pi-cogs", true, "DiMediatorModel", 300, 2 },
-                    { 422, "Interface Property", 4, "pi pi-plug", true, "InterfacePropertyModel", 420, 1 },
-                    { 424, "Interface Method", 4, "pi pi-plug", true, "InterfaceMethodModel", 420, 2 },
-                    { 522, "Class Property", 4, "pi pi-cube", true, "ClassPropertyModel", 500, 1 },
-                    { 524, "Class Method", 4, "pi pi-cube", true, "ClassMethodModel", 500, 2 },
-                    { 610, "Entity Class", 4, "", true, "EntityClassModel", 600, 1 },
-                    { 612, "Entity Property", 4, "", true, "EntityPropertyModel", 600, 1 },
-                    { 614, "Entity Navigation Property", 4, "", true, "EntityNavigationModel", 600, 2 },
-                    { 620, "Entity Configuration Class", 4, "", true, "EntityConfigurationModel", 600, 2 },
-                    { 732, "Handler Property", 4, "pi pi-shield", true, "HandlerPropertyModel", 730, 1 },
-                    { 734, "Handler Method", 4, "pi pi-shield", true, "HandlerMethodModel", 730, 2 }
+                    { 302, "DI - DbContext", 4, "pi pi-database", true, "DiDbContextModel", 300, 302 },
+                    { 304, "DI - Mediator", 4, "pi pi-cogs", true, "DiMediatorModel", 300, 304 },
+                    { 420, "Interface", 4, "pi pi-plug", true, "InterfaceModel", 400, 420 },
+                    { 440, "Record", 4, "", true, "RecordModel", 400, 440 },
+                    { 460, "Struct", 4, "", true, "StructModel", 400, 460 },
+                    { 500, "Class", 4, "pi pi-cubes", true, "ClassModel", 400, 500 },
+                    { 600, "Entity", 4, "", true, "EntityModel", 400, 600 },
+                    { 700, "Handler", 4, "pi pi-shield", true, "HandlerModel", 400, 700 }
                 });
 
             migrationBuilder.InsertData(
@@ -435,19 +454,18 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 6, "103", 10, true, 422, "PropertyType", 1, 50, 3 },
-                    { 7, "1", 2, true, 422, "IsNullable", 2, null, 1 },
-                    { 8, "103", 10, true, 424, "ReturnType", 1, 50, 3 },
-                    { 14, "103", 10, true, 522, "PropertyType", 1, 50, 3 },
-                    { 15, "", 4, true, 522, "PropertyTypeRefName", 1, null, 6 },
-                    { 16, "1", 2, true, 522, "IsNullable", 1, null, 1 },
-                    { 17, "103", 10, true, 524, "ReturnType", 1, 50, 3 },
-                    { 18, "", 4, true, 524, "ReturnTypeRefName", 1, null, 6 },
-                    { 19, "1", 2, true, 524, "IsAsync", 1, null, 1 },
-                    { 20, "1", 2, true, 524, "IsVirtual", 1, null, 1 },
-                    { 21, "1", 2, true, 524, "IsStatic", 1, null, 1 },
-                    { 22, "1", 2, true, 524, "IsAbstract", 1, null, 1 },
-                    { 23, "1", 2, true, 524, "IsSealed", 1, null, 1 }
+                    { 8, "", 4, true, 420, "BaseType", 1, null, 6 },
+                    { 14, "", 4, true, 440, "Namespace", 1, null, 6 },
+                    { 15, "", 10, true, 440, "BaseType", 2, 50, 3 },
+                    { 16, "", 11, true, 440, "Interface", 3, 420, 3 },
+                    { 17, "", 12, true, 440, "RecordContent", 4, null, 6 },
+                    { 18, "", 4, true, 460, "Namespace", 1, null, 6 },
+                    { 19, "", 10, true, 460, "BaseType", 2, 50, 3 },
+                    { 20, "", 11, true, 460, "Interface", 3, 420, 3 },
+                    { 21, "", 12, true, 460, "StructContent", 4, null, 6 },
+                    { 22, "", 4, true, 500, "Namespace", 1, null, 6 },
+                    { 23, "", 10, true, 500, "BaseType", 2, 50, 3 },
+                    { 24, "", 11, true, 500, "Interface", 3, 420, 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -455,9 +473,17 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 426, "Interface Method Parameter", 4, "pi pi-plug", true, "InterfaceMethodParameterModel", 424, 1 },
-                    { 526, "Class Method Parameter", 4, "pi pi-cube", true, "ClassMethodParameterModel", 524, 1 },
-                    { 622, "Entity Property Configuration", 4, "", true, "EntityPropertyConfigurationModel", 612, 1 }
+                    { 422, "Interface Property", 4, "pi pi-plug", true, "InterfacePropertyModel", 420, 422 },
+                    { 424, "Interface Method", 4, "pi pi-plug", true, "InterfaceMethodModel", 420, 424 },
+                    { 522, "Class Property", 4, "pi pi-cube", true, "ClassPropertyModel", 500, 522 },
+                    { 524, "Class Method", 4, "pi pi-cube", true, "ClassMethodModel", 500, 524 },
+                    { 610, "Entity Class", 4, "", true, "EntityClassModel", 600, 610 },
+                    { 612, "Entity Property", 4, "", true, "EntityPropertyModel", 600, 612 },
+                    { 614, "Entity Navigation Property", 4, "", true, "EntityNavigationModel", 600, 614 },
+                    { 620, "Entity Configuration Class", 4, "", true, "EntityConfigurationModel", 600, 620 },
+                    { 710, "Handler Response", 4, "pi pi-shield", true, "HandlerResponseModel", 700, 710 },
+                    { 720, "Handler Command", 4, "pi pi-shield", true, "HandlerCommandModel", 700, 720 },
+                    { 730, "Handler Class", 4, "pi pi-shield", true, "HandlerClassModel", 700, 730 }
                 });
 
             migrationBuilder.InsertData(
@@ -465,12 +491,50 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 9, "103", 10, true, 426, "ParameterType", 1, 50, 3 },
-                    { 10, "1", 2, true, 426, "IsNullable", 2, null, 1 },
-                    { 24, "103", 10, true, 526, "ParameterType", 1, 50, 3 },
-                    { 25, "", 4, true, 526, "ParameterTypeRefName", 1, null, 6 },
-                    { 26, "1", 2, true, 526, "IsNullable", 1, null, 1 }
+                    { 9, "64", 10, true, 422, "PropertyType", 1, 50, 3 },
+                    { 10, "1", 2, true, 422, "IsNullable", 2, null, 1 },
+                    { 11, "64", 10, true, 424, "ReturnType", 1, 50, 3 },
+                    { 25, "64", 10, true, 522, "PropertyType", 1, 50, 3 },
+                    { 26, "", 4, true, 522, "PropertyTypeRefName", 2, null, 6 },
+                    { 27, "1", 2, true, 522, "IsNullable", 3, null, 1 },
+                    { 28, "64", 10, true, 524, "ReturnType", 1, 50, 3 },
+                    { 29, "", 4, true, 524, "ReturnTypeRefName", 2, null, 6 },
+                    { 30, "1", 2, true, 524, "IsAsync", 3, null, 1 },
+                    { 31, "1", 2, true, 524, "IsVirtual", 4, null, 1 },
+                    { 32, "1", 2, true, 524, "IsStatic", 5, null, 1 },
+                    { 33, "1", 2, true, 524, "IsAbstract", 6, null, 1 },
+                    { 34, "1", 2, true, 524, "IsSealed", 7, null, 1 }
                 });
+
+            migrationBuilder.InsertData(
+                table: "ItemTypes",
+                columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
+                values: new object[,]
+                {
+                    { 426, "Interface Method Parameter", 4, "pi pi-plug", true, "InterfaceMethodParameterModel", 424, 426 },
+                    { 526, "Class Method Parameter", 4, "pi pi-cube", true, "ClassMethodParameterModel", 524, 526 },
+                    { 622, "Entity Property Configuration", 4, "", true, "EntityPropertyConfigurationModel", 612, 622 },
+                    { 732, "Handler Property", 4, "pi pi-shield", true, "HandlerPropertyModel", 730, 732 },
+                    { 734, "Handler Method", 4, "pi pi-shield", true, "HandlerMethodModel", 730, 734 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemPropertyDefaults",
+                columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
+                values: new object[,]
+                {
+                    { 12, "64", 10, true, 426, "ParameterType", 1, 50, 3 },
+                    { 13, "1", 2, true, 426, "IsNullable", 2, null, 1 },
+                    { 35, "64", 10, true, 526, "ParameterType", 1, 50, 3 },
+                    { 36, "", 4, true, 526, "ParameterTypeRefName", 2, null, 6 },
+                    { 37, "1", 2, true, 526, "IsNullable", 3, null, 1 }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppSettings_Key",
+                table: "AppSettings",
+                column: "Key",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataTypes_Name",
@@ -594,6 +658,9 @@ namespace Weavers.Core.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AppSettings");
+
             migrationBuilder.DropTable(
                 name: "ItemProperties");
 
