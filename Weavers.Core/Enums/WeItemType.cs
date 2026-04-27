@@ -1,6 +1,12 @@
 ﻿
+using System;
+using Weavers.Core.Entities;
+
 namespace Weavers.Core.Enums {
   public enum WeItemType {
+    NavigationTypes = 6,
+      NavHasOne = 7,
+      NavHasMany = 8,
 
     SqlTypes = 10,
     SqlBitType = 11,
@@ -19,6 +25,10 @@ namespace Weavers.Core.Enums {
     SqlDateTimeOffsetType = 29,
     SqlBinaryType = 30,
 
+    CSharpLifetimes = 40,
+    CSLifetimeSingleton = 41,
+    CSLifetimeScoped = 42,
+    CSLifetimeTransient = 43,
 
     CSharpTypes = 50,
     CSharpClassType = 52,
@@ -42,38 +52,54 @@ namespace Weavers.Core.Enums {
     CSharpByteArrayType = 86,
     CSharpGuidType = 88,
 
+    AccessibilityLookups = 90,
+      WePublic = 91,
+      WeInternal = 92,
+      WePrivate = 93,
+      WeProtected = 94,
+      WeProtectedInternal = 95,  
 
-    ProjectFolderModel = 100,
+  ProjectFolderModel = 100,
+
     RelativeFolderModel = 110,
-    FileModel = 150,    
-    LibraryModel = 200,
+
+    FileModel = 150,   
+
+    SolutionModel = 160,  
+      SolutionImportModel = 162, // import Libraries, apps, apis, mcps into a solution.
+
+    LibraryModel = 200,     // name of project is root namespace. 
       DependencyInjectionModel = 300,
-       DiDbContextModel = 302,
-       DiMediatorModel = 304,
+        DiImportModel = 306,
 
-      NamespaceModel = 400,
+      DbContextModel = 310,
+        DbContextEntityImportModel = 312,
 
-       InterfaceModel = 420,
-        InterfacePropertyModel = 422,
-        InterfaceMethodModel = 424,
-        InterfaceMethodParameterModel = 426,
 
-       RecordModel = 440,
-       StructModel = 460,
+      NamespaceModel = 400,  // folder off the root of a code project
+        InterfaceModel = 420,    // not used, interfaces are a projection of a class.
+          InterfacePropertyModel = 422,
+          InterfaceMethodModel = 424,
+            InterfaceMethodParameterModel = 426,
 
-       ClassModel = 500,
-        ClassPropertyModel = 522,
-        ClassMethodModel = 524,
-        ClassMethodParameterModel = 526,
+        RecordModel = 440,
+        StructModel = 460,
 
-       EntityModel = 600,
-        EntityClassModel = 610,
+        ClassModel = 500,
+          ClassImportModel = 510,
+          ClassPropertyModel = 522,
+          ClassMethodModel = 524,
+            ClassMethodParameterModel = 526,
+
+       EntityClassModel = 610,
+         EntityClassImportModel = 611,
          EntityPropertyModel = 612,
          EntityNavigationModel = 614,
         EntityConfigurationModel = 620,
          EntityPropertyConfigurationModel = 622,
+         EntityNavigationConfigurationModel = 624,
 
-       HandlerModel = 700,
+    HandlerModel = 700,
         HandlerResponseModel = 710,
         HandlerCommandModel = 720,
         HandlerClassModel = 730,

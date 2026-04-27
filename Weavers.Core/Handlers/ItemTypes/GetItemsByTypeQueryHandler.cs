@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MediatR;
 using Weavers.Core.Models;
 using Weavers.Core.Enums;
@@ -17,7 +13,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
 ) : IRequest<List<ItemLookup>>;
   
 
-  public class GetItemsByTypeQueryHandler {
+  public class GetItemsByTypeQueryHandler : IRequestHandler<GetItemsByItemTypeQuery, List<ItemLookup>> {
     private readonly FabricDbContext _context;
     public GetItemsByTypeQueryHandler(FabricDbContext context) {
       _context = context;
@@ -25,10 +21,10 @@ namespace Weavers.Core.Handlers.ItemTypes {
     public async Task<List<ItemLookup>> Handle(GetItemsByItemTypeQuery request, CancellationToken cancellationToken) {
       var rt = (WeItemType)request.ItemTypeId;
 
-      if (rt == WeItemType.CSharpTypes || rt == WeItemType.SqlTypes) {
+      if (rt == WeItemType.CSharpTypes || rt == WeItemType.SqlTypes || rt == WeItemType.AccessibilityLookups || rt == WeItemType.CSharpLifetimes) {
         var items = await _context.ItemTypes
-          .Where(i => i.Id == request.ItemTypeId)
-          .Select(i => new ItemLookup(i.Id, i.Name, i.Description))          
+          .Where(i => i.ParentTypeId == request.ItemTypeId)
+          .Select(i => new ItemLookup(i.Id, i.Description, i.Description))          
           .ToListAsync(cancellationToken);
         return items;
       } else {
@@ -38,7 +34,9 @@ namespace Weavers.Core.Handlers.ItemTypes {
             .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
             .ToListAsync(cancellationToken);    
           return items;
-        } else return new List<ItemLookup>();
+        }  
+        
+        else return new List<ItemLookup>();
       }
     }
   }

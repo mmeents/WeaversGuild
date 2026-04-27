@@ -5,6 +5,7 @@ using Weavers.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Handlers.RelationTypes;
 using Weavers.Core.Handlers.ItemTypes;
+using Weavers.Core.Handlers.DepItems;
 using System.Runtime.CompilerServices;
 
 
@@ -24,6 +25,11 @@ namespace Weavers.Core.Service {
     Task<ItemPropertyDto?> AddUpdateItemPropertyAsync(ItemPropertyDto? itemProperty);
     Task<List<ItemLookup>> GetItemsByItemType(int itemTypeId);
     Task<int> GetNextItemRank(int? itemId = null);
+    Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath);
+    Task UpdateItemPropertyNamespaceRecursive(int itemId, string oldNamespace, string newNamespace);
+    Task AddRemoveClassToLibDi(int ClassItemId, bool add, bool GenerateInterface);
+
+    Task AddRemoveDbContextToLibDi(int DiItemId, bool add);
 
 
   }
@@ -138,5 +144,29 @@ namespace Weavers.Core.Service {
         return result;
     }
 
+    public async Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath) { 
+      var mediator = GetMediator();
+      var command = new UpdateItemPropertyPathRecursiveCommand(itemId, oldPath, newPath);
+      await mediator.Send(command);   
+    }
+
+    public async Task UpdateItemPropertyNamespaceRecursive(int itemId, string oldNamespace, string newNamespace) {
+      var mediator = GetMediator();
+      var command = new UpdateItemPropertyNamespaceRecursiveCommand(itemId, oldNamespace, newNamespace);
+      await mediator.Send(command);
+    }
+
+    public async Task AddRemoveClassToLibDi(int ClassItemId, bool add, bool generateInterface) {
+      var mediator = GetMediator();
+      var command = new AddRemoveClassToLibDiCommand(ClassItemId, add, generateInterface);
+      await mediator.Send(command);
+    }
+
+    public async Task AddRemoveDbContextToLibDi(int DiItemId, bool add) {
+      var mediator = GetMediator();
+      var command = new AddRemoveDbContextToLibDiCommand(DiItemId, add);
+      await mediator.Send(command);
+
+    }
   }
 }

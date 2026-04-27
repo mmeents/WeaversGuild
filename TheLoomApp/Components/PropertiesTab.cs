@@ -5,10 +5,12 @@ using Weavers.Core.Interfaces;
 using Weavers.Core.Models;
 using TheLoomApp.Editors;
 using Weavers.Core.Service;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TheLoomApp.Components {
   public class PropertiesTab : TabPage {
     private string _titleLabel = "Properties";
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly IAppDataService _appDataService;
     private readonly IItemTypeLookupComboProvider _itemTypeLookupComboProvider;
 
@@ -17,9 +19,11 @@ namespace TheLoomApp.Components {
       get { return this.Text; }
       set { this.Text = value; }
     }
-    public PropertiesTab(IAppDataService appDataService, IItemTypeLookupComboProvider itemTypeLookupComboProvider) {
-      _appDataService = appDataService;
-      _itemTypeLookupComboProvider = itemTypeLookupComboProvider;
+    public PropertiesTab(IServiceScopeFactory scopeFactory) {
+      _scopeFactory = scopeFactory;    
+      var scope = _scopeFactory.CreateScope();
+      _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
+      _itemTypeLookupComboProvider = scope.ServiceProvider.GetRequiredService<IItemTypeLookupComboProvider>();
       BasePanel = new Panel {
         Dock = DockStyle.Fill,
         AutoScroll = true,
@@ -130,7 +134,6 @@ namespace TheLoomApp.Components {
 
     private void CancelButton_Click(object? sender, EventArgs e) {
       if (ItemProps != null) {
-        SetEditingMode(false);
         ResetToRow(); 
       }
     }
@@ -182,6 +185,7 @@ namespace TheLoomApp.Components {
       TitlePanel.Controls.Add(TitleLabel);
       BasePanel.Controls.Add(TitlePanel);
       CreateMenuButtons();
+      SetEditingMode(false);
 
     }
 

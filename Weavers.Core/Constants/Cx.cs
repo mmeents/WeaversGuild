@@ -13,8 +13,10 @@ namespace Weavers.Core.Constants {
     public static string AppVersion => "0.1.2";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
-
+        
     public const int DefaultLmStudioContextLength = 8000;
+    public const int intPropertyLabelLeft = 116;
+
     public const string LMStudioUrl = "http://10.0.0.118:8669";
     public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
     public const string LMStudioMcpToolName = "mcp/weavers-mcp";
@@ -35,35 +37,54 @@ namespace Weavers.Core.Constants {
     public const string ValidItemTypes = "Item types Id ";
 
 
-    public const int intPropertyLabelLeft = 116;
-
     public const string ApsDefaultFolder = "AppDefaultFolder";
 
-
-    // itemProperty names constants
-    public const string ItRepoUrl = "RepositoryUrl";
-    public const string ItRootFolder = "RootFolder";    
-    public const string ItRelativeFolder = "RelativeFolder";
-    public const string ItFilePath = "FilePath";
+    // itemProperty names constants 
+    public const string ItAccessModifier = "AccessModifier";
     public const string ItBaseType = "BaseType";
-    public const string ItPropertyType = "PropertyType";
-    public const string ItPropertyTypeRefName = "PropertyTypeRefName";
+    public const string ItClassType = "ClassType";
+    public const string ItDataType = "DataType";
+    public const string ItDbContextName = "DbContextName";
+    public const string ItFilePath = "FilePath";
+    public const string ItFileExt = "FileExtension";
+    public const string ItGenerateInterface = "GenerateInterface";
+    public const string ItHasDbContext = "HasDbContext";
+    public const string ItHasMediator = "HasMediator";
+    public const string ItHasNavigation = "HasNavigation";
+    public const string ItHasSetter = "HasSetter";
+    public const string ItImportObject = "ImportObject";
+    public const string ItImportUseInterface = "UseInterface";
+    public const string ItInterface = "Interface";    
+    public const string ItIsAbstract = "IsAbstract";
+    public const string ItIsCollection = "IsCollection";
+    public const string ItIsAsync = "IsAsync";
     public const string ItIsNullable = "IsNullable";
-    public const string ItParameterType = "ParameterType";    
+    public const string ItIsPrimaryKey = "IsPrimaryKey";
+    public const string ItIsSealed = "IsSealed";
+    public const string ItIsStatic = "IsStatic";
+    public const string ItIsVirtual = "IsVirtual";
+    public const string ItLifetimeScope = "LifetimeScope";
+    public const string ItMaxSize = "MaxSize";
     public const string ItNamespace = "Namespace";
-    public const string ItInterface = "Interface";
+    public const string ItNamespaceRoot = "NamespaceRoot";    
+    public const string ItParameterDataType = Cx.ItDataType;
+    public const string ItParameterClassType = Cx.ItClassType;
+    public const string ItPropertyDataType = Cx.ItDataType;
+    public const string ItPropertyClassType = Cx.ItClassType;
+
+    public const string ItProjectGuid = "ProjectGuid";
     public const string ItRecordContent = "RecordContent";
     public const string ItStructContent = "StructContent";
-    public const string ItReturnType = "ReturnType";
-    public const string ItReturnTypeRefName = "ReturnTypeRefName";
-    public const string ItIsAsync = "IsAsync";
-    public const string ItIsVirtual = "IsVirtual";
-    public const string ItIsStatic = "IsStatic";
-    public const string ItIsAbstract = "IsAbstract";
-    public const string ItIsSealed = "IsSealed";
-    public const string ItParameterTypeRefName = "ParameterTypeRefName";
-
-
+    public const string ItReturnDataType = Cx.ItDataType;
+    public const string ItReturnClassType = Cx.ItClassType; 
+    public const string ItRegisterDi = "RegisterDI";   
+    public const string ItRegisterObject = "RegisterObject";
+    public const string ItRegisterInterface = "RegisterInterface";
+    public const string ItRelativeFolder = "RelativeFolder";    
+    public const string ItRootFolder = "RootFolder";
+    public const string ItRepoUrl = "RepositoryUrl";
+    public const string ItSolutionGuid = "SolutionGuid";
+    public const string ItUseThis = "UseThis";
 
 
 

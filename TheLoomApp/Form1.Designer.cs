@@ -33,6 +33,19 @@
       toolStripSeparator1 = new ToolStripSeparator();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
+      miAddSolution = new ToolStripMenuItem();
+      miAddSolutionImport = new ToolStripMenuItem();
+      miAddFile = new ToolStripMenuItem();
+      miAddLibrary = new ToolStripMenuItem();
+      miAddDiModel = new ToolStripMenuItem();
+      miAddNamespace = new ToolStripMenuItem();
+      miAddClass = new ToolStripMenuItem();
+      miAddClassImport = new ToolStripMenuItem();
+      miAddClassProp = new ToolStripMenuItem();
+      miAddClassMethod = new ToolStripMenuItem();
+      miAddClassMethodParam = new ToolStripMenuItem();
+      toolStripSeparator3 = new ToolStripSeparator();
+      miGenerate = new ToolStripMenuItem();
       toolStripSeparator2 = new ToolStripSeparator();
       miDeleteItem = new ToolStripMenuItem();
       ilTreeImages = new ImageList(components);
@@ -46,9 +59,10 @@
       label2 = new Label();
       edAppDefaultFolder = new TextBox();
       tpItem = new TabPage();
+      btnGenerateDesc = new Button();
       tabControl2 = new TabControl();
       tpItemDesc = new TabPage();
-      edItemDesc = new TextBox();
+      edItemDesc = new FastColoredTextBoxNS.FastColoredTextBox();
       tpData = new TabPage();
       edItemData = new TextBox();
       btnArchive = new Button();
@@ -90,6 +104,7 @@
       tpItem.SuspendLayout();
       tabControl2.SuspendLayout();
       tpItemDesc.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)edItemDesc).BeginInit();
       tpData.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)edRank).BeginInit();
       tsErrorPopup.SuspendLayout();
@@ -149,46 +164,135 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(165, 104);
+      cmsTreeMenus.Size = new Size(209, 374);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
       // 
       miReloadTree.Name = "miReloadTree";
-      miReloadTree.Size = new Size(164, 22);
+      miReloadTree.Size = new Size(208, 22);
       miReloadTree.Text = "Reload Projects";
       miReloadTree.Click += miReloadTree_Click;
       // 
       // toolStripSeparator1
       // 
       toolStripSeparator1.Name = "toolStripSeparator1";
-      toolStripSeparator1.Size = new Size(161, 6);
+      toolStripSeparator1.Size = new Size(205, 6);
       // 
       // miAddProjectRoot
       // 
       miAddProjectRoot.Name = "miAddProjectRoot";
-      miAddProjectRoot.Size = new Size(164, 22);
+      miAddProjectRoot.Size = new Size(208, 22);
       miAddProjectRoot.Text = "Add Project Root";
       miAddProjectRoot.Click += miAddProjectRoot_Click;
       // 
       // miAddSubProject
       // 
       miAddSubProject.Name = "miAddSubProject";
-      miAddSubProject.Size = new Size(164, 22);
+      miAddSubProject.Size = new Size(208, 22);
       miAddSubProject.Text = "Add Project";
       miAddSubProject.Click += miAddSubProject_Click;
+      // 
+      // miAddSolution
+      // 
+      miAddSolution.Name = "miAddSolution";
+      miAddSolution.Size = new Size(208, 22);
+      miAddSolution.Text = "Add Solution";
+      miAddSolution.Click += miAddSolution_Click;
+      // 
+      // miAddSolutionImport
+      // 
+      miAddSolutionImport.Name = "miAddSolutionImport";
+      miAddSolutionImport.Size = new Size(208, 22);
+      miAddSolutionImport.Text = "Add Solution Import";
+      miAddSolutionImport.Click += miAddSolutionImport_Click;
+      // 
+      // miAddFile
+      // 
+      miAddFile.Name = "miAddFile";
+      miAddFile.Size = new Size(208, 22);
+      miAddFile.Text = "Add File";
+      miAddFile.Click += miAddFile_Click;
+      // 
+      // miAddLibrary
+      // 
+      miAddLibrary.Name = "miAddLibrary";
+      miAddLibrary.Size = new Size(208, 22);
+      miAddLibrary.Text = "Add Library";
+      miAddLibrary.Click += miAddLibrary_Click;
+      // 
+      // miAddDiModel
+      // 
+      miAddDiModel.Name = "miAddDiModel";
+      miAddDiModel.Size = new Size(208, 22);
+      miAddDiModel.Text = "Add DI Model";
+      miAddDiModel.Click += miAddDiModel_Click;
+      // 
+      // miAddNamespace
+      // 
+      miAddNamespace.Name = "miAddNamespace";
+      miAddNamespace.Size = new Size(208, 22);
+      miAddNamespace.Text = "Add Namespace";
+      miAddNamespace.Click += miAddNamespace_Click;
+      // 
+      // miAddClass
+      // 
+      miAddClass.Name = "miAddClass";
+      miAddClass.Size = new Size(208, 22);
+      miAddClass.Text = "Add Class";
+      miAddClass.Click += miAddClass_Click;
+      // 
+      // miAddClassImport
+      // 
+      miAddClassImport.Name = "miAddClassImport";
+      miAddClassImport.Size = new Size(208, 22);
+      miAddClassImport.Text = "Add Class Import";
+      miAddClassImport.Click += miAddClassImport_Click;
+      // 
+      // miAddClassProp
+      // 
+      miAddClassProp.Name = "miAddClassProp";
+      miAddClassProp.Size = new Size(208, 22);
+      miAddClassProp.Text = "Add Class Property";
+      miAddClassProp.Click += miAddClassProp_Click;
+      // 
+      // miAddClassMethod
+      // 
+      miAddClassMethod.Name = "miAddClassMethod";
+      miAddClassMethod.Size = new Size(208, 22);
+      miAddClassMethod.Text = "Add Class Method";
+      miAddClassMethod.Click += miAddClassMethod_Click;
+      // 
+      // miAddClassMethodParam
+      // 
+      miAddClassMethodParam.Name = "miAddClassMethodParam";
+      miAddClassMethodParam.Size = new Size(208, 22);
+      miAddClassMethodParam.Text = "Add Class Method Param";
+      miAddClassMethodParam.Click += miAddClassMethodParam_Click;
+      // 
+      // toolStripSeparator3
+      // 
+      toolStripSeparator3.Name = "toolStripSeparator3";
+      toolStripSeparator3.Size = new Size(205, 6);
+      // 
+      // miGenerate
+      // 
+      miGenerate.Name = "miGenerate";
+      miGenerate.Size = new Size(208, 22);
+      miGenerate.Text = "Generate";
+      miGenerate.Click += miGenerate_Click;
       // 
       // toolStripSeparator2
       // 
       toolStripSeparator2.Name = "toolStripSeparator2";
-      toolStripSeparator2.Size = new Size(161, 6);
+      toolStripSeparator2.Size = new Size(205, 6);
       // 
       // miDeleteItem
       // 
       miDeleteItem.Name = "miDeleteItem";
-      miDeleteItem.Size = new Size(164, 22);
+      miDeleteItem.Size = new Size(208, 22);
       miDeleteItem.Text = "Delete Selected";
       miDeleteItem.Click += miDeleteItem_Click;
       // 
@@ -199,6 +303,20 @@
       ilTreeImages.TransparentColor = Color.Transparent;
       ilTreeImages.Images.SetKeyName(0, "transparent.png");
       ilTreeImages.Images.SetKeyName(1, "folder.png");
+      ilTreeImages.Images.SetKeyName(2, "callsheet.png");
+      ilTreeImages.Images.SetKeyName(3, "filemodel.png");
+      ilTreeImages.Images.SetKeyName(4, "DiModel.png");
+      ilTreeImages.Images.SetKeyName(5, "InterfaceModel.png");
+      ilTreeImages.Images.SetKeyName(6, "propertyModel.png");
+      ilTreeImages.Images.SetKeyName(7, "MethodModel.png");
+      ilTreeImages.Images.SetKeyName(8, "paramModel.png");
+      ilTreeImages.Images.SetKeyName(9, "ClassModel.png");
+      ilTreeImages.Images.SetKeyName(10, "HandlerModel.png");
+      ilTreeImages.Images.SetKeyName(11, "DblCabnet.png");
+      ilTreeImages.Images.SetKeyName(12, "deliverable.png");
+      ilTreeImages.Images.SetKeyName(13, "story.png");
+      ilTreeImages.Images.SetKeyName(14, "EntityProperty.png");
+      ilTreeImages.Images.SetKeyName(15, "importBrick.png");
       // 
       // splitContainer3
       // 
@@ -291,6 +409,7 @@
       btnAppDefaultFolderBrowse.TabIndex = 2;
       btnAppDefaultFolderBrowse.Text = "↗";
       btnAppDefaultFolderBrowse.UseVisualStyleBackColor = true;
+      btnAppDefaultFolderBrowse.Click += btnAppDefaultFolderBrowse_Click;
       // 
       // label2
       // 
@@ -313,6 +432,7 @@
       // 
       // tpItem
       // 
+      tpItem.Controls.Add(btnGenerateDesc);
       tpItem.Controls.Add(tabControl2);
       tpItem.Controls.Add(btnArchive);
       tpItem.Controls.Add(btnCancelRelation);
@@ -340,16 +460,28 @@
       tpItem.Text = "Details";
       tpItem.UseVisualStyleBackColor = true;
       // 
+      // btnGenerateDesc
+      // 
+      btnGenerateDesc.Anchor = AnchorStyles.Top;
+      btnGenerateDesc.Location = new Point(452, 148);
+      btnGenerateDesc.Margin = new Padding(3, 2, 3, 2);
+      btnGenerateDesc.Name = "btnGenerateDesc";
+      btnGenerateDesc.Size = new Size(92, 21);
+      btnGenerateDesc.TabIndex = 46;
+      btnGenerateDesc.Text = "Generate Desc";
+      btnGenerateDesc.UseVisualStyleBackColor = true;
+      btnGenerateDesc.Click += btnGenerateDesc_Click;
+      // 
       // tabControl2
       // 
       tabControl2.Controls.Add(tpItemDesc);
       tabControl2.Controls.Add(tpData);
       tabControl2.Dock = DockStyle.Bottom;
-      tabControl2.Location = new Point(3, 226);
+      tabControl2.Location = new Point(3, 247);
       tabControl2.Margin = new Padding(3, 2, 3, 2);
       tabControl2.Name = "tabControl2";
       tabControl2.SelectedIndex = 0;
-      tabControl2.Size = new Size(609, 257);
+      tabControl2.Size = new Size(609, 236);
       tabControl2.TabIndex = 45;
       // 
       // tpItemDesc
@@ -359,22 +491,52 @@
       tpItemDesc.Margin = new Padding(3, 2, 3, 2);
       tpItemDesc.Name = "tpItemDesc";
       tpItemDesc.Padding = new Padding(3, 2, 3, 2);
-      tpItemDesc.Size = new Size(601, 229);
+      tpItemDesc.Size = new Size(601, 208);
       tpItemDesc.TabIndex = 0;
       tpItemDesc.Text = "Description";
       tpItemDesc.UseVisualStyleBackColor = true;
       // 
       // edItemDesc
       // 
+      edItemDesc.AutoCompleteBracketsList = new char[]
+  {
+    '(',
+    ')',
+    '{',
+    '}',
+    '[',
+    ']',
+    '"',
+    '"',
+    '\'',
+    '\''
+  };
+      edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
+      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.BackBrush = null;
+      edItemDesc.CharHeight = 14;
+      edItemDesc.CharWidth = 8;
+      edItemDesc.DefaultMarkerSize = 8;
+      edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
+      edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
+      edItemDesc.GoToForm = null;
+      edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
+      edItemDesc.IsReplaceMode = false;
       edItemDesc.Location = new Point(3, 2);
-      edItemDesc.Margin = new Padding(3, 2, 3, 2);
-      edItemDesc.Multiline = true;
       edItemDesc.Name = "edItemDesc";
-      edItemDesc.ScrollBars = ScrollBars.Both;
-      edItemDesc.Size = new Size(595, 225);
-      edItemDesc.TabIndex = 28;
-      edItemDesc.TextChanged += edItemName_TextChanged;
+      edItemDesc.Paddings = new Padding(0);
+      edItemDesc.ReplaceForm = null;
+      edItemDesc.SelectionColor = Color.FromArgb(60, 0, 0, 255);
+      edItemDesc.ServiceColors = (FastColoredTextBoxNS.ServiceColors)resources.GetObject("edItemDesc.ServiceColors");
+      edItemDesc.Size = new Size(595, 204);
+      edItemDesc.TabIndex = 0;
+      edItemDesc.Text = "fastColoredTextBox1";
+      edItemDesc.WordWrapAutoIndent = false;
+      edItemDesc.WordWrapMode = FastColoredTextBoxNS.WordWrapMode.CharWrapPreferredWidth;
+      edItemDesc.Zoom = 100;
+      edItemDesc.TextChanged += edItemDesc2_TextChanged;
       // 
       // tpData
       // 
@@ -383,7 +545,7 @@
       tpData.Margin = new Padding(3, 2, 3, 2);
       tpData.Name = "tpData";
       tpData.Padding = new Padding(3, 2, 3, 2);
-      tpData.Size = new Size(601, 229);
+      tpData.Size = new Size(601, 208);
       tpData.TabIndex = 1;
       tpData.Text = "Json Data";
       tpData.UseVisualStyleBackColor = true;
@@ -396,7 +558,7 @@
       edItemData.Multiline = true;
       edItemData.Name = "edItemData";
       edItemData.ScrollBars = ScrollBars.Both;
-      edItemData.Size = new Size(595, 225);
+      edItemData.Size = new Size(595, 204);
       edItemData.TabIndex = 27;
       edItemData.TextChanged += edItemName_TextChanged;
       // 
@@ -656,7 +818,7 @@
       tpItem.PerformLayout();
       tabControl2.ResumeLayout(false);
       tpItemDesc.ResumeLayout(false);
-      tpItemDesc.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)edItemDesc).EndInit();
       tpData.ResumeLayout(false);
       tpData.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)edRank).EndInit();
@@ -704,8 +866,7 @@
     private TextBox edItemName;
     private TabControl tabControl2;
     private TabPage tpItemDesc;
-    private TabPage tpData;
-    private TextBox edItemDesc;
+    private TabPage tpData;    
     private TextBox edItemData;
     private Label label2;
     private TextBox edAppDefaultFolder;
@@ -715,5 +876,20 @@
     private Button btnCancelAppDefaultF;
     private Button btnSaveDefaultFolder;
     private Button btnShowErrors;
+    private ToolStripMenuItem miAddFile;
+    private ToolStripSeparator toolStripSeparator3;
+    private ToolStripMenuItem miGenerate;
+    private ToolStripMenuItem miAddLibrary;
+    private ToolStripMenuItem miAddDiModel;
+    private ToolStripMenuItem miAddNamespace;
+    private ToolStripMenuItem miAddClass;
+    private ToolStripMenuItem miAddSolution;
+    private ToolStripMenuItem miAddSolutionImport;
+    private ToolStripMenuItem miAddClassImport;
+    private ToolStripMenuItem miAddClassProp;
+    private ToolStripMenuItem miAddClassMethod;
+    private Button btnGenerateDesc;
+    private ToolStripMenuItem miAddClassMethodParam;
+    private FastColoredTextBoxNS.FastColoredTextBox edItemDesc;
   }
 }

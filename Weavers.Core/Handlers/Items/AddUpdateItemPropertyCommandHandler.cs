@@ -45,6 +45,7 @@ namespace Weavers.Core.Handlers.Items {
           request.PropertyEditorTypeId);
 
         await _context.ItemProperties.AddAsync(property, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
       } else {
         // Update existing property
         id = request.Id;

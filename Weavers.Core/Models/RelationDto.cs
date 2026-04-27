@@ -6,6 +6,7 @@ namespace Weavers.Core.Models {
     public int ItemId { get; set; }
     public string ItemName { get; set; } = string.Empty;
     public int? RelatedItemId { get; set; } = null;
+    public int? RelatedItemTypeId { get; set; } = null;
     public string RelatedItemName { get; set; } = string.Empty;
     public int RelationTypeId { get; set; }
     public string RelationTypeName { get; set; } = string.Empty;
@@ -22,6 +23,7 @@ namespace Weavers.Core.Models {
         ItemId = relation.ItemId,
         ItemName = relation.Item?.Name ?? string.Empty,
         RelatedItemId = relation.RelatedItemId,
+        RelatedItemTypeId = relation.RelatedItem?.ItemTypeId,
         RelatedItemName = relation.RelatedItem?.Name ?? string.Empty,
         RelationTypeId = relation.RelationTypeId,
         RelationTypeName = relation.RelationType?.Name ?? string.Empty,

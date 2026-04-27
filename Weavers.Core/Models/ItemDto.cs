@@ -40,8 +40,9 @@ namespace Weavers.Core.Models {
       if (includeRelations) {
         dto.Relations = item.Relations?.Select(r => r.ToDto()).ToList() ?? [];
         dto.IncomingRelations = item.IncomingRelations?.Select(r => r.ToDto()).ToList() ?? [];
+        dto.Properties = item.Properties?.Select(p => p.ToDto()).ToList() ?? [];
       }
-      dto.Properties = item.Properties?.Select(p => p.ToDto()).ToList() ?? [];
+      
       return dto;
     }
   }

@@ -165,15 +165,42 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-    public static bool AsBoolean(this string value) {
+    public static bool AsBoolean(this string? value) {
+      if (value == null) return false;
       return value switch {
         "1" => true,
         "0" => false,
         "true" => true,
         "false" => false,
-        _ => throw new ArgumentException($"Cannot convert '{value}' to boolean. Expected '1', '0', 'true', or 'false'.")
+        "True" => true,
+        "False" => false,
+        _ => false
       };
 
     }
+
+    /// <summary>
+    /// lower case first letter of content concat with remainder.
+    /// </summary>
+    /// <param name="content"></param>
+    /// <returns></returns>    
+    public static string AsLowerCaseFirstLetter(this string content) {
+      if (string.IsNullOrEmpty(content)) return "";
+      var newName = content.Substring(0, 1).ToLower() + content.Substring(1);
+      return newName.UrlSafe();
+    }
+
+    /// <summary>
+    /// Uppercase first letter of content concat with rest of content.
+    /// </summary>
+    /// <param name="content"></param>
+    /// <returns></returns>
+    public static string AsUpperCaseFirstLetter(this string content) {
+      if (string.IsNullOrEmpty(content)) return "";
+      var newName = content.Substring(0, 1).ToUpper() + content.Substring(1);
+      return newName.UrlSafe();
+    }
+
+
   }
 }

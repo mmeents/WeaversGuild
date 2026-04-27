@@ -16,6 +16,7 @@ namespace Weavers.Core {
 
       services.AddScoped<IAppSettingService, AppSettingService>();
       services.AddScoped<IAppDataService, AppDataService>();
+      services.AddScoped<IAppItemTemplateService, AppItemTemplateService>();
       services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
 
       return services;

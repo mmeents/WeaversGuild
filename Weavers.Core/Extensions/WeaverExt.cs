@@ -11,7 +11,13 @@ namespace Weavers.Core.Extensions {
     public static char[] InvalidFileNameChars() => [.. Path.GetInvalidFileNameChars(), .. MyInvalidList()];
     public static char[] MyInvalidList() => " `~!@#$%^&*()_-+=[]{},.;'".ToCharArray();
     public static string UrlSafe(this string str) {
-      return string.Concat(str.Split(WeaverExt.InvalidFileNameChars()));
+      return string.Concat(str.Split(InvalidFileNameChars()));
+    }
+
+    public static char[] NamesafeChars() => " `~!@#$%^&*()_-+=[]{},;'".ToCharArray();
+    public static char[] InvalidNamesafeChars() => [.. Path.GetInvalidFileNameChars(), .. NamesafeChars()];
+    public static string NameSafe(this string str) {
+      return string.Concat(str.Split(InvalidNamesafeChars()));
     }
 
     public static string CommonAppPath {

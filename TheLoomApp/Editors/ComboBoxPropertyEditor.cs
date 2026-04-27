@@ -127,6 +127,8 @@ namespace TheLoomApp.Editors {
       // Restore previous selection if possible
       if (!string.IsNullOrEmpty(_originalValue)) {
         PropertyValue = _originalValue;
+      } else { 
+        comboBox1.SelectedIndex = 0; // Select (None) by default
       }
     }
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -202,7 +204,6 @@ namespace TheLoomApp.Editors {
       if (Modified) {
         ItemLookup? selectedItem = comboBox1.SelectedItem as ItemLookup;
         Field.Value = Convert.ToString( selectedItem?.Value ?? "");
-        Modified = false;
       }
     }
 

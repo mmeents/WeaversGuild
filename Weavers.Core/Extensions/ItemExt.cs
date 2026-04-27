@@ -22,6 +22,7 @@ namespace Weavers.Core.Extensions {
           ItemId = r.ItemId,
           ItemName = r.Item.Name,
           RelatedItemId = r.RelatedItemId,
+          RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
           RelatedItemName = r.RelatedItem != null ? r.RelatedItem.Name : "",
           RelationTypeId = r.RelationTypeId,
           RelationTypeName = r.RelationType.Name ?? string.Empty,
@@ -51,6 +52,7 @@ namespace Weavers.Core.Extensions {
             ItemId = r.ItemId,
             ItemName = r.Item.Name,
             RelatedItemId = r.RelatedItemId,
+            RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
             RelatedItemName = r.RelatedItem != null ? r.RelatedItem.Name : "",
             RelationTypeId = r.RelationTypeId,
             RelationTypeName = r.RelationType.Name ?? string.Empty,
@@ -63,6 +65,7 @@ namespace Weavers.Core.Extensions {
             ItemId = r.ItemId,
             ItemName = r.Item.Name ?? string.Empty,
             RelatedItemId = r.RelatedItemId,
+            RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
             RelatedItemName = (r.RelatedItem == null) ? "" : r.RelatedItem.Name ,
             RelationTypeId = r.RelationTypeId,
             RelationTypeName = r.RelationType.Name ?? string.Empty,
@@ -157,6 +160,7 @@ namespace Weavers.Core.Extensions {
           ItemName = r.ItemName ?? string.Empty,
           RelatedItemId = r.RelatedItemId,
           RelatedItemName = r.RelatedItemName ?? string.Empty,
+          RelatedItemTypeId = r.RelatedItemTypeId,
           RelationTypeId = r.RelationTypeId,
           RelationTypeName = r.RelationTypeName ?? string.Empty,
           Rank = r.Rank,
@@ -169,6 +173,7 @@ namespace Weavers.Core.Extensions {
           ItemName = r.ItemName ?? string.Empty,
           RelatedItemId = r.RelatedItemId,
           RelatedItemName = r.RelatedItemName ?? string.Empty,
+          RelatedItemTypeId = r.RelatedItemTypeId,
           RelationTypeId = r.RelationTypeId,
           RelationTypeName = r.RelationTypeName ?? string.Empty,
           Rank = r.Rank,
@@ -211,6 +216,7 @@ namespace Weavers.Core.Extensions {
         ItemName = relation.ItemName ?? string.Empty,
         RelatedItemId = relation.RelatedItemId,
         RelatedItemName = relation.RelatedItemName ?? string.Empty,
+        RelatedItemTypeId = relation.RelatedItemTypeId,
         RelationTypeId = relation.RelationTypeId,
         RelationTypeName = relation.RelationTypeName ?? string.Empty,
         Rank = relation.Rank,
@@ -225,11 +231,19 @@ namespace Weavers.Core.Extensions {
 
     public static string ResolveParentFolderPath(this ItemDto? item, string defaultPath) {
       if (item == null) return defaultPath;
-      var propKey = item.ItemTypeId == (int)WeItemType.ProjectFolderModel
-          ? Cx.ItRootFolder : Cx.ItRelativeFolder;
-      return item.Properties.FirstOrDefault(p => p.Name == propKey)?.Value ?? defaultPath;
+      string propertyKey = item.ItemTypeId.GetFolderPropertyName();                  
+      string Value = item.Properties.FirstOrDefault(p => p.Name == propertyKey)?.Value ?? defaultPath;
+      if (item.ItemTypeId == (int)WeItemType.LibraryModel 
+        || item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
+        Value = Path.GetDirectoryName(Value) ?? defaultPath; 
+      }
+      return Value;
     }
 
-
+    public static string ResolveParentNamespace(this ItemDto? item, string defaultNamespace) {
+      if (item == null) return defaultNamespace;
+      var propKey = item.ItemTypeId.GetNamespacePropertyName();
+      return item.Properties.FirstOrDefault(p => p.Name == propKey)?.Value ?? defaultNamespace;
+    }
   }
 }
