@@ -29,7 +29,7 @@ namespace Weavers.Core.Handlers.Templates {
       var solutionFilePathProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
       if (solutionFilePathProp == null || string.IsNullOrEmpty(solutionFilePathProp.Value)) return null;
       var solutionDir = Path.GetDirectoryName(solutionFilePathProp.Value);
-
+      string solutionDir2 = solutionDir != null ? solutionDir : WeaverExt.AppProjectsPath;
       StringBuilder cSb = new StringBuilder();
       StringBuilder sbGlobal = new StringBuilder();
       cSb.Append("\r\nMicrosoft Visual Studio Solution File, Format Version 12.00\r\n# Visual Studio Version 17\r\nVisualStudioVersion = 17.14.36221.1\r\nMinimumVisualStudioVersion = 10.0.40219.1\r\n");
@@ -50,8 +50,8 @@ namespace Weavers.Core.Handlers.Templates {
                 if (LibPathProp != null && !string.IsNullOrEmpty(LibPathProp.Value)) {
                   var libPath = LibPathProp.Value;
                   var relativePath = "";
-                  if (libPath.StartsWith(solutionDir, StringComparison.OrdinalIgnoreCase)) {
-                    relativePath = libPath.Substring(solutionDir.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);                    
+                  if (libPath.StartsWith(solutionDir2, StringComparison.OrdinalIgnoreCase)) {
+                    relativePath = libPath.Substring(solutionDir2.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);                    
                   } else {
                     relativePath = libPath; // Return absolute path if it's outside the solution directory
                   } 

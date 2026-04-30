@@ -11,11 +11,14 @@ using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace TheLoomApp {
   public partial class Form1 : Form {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IAppDataService _appDataService;
+    private readonly IAppGraphFileService _appGraphService;
+    private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
     private ItemNode? _selectedNode = null;
     private Dictionary<int, ItemNode> _itemCache = new Dictionary<int, ItemNode>();
@@ -29,6 +32,8 @@ namespace TheLoomApp {
       _serviceScopeFactory = serviceScopeFactory;
       using var scope = _serviceScopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
+      _appGraphService = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+      _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _itemPropertiesTab = new PropertiesTab(_serviceScopeFactory);
       _settings = scope.ServiceProvider.GetRequiredService<IAppSettingService>();
@@ -147,7 +152,7 @@ namespace TheLoomApp {
             ItemNode projectNode = project.ToItemNode();
             _itemCache[project.Id] = projectNode;
             if (project.Relations.Count() > 0) {
-              foreach (var rel in project.Relations) {
+              foreach (var rel in project.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
                 if (rel.RelatedItemId.HasValue) {
 
                   if (expandedNodeIds.Contains(rel.RelatedItemId.Value)) {
@@ -213,7 +218,7 @@ namespace TheLoomApp {
           _itemCache[bItem.Id] = newNode;
           parent.Nodes.Add(newNode);
           if (bItem.Relations.Count() > 0) {
-            foreach (var rel in bItem.Relations) {
+            foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
               var relatedItem = await AddNodeById(toLoad, newNode, rel.RelatedItemId, rel);
             }
           }
@@ -244,7 +249,7 @@ namespace TheLoomApp {
       if (node.Item == null) return;
       var item = await _appDataService.GetItemById(node.Item.Id);
       if (item != null) {
-        foreach (var rel in item.Relations) {
+        foreach (var rel in item.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
           if (rel.RelatedItemId.HasValue) {
             var itemChild = await _appDataService.GetItemById(rel.RelatedItemId.Value);
             if (itemChild != null) {
@@ -301,8 +306,8 @@ namespace TheLoomApp {
 
     #endregion
 
+    // ----------------------- Tree View Selection and Property Editing -------------------------//
     #region Tree View Selection tracking
-
 
     private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
       if (e.Node is not ItemNode) {
@@ -454,69 +459,85 @@ namespace TheLoomApp {
       }
     }
 
+
+    // ---------------post event ------------------------------------------------//
     private async void ProjectTab_OnPostEvent() {
-      if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
-        _itemPropertiesTab.ItemProps = _selectedNode.Item.Properties.ToList();
-        _itemPropertiesTab.SetEditingMode(false);
-        _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
+      try { 
+        if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
+          _itemPropertiesTab.ItemProps = _selectedNode.Item.Properties.ToList();
+          _itemPropertiesTab.SetEditingMode(false);
+          _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
 
 
-        if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ProjectFolderModel
-          || _selectedNode.Item.ItemTypeId == (int)WeItemType.RelativeFolderModel
-          || _selectedNode.Item.ItemTypeId == (int)WeItemType.FileModel
-          || _selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel
-        ) {
-          var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
-          if (folderProp != null) {
-            string basePath = folderProp.Value ?? "";
-            await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
-          }
-        } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
-          var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
-          await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
-          if (!hasDbContext && _selectedNode.Nodes.Count > 0) {
-            foreach(ItemNode node in _selectedNode.Nodes) { 
-              if (node.Item != null && node.Item.ItemTypeId == (int)WeItemType.DbContextModel) {
-                node.Remove();
-              }
-            }          
-          } else if (hasDbContext && _selectedNode.Nodes.Count == 0) {
-            var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-            tvKb_BeforeExpand(null, ee);
-          }
-          var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
-          var itemId = _selectedNode.Item.Id;
-          if (itemId != 0 && _itemTemplateService != null) {
-            string? newDescription = await _itemTemplateService.GetDependencyInjectionTemplate(itemId);
-            if (newDescription != null) {
-              _selectedNode.Item.Description = newDescription;
-              await _appDataService.UpdateItemAsync(_selectedNode.Item);
+          if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ProjectFolderModel
+            || _selectedNode.Item.ItemTypeId == (int)WeItemType.RelativeFolderModel
+            || _selectedNode.Item.ItemTypeId == (int)WeItemType.FileModel
+            || _selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel
+          ) {
+            var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
+            if (folderProp != null) {
+              string basePath = folderProp.Value ?? "";
+              await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
-          }
-        } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ClassModel) {
-          var itemId = _selectedNode.Item.Id;
-          var propGenerateInterface = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
-          bool generateInterface = false;
-          if (propGenerateInterface != null) {
-            generateInterface = propGenerateInterface.Value.AsBoolean();
-          }
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
+            var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
+            await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
 
-          var propRegisterDi = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRegisterDi);
-          if (propRegisterDi != null) {
-            var registerDi = propRegisterDi.Value.AsBoolean();            
-            await _appDataService.AddRemoveClassToLibDi(_selectedNode.Item.Id, registerDi, generateInterface);            
-          }
+            if (!hasDbContext && _selectedNode.Nodes.Count > 0) {
+              foreach (ItemNode node in _selectedNode.Nodes) {
+                if (node.Item != null && node.Item.ItemTypeId == (int)WeItemType.DbContextModel) {
+                  node.Remove();
+                }
+              }
+            } else if (hasDbContext && _selectedNode.Nodes.Count == 0) {
+              var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+              tvKb_BeforeExpand(ee, ee);
+            }
+            var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
+            var itemId = _selectedNode.Item.Id;
+            if (itemId != 0 && _itemTemplateService != null) {
+              string? newDescription = await _itemTemplateService.GetDependencyInjectionTemplate(itemId);
+              if (newDescription != null) {
+                _selectedNode.Item.Description = newDescription;
+                await _appDataService.UpdateItemAsync(_selectedNode.Item);
+              }
+            }
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ClassModel) {
+            var itemId = _selectedNode.Item.Id;
+            var propGenerateInterface = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
+            bool generateInterface = false;
+            if (propGenerateInterface != null) {
+              generateInterface = propGenerateInterface.Value.AsBoolean();
+            }
 
-          if (itemId != 0 && _itemTemplateService != null) {
-            string? newDesc = await _itemTemplateService.GetClassTemplate(itemId);
-            if (newDesc != null) {
-              _selectedNode.Item.Description = newDesc;
-              await _appDataService.UpdateItemAsync(_selectedNode.Item);
+            var propRegisterDi = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRegisterDi);
+            if (propRegisterDi != null) {
+              var registerDi = propRegisterDi.Value.AsBoolean();
+              await _appDataService.AddRemoveClassToLibDi(_selectedNode.Item.Id, registerDi, generateInterface);
+            }
+
+            if (itemId != 0 && _itemTemplateService != null) {
+              string? newDesc = await _itemTemplateService.GetClassTemplate(itemId);
+              if (newDesc != null) {
+                _selectedNode.Item.Description = newDesc;
+                await _appDataService.UpdateItemAsync(_selectedNode.Item);
+              }
+            }
+
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel) {
+            ItemNode? parent = _selectedNode.Parent as ItemNode;
+            if (parent != null) { 
+              // after update many scriptables change, need to do that off form.
+              await _appDataService.ProcessPropertyUpdate(parent.Item!, _selectedNode.Item);
+              parent.Collapse();
+              parent.ExpandAll();
             }
           }
 
         }
-
+      } catch (Exception ex) {
+        DoLogMessage("Failed to update item properties - error:" + ex.Message);
+        MessageBox.Show($"Error updating item properties: {ex.Message}", "Update Failed");
       }
     }
 
@@ -545,16 +566,16 @@ namespace TheLoomApp {
           await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
         } else {
           var parentNode = (ItemNode?)_selectedNode.Parent;
-          if (parentNode != null) {
-            if (_parentFolderTypes.Contains(selectedItemType)) {
-              string newPath = parentNode.Item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-              await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
-            }
-            
-            if (parentNode.Item != null && _parentNamespaceTypes.Contains(selectedItemType)) {
-              string newNamespace = parentNode.Item.ResolveParentNamespace(_selectedNode.Item.Name); // library case previous no namespace.
-              await UpdateNamespacePathIfNeededAsync(_selectedNode.Item, newNamespace);            //  name is the library though.
-            }
+          if (parentNode == null) { return; }
+
+          if (_parentFolderTypes.Contains(selectedItemType)) {
+            string newPath = parentNode.Item.ResolveParentFolderPath(edAppDefaultFolder.Text);
+            await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
+          }
+
+          if (parentNode.Item != null && _parentNamespaceTypes.Contains(selectedItemType)) {
+            string newNamespace = parentNode.Item.ResolveParentNamespace(_selectedNode.Item.Name); // library case previous no namespace.
+            await UpdateNamespacePathIfNeededAsync(_selectedNode.Item, newNamespace);            //  name is the library though.
           }
           
           if (selectedItemTypeId == (int)WeItemType.DependencyInjectionModel) {
@@ -565,7 +586,10 @@ namespace TheLoomApp {
             if (diCode != null) {
               _selectedNode.Item.Description = diCode;
               await _appDataService.UpdateItemAsync(_selectedNode.Item);
-            }                        
+            }
+          } else if (selectedItemType == WeItemType.EntityPropertyModel) {
+            // after update many scriptables change, need to do that off form.
+            await _appDataService.ProcessPropertyUpdate(parentNode.Item!, _selectedNode.Item);            
           }
         }
 
@@ -664,6 +688,8 @@ namespace TheLoomApp {
         miAddClassProp.Visible = false;
         miAddClassMethod.Visible = false;
         miAddClassMethodParam.Visible = false;
+        miAddEntity.Visible = false;
+        miAddEntityProperty.Visible = false;
 
         miGenerate.Visible = false;
         toolStripSeparator2.Visible = false;
@@ -688,6 +714,8 @@ namespace TheLoomApp {
         miAddClassProp.Visible = itemType == WeItemType.ClassModel;
         miAddClassMethod.Visible = itemType == WeItemType.ClassModel;
         miAddClassMethodParam.Visible = itemType == WeItemType.ClassMethodModel;
+        miAddEntity.Visible = itemType == WeItemType.LibraryModel || itemType == WeItemType.NamespaceModel;
+        miAddEntityProperty.Visible = itemType == WeItemType.EntityClassModel;
         miGenerate.Visible = true;
         toolStripSeparator2.Visible = true;
         miDeleteItem.Enabled = true;
@@ -699,622 +727,127 @@ namespace TheLoomApp {
       await LoadRootProjects();
     }
 
-    private void AddNodeToRoot(ItemNode node) {
-      var idx = tvKb.Nodes.Add(node);
-      tvKb.SelectedNode = tvKb.Nodes[idx];
-    }
-
-    private void AddNodeToSelected(ItemNode parentNode, ItemNode childNode) {
-      var idx = parentNode.Nodes.Add(childNode);
-      _isExpanding = true;
-      parentNode.Expand();
-      _isExpanding = false;
-      if (parentNode.Nodes.Count > 0 && idx >= 0 && idx < parentNode.Nodes.Count) {
-        tvKb.SelectedNode = parentNode.Nodes[idx];
-      }
-    }
-
     private async void miAddProjectRoot_Click(object sender, EventArgs e) {
       try {
-        await AddProjectRootAsync();
+        await tvKb.AddProjectRoot(_appGraphService, edAppDefaultFolder.Text);
       } catch (Exception ex) {
         DoLogMessage("Failed to add project root - error:" + ex.Message);
         MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
       }
     }
-
-    private async Task AddProjectRootAsync() {
-      var nextRank = await _appDataService.GetNextItemRank() + 1;
-      var newItem = await _appDataService.CreateItemAsync(new ItemDto {
-        Name = $"Project {nextRank}",
-        Description = "",
-        Data = "{}",
-        ItemTypeId = (int)WeItemType.ProjectFolderModel
-      });
-      if (newItem == null) return;
-
-      var rootFolderProperty = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        var defaultFolder = string.IsNullOrEmpty(edAppDefaultFolder.Text)
-          ? WeaverExt.AppProjectsPath : edAppDefaultFolder.Text;
-
-        rootFolderProperty.Value = Path.Combine(defaultFolder, newItem.Name.UrlSafe());
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) {
-          newItem.AddOrUpdateProperty(updatedProp);
-        }
-      }
-
-      AddNodeToRoot(newItem.ToItemNode());
-    }
-
     private async void miAddSubProject_Click(object sender, EventArgs e) {
       try {
-        await AddSubFolderAsync();
+        await tvKb.AddSubFolder(_appGraphService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add subfolder - error:" + ex.Message);
         MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
       }
     }
-
-    private async Task AddSubFolderAsync() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (!item.IsValidFolderParent()) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.RelativeFolderModel,
-        $"Folder {nextRank}", string.Empty, "{}");
-
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var fullPath = Path.Combine(parentFolderPath, newSubItem.Name.UrlSafe());
-        rootFolderProperty.Value = fullPath;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-
-    }
-
     private async void miAddSolution_Click(object sender, EventArgs e) {
       try {
-        await AddSolutionAsync();
+        await tvKb.AddSolution(_appGraphService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add solution - error: " + ex.Message);
         MessageBox.Show($"Error adding solution: {ex.Message}", "Add Solution failed");
       }
     }
-    private async Task AddSolutionAsync() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (!item.IsValidFolderParent()) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.SolutionModel,
-        $"{item.Name}{nextRank}",
-        string.Empty,
-        "{}");
-
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var fileName = newSubItem.Name.UrlSafe() + ".sln";
-        var fullPath = Path.Combine(parentFolderPath, fileName);
-        rootFolderProperty.Value = fullPath;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      var slnGuidProp = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSolutionGuid);
-      if (slnGuidProp != null) {
-        string? val = slnGuidProp?.Value ?? "";
-        if (slnGuidProp != null && string.IsNullOrEmpty(val)) {
-          slnGuidProp.Value = Guid.NewGuid().ToString("B").ToUpper();
-          var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(slnGuidProp);
-          if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-        }
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-
-    }
     private async void miAddSolutionImport_Click(object sender, EventArgs e) {
       try {
-        await AddSolutionImportAsync();
+        await tvKb.AddSolutionImport(_appGraphService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add solution import - error: " + ex.Message);
         MessageBox.Show($"Error adding solution import: {ex.Message}", "Add Solution failed");
       }
     }
-
-    private async Task AddSolutionImportAsync() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      var itemType = (WeItemType)item.ItemTypeId;
-      if (itemType == WeItemType.SolutionModel) {
-        var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-        var newSubItem = await _appDataService.CreateRelatedItemAsync(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.SolutionImportModel, $"Import{nextRank}", string.Empty, "{}");
-
-        var newParentRelation = newSubItem.IncomingRelations
-          .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-        if (newParentRelation == null) {
-          // add error logging.
-          return;
-        }
-
-        var projGuidProp = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItProjectGuid);
-        if (projGuidProp != null) {
-          string? val = projGuidProp?.Value ?? "";
-          if (projGuidProp != null && string.IsNullOrEmpty(val)) {
-            projGuidProp.Value = Guid.NewGuid().ToString("B").ToUpper();
-            var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(projGuidProp);
-            if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-          }
-        }
-
-        var newNode = newParentRelation.ToItemNode(newSubItem);
-        AddNodeToSelected(_selectedNode, newNode);
-        //if (newSubItem != null) await LoadRootProjects(newSubItem.Id);
-      }
-    }
-
     private async void miAddFile_Click(object sender, EventArgs e) {
       try {
-        await AddFileAsync();
+        await tvKb.AddFile(_appGraphService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add file - error:" + ex.Message);
         MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
       }
     }
 
-    private async Task AddFileAsync() {
-
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (!item.IsValidFolderParent()) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.FileModel,
-        $"File {nextRank}", string.Empty, "{}");
-
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var fileName = newSubItem.Name.Contains('.') ? newSubItem.Name : newSubItem.Name.UrlSafe() + ".md";
-        var fullPath = Path.Combine(parentFolderPath, fileName);
-        rootFolderProperty.Value = fullPath;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-
-    }
-
     private async void miAddLibrary_Click(object sender, EventArgs e) {
       try {
-        await AddLibraryAsync();
+        await tvKb.AddLibrary(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add library - error:" + ex.Message);
         MessageBox.Show($"Error adding library: {ex.Message}", "Add Library Failed");
       }
     }
-    private async Task AddLibraryAsync() {
-
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (!item.IsValidFolderParent()) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.LibraryModel,
-        $"Library{nextRank}",
-        ItemDefaultsByTypeExt.GetTypeTemplate(itemNode.Item, WeItemType.LibraryModel),
-        "{}");
-
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var fileName = newSubItem.Name.Contains('.') ? newSubItem.Name : newSubItem.Name.UrlSafe() + ".csproj";
-        var fullPath = Path.Combine(parentFolderPath, fileName);
-        rootFolderProperty.Value = fullPath;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespaceRoot);
-      if (rootNamespaceProperty != null && string.IsNullOrEmpty(rootNamespaceProperty.Value)) {
-        rootNamespaceProperty.Value = newSubItem.Name.NameSafe();
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootNamespaceProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      // await LoadRootProjects(newSubItem.Id);
-
-    }
-
-
     private async void miAddDiModel_Click(object sender, EventArgs e) {
       try {
-        await AddDiModel();
+        await tvKb.AddDiModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add DI model - error:" + ex.Message);
         MessageBox.Show($"Error adding DI model: {ex.Message}", "Add DI Model Failed");
       }
     }
-
-    private async Task AddDiModel() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (item.ItemTypeId != (int)WeItemType.LibraryModel) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.DependencyInjectionModel,
-        $"DI Model {nextRank}",
-        ItemDefaultsByTypeExt.GetTypeTemplate(itemNode.Item, WeItemType.DependencyInjectionModel),
-        "{}");
-
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var fileName = "DependencyInjection.cs";
-        var fullPath = Path.Combine(parentFolderPath, fileName);
-        rootFolderProperty.Value = fullPath;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespaceRoot);
-      if (rootNamespaceProperty != null && string.IsNullOrEmpty(rootNamespaceProperty.Value)) {
-        rootNamespaceProperty.Value = newSubItem.Name;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootNamespaceProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-    }
-
-
-
     private async void miAddNamespace_Click(object sender, EventArgs e) {
       try {
-        await AddNamespaceModel();
+        await tvKb.AddNamespaceModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add namespace model - error:" + ex.Message);
         MessageBox.Show($"Error adding namespace model: {ex.Message}", "Add Namespace Model Failed");
       }
     }
-
-    private async Task AddNamespaceModel() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (item.ItemTypeId != (int)WeItemType.LibraryModel && item.ItemTypeId != (int)WeItemType.NamespaceModel) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.NamespaceModel,
-        $"Namespace{nextRank}",
-        ItemDefaultsByTypeExt.GetTypeTemplate(itemNode.Item, WeItemType.NamespaceModel),
-        "{}");
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var newFolderName = newSubItem.Name.UrlSafe();
-        var fullPath = Path.Combine(parentFolderPath, newFolderName);
-        if (rootFolderProperty.Value != fullPath) {
-          rootFolderProperty.Value = fullPath;
-          var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootFolderProperty);
-          if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-        }
-      }
-
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace);
-      if (rootNamespaceProperty != null && _selectedNode != null) {
-        ItemNode parent = (ItemNode)_selectedNode;
-        string newNamespace = parent.Item.ResolveParentNamespace("NoParentNamespace");
-        if (_selectedNode.Item != null) {
-          await UpdateNamespacePathIfNeededAsync(newSubItem, newNamespace);
-        }
-        rootNamespaceProperty.Value = newNamespace + "." + newSubItem.Name;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootNamespaceProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-    }
-
     private async void miAddClass_Click(object sender, EventArgs e) {
       try {
-        await AddClassAsync();
+        await tvKb.AddClassModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add class model - error:" + ex.Message);
         MessageBox.Show($"Error adding class model: {ex.Message}", "Add Class Model Failed");
       }
     }
-
-    private async Task AddClassAsync() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      if (item.ItemTypeId != (int)WeItemType.LibraryModel && item.ItemTypeId != (int)WeItemType.NamespaceModel) return;
-      var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-      var newSubItem = await _appDataService.CreateRelatedItemAsync(
-        item.Id,
-        (int)WeRelationTypes.Contains,
-        (int)WeItemType.ClassModel,
-        $"Class{nextRank}",
-        ItemDefaultsByTypeExt.GetTypeTemplate(itemNode.Item, WeItemType.ClassModel),
-        "{}");
-      if (newSubItem == null) {
-        // add error logging.
-        return;
-      }
-
-      var newParentRelation = newSubItem.IncomingRelations
-        .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-      if (newParentRelation == null) {
-        // add error logging.
-        return;
-      }
-
-      var newNode = newParentRelation.ToItemNode(newSubItem);
-      AddNodeToSelected(_selectedNode, newNode);
-
-      var classFilePathProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      var fileExtProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFileExt);
-      if (classFilePathProperty != null && fileExtProperty != null) {
-        string parentFolderPath = item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-        var newFileExt = fileExtProperty.Value ?? ".cs";
-        var newFolderName = newSubItem.Name.UrlSafe();
-        var fullPath = Path.Combine(parentFolderPath, newFolderName + newFileExt);
-        if (classFilePathProperty.Value != fullPath) {
-          classFilePathProperty.Value = fullPath;
-          var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(classFilePathProperty);
-          if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-        }
-      }
-
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace);
-      if (rootNamespaceProperty != null && _selectedNode != null) {
-        ItemNode parent = (ItemNode)_selectedNode;
-        string newNamespace = parent.Item.ResolveParentNamespace("NoParentNamespace");
-        if (_selectedNode.Item != null) {
-          await UpdateNamespacePathIfNeededAsync(newSubItem, newNamespace);
-        }
-        rootNamespaceProperty.Value = newNamespace;
-        var updatedProp = await _appDataService.AddUpdateItemPropertyAsync(rootNamespaceProperty);
-        if (updatedProp != null) newSubItem.AddOrUpdateProperty(updatedProp);
-      }
-
-      //await LoadRootProjects(newSubItem.Id);
-    }
-
     private async void miAddClassImport_Click(object sender, EventArgs e) {
       try {
-        await AddClassImport();
+        await tvKb.AddClassImportModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add class Import - error:" + ex.Message);
         MessageBox.Show($"Error adding class import: {ex.Message}", "Add Class Import Failed");
       }
     }
-    private async Task AddClassImport() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      var itemType = (WeItemType)item.ItemTypeId;
-      if (itemType == WeItemType.ClassModel) {
-        var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-        var newSubItem = await _appDataService.CreateRelatedItemAsync(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.ClassImportModel, $"Import{nextRank}", string.Empty, "{}");
-
-        var newParentRelation = newSubItem.IncomingRelations
-          .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-        if (newParentRelation == null) {
-          // add error logging.
-          return;
-        }
-        var newNode = newParentRelation.ToItemNode(newSubItem);
-        AddNodeToSelected(_selectedNode, newNode);
-        //if (newSubItem != null) await LoadRootProjects(newSubItem.Id);
-      }
-    }
     private async void miAddClassProp_Click(object sender, EventArgs e) {
       try {
-        await AddClassProp();
+        await tvKb.AddClassPropModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add class property - error:" + ex.Message);
         MessageBox.Show($"Error adding class property: {ex.Message}", "Add Class Property Failed");
       }
     }
-    private async Task AddClassProp() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      var itemType = (WeItemType)item.ItemTypeId;
-      if (itemType == WeItemType.ClassModel) {
-        var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-        var newSubItem = await _appDataService.CreateRelatedItemAsync(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.ClassPropertyModel, $"Prop{nextRank}", string.Empty, "{}");
-        var newParentRelation = newSubItem.IncomingRelations
-          .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-        if (newParentRelation == null) {
-          // add error logging.
-          return;
-        }
-        var newNode = newParentRelation.ToItemNode(newSubItem);
-        AddNodeToSelected(_selectedNode, newNode);
-        //if (newSubItem != null) await LoadRootProjects(newSubItem.Id);
-      }
-    }
     private async void miAddClassMethod_Click(object sender, EventArgs e) {
       try {
-        await AddClassMethod();
+        await tvKb.AddClassMethodModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add class method - error:" + ex.Message);
         MessageBox.Show($"Error adding class method: {ex.Message}", "Add Class Method Failed");
       }
     }
-
-    private async Task AddClassMethod() {
-      var itemNode = _selectedNode;
-      if (itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      var itemType = (WeItemType)item.ItemTypeId;
-      if (itemType == WeItemType.ClassModel) {
-        var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-        var newSubItem = await _appDataService.CreateRelatedItemAsync(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.ClassMethodModel, $"Method{nextRank}", string.Empty, "{}");
-
-        var newParentRelation = newSubItem.IncomingRelations
-          .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-        if (newParentRelation == null) {
-          // add error logging.
-          return;
-        }
-
-        var newNode = newParentRelation.ToItemNode(newSubItem);
-        AddNodeToSelected(_selectedNode, newNode);
-        //if (newSubItem != null) await LoadRootProjects(newSubItem.Id);
-      }
-    }
-
     private async void miAddClassMethodParam_Click(object sender, EventArgs e) {
       try {
-        await AddClassMethodParam();
+        await tvKb.AddClassMethodParamModel(_appClassService);
       } catch (Exception ex) {
         DoLogMessage("Failed to add class method parameter - error:" + ex.Message);
         MessageBox.Show($"Error adding class method parameter: {ex.Message}", "Add Class Method Parameter Failed");
       }
     }
 
-    private async Task AddClassMethodParam() {
-      var itemNode = _selectedNode;
-      if (_selectedNode == null || itemNode?.Item == null) return;
-      ItemDto item = itemNode.Item;
-      var itemType = (WeItemType)item.ItemTypeId;
-      if (itemType == WeItemType.ClassMethodModel) {
-        var nextRank = await _appDataService.GetNextItemRank(item.Id) + 1;
-        var newSubItem = await _appDataService.CreateRelatedItemAsync(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.ClassMethodParameterModel, $"Param{nextRank}", string.Empty, "{}");
-        var newParentRelation = newSubItem.IncomingRelations
-          .FirstOrDefault(r => r.ItemId == item.Id && r.RelationTypeId == (int)WeRelationTypes.Contains);
-        if (newParentRelation == null) {
-          // add error logging.
-          return;
-        }
-        var newNode = newParentRelation.ToItemNode(newSubItem);
-        AddNodeToSelected(_selectedNode, newNode);
-        //if (newSubItem != null) await LoadRootProjects(newSubItem.Id);
+    private async void miAddEntity_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.AddEntityClassModel(_appClassService);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add entity - error:" + ex.Message);
+        MessageBox.Show($"Error adding entity: {ex.Message}", "Add Entity Failed");
+      }
+    }
+
+    private async void miAddEntityProperty_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.AddEntityPropertyModel(_appClassService);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add entity property - error:" + ex.Message);
+        MessageBox.Show($"Error adding entity property: {ex.Message}", "Add Entity Property Failed");
       }
     }
 
@@ -1448,6 +981,13 @@ namespace TheLoomApp {
                 await _appDataService.UpdateItemAsync(item);
               }
               break;
+            case WeItemType.DbContextModel:
+              var dbContextCode = await _itemTemplateService.GetDbContextTemplate(item.Id);
+              if (dbContextCode != null) {
+                item.Description = dbContextCode;
+                await _appDataService.UpdateItemAsync(item);
+              }
+              break;
             case WeItemType.ClassModel:
               var classCode = await _itemTemplateService.GetClassTemplate(item.Id);
               if (classCode != null) {
@@ -1455,6 +995,20 @@ namespace TheLoomApp {
                 await _appDataService.UpdateItemAsync(item);
               }
               break;
+            case WeItemType.EntityClassModel:
+              var entityCode = await _itemTemplateService.GetEntityClassTemplate(item.Id);
+              if (entityCode != null) {
+                item.Description = entityCode;
+                await _appDataService.UpdateItemAsync(item);
+              }
+              break;
+            case WeItemType.EntityConfigurationModel:
+              //var entityConfigCode = await _itemTemplateService.GetEntityConfigTemplate(item.Id);
+              //if (entityConfigCode != null) {
+              //  item.Description = entityConfigCode;
+              //  await _appDataService.UpdateItemAsync(item);
+              //}
+               break;
             default:
               break;
           }

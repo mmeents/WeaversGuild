@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
@@ -245,5 +246,47 @@ namespace Weavers.Core.Extensions {
       var propKey = item.ItemTypeId.GetNamespacePropertyName();
       return item.Properties.FirstOrDefault(p => p.Name == propKey)?.Value ?? defaultNamespace;
     }
+
+    public static async Task<ItemDto?> ResolveDependencyInjectionFromLib(this FabricDbContext _context, ItemDto? LibraryItem, CancellationToken cancellationToken = default) {
+      if (LibraryItem == null) { return null; }
+      var diItemid = LibraryItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel).Select(r => r.RelatedItemId).FirstOrDefault();
+      if (diItemid == null) { return null; }
+      var DiItem = await _context.GetItemDtoById(diItemid.Value);
+      return DiItem;
+    }
+
+    public static async Task<ItemDto?> ResolveDbContextFromLib(this FabricDbContext _context, ItemDto? LibraryItem, CancellationToken cancellationToken = default) {
+      if (LibraryItem == null) { return null; }
+      var diItemid = LibraryItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel).Select(r => r.RelatedItemId).FirstOrDefault();
+      if (diItemid == null) { return null; }
+      var DiItem = await _context.GetItemDtoById(diItemid.Value, cancellationToken);      
+      var dbContextItemid = DiItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextModel).Select(r => r.RelatedItemId).FirstOrDefault();
+      if (dbContextItemid == null) { return null; }
+      var dbContextItem = await _context.GetItemDtoById(dbContextItemid.Value, cancellationToken);
+      return dbContextItem;
+    }
+
+    public static async Task<ItemDto?> FindRelatedDbContextEntity(this FabricDbContext _context, ItemDto dbContextItem, ItemDto entityClassItem, CancellationToken cancellationToken) { 
+      if (_context == null || dbContextItem == null || entityClassItem == null) { return null;}
+      ItemDto? foundImportItem = null;
+      var itemIds = dbContextItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextEntityImportModel)
+        .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(i => i.Value).ToList();
+      foreach(var importId in itemIds) {
+        var importItem = await _context.GetItemDtoById(importId, cancellationToken);
+        if (importItem != null) {
+          var registerObjectProp = importItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRegisterObject);
+          if (registerObjectProp != null && registerObjectProp.Value == entityClassItem.Id.ToString()) {
+            foundImportItem = importItem;
+            break;
+          }
+        }
+      };
+      return foundImportItem;
+    }
+
+
+
+
+    // namespace and class below, no need to edit.
   }
 }

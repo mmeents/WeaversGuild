@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Weavers.Core.Enums;
+using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Extensions {
@@ -14,7 +16,7 @@ namespace Weavers.Core.Extensions {
       (int)WeItemType.LibraryModel => item.Name.UrlSafe() + ".csproj",
       (int)WeItemType.NamespaceModel => item.Name.UrlSafe(),
       (int)WeItemType.DependencyInjectionModel => "DependencyInjection.cs",
-      (int)WeItemType.DbContextModel => item.Name.UrlSafe() + "DbContext.cs",
+      (int)WeItemType.DbContextModel => item.Name.UrlSafe() + ".cs",
       _ => item.Name.Contains('.') ? item.Name : item.Name.UrlSafe() + ".cs"
     };
 
@@ -26,5 +28,27 @@ namespace Weavers.Core.Extensions {
         item.Properties.Add(property);
       }
     }
+
+    public static async Task SaveProp(this ItemPropertyDto property, ItemDto item, IMediator mediator) {
+      var updatedProp = await mediator.Send(new AddUpdateItemPropertyCommand(
+        property.Id,
+        property.ItemId,
+        property.Name,
+        property.Value,
+        property.ValueDataTypeId,
+        property.EditorTypeId,
+        property.ReferenceItemTypeId
+      ));
+      if (updatedProp != null) {        
+        if (item != null) {
+          item.AddOrUpdateProperty(updatedProp);
+        }
+      }
+    }
+    
+
+
+
+
   }
 }

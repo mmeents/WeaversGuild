@@ -25,7 +25,7 @@ namespace Weavers.Core.Handlers.Items {
       var pathProp = parentItem.Properties.FirstOrDefault(p => p.Name == propKey);
       if (pathProp == null) { return null; }
       var path = pathProp.Value;
-      if (parentItem.ItemTypeId == (int)WeItemType.LibraryModel) {     
+      if (parentItem.ItemTypeId == (int)WeItemType.LibraryModel || parentItem.ItemTypeId == (int)WeItemType.EntityConfigurationModel) {     
         path = Path.GetDirectoryName(path) ?? "";
       }
       return path;

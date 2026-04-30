@@ -3,6 +3,7 @@ using MediatR;
 using Weavers.Core.Models;
 using Weavers.Core.Enums;
 using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Extensions;
 
 
 namespace Weavers.Core.Handlers.ItemTypes {
@@ -20,8 +21,8 @@ namespace Weavers.Core.Handlers.ItemTypes {
     }
     public async Task<List<ItemLookup>> Handle(GetItemsByItemTypeQuery request, CancellationToken cancellationToken) {
       var rt = (WeItemType)request.ItemTypeId;
-
-      if (rt == WeItemType.CSharpTypes || rt == WeItemType.SqlTypes || rt == WeItemType.AccessibilityLookups || rt == WeItemType.CSharpLifetimes) {
+      var lookuptypes = WeItemTypeExtensions.GetLookupTypes();
+      if (lookuptypes.Contains(rt)) {
         var items = await _context.ItemTypes
           .Where(i => i.ParentTypeId == request.ItemTypeId)
           .Select(i => new ItemLookup(i.Id, i.Description, i.Description))          

@@ -44,6 +44,8 @@
       miAddClassProp = new ToolStripMenuItem();
       miAddClassMethod = new ToolStripMenuItem();
       miAddClassMethodParam = new ToolStripMenuItem();
+      miAddEntity = new ToolStripMenuItem();
+      miAddEntityProperty = new ToolStripMenuItem();
       toolStripSeparator3 = new ToolStripSeparator();
       miGenerate = new ToolStripMenuItem();
       toolStripSeparator2 = new ToolStripSeparator();
@@ -164,9 +166,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 374);
+      cmsTreeMenus.Size = new Size(209, 440);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -271,6 +273,20 @@
       miAddClassMethodParam.Size = new Size(208, 22);
       miAddClassMethodParam.Text = "Add Class Method Param";
       miAddClassMethodParam.Click += miAddClassMethodParam_Click;
+      // 
+      // miAddEntity
+      // 
+      miAddEntity.Name = "miAddEntity";
+      miAddEntity.Size = new Size(208, 22);
+      miAddEntity.Text = "Add Entity";
+      miAddEntity.Click += miAddEntity_Click;
+      // 
+      // miAddEntityProperty
+      // 
+      miAddEntityProperty.Name = "miAddEntityProperty";
+      miAddEntityProperty.Size = new Size(208, 22);
+      miAddEntityProperty.Text = "Add Entity Property";
+      miAddEntityProperty.Click += miAddEntityProperty_Click;
       // 
       // toolStripSeparator3
       // 
@@ -512,7 +528,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.AutoScrollMinSize = new Size(154, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -891,5 +907,7 @@
     private Button btnGenerateDesc;
     private ToolStripMenuItem miAddClassMethodParam;
     private FastColoredTextBoxNS.FastColoredTextBox edItemDesc;
+    private ToolStripMenuItem miAddEntity;
+    private ToolStripMenuItem miAddEntityProperty;
   }
 }

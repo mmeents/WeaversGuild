@@ -1,13 +1,17 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Handlers.DepItems;
+using Weavers.Core.Enums;
 
 namespace Weavers.Core.Handlers.Items {
   public record DeleteItemCommand(int Id) : IRequest<bool>;
 
   public class DeleteItemCommandHandler : IRequestHandler<DeleteItemCommand, bool> {
     private readonly FabricDbContext _context;
-    public DeleteItemCommandHandler(FabricDbContext context) {
+    private readonly IMediator _mediator;
+    public DeleteItemCommandHandler(FabricDbContext context, IMediator mediator) {
       _context = context;
+      _mediator = mediator;
     }
 
     public async Task<bool> Handle(DeleteItemCommand request, CancellationToken cancellationToken) {
@@ -17,6 +21,13 @@ namespace Weavers.Core.Handlers.Items {
         .Include(i => i.IncomingRelations)
         .FirstOrDefaultAsync(i => i.Id == request.Id, cancellationToken)
         ?? throw new KeyNotFoundException("Item not found");
+
+      if (item.ItemTypeId == (int)WeItemType.EntityClassModel) {
+        var libraryItem = await _mediator.Send(new GetLibDiModelCommand(item.Id), cancellationToken);
+        if (libraryItem != null) {
+          await _mediator.Send(new AddRemoveEntityToDbContextCommand(item.Id, false), cancellationToken);
+        }
+      }      
 
       // Remove inbound relations (other items pointing here)
       _context.Relations.RemoveRange(item.IncomingRelations);

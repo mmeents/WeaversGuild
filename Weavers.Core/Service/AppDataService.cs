@@ -28,9 +28,9 @@ namespace Weavers.Core.Service {
     Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath);
     Task UpdateItemPropertyNamespaceRecursive(int itemId, string oldNamespace, string newNamespace);
     Task AddRemoveClassToLibDi(int ClassItemId, bool add, bool GenerateInterface);
-
     Task AddRemoveDbContextToLibDi(int DiItemId, bool add);
-
+    //Task AddRemoveEntityToDbContext(int entityItemId, bool add);
+    Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem);
 
   }
   public class AppDataService : IAppDataService {
@@ -72,8 +72,7 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<bool> DeleteItemAsync(int itemId) {
-      using var scope = _scopeFactory.CreateScope();
-      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var mediator = GetMediator();
       var command = new DeleteItemCommand(itemId);
       return await mediator.Send(command);
     }
@@ -166,7 +165,21 @@ namespace Weavers.Core.Service {
       var mediator = GetMediator();
       var command = new AddRemoveDbContextToLibDiCommand(DiItemId, add);
       await mediator.Send(command);
-
     }
+
+    //public async Task AddRemoveEntityToDbContext(int entityItemId, bool add) {
+    //  var mediator = GetMediator();
+    //  var command = new AddRemoveEntityToDbContextCommand(entityItemId, add);
+    //  await mediator.Send(command);
+    //}
+
+    public async Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem) {
+      var mediator = GetMediator();
+      var command = new ProcessPropertyUpdateCommand(entityItem, propertyItem);
+      await mediator.Send(command);
+    }
+
+
+
   }
 }

@@ -92,7 +92,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassModel => WeItemType.NamespaceModel,        
         WeItemType.EntityClassImportModel => WeItemType.EntityClassModel,
         WeItemType.EntityPropertyModel => WeItemType.EntityClassModel,
-        WeItemType.EntityNavigationModel => WeItemType.EntityClassModel,
+        WeItemType.EntityNavigationModel => WeItemType.EntityPropertyModel,
         WeItemType.EntityConfigurationModel => WeItemType.EntityClassModel,
         WeItemType.EntityPropertyConfigurationModel => WeItemType.EntityConfigurationModel,
         WeItemType.EntityNavigationConfigurationModel => WeItemType.EntityConfigurationModel,
@@ -546,10 +546,24 @@ namespace Weavers.Core.Extensions {
       HashSet<WeItemType> nodeTypes = new HashSet<WeItemType>(){        
         WeItemType.SolutionModel,
         WeItemType.LibraryModel,
-        WeItemType.DependencyInjectionModel,        
-        WeItemType.ClassModel
+        WeItemType.DependencyInjectionModel,
+        WeItemType.DbContextModel,
+        WeItemType.ClassModel,
+        WeItemType.EntityClassModel,
+        WeItemType.EntityConfigurationModel
       };
       return nodeTypes;
+    }
+
+    public static HashSet<WeItemType> GetLookupTypes() { 
+      HashSet<WeItemType> lookupTypes = new HashSet<WeItemType>(){
+          WeItemType.NavigationTypes,
+          WeItemType.SqlTypes,
+          WeItemType.CSharpLifetimes,
+          WeItemType.CSharpTypes,
+          WeItemType.AccessibilityLookups
+      };
+      return lookupTypes;
     }
 
     public static string GetFolderPropertyName(this int itemTypeId) {

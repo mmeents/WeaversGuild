@@ -335,6 +335,7 @@ namespace TheLoomApp.Components {
         editor.ResetToField();
         editor.Modified = false;
       }
+      if (MenuPanel != null && MenuPanel.Visible) MenuPanel.Visible = false;
     }
 
   }
