@@ -179,6 +179,12 @@ namespace Weavers.Core.Extensions {
 
     }
 
+    public static int AsInt32(this string? value) { 
+      if (value == null) return 0;
+      if (int.TryParse(value, out int result)) return result;
+      return 0;
+    }
+
     /// <summary>
     /// lower case first letter of content concat with remainder.
     /// </summary>

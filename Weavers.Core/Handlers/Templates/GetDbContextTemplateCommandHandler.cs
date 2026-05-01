@@ -21,7 +21,7 @@ namespace Weavers.Core.Handlers.Templates {
       sbUses.Add("using Microsoft.EntityFrameworkCore;");      
 
       var importItemIds = dbContextItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextEntityImportModel)
-        .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(v => v.Value).ToList();
+        .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(v => v!.Value).ToList();
       string namespaceValue = dbContextItem.Properties.Where(p => p.Name == Cx.ItNamespace).FirstOrDefault()?.Value ?? "BadNamespace";      
       sbUses.Add(namespaceValue);
 

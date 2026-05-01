@@ -524,13 +524,19 @@ namespace TheLoomApp {
               }
             }
 
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel) {
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel || _selectedNode.Item.ItemTypeId ==(int)WeItemType.EntityNavigationModel) {
             ItemNode? parent = _selectedNode.Parent as ItemNode;
-            if (parent != null) { 
-              // after update many scriptables change, need to do that off form.
-              await _appDataService.ProcessPropertyUpdate(parent.Item!, _selectedNode.Item);
-              parent.Collapse();
-              parent.ExpandAll();
+            if (parent != null) {
+              var prevParent = _selectedNode;
+              while (parent != null && parent.Item != null && parent.Item.ItemTypeId != (int)WeItemType.EntityClassModel) {
+                prevParent = parent;
+                parent = parent.Parent as ItemNode;
+              }
+              if (parent != null) {            
+                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);
+                parent.Collapse();
+                parent.ExpandAll();
+              }
             }
           }
 
@@ -587,9 +593,16 @@ namespace TheLoomApp {
               _selectedNode.Item.Description = diCode;
               await _appDataService.UpdateItemAsync(_selectedNode.Item);
             }
-          } else if (selectedItemType == WeItemType.EntityPropertyModel) {
-            // after update many scriptables change, need to do that off form.
-            await _appDataService.ProcessPropertyUpdate(parentNode.Item!, _selectedNode.Item);            
+          } else if (selectedItemType == WeItemType.EntityPropertyModel || selectedItemType == WeItemType.EntityNavigationModel) {
+            var preParentNode = _selectedNode;
+            while (parentNode != null && parentNode.Item != null && parentNode.Item.ItemTypeId != (int)WeItemType.EntityClassModel) {
+              preParentNode = parentNode;
+              parentNode = parentNode.Parent as ItemNode;
+            }
+            // ugly, starts at nav update walks up to prop then class. process property needs to land on a property.            
+            if (parentNode != null) {
+              await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);            
+            }
           }
         }
 

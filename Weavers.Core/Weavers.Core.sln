@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaversMCP", "..\WeaversMCP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheLoomApp", "..\TheLoomApp\TheLoomApp.csproj", "{20629E0F-3D38-4467-BABD-2A8E67FABF85}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResearchSpaceTests", "..\ResearchSpaceTests\ResearchSpaceTests.csproj", "{3F857B00-7238-48EA-8D61-D7243F9E30A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{20629E0F-3D38-4467-BABD-2A8E67FABF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20629E0F-3D38-4467-BABD-2A8E67FABF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20629E0F-3D38-4467-BABD-2A8E67FABF85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F857B00-7238-48EA-8D61-D7243F9E30A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F857B00-7238-48EA-8D61-D7243F9E30A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F857B00-7238-48EA-8D61-D7243F9E30A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F857B00-7238-48EA-8D61-D7243F9E30A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,6 +8,10 @@ namespace Weavers.Core.Extensions {
     
     public static WeItemType? ParentType(this WeItemType itemType) {
       return itemType switch {
+        WeItemType.InboundNavTypes => (WeItemType?)null,
+        WeItemType.NavWithOne => WeItemType.InboundNavTypes,
+        WeItemType.NavWithMany => WeItemType.InboundNavTypes,
+
         WeItemType.NavigationTypes => (WeItemType?)null,
         WeItemType.NavHasOne => WeItemType.NavigationTypes,
         WeItemType.NavHasMany => WeItemType.NavigationTypes,
@@ -68,6 +72,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SolutionModel => WeItemType.RelativeFolderModel,
         WeItemType.SolutionImportModel => WeItemType.SolutionModel,
         WeItemType.LibraryModel => WeItemType.RelativeFolderModel,
+        WeItemType.LibraryImportModel => WeItemType.LibraryModel,
 
         WeItemType.DependencyInjectionModel => WeItemType.LibraryModel,        
         WeItemType.DiImportModel => WeItemType.DependencyInjectionModel,
@@ -93,9 +98,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassImportModel => WeItemType.EntityClassModel,
         WeItemType.EntityPropertyModel => WeItemType.EntityClassModel,
         WeItemType.EntityNavigationModel => WeItemType.EntityPropertyModel,
+        WeItemType.EntityInboundNavigationModel => WeItemType.EntityClassModel,
         WeItemType.EntityConfigurationModel => WeItemType.EntityClassModel,
         WeItemType.EntityPropertyConfigurationModel => WeItemType.EntityConfigurationModel,
         WeItemType.EntityNavigationConfigurationModel => WeItemType.EntityConfigurationModel,
+        WeItemType.EntityInboundNavConfigurationModel => WeItemType.EntityConfigurationModel,
 
         WeItemType.HandlerModel => WeItemType.NamespaceModel,
         WeItemType.HandlerResponseModel => WeItemType.HandlerModel,
@@ -110,6 +117,10 @@ namespace Weavers.Core.Extensions {
 
     public static int DefaultRank(this WeItemType itemType) {
       return itemType switch {
+        WeItemType.InboundNavTypes => 1,
+        WeItemType.NavWithOne => 1,
+        WeItemType.NavWithMany => 2,
+
         WeItemType.NavigationTypes => 1,
         WeItemType.NavHasOne => 1,
         WeItemType.NavHasMany => 2,
@@ -170,6 +181,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SolutionModel => (int)WeItemType.SolutionModel,
         WeItemType.SolutionImportModel => (int)WeItemType.SolutionImportModel,
         WeItemType.LibraryModel => (int)WeItemType.LibraryModel,
+        WeItemType.LibraryImportModel => 1,
         WeItemType.DependencyInjectionModel => 1,
         WeItemType.DiImportModel => 1,
         WeItemType.DbContextModel => 2,
@@ -194,6 +206,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassImportModel => (int)WeItemType.EntityClassImportModel,
         WeItemType.EntityPropertyModel => (int)WeItemType.EntityPropertyModel,
         WeItemType.EntityNavigationModel => (int)WeItemType.EntityNavigationModel,
+        WeItemType.EntityInboundNavigationModel => (int)WeItemType.EntityInboundNavigationModel,
         WeItemType.EntityConfigurationModel => (int)WeItemType.EntityConfigurationModel,
         WeItemType.EntityPropertyConfigurationModel => (int)WeItemType.EntityPropertyConfigurationModel,
         WeItemType.EntityNavigationConfigurationModel => (int)WeItemType.EntityNavigationConfigurationModel,
@@ -210,6 +223,10 @@ namespace Weavers.Core.Extensions {
 
     public static int DefaultEditorTypeId(this WeItemType itemType) {
       return itemType switch {
+        WeItemType.InboundNavTypes => (int)WeEditorType.LookupTypeEditor,
+        WeItemType.NavWithOne => (int)WeEditorType.Boolean,
+        WeItemType.NavWithMany => (int)WeEditorType.Boolean,
+
         WeItemType.NavigationTypes => (int)WeEditorType.LookupTypeEditor,
         WeItemType.NavHasOne => (int)WeEditorType.Boolean,
         WeItemType.NavHasMany => (int)WeEditorType.Boolean,
@@ -270,6 +287,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SolutionModel => (int)WeEditorType.String,
         WeItemType.SolutionImportModel => (int)WeEditorType.String,
         WeItemType.LibraryModel => (int)WeEditorType.String,
+        WeItemType.LibraryImportModel => (int)WeEditorType.String,
         WeItemType.DependencyInjectionModel => (int)WeEditorType.String,        
         WeItemType.DiImportModel => (int)WeEditorType.String,
         WeItemType.DbContextModel => (int)WeEditorType.String,
@@ -295,6 +313,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassImportModel => (int)WeEditorType.String,
         WeItemType.EntityPropertyModel => (int)WeEditorType.String,
         WeItemType.EntityNavigationModel => (int)WeEditorType.String,
+        WeItemType.EntityInboundNavigationModel => (int)WeEditorType.String,
         WeItemType.EntityConfigurationModel => (int)WeEditorType.String,
         WeItemType.EntityPropertyConfigurationModel => (int)WeEditorType.String,
         WeItemType.EntityNavigationConfigurationModel => (int)WeEditorType.String,
@@ -346,9 +365,13 @@ namespace Weavers.Core.Extensions {
 
     public static string Description(this WeItemType itemType) {
       return itemType switch {
+        WeItemType.InboundNavTypes => "Inbound Nav Types",
+        WeItemType.NavWithOne => "With One",
+        WeItemType.NavWithMany => "With Many",
+
         WeItemType.NavigationTypes => "Entity Nav Types",
-        WeItemType.NavHasOne => "HasOne",
-        WeItemType.NavHasMany => "HasMany",
+        WeItemType.NavHasOne => "Has One",
+        WeItemType.NavHasMany => "Has Many",
 
         WeItemType.SqlTypes => "Owner Type of SQL Types",
         WeItemType.SqlBitType => "sql bit type",
@@ -407,6 +430,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SolutionModel => "Solution",
         WeItemType.SolutionImportModel => "Solution Import",
         WeItemType.LibraryModel => "Library",
+        WeItemType.LibraryImportModel => "Library Import",
         WeItemType.DependencyInjectionModel => "Dependency Injection",        
         WeItemType.DiImportModel => "DI - Import",
         WeItemType.DbContextModel => "DbContext",
@@ -426,10 +450,11 @@ namespace Weavers.Core.Extensions {
         
         WeItemType.EntityClassModel => "Entity Class",
         WeItemType.EntityPropertyModel => "Entity Property",
-        WeItemType.EntityNavigationModel => "Entity Navigation Property",
+        WeItemType.EntityNavigationModel => "Entity Nav Property",
+        WeItemType.EntityInboundNavigationModel => "Inbound Nav Property",
         WeItemType.EntityConfigurationModel => "Entity Configuration Class",
         WeItemType.EntityPropertyConfigurationModel => "Entity Property Configuration",
-        WeItemType.EntityNavigationConfigurationModel => "Entity Navigation Configuration",
+        WeItemType.EntityNavigationConfigurationModel => "Entity Nav Configuration",
 
         WeItemType.HandlerModel => "Handler",
         WeItemType.HandlerResponseModel => "Handler Response",
@@ -475,6 +500,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
         WeItemType.LibraryModel => 12,
+        WeItemType.LibraryImportModel => 15,
         WeItemType.DependencyInjectionModel => 5,     
         WeItemType.DiImportModel => 6,
         WeItemType.DbContextModel => 4,
@@ -493,6 +519,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassImportModel => 8,
         WeItemType.EntityPropertyModel => 14,
         WeItemType.EntityNavigationModel => 6,
+        WeItemType.EntityInboundNavigationModel => 6,
         WeItemType.EntityConfigurationModel => 9,
         WeItemType.EntityPropertyConfigurationModel => 14,
         WeItemType.EntityNavigationConfigurationModel => 6,
@@ -557,6 +584,7 @@ namespace Weavers.Core.Extensions {
 
     public static HashSet<WeItemType> GetLookupTypes() { 
       HashSet<WeItemType> lookupTypes = new HashSet<WeItemType>(){
+          WeItemType.InboundNavTypes,
           WeItemType.NavigationTypes,
           WeItemType.SqlTypes,
           WeItemType.CSharpLifetimes,

@@ -5,7 +5,7 @@
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class AddsMinorDefaultUpdatesX2 : Migration
+    public partial class AddsMinorPropChangeX1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,16 +13,16 @@ namespace Weavers.Core.Migrations
             migrationBuilder.UpdateData(
                 table: "ItemPropertyDefaults",
                 keyColumn: "Id",
-                keyValue: 78,
-                column: "DefaultValue",
-                value: "7");
+                keyValue: 95,
+                column: "ReferenceItemTypeId",
+                value: 610);
 
             migrationBuilder.UpdateData(
-                table: "ItemTypes",
+                table: "ItemPropertyDefaults",
                 keyColumn: "Id",
-                keyValue: 614,
-                column: "ParentTypeId",
-                value: 612);
+                keyValue: 97,
+                column: "ReferenceItemTypeId",
+                value: 610);
         }
 
         /// <inheritdoc />
@@ -31,16 +31,16 @@ namespace Weavers.Core.Migrations
             migrationBuilder.UpdateData(
                 table: "ItemPropertyDefaults",
                 keyColumn: "Id",
-                keyValue: 78,
-                column: "DefaultValue",
-                value: "1");
+                keyValue: 95,
+                column: "ReferenceItemTypeId",
+                value: 614);
 
             migrationBuilder.UpdateData(
-                table: "ItemTypes",
+                table: "ItemPropertyDefaults",
                 keyColumn: "Id",
-                keyValue: 614,
-                column: "ParentTypeId",
-                value: 610);
+                keyValue: 97,
+                column: "ReferenceItemTypeId",
+                value: 616);
         }
     }
 }

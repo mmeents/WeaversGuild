@@ -4,6 +4,10 @@ using Weavers.Core.Entities;
 
 namespace Weavers.Core.Enums {
   public enum WeItemType {
+    InboundNavTypes = 2,
+      NavWithOne = 3,
+      NavWithMany = 4,
+
     NavigationTypes = 6,
       NavHasOne = 7,
       NavHasMany = 8,
@@ -69,6 +73,7 @@ namespace Weavers.Core.Enums {
       SolutionImportModel = 162, // import Libraries, apps, apis, mcps into a solution.
 
     LibraryModel = 200,     // name of project is root namespace. 
+      LibraryImportModel = 210, // import other projects as dependencies.
       DependencyInjectionModel = 300,
         DiImportModel = 306,
 
@@ -91,13 +96,15 @@ namespace Weavers.Core.Enums {
           ClassMethodModel = 524,
             ClassMethodParameterModel = 526,
 
-       EntityClassModel = 610,
-         EntityClassImportModel = 611,
-         EntityPropertyModel = 612,
+       EntityClassModel = 600,
+         EntityClassImportModel = 605,
+         EntityPropertyModel = 610,
          EntityNavigationModel = 614,
+         EntityInboundNavigationModel = 616,
         EntityConfigurationModel = 620,
          EntityPropertyConfigurationModel = 622,
          EntityNavigationConfigurationModel = 624,
+         EntityInboundNavConfigurationModel = 626,
 
     HandlerModel = 700,
         HandlerResponseModel = 710,
