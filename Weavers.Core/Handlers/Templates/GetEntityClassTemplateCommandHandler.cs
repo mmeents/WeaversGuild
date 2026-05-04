@@ -34,8 +34,7 @@ namespace Weavers.Core.Handlers.Templates {
       var sbUses = new StringBuilder();
       var sbLocals = new StringBuilder();
       var sbConstParams = new StringBuilder();
-      var sbConstructor = new StringBuilder();
-      var sbInterface = new StringBuilder();
+      var sbConstructor = new StringBuilder();      
       var sbProperties = new StringBuilder();
       var sbNavs = new StringBuilder();
 
@@ -47,7 +46,6 @@ namespace Weavers.Core.Handlers.Templates {
       var hasConstructorParams = false;
       var imports = item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityClassImportModel)
         .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
-
       foreach (var importId in imports) {
         hasConstructorParams = true;
         var importItem = await _context.GetItemDtoById(importId, ct);
@@ -75,6 +73,7 @@ namespace Weavers.Core.Handlers.Templates {
 
       var classProps = item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityPropertyModel)
         .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      bool navPrinted = false;
       foreach (var propId in classProps) {
         var propItem = await _context.GetItemDtoById(propId, ct);
         if (propItem != null) {
@@ -83,58 +82,100 @@ namespace Weavers.Core.Handlers.Templates {
           var isNullableProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable);
           var hasSetterProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasSetter);
           var isNavProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
-          var isPrimaryKeyProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsPrimaryKey);
-          var maxSizeProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItMaxSize);
+          var isPrimaryKeyProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsPrimaryKey);          
           bool isNullable = isNullableProp != null && isNullableProp.Value.AsBoolean();
           bool hasSetter = hasSetterProp != null && hasSetterProp.Value.AsBoolean();
           string setterClause = hasSetter ? " { get; set; }" : " { get; }";          
           bool isNav = isNavProp != null && isNavProp.Value.AsBoolean();
           bool isPrimaryKey = isPrimaryKeyProp != null && isPrimaryKeyProp.Value.AsBoolean();
           string nullableClause = isNullable && !isPrimaryKey ? "?" : "";
-          int dataTypeId = dataTypeProp != null && dataTypeProp.Value != null ? int.Parse(dataTypeProp.Value) : 0;          
-          int maxSize = (maxSizeProp != null && int.TryParse( maxSizeProp.Value, out var maxSizeOut)) ? maxSizeOut : 0;
+          int dataTypeId = dataTypeProp != null && dataTypeProp.Value != null ? int.Parse(dataTypeProp.Value) : 0;           
           string propTypeName = "";
           if (dataTypeId == (int)WeItemType.CSharpClassType) {                        
               propTypeName = "object";            
           } else {
             propTypeName = dataTypeId != 0 ? ((WeItemType)dataTypeId).AsCsCode() : "object";
           }
+
           sbProperties.AppendLine($"    public {propTypeName}{nullableClause} {propName} {setterClause}");
+
           if (isNav) {
             var navItemId = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId??0;
             if (navItemId > 0) {
               var navItem = await _context.GetItemDtoById(navItemId, ct);
               var isNavNullableProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable);
-              bool isNavNullable = isNullableProp != null && isNullableProp.Value.AsBoolean();
+              bool isNavNullable = isNavNullableProp != null && isNavNullableProp.Value.AsBoolean();
               var classTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType);
               var classTypeId = classTypeProp != null && classTypeProp.Value != null ? int.Parse(classTypeProp.Value) : 0;
               
               var navTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
-              WeItemType navType = (navTypeProp != null && int.TryParse(navTypeProp.Value, out var navTypeEnumInt)) ? (WeItemType)navTypeEnumInt : WeItemType.NavHasOne;
+              WeItemType navType = (navTypeProp != null && int.TryParse(navTypeProp.Value, out var navTypeEnumInt)) ? (WeItemType)navTypeEnumInt : WeItemType.NavHasOneToMany;
               if (classTypeId > 0) { 
                 var classTypeItem = await _context.GetItemDtoById(classTypeId, ct); 
                 if (classTypeItem != null) { 
-                  string classTypeName = classTypeItem.Name;
-                  string navName = classTypeName+"Set";
+                  string classTypeName = classTypeItem.Name;              
+                  string navName = classTypeItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName)?.Value ?? classTypeName + "Set";
                   string navNullableClause = isNavNullable ? "?" : "";
                   string navNulClause2 = isNavNullable ? " = null;" : " = null!;";
-                  if (navType == WeItemType.NavHasOne) { 
-                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {classTypeName}{setterClause}{navNulClause2}");
-                  } else if (navType == WeItemType.NavHasMany) { 
-                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navName}{setterClause} = [];");
+                  if (!navPrinted) {
+                    sbNavs.AppendLine("    // Nav properties");
+                    navPrinted = true;
                   }
+                  // print the too part:
+                  if ((navType == WeItemType.NavHasManyToOne || navType == WeItemType.NavHasOneToOne)) { 
+                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {classTypeName}{setterClause}{navNulClause2}");
+                  } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasOneToMany) { 
+                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navName}{setterClause} = [];");
+                  }                  
+                } else {                     
+                  sbNavs.AppendLine("    // WeaverError: ");
+                  sbNavs.AppendLine($"    // Could not resolve navigation class type for property {propName}");
                 }
               }              
 
             }
-          }
-          
+          }          
           
         }
-      }     
+      }
 
+      var inboundNavIds = item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityInboundNavigationModel)
+        .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      var printedComment = false;
+      foreach (var navId in inboundNavIds) {
+        var navItem = await _context.GetItemDtoById(navId, ct);
+        if (navItem != null) {
+          if (!printedComment) {
+            sbNavs.AppendLine("    // Inbound nav properties");
+            printedComment = true;
+          }
+          
+          bool isNavNullable = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable)?.Value.AsBoolean() ?? false;
+          string boolClause = isNavNullable? "?":"";
+          string boolClause2 = isNavNullable ? "" : "!";
+          var classTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType);
+          var classTypeId = classTypeProp != null && classTypeProp.Value != null ? int.Parse(classTypeProp.Value) : 0;          
+          var propClassStr = "missingClass";
+          var propDbTableName = "missingTable";
+          if (classTypeId > 0) {
+            var propClass = await _context.GetItemDtoById(classTypeId, ct);
+            if (propClass != null) {
+              propDbTableName = propClass.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName)?.Value;
+              propClassStr = propClass.Name;
+            }
+          } 
 
-      cSb.AppendLine($"namespace {namespaceName} {{");
+          var navTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
+          var navTypeId = navTypeProp != null && navTypeProp.Value != null ? int.Parse(navTypeProp.Value) : 0;
+          WeItemType navType = (WeItemType)navTypeId;
+          var typeClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? $"ICollection<{propClassStr}>" : $"{propClassStr}{boolClause}";
+          var nameClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? $"{propDbTableName}" : $"{propClassStr}";
+          var defaultClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? "{ get; set; } = [];" : "{ get; set; } = "+$"null{boolClause2};";                             
+          sbNavs.AppendLine($"    public {typeClause} {nameClause} {defaultClause}");
+        }
+      }
+
+          cSb.AppendLine($"namespace {namespaceName} {{");
       cSb.AppendLine("");  
 
       cSb.AppendLine($"  public class {className} {{");

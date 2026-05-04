@@ -3,14 +3,13 @@ using System;
 using Weavers.Core.Entities;
 
 namespace Weavers.Core.Enums {
-  public enum WeItemType {
-    InboundNavTypes = 2,
-      NavWithOne = 3,
-      NavWithMany = 4,
+  public enum WeItemType {    
 
-    NavigationTypes = 6,
-      NavHasOne = 7,
-      NavHasMany = 8,
+    NavigationTypes = 5,
+      NavHasOneToOne = 6,
+      NavHasOneToMany = 7,
+      NavHasManyToOne = 8,
+      NavHasManyToMany = 9,
 
     SqlTypes = 10,
     SqlBitType = 11,
@@ -102,9 +101,6 @@ namespace Weavers.Core.Enums {
          EntityNavigationModel = 614,
          EntityInboundNavigationModel = 616,
         EntityConfigurationModel = 620,
-         EntityPropertyConfigurationModel = 622,
-         EntityNavigationConfigurationModel = 624,
-         EntityInboundNavConfigurationModel = 626,
 
     HandlerModel = 700,
         HandlerResponseModel = 710,

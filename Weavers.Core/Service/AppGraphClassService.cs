@@ -261,6 +261,25 @@ namespace Weavers.Core.Service {
         await rootNamespaceProperty.SaveProp(newEntityItem, mediator);
       }
 
+      var newPkProperty = await mediator.Send(
+        new CreateRelatedItemCommand(newEntityItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.EntityPropertyModel, "Id", "", "{\"IsKey\":true}"));
+      if (newPkProperty != null) { 
+        var isPrimaryKeyProp = newPkProperty.Properties.FirstOrDefault(p => p.Name == Cx.ItIsPrimaryKey);
+        if (isPrimaryKeyProp != null) {
+          isPrimaryKeyProp.Value = "true";
+          await isPrimaryKeyProp.SaveProp(newPkProperty, mediator);
+        }
+      }
+
+      var newDbTableProp = newEntityItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName);
+      if (newDbTableProp != null) {
+        var newTableName = newEntityItem.Name.UrlSafe()+"s";
+        if (newDbTableProp.Value != newTableName) {
+          newDbTableProp.Value = newTableName;
+          await newDbTableProp.SaveProp(newEntityItem, mediator);
+        }
+      }
+
       var newEntityConfigItem = await mediator.Send(
         new CreateRelatedItemCommand(newEntityItem.Id,
           (int)WeRelationTypes.Contains,
@@ -315,24 +334,7 @@ namespace Weavers.Core.Service {
         // add error logging.
         return null;
       }
-
-      var entityConfigItemId = classItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityConfigurationModel)?.RelatedItemId;
-      if (entityConfigItemId != null) {
-        var entityConfigItem = await mediator.Send(new GetItemByIdQuery(entityConfigItemId.Value));
-        if (entityConfigItem != null) { 
-          var newConfigPropItem = await mediator.Send(new CreateRelatedItemCommand(entityConfigItem.Id,
-                (int)WeRelationTypes.Contains,
-                (int)WeItemType.EntityPropertyConfigurationModel,
-                $"{name}", "", "{}"));
-          if (newConfigPropItem != null) {
-            var parameterClassProp = newConfigPropItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);
-            if (parameterClassProp != null) {
-              parameterClassProp.Value = newSubItem.Id.ToString();
-              await parameterClassProp.SaveProp(newConfigPropItem, mediator);
-            }
-          }
-        }
-      }
+      
       return newSubItem;
     }
 

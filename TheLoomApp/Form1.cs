@@ -20,6 +20,7 @@ namespace TheLoomApp {
     private readonly IAppGraphFileService _appGraphService;
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
+    private readonly IGraphItemUpdateService _graphItemUpdateService;
     private ItemNode? _selectedNode = null;
     private Dictionary<int, ItemNode> _itemCache = new Dictionary<int, ItemNode>();
     private Dictionary<int, ItemTypeDto> _itemTypeCache = new Dictionary<int, ItemTypeDto>();
@@ -35,6 +36,10 @@ namespace TheLoomApp {
       _appGraphService = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
+      _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
+      _graphItemUpdateService.OnItemAdded += itemId => {
+        this.Invoke(() => RefreshNode(itemId));
+      };
       _itemPropertiesTab = new PropertiesTab(_serviceScopeFactory);
       _settings = scope.ServiceProvider.GetRequiredService<IAppSettingService>();
       SetupForStartup();
@@ -304,6 +309,31 @@ namespace TheLoomApp {
 
     }
 
+    private async void RefreshNode(int itemId) {
+      if (_itemCache.ContainsKey(itemId)) {
+        var node = _itemCache[itemId];
+        tvKb.BeginUpdate();
+        try {
+          node.Collapse();
+
+          var itemDto = await _appDataService.GetItemById(itemId);
+          if (itemDto != null && node.Relation != null) {
+            var newNode = node.Relation.ToItemNode(itemDto);
+            node.Item = itemDto;
+            _itemCache[itemId] = node;
+          }          
+          node.Expand();
+          node.ExpandAll();
+        } finally {
+          tvKb.EndUpdate();
+        }
+
+        TreeViewEventArgs ee = new TreeViewEventArgs(_selectedNode);
+        tvKb_AfterSelect(this, ee);
+
+      }
+    }
+
     #endregion
 
     // ----------------------- Tree View Selection and Property Editing -------------------------//
@@ -533,9 +563,7 @@ namespace TheLoomApp {
                 parent = parent.Parent as ItemNode;
               }
               if (parent != null) {            
-                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);
-                parent.Collapse();
-                parent.ExpandAll();
+                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);                
               }
             }
           }
@@ -604,12 +632,14 @@ namespace TheLoomApp {
               await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);            
             }
           }
-        }
+          await Task.Delay(100);
+          if (parentNode != null && parentNode.Item != null) {
+            this.Invoke(() => RefreshNode(parentNode.Item.Id));
+          }
+        }        
 
-        await Task.Delay(100);
-        await LoadRootProjects();
+        
       }
-
     }
 
     private async Task UpdateFolderPathIfNeededAsync(ItemDto item, string basePath) {
@@ -1016,11 +1046,11 @@ namespace TheLoomApp {
               }
               break;
             case WeItemType.EntityConfigurationModel:
-              //var entityConfigCode = await _itemTemplateService.GetEntityConfigTemplate(item.Id);
-              //if (entityConfigCode != null) {
-              //  item.Description = entityConfigCode;
-              //  await _appDataService.UpdateItemAsync(item);
-              //}
+              var entityConfigCode = await _itemTemplateService.GetEntityClassConfigTemplate(item.Id);
+              if (entityConfigCode != null) {
+                item.Description = entityConfigCode;
+                await _appDataService.UpdateItemAsync(item);
+              }
                break;
             default:
               break;

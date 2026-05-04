@@ -78,21 +78,7 @@ namespace Weavers.Core.Handlers.Items {
         var rels = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel);
         if (rels != null && rels.RelatedItemId != null) { 
           await DoRename(rels.RelatedItemId, request.Name, cancellationToken); // child nav
-        }
-        var entityClassId = propItem.IncomingRelations.FirstOrDefault(r => r.ItemId != propItem.Id)?.ItemId;
-        if (entityClassId != null) { 
-          var entityClass = await _context.GetItemDtoById(entityClassId.Value, cancellationToken);
-          var entConfigItemRef = entityClass.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityConfigurationModel);
-          if (entConfigItemRef != null && entConfigItemRef.RelatedItemId != null) {
-            var entConfigItem = await _context.GetItemDtoById(entConfigItemRef.RelatedItemId.Value, cancellationToken);
-            if (entConfigItem != null) { 
-              var configProp = await GetPropConfig(entConfigItem, itemDto, cancellationToken);
-              if (configProp != null) {  // update props runs later and re adds with correct name.
-                await _mediator.Send(new DeleteItemCommand(configProp.Id), cancellationToken);
-              }
-            }      
-          }
-        }        
+        }             
 
       } 
         else if (itemDto.ItemTypeId == (int)WeItemType.EntityNavigationModel && nameWas != itemDto.Name) {
@@ -124,22 +110,6 @@ namespace Weavers.Core.Handlers.Items {
         }
       } else return false;
       return true;
-    }
-
-    private async Task<ItemDto?> GetPropConfig(ItemDto entityConfig, ItemDto entityProp, CancellationToken cancellationToken) {
-      var targetId = entityProp.Id.ToString();
-      foreach (var importRel in entityConfig.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityPropertyConfigurationModel)) {
-        if (importRel.RelatedItemId != null) {
-          var importItem = await _context.GetItemDtoById(importRel.RelatedItemId.Value, cancellationToken);
-          if (importItem != null) {
-            var importProp = importItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType && p.Value == targetId);
-            if (importProp != null) {
-              return importItem;
-            }
-          }
-        }
-      }
-      return null;
     }
 
 

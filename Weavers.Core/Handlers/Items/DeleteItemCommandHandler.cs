@@ -46,10 +46,7 @@ namespace Weavers.Core.Handlers.Items {
             if (entityConfigRelationId == null) { return false; }
             var entityConfigItem = await _context.GetItemDtoById(entityConfigRelationId.Value, cancellationToken);
             if (entityConfigItem == null) { return false; }
-            var configProp = await GetPropConfig(entityConfigItem, item, cancellationToken);
-            if (configProp != null) { 
-              await _mediator.Send(new DeleteItemCommand(configProp.Id), cancellationToken);
-            }
+
             var navItem = propItemDto.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel).FirstOrDefault();
             if (navItem != null && navItem.RelatedItemId.HasValue) { 
                await _mediator.Send(new DeleteItemCommand(navItem.RelatedItemId.Value), cancellationToken);
@@ -108,21 +105,6 @@ namespace Weavers.Core.Handlers.Items {
       }
     }
 
-    private async Task<ItemDto?> GetPropConfig(ItemDto entityConfig, Item entityProp, CancellationToken cancellationToken) {
-      var targetId = entityProp.Id.ToString();
-      foreach (var importRel in entityConfig.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityPropertyConfigurationModel)) {
-        if (importRel.RelatedItemId != null) {
-          var importItem = await _context.GetItemDtoById(importRel.RelatedItemId.Value, cancellationToken);
-          if (importItem != null) {
-            var importProp = importItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType && p.Value == targetId);
-            if (importProp != null) {
-              return importItem;
-            }
-          }
-        }
-      }
-      return null;
-    }
 
   }
 

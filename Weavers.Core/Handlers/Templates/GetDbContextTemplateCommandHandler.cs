@@ -43,8 +43,11 @@ namespace Weavers.Core.Handlers.Templates {
           sbMain.AppendLine($"      public DbSet<{classItem.Name}> {classItem.Name}Set => Set<{classItem.Name}>();");
         }
       }
-      sbMain.AppendLine("\r\n    protected override void OnModelCreating(ModelBuilder modelBuilder) {\r\n      base.OnModelCreating(modelBuilder);\r\n      modelBuilder.ApplyConfigurationsFromAssembly(typeof("+ 
-        dbContextItem.Name +").Assembly);\r\n    }");
+      sbMain.AppendLine("\r\n"+
+        "    protected override void OnModelCreating(ModelBuilder modelBuilder) {\r\n"+
+        "      base.OnModelCreating(modelBuilder);\r\n"+
+        "      modelBuilder.ApplyConfigurationsFromAssembly(typeof("+ dbContextItem.Name + ").Assembly);\r\n"+
+        "    }");
       sbMain.AppendLine($"  }}");
       sbMain.AppendLine($"}}");                  
 

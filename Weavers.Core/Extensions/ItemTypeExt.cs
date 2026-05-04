@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlTypes;
+using System.Drawing;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 
@@ -8,13 +9,12 @@ namespace Weavers.Core.Extensions {
     
     public static WeItemType? ParentType(this WeItemType itemType) {
       return itemType switch {
-        WeItemType.InboundNavTypes => (WeItemType?)null,
-        WeItemType.NavWithOne => WeItemType.InboundNavTypes,
-        WeItemType.NavWithMany => WeItemType.InboundNavTypes,
 
         WeItemType.NavigationTypes => (WeItemType?)null,
-        WeItemType.NavHasOne => WeItemType.NavigationTypes,
-        WeItemType.NavHasMany => WeItemType.NavigationTypes,
+        WeItemType.NavHasOneToOne => WeItemType.NavigationTypes,
+        WeItemType.NavHasOneToMany => WeItemType.NavigationTypes,
+        WeItemType.NavHasManyToOne => WeItemType.NavigationTypes,
+        WeItemType.NavHasManyToMany => WeItemType.NavigationTypes,
 
         WeItemType.SqlTypes => (WeItemType?)null,
         WeItemType.SqlBitType => WeItemType.SqlTypes,
@@ -100,9 +100,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityNavigationModel => WeItemType.EntityPropertyModel,
         WeItemType.EntityInboundNavigationModel => WeItemType.EntityClassModel,
         WeItemType.EntityConfigurationModel => WeItemType.EntityClassModel,
-        WeItemType.EntityPropertyConfigurationModel => WeItemType.EntityConfigurationModel,
-        WeItemType.EntityNavigationConfigurationModel => WeItemType.EntityConfigurationModel,
-        WeItemType.EntityInboundNavConfigurationModel => WeItemType.EntityConfigurationModel,
 
         WeItemType.HandlerModel => WeItemType.NamespaceModel,
         WeItemType.HandlerResponseModel => WeItemType.HandlerModel,
@@ -117,13 +114,12 @@ namespace Weavers.Core.Extensions {
 
     public static int DefaultRank(this WeItemType itemType) {
       return itemType switch {
-        WeItemType.InboundNavTypes => 1,
-        WeItemType.NavWithOne => 1,
-        WeItemType.NavWithMany => 2,
 
         WeItemType.NavigationTypes => 1,
-        WeItemType.NavHasOne => 1,
-        WeItemType.NavHasMany => 2,
+        WeItemType.NavHasOneToOne => 1,
+        WeItemType.NavHasOneToMany => 2,
+        WeItemType.NavHasManyToOne => 3,
+        WeItemType.NavHasManyToMany => 4,
 
         WeItemType.SqlTypes => 1,
         WeItemType.SqlBitType => 2,
@@ -208,8 +204,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityNavigationModel => (int)WeItemType.EntityNavigationModel,
         WeItemType.EntityInboundNavigationModel => (int)WeItemType.EntityInboundNavigationModel,
         WeItemType.EntityConfigurationModel => (int)WeItemType.EntityConfigurationModel,
-        WeItemType.EntityPropertyConfigurationModel => (int)WeItemType.EntityPropertyConfigurationModel,
-        WeItemType.EntityNavigationConfigurationModel => (int)WeItemType.EntityNavigationConfigurationModel,
 
         WeItemType.HandlerModel => (int)WeItemType.HandlerModel,
         WeItemType.HandlerResponseModel => (int)WeItemType.HandlerResponseModel,
@@ -223,13 +217,12 @@ namespace Weavers.Core.Extensions {
 
     public static int DefaultEditorTypeId(this WeItemType itemType) {
       return itemType switch {
-        WeItemType.InboundNavTypes => (int)WeEditorType.LookupTypeEditor,
-        WeItemType.NavWithOne => (int)WeEditorType.Boolean,
-        WeItemType.NavWithMany => (int)WeEditorType.Boolean,
 
         WeItemType.NavigationTypes => (int)WeEditorType.LookupTypeEditor,
-        WeItemType.NavHasOne => (int)WeEditorType.Boolean,
-        WeItemType.NavHasMany => (int)WeEditorType.Boolean,
+        WeItemType.NavHasOneToOne => (int)WeEditorType.Boolean,
+        WeItemType.NavHasOneToMany => (int)WeEditorType.Boolean,
+        WeItemType.NavHasManyToOne => (int)WeEditorType.Boolean,
+        WeItemType.NavHasManyToMany => (int)WeEditorType.Boolean,
 
         WeItemType.SqlTypes => (int)WeEditorType.LookupTypeEditor,
         WeItemType.SqlBitType => (int)WeEditorType.Boolean,
@@ -315,8 +308,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityNavigationModel => (int)WeEditorType.String,
         WeItemType.EntityInboundNavigationModel => (int)WeEditorType.String,
         WeItemType.EntityConfigurationModel => (int)WeEditorType.String,
-        WeItemType.EntityPropertyConfigurationModel => (int)WeEditorType.String,
-        WeItemType.EntityNavigationConfigurationModel => (int)WeEditorType.String,
 
         WeItemType.HandlerModel => (int)WeEditorType.String,
         WeItemType.HandlerResponseModel => (int)WeEditorType.String,
@@ -365,13 +356,12 @@ namespace Weavers.Core.Extensions {
 
     public static string Description(this WeItemType itemType) {
       return itemType switch {
-        WeItemType.InboundNavTypes => "Inbound Nav Types",
-        WeItemType.NavWithOne => "With One",
-        WeItemType.NavWithMany => "With Many",
 
         WeItemType.NavigationTypes => "Entity Nav Types",
-        WeItemType.NavHasOne => "Has One",
-        WeItemType.NavHasMany => "Has Many",
+        WeItemType.NavHasOneToOne => "Has One to One",
+        WeItemType.NavHasOneToMany => "Has One to Many",
+        WeItemType.NavHasManyToOne => "Has Many to One",
+        WeItemType.NavHasManyToMany => "Has Many to Many",
 
         WeItemType.SqlTypes => "Owner Type of SQL Types",
         WeItemType.SqlBitType => "sql bit type",
@@ -453,8 +443,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityNavigationModel => "Entity Nav Property",
         WeItemType.EntityInboundNavigationModel => "Inbound Nav Property",
         WeItemType.EntityConfigurationModel => "Entity Configuration Class",
-        WeItemType.EntityPropertyConfigurationModel => "Entity Property Configuration",
-        WeItemType.EntityNavigationConfigurationModel => "Entity Nav Configuration",
 
         WeItemType.HandlerModel => "Handler",
         WeItemType.HandlerResponseModel => "Handler Response",
@@ -504,7 +492,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.DependencyInjectionModel => 5,     
         WeItemType.DiImportModel => 6,
         WeItemType.DbContextModel => 4,
-        WeItemType.DbContextEntityImportModel => 6,
+        WeItemType.DbContextEntityImportModel => 15,
         WeItemType.NamespaceModel => 11,
         WeItemType.InterfaceModel => 5,
         WeItemType.InterfacePropertyModel => 14,
@@ -519,10 +507,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityClassImportModel => 8,
         WeItemType.EntityPropertyModel => 14,
         WeItemType.EntityNavigationModel => 6,
-        WeItemType.EntityInboundNavigationModel => 6,
+        WeItemType.EntityInboundNavigationModel => 15,
         WeItemType.EntityConfigurationModel => 9,
-        WeItemType.EntityPropertyConfigurationModel => 14,
-        WeItemType.EntityNavigationConfigurationModel => 6,
         WeItemType.HandlerModel => 10,
         WeItemType.HandlerResponseModel => 11,
         WeItemType.HandlerCommandModel => 12,
@@ -584,7 +570,6 @@ namespace Weavers.Core.Extensions {
 
     public static HashSet<WeItemType> GetLookupTypes() { 
       HashSet<WeItemType> lookupTypes = new HashSet<WeItemType>(){
-          WeItemType.InboundNavTypes,
           WeItemType.NavigationTypes,
           WeItemType.SqlTypes,
           WeItemType.CSharpLifetimes,
@@ -634,7 +619,68 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-    
+    public static string GetConfigSqlType(this WeItemType type, string maxSize) {
+      string vmSize = maxSize.ValidateMaxSize(type);
+      return type switch {
+        WeItemType.CSharpStringType => $".HasColumnType(\"nvarchar({vmSize})\")",
+        WeItemType.CSharpBoolType => ".HasColumnType(\"bit\")",
+        WeItemType.CSharpIntType => ".HasColumnType(\"int\")",
+        WeItemType.CSharpLongType => ".HasColumnType(\"bigint\")",
+        WeItemType.CSharpShortType => ".HasColumnType(\"smallint\")",
+        WeItemType.CSharpDecimalType => $".HasColumnType(\"decimal({vmSize})\")",
+        WeItemType.CSharpDoubleType => $".HasColumnType(\"decimal({vmSize})\")",
+        WeItemType.CSharpFloatType => $".HasColumnType(\"float({vmSize})\")",
+        WeItemType.CSharpDateTimeType => ".HasColumnType(\"datetime\")",
+        WeItemType.CSharpDateTime2Type => ".HasColumnType(\"datetime2\")",
+        WeItemType.CSharpDateType => ".HasColumnType(\"date\")",
+        WeItemType.CSharpTimeType => ".HasColumnType(\"time\")",
+        WeItemType.CSharpDateTimeOffsetType => ".HasColumnType(\"datetimeoffset\")",
+        WeItemType.CSharpGuidType => ".HasColumnType(\"uniqueidentifier\")",        
+        _ => ""
+      };    
+    }
+
+    public static string ValidateMaxSize(this string maxSize, WeItemType weItem) {
+      var sizeParts = maxSize.Parse("(), ");
+      var firstpart = sizeParts.Length > 0 ? sizeParts[0] : "0"; 
+      var secondpart = sizeParts.Length >= 2 ? sizeParts[1] : "0";
+      var aVal = weItem switch {
+        WeItemType.CSharpStringType => firstpart.ValidateString(),
+        WeItemType.CSharpDecimalType => ValidateDecimal(firstpart, secondpart),
+        WeItemType.CSharpDoubleType => ValidateDecimal(firstpart, secondpart),
+        WeItemType.CSharpFloatType => int.TryParse(firstpart, out int f) && f > 0 ? f.ToString() : "53",
+        _ => ""
+      };
+
+      return aVal;
+    }
+
+    public static string[] Parse(this string content, string delims) {
+      return content.Split(delims.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+    }
+
+
+    private static string ValidateString(this string part) {
+      if (part == "-1") return "max";
+      if (part.Equals("MAX", StringComparison.OrdinalIgnoreCase)) return "max";
+      if (int.TryParse(part, out int val)) {
+        if (val <= 0 || val > 4000) return "max"; // SQL Server NVARCHAR limit is 4000 before MAX
+        return val.ToString();
+      }
+      return "200"; // Default
+    }
+
+    private static string ValidateDecimal(string p, string s) {
+      int.TryParse(p, out int precision);
+      int.TryParse(s, out int scale);
+
+      // SQL Server Defaults: Precision max 38, Scale cannot exceed precision
+      precision = (precision <= 0 || precision > 38) ? 18 : precision;
+      scale = (scale < 0 || scale > precision) ? 2 : scale;
+
+      return $"{precision},{scale}";
+    }
+
 
   }
 }

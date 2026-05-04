@@ -10,6 +10,7 @@ namespace Weavers.Core.Service {
     Task<string?> GetDbContextTemplate(int dbContextItemId);
     Task<string?> GetClassTemplate(int classItemId);
     Task<string?> GetEntityClassTemplate(int EntityItemId);
+    Task<string?> GetEntityClassConfigTemplate(int EntityConfigItemId);
 
   }
   public class AppItemTemplateService(IServiceScopeFactory serviceScopeFactory) : IAppItemTemplateService {
@@ -50,6 +51,13 @@ namespace Weavers.Core.Service {
     public async Task<string?> GetEntityClassTemplate(int EntityItemId) { 
       var mediator = GetMediator();
       var query = new GetEntityClassTemplateCommand(EntityItemId);
+      var result = await mediator.Send(query);
+      return result;
+    }
+
+    public async Task<string?> GetEntityClassConfigTemplate(int EntityConfigItemId) { 
+      var mediator = GetMediator();
+      var query = new GetEntityConfigTemplateCommand(EntityConfigItemId);
       var result = await mediator.Send(query);
       return result;
     }

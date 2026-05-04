@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class IsCreateVersion110 : Migration
+    public partial class AddsInitialCreateVersion113 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -336,8 +336,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 2, "Inbound Nav Types", 10, "", true, "InboundNavTypes", null, 1 },
-                    { 6, "Entity Nav Types", 10, "", true, "NavigationTypes", null, 1 },
+                    { 5, "Entity Nav Types", 10, "", true, "NavigationTypes", null, 1 },
                     { 10, "Owner Type of SQL Types", 10, "", true, "SqlTypes", null, 1 },
                     { 21, "sql float type", -1, "", true, "SqlFloatType", 21, 0 },
                     { 40, "Owner Type of C# Lifetimes", 10, "", true, "CSharpLifetimes", null, 1 },
@@ -360,10 +359,10 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 3, "With One", 2, "", true, "NavWithOne", 2, 1 },
-                    { 4, "With Many", 2, "", true, "NavWithMany", 2, 2 },
-                    { 7, "Has One", 2, "", true, "NavHasOne", 6, 1 },
-                    { 8, "Has Many", 2, "", true, "NavHasMany", 6, 2 },
+                    { 6, "Has One to One", 2, "", true, "NavHasOneToOne", 5, 1 },
+                    { 7, "Has One to Many", 2, "", true, "NavHasOneToMany", 5, 2 },
+                    { 8, "Has Many to One", 2, "", true, "NavHasManyToOne", 5, 3 },
+                    { 9, "Has Many to Many", 2, "", true, "NavHasManyToMany", 5, 4 },
                     { 11, "sql bit type", 2, "", true, "SqlBitType", 10, 2 },
                     { 12, "sql smallint type", 3, "", true, "SqlSmallIntType", 10, 3 },
                     { 13, "sql int type", 3, "", true, "SqlIntType", 10, 4 },
@@ -520,7 +519,9 @@ namespace Weavers.Core.Migrations
                     { 53, "0", 2, true, 500, "IsStatic", 18, null, 1 },
                     { 72, ".cs", 4, true, 600, "FileExtension", 12, null, 6 },
                     { 73, "", 4, true, 600, "FilePath", 13, null, 6 },
-                    { 74, "", 4, true, 600, "Namespace", 14, null, 6 }
+                    { 74, "", 4, true, 600, "Namespace", 14, null, 6 },
+                    { 75, "dbo", 4, true, 600, "DbSchema", 15, null, 6 },
+                    { 76, "", 4, true, 600, "DbTableName", 16, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -563,21 +564,22 @@ namespace Weavers.Core.Migrations
                     { 65, "0", 2, true, 524, "IsStatic", 16, null, 1 },
                     { 66, "0", 2, true, 524, "IsAbstract", 17, null, 1 },
                     { 67, "0", 2, true, 524, "IsSealed", 18, null, 1 },
-                    { 75, "", 10, true, 605, "ImportObject", 2, 500, 3 },
-                    { 76, "", 2, true, 605, "UseInterface", 3, null, 1 },
-                    { 77, "64", 10, true, 610, "PropertyType", 1, 50, 3 },
-                    { 78, "0", 2, true, 610, "IsNullable", 3, null, 1 },
-                    { 79, "1", 2, true, 610, "HasSetter", 4, null, 1 },
-                    { 80, "0", 2, true, 610, "HasNavigation", 5, null, 1 },
-                    { 81, "0", 2, true, 610, "IsPrimaryKey", 6, null, 1 },
-                    { 82, "-1", 3, true, 610, "MaxSize", 7, null, 3 },
-                    { 86, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
-                    { 87, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
-                    { 88, "4", 10, true, 616, "HasNavigation", 4, 2, 3 },
-                    { 89, "1", 2, true, 616, "IsNullable", 5, null, 1 },
-                    { 90, ".cs", 4, true, 620, "FileExtension", 12, null, 6 },
-                    { 91, "", 4, true, 620, "FilePath", 13, null, 6 },
-                    { 92, "", 4, true, 620, "Namespace", 14, null, 6 }
+                    { 77, "", 10, true, 605, "ImportObject", 2, 500, 3 },
+                    { 78, "", 2, true, 605, "UseInterface", 3, null, 1 },
+                    { 79, "64", 10, true, 610, "PropertyType", 1, 50, 3 },
+                    { 80, "0", 2, true, 610, "IsNullable", 3, null, 1 },
+                    { 81, "1", 2, true, 610, "HasSetter", 4, null, 1 },
+                    { 82, "0", 2, true, 610, "HasNavigation", 5, null, 1 },
+                    { 83, "0", 2, true, 610, "IsPrimaryKey", 6, null, 1 },
+                    { 84, "-1", 3, true, 610, "MaxSize", 7, null, 3 },
+                    { 88, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
+                    { 89, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
+                    { 90, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
+                    { 91, "1", 2, true, 616, "IsNullable", 5, null, 1 },
+                    { 92, "", 4, true, 616, "InverseNav", 6, null, 6 },
+                    { 93, ".cs", 4, true, 620, "FileExtension", 12, null, 6 },
+                    { 94, "", 4, true, 620, "FilePath", 13, null, 6 },
+                    { 95, "", 4, true, 620, "Namespace", 14, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -588,9 +590,6 @@ namespace Weavers.Core.Migrations
                     { 426, "Interface Method Parameter", 4, "pi pi-plug", true, "InterfaceMethodParameterModel", 424, 426 },
                     { 526, "Class Method Parameter", 4, "pi pi-cube", true, "ClassMethodParameterModel", 524, 526 },
                     { 614, "Entity Nav Property", 4, "", true, "EntityNavigationModel", 610, 614 },
-                    { 622, "Entity Property Configuration", 4, "", true, "EntityPropertyConfigurationModel", 620, 622 },
-                    { 624, "Entity Nav Configuration", 4, "", true, "EntityNavigationConfigurationModel", 620, 624 },
-                    { 626, "EntityInboundNavConfigurationModel", -1, "", true, "EntityInboundNavConfigurationModel", 620, 0 },
                     { 732, "Handler Property", 4, "pi pi-shield", true, "HandlerPropertyModel", 730, 732 },
                     { 734, "Handler Method", 4, "pi pi-shield", true, "HandlerMethodModel", 730, 734 }
                 });
@@ -604,15 +603,9 @@ namespace Weavers.Core.Migrations
                     { 69, "", 10, true, 526, "ParamClass", 2, 500, 3 },
                     { 70, "1", 2, true, 526, "IsNullable", 3, null, 1 },
                     { 71, "0", 2, true, 526, "UseThis", 4, null, 1 },
-                    { 83, "", 10, true, 614, "PropertyClass", 2, 600, 3 },
-                    { 84, "7", 10, true, 614, "HasNavigation", 3, 6, 3 },
-                    { 85, "1", 2, true, 614, "IsNullable", 3, null, 1 },
-                    { 93, "", 10, true, 622, "ParamClass", 2, 610, 3 },
-                    { 94, "1", 2, true, 622, "IsNullable", 3, null, 1 },
-                    { 95, "", 10, true, 624, "ParamClass", 2, 614, 3 },
-                    { 96, "1", 2, true, 624, "IsNullable", 3, null, 1 },
-                    { 97, "", 10, true, 626, "ParamClass", 2, 616, 3 },
-                    { 98, "1", 2, true, 626, "IsNullable", 3, null, 1 }
+                    { 85, "", 10, true, 614, "PropertyClass", 2, 600, 3 },
+                    { 86, "6", 10, true, 614, "HasNavigation", 3, 5, 3 },
+                    { 87, "1", 2, true, 614, "IsNullable", 5, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(

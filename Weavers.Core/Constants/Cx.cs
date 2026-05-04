@@ -45,6 +45,8 @@ namespace Weavers.Core.Constants {
     public const string ItClassType = "ClassType";
     public const string ItDataType = "DataType";
     public const string ItDbContextName = "DbContextName";
+    public const string ItDbSchema = "DbSchema";
+    public const string ItDbTableName = "DbTableName";
     public const string ItFilePath = "FilePath";
     public const string ItFileExt = "FileExtension";
     public const string ItGenerateInterface = "GenerateInterface";
@@ -54,6 +56,7 @@ namespace Weavers.Core.Constants {
     public const string ItHasSetter = "HasSetter";
     public const string ItImportObject = "ImportObject";
     public const string ItImportUseInterface = "UseInterface";
+    public const string ItInverseNavigation = "InverseNav";
     public const string ItInterface = "Interface";    
     public const string ItIsAbstract = "IsAbstract";
     public const string ItIsCollection = "IsCollection";
