@@ -1,15 +1,8 @@
 ﻿using MediatR;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Constants;
-using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
-using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Templates {
   public record GetEntityConfigTemplateCommand(int EntityCfgItemId) : IRequest<string>;
@@ -138,13 +131,13 @@ namespace Weavers.Core.Handlers.Templates {
 
         string navConfig = (WeItemType)navTypeId switch {
           WeItemType.NavHasOneToOne =>
-              $"builder.HasOne(x => x.{propClassStr}).WithOne().HasForeignKey(y => y.{fkName});",
+              $"builder.HasOne(x => x.{propClassStr}).WithOne(y => y.{itemClassName}).HasForeignKey<{propClassStr}>(y => y.{fkName});",
 
           WeItemType.NavHasOneToMany =>
               $"builder.HasOne(x => x.{propClassStr}).WithMany(y => y.{propClassDbTableName}).HasForeignKey(y => y.{fkName});",
 
           WeItemType.NavHasManyToOne =>   // Most important one for inbound references
-              $"builder.HasMany(x => x.{propClassDbTableName}).WithOne().HasForeignKey(y => y.{fkName});",
+              $"builder.HasMany(x => x.{propClassDbTableName}).WithOne(y => y.{itemClassName}).HasForeignKey(y => y.{fkName});",
 
           WeItemType.NavHasManyToMany =>
               $"builder.HasMany(x => x.{propClassDbTableName}).WithMany(y => y.{propClassDbTableName});",

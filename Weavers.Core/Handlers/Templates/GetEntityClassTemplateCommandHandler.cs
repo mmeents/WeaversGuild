@@ -1,17 +1,8 @@
-﻿using Azure.Core;
-using MediatR;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
+﻿using MediatR;
 using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Constants;
-using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
-using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Templates {
 
@@ -103,17 +94,18 @@ namespace Weavers.Core.Handlers.Templates {
             var navItemId = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId??0;
             if (navItemId > 0) {
               var navItem = await _context.GetItemDtoById(navItemId, ct);
+              if (navItem == null) continue;
               var isNavNullableProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable);
               bool isNavNullable = isNavNullableProp != null && isNavNullableProp.Value.AsBoolean();
               var classTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType);
               var classTypeId = classTypeProp != null && classTypeProp.Value != null ? int.Parse(classTypeProp.Value) : 0;
-              
+
               var navTypeProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
               WeItemType navType = (navTypeProp != null && int.TryParse(navTypeProp.Value, out var navTypeEnumInt)) ? (WeItemType)navTypeEnumInt : WeItemType.NavHasOneToMany;
-              if (classTypeId > 0) { 
-                var classTypeItem = await _context.GetItemDtoById(classTypeId, ct); 
-                if (classTypeItem != null) { 
-                  string classTypeName = classTypeItem.Name;              
+              if (classTypeId > 0) {
+                var classTypeItem = await _context.GetItemDtoById(classTypeId, ct);
+                if (classTypeItem != null) {
+                  string classTypeName = classTypeItem.Name;
                   string navName = classTypeItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName)?.Value ?? classTypeName + "Set";
                   string navNullableClause = isNavNullable ? "?" : "";
                   string navNulClause2 = isNavNullable ? " = null;" : " = null!;";
@@ -122,17 +114,16 @@ namespace Weavers.Core.Handlers.Templates {
                     navPrinted = true;
                   }
                   // print the too part:
-                  if ((navType == WeItemType.NavHasManyToOne || navType == WeItemType.NavHasOneToOne)) { 
+                  if ((navType == WeItemType.NavHasManyToOne || navType == WeItemType.NavHasOneToOne)) {
                     sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {classTypeName}{setterClause}{navNulClause2}");
-                  } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasOneToMany) { 
+                  } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasOneToMany) {
                     sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navName}{setterClause} = [];");
-                  }                  
-                } else {                     
+                  }
+                } else {
                   sbNavs.AppendLine("    // WeaverError: ");
                   sbNavs.AppendLine($"    // Could not resolve navigation class type for property {propName}");
                 }
               }              
-
             }
           }          
           

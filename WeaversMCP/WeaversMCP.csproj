@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="PropertiesTab\**" />
+    <EmbeddedResource Remove="PropertiesTab\**" />
+    <None Remove="PropertiesTab\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -28,10 +34,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Weavers.Core\Weavers.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="PropertiesTab\" />
   </ItemGroup>
 
 </Project>

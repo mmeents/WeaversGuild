@@ -309,7 +309,7 @@ namespace TheLoomApp {
 
     }
 
-    private async void RefreshNode(int itemId) {
+    private async void RefreshNode(int itemId) {        
       if (_itemCache.ContainsKey(itemId)) {
         var node = _itemCache[itemId];
         tvKb.BeginUpdate();
@@ -326,6 +326,33 @@ namespace TheLoomApp {
           node.ExpandAll();
         } finally {
           tvKb.EndUpdate();
+        }        
+
+      }
+    }
+
+    private async void RefreshSelectedNode(int itemId) {
+      if (_itemCache.ContainsKey(itemId)) {
+        var node = _itemCache[itemId];
+        tvKb.BeginUpdate();
+        try
+        {
+          node.Collapse();
+
+          var itemDto = await _appDataService.GetItemById(itemId);
+          if (itemDto != null && node.Relation != null)
+          {
+              var newNode = node.Relation.ToItemNode(itemDto);
+              node.Item = itemDto;
+              _itemCache[itemId] = node;
+
+          }
+          node.Expand();
+          node.ExpandAll();
+        }
+        finally
+        {
+          tvKb.EndUpdate();
         }
 
         TreeViewEventArgs ee = new TreeViewEventArgs(_selectedNode);
@@ -334,12 +361,12 @@ namespace TheLoomApp {
       }
     }
 
-    #endregion
+        #endregion
 
-    // ----------------------- Tree View Selection and Property Editing -------------------------//
-    #region Tree View Selection tracking
+        // ----------------------- Tree View Selection and Property Editing -------------------------//
+        #region Tree View Selection tracking
 
-    private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
+        private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
       if (e.Node is not ItemNode) {
         _selectedNode = null;
         return;
@@ -598,6 +625,7 @@ namespace TheLoomApp {
         if (selectedItemType == WeItemType.ProjectFolderModel) {
           string newPath = Path.Combine(edAppDefaultFolder.Text, edItemName.Text);
           await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
+          this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
         } else {
           var parentNode = (ItemNode?)_selectedNode.Parent;
           if (parentNode == null) { return; }
@@ -634,7 +662,7 @@ namespace TheLoomApp {
           }
           await Task.Delay(100);
           if (parentNode != null && parentNode.Item != null) {
-            this.Invoke(() => RefreshNode(parentNode.Item.Id));
+            this.Invoke(() => RefreshSelectedNode(parentNode.Item.Id));
           }
         }        
 
