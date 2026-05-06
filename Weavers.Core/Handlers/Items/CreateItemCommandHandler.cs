@@ -31,6 +31,7 @@ namespace Weavers.Core.Handlers.Items {
         Name = request.Name,
         ItemTypeId = itemType.Id,
         Description = request.Description,
+        Established = DateTime.UtcNow,
         Data = request.Data,
         IsActive = true
       };

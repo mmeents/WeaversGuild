@@ -10,6 +10,7 @@ namespace Weavers.Core.Entities {
     public string Description { get; set; } = string.Empty;
     public string Data { get; set; } = "{}";
     public DateTime Established { get; set; } = DateTime.UtcNow;
+    public DateTime? WrittenAt { get; set; } = null;
     public bool IsActive { get; set; } = true;
 
 
@@ -34,7 +35,8 @@ namespace Weavers.Core.Entities {
       builder.Property(x => x.Description).HasMaxLength(-1);
       builder.Property(x => x.Data).HasColumnType("nvarchar(max)").HasDefaultValue("{}");
       builder.Property(x => x.IsActive).HasDefaultValue(true);
-      builder.Property(x => x.Established).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+      builder.Property(x => x.Established).IsRequired().HasDefaultValueSql("GETUTCDATE()");      
+      builder.Property(x => x.WrittenAt).IsRequired(false);
 
       builder.HasOne(x => x.ItemType).WithMany(x => x.Items).HasForeignKey(x => x.ItemTypeId).OnDelete(DeleteBehavior.Restrict);
       builder.HasMany(m => m.Properties).WithOne(p => p.Item).HasForeignKey(p => p.ItemId).OnDelete(DeleteBehavior.Cascade);

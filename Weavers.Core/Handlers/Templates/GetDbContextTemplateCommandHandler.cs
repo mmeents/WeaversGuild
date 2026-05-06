@@ -13,6 +13,7 @@ namespace Weavers.Core.Handlers.Templates {
     public async Task<string?> Handle(GetDbContextTemplateCommand request, CancellationToken cancellationToken) {
       
       var dbContextItem = await _context.GetItemDtoById(request.DbContextItemId, cancellationToken);
+      if (dbContextItem == null) return "// DbContext item not found";
             
       StringBuilder sbMain = new StringBuilder();
       StringBuilder sbUse = new StringBuilder();
@@ -31,16 +32,19 @@ namespace Weavers.Core.Handlers.Templates {
       sbMain.AppendLine($"    protected {dbContextItem.Name}(DbContextOptions options) : base(options) {{}}");
 
       foreach (var importId in importItemIds) { 
-        var import = await _context.GetItemDtoById(importId, cancellationToken);      
+        var import = await _context.GetItemDtoById(importId, cancellationToken);   
+        if (import == null) continue;
         var classId = int.TryParse(import.Properties.Where(p => p.Name == Cx.ItRegisterObject).FirstOrDefault()?.Value, out var result) ? result : 0;
         if (classId > 0) { 
           var classItem = await _context.GetItemDtoById(classId, cancellationToken);
+          if (classItem == null) continue; 
           var classNs = classItem.Properties.Where(p => p.Name == Cx.ItNamespace).FirstOrDefault()?.Value;
           if (!string.IsNullOrEmpty(classNs) && !sbUses.Contains(classNs)) {
             sbUse.AppendLine($"using {classNs};");
             sbUses.Add(classNs);
-          }      
+          }
           sbMain.AppendLine($"      public DbSet<{classItem.Name}> {classItem.Name}Set => Set<{classItem.Name}>();");
+                    
         }
       }
       sbMain.AppendLine("\r\n"+

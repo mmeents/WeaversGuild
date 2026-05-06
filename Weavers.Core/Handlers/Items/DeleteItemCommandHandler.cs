@@ -27,10 +27,10 @@ namespace Weavers.Core.Handlers.Items {
         ?? throw new KeyNotFoundException("Item not found");
 
       var propItemDto = await _context.GetItemDtoById(request.Id, cancellationToken);
-
+      if (propItemDto == null) return false;
 
       if (propItemDto.ItemTypeId == (int)WeItemType.EntityClassModel) {
-        var libraryItem = await _mediator.Send(new GetLibDiModelCommand(item.Id), cancellationToken);
+        var libraryItem = await _mediator.Send(new GetLibraryRelativeCommand(item.Id), cancellationToken);
         if (libraryItem != null) {
           await _mediator.Send(new AddRemoveEntityToDbContextCommand(item.Id, false), cancellationToken);
         }

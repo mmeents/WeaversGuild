@@ -11,10 +11,10 @@ using Weavers.Core.Enums;
 
 namespace Weavers.Core.Handlers.DepItems {
 
-  public record GetLibDiModelCommand(int ClassItemId) : IRequest<ItemDto?>;
-  public class GetLibDiModelCommandHandler(FabricDbContext context) : IRequestHandler<GetLibDiModelCommand, ItemDto?> {
+  public record GetLibraryRelativeCommand(int ClassItemId) : IRequest<ItemDto?>;
+  public class GetLibLibraryRelativeCommandHandler(FabricDbContext context) : IRequestHandler<GetLibraryRelativeCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;    
-    public async Task<ItemDto?> Handle(GetLibDiModelCommand request, CancellationToken cancellationToken) {     
+    public async Task<ItemDto?> Handle(GetLibraryRelativeCommand request, CancellationToken cancellationToken) {     
       var item = await _context.GetItemDtoById(request.ClassItemId);
       var visited = new HashSet<int>();
       while (item != null) {

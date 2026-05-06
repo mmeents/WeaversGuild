@@ -29,6 +29,7 @@ namespace Weavers.Core.Handlers.DepItems {
       if ( DbContextRel == null && request.HasDbContext) {
 
         var libItem = await _context.GetItemDtoById(libParentRel.ItemId, cancellationToken);
+        if ( libItem == null ) return false;
         var libItemname = libItem?.Name.UrlSafe() ?? "NeedsLib";
         var dbContextName = $"{libItemname}DbContext";
 
@@ -41,12 +42,14 @@ namespace Weavers.Core.Handlers.DepItems {
         
         string newNamespace = diItem.ResolveParentNamespace(dbContextItem.Name);
         await UpdateNamespacePathIfNeededAsync(dbContextItem, newNamespace);  
-        
+
+        await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, request.HasDbContext);
+        await _context.MarkItemUpdated(libItem!.Id,cancellationToken);
 
       } else if ( !request.HasDbContext && DbContextRel != null && DbContextRel.RelatedItemId != null) {
 
-        await _mediator.Send(new DeleteItemCommand(DbContextRel.RelatedItemId.Value), cancellationToken);       
-
+        await _mediator.Send(new DeleteItemCommand(DbContextRel.RelatedItemId.Value), cancellationToken);
+        await _context.MarkItemUpdated(diItem!.Id, cancellationToken);
       }
 
       return true;
@@ -75,20 +78,23 @@ namespace Weavers.Core.Handlers.DepItems {
         fullPath = basePath;
       }
 
-      folderProp.Value = fullPath;
-      var command = new AddUpdateItemPropertyCommand(
-        folderProp.Id,
-        folderProp.ItemId,
-        folderProp.Name,
-        folderProp.Value,
-        folderProp.ValueDataTypeId,
-        folderProp.EditorTypeId,
-        folderProp.ReferenceItemTypeId
-       );
-      var updated = await _mediator.Send(command);
-      
-      if (updated != null) item.AddOrUpdateProperty(updated);
-      
+      if (folderProp != null && string.Compare(folderProp.Value, fullPath, true) == 0) {
+
+        folderProp.Value = fullPath;
+        var command = new AddUpdateItemPropertyCommand(
+          folderProp.Id,
+          folderProp.ItemId,
+          folderProp.Name,
+          folderProp.Value,
+          folderProp.ValueDataTypeId,
+          folderProp.EditorTypeId,
+          folderProp.ReferenceItemTypeId
+         );
+        var updated = await _mediator.Send(command);
+        await _context.MarkItemUpdated(item.Id);
+
+        if (updated != null) item.AddOrUpdateProperty(updated);
+      }
 
     }
 
@@ -114,7 +120,8 @@ namespace Weavers.Core.Handlers.DepItems {
         namespaceProp.EditorTypeId,
         namespaceProp.ReferenceItemTypeId
         );
-        var updated = await _mediator.Send(command);        
+        var updated = await _mediator.Send(command);
+        await _context.MarkItemUpdated(item.Id);
       }
     }
 
@@ -122,5 +129,8 @@ namespace Weavers.Core.Handlers.DepItems {
 
 
 
+
+
+    
   }
 }

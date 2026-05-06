@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Weavers.Core.Entities;
+﻿using Weavers.Core.Entities;
 
 namespace Weavers.Core.Models {
   public class ItemDto {
@@ -14,6 +9,7 @@ namespace Weavers.Core.Models {
     public string Description { get; set; } = string.Empty;
     public string Data { get; set; } = "{}";
     public DateTime Established { get; set; }
+    public DateTime? WrittenAt { get; set; } = null;
     public bool IsActive { get; set; }
 
     public ItemTypeDto ItemType { get; set; } = null!;
@@ -34,6 +30,7 @@ namespace Weavers.Core.Models {
         Description = item.Description,
         Data = item.Data,
         Established = item.Established,
+        WrittenAt = item.WrittenAt,
         IsActive = item.IsActive
       };
 

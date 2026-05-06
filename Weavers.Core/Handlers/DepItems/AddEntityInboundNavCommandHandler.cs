@@ -31,15 +31,21 @@ namespace Weavers.Core.Handlers.DepItems {
       var targetEntityItem = await _context.GetItemDtoById(request.TargetEntityItemId, cancellationToken);  // entity class
       if (targetEntityItem == null || targetEntityItem.Relations == null) return false;
 
-      var parentItemId = targetEntityItem?.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemId; // look up parent.     
+      var parentItemId = targetEntityItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemId; // look up parent.     
+      if (parentItemId == null) return false;
 
       var fromEntityItem = await _context.GetItemDtoById(request.FromEntityItemId, cancellationToken);  // from entity class.      
-      var entityNameProp = fromEntityItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName);
-      var entityTableDisplayName = entityNameProp != null ? entityNameProp.Value : fromEntityItem?.Name ?? "UnknownEntity";      
+      if (fromEntityItem == null) return false;
+
+      var entityNameProp = fromEntityItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName);
+      var entityTableDisplayName = entityNameProp != null ? entityNameProp.Value : fromEntityItem.Name ?? "UnknownEntity";  
+      if (entityTableDisplayName == null) return false;
 
       var propertyItem = await _context.GetItemDtoById(request.AddPropertyItemId, cancellationToken);   // property added  
+      if (propertyItem == null) return false; 
+
       var originalNavItem = await GetEntityNavForProperty(propertyItem, cancellationToken);             // propertys navigation item.
-      if (targetEntityItem == null || fromEntityItem == null || propertyItem == null || parentItemId == null|| originalNavItem == null) { return false; }
+      if (originalNavItem == null)  return false; 
 
 
       var origalNavTypeProp = originalNavItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
@@ -56,6 +62,7 @@ namespace Weavers.Core.Handlers.DepItems {
         if (inboundEntityNavItem == null) {
           var cmd1 = new CreateRelatedItemCommand(targetEntityItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.EntityInboundNavigationModel, propertyItem.Name, "", "{}");
           inboundEntityNavItem = await _mediator.Send(cmd1, cancellationToken);
+          await _context.MarkItemUpdated(targetEntityItem.Id, cancellationToken);
         } 
         
         var dirty = false;
@@ -130,6 +137,7 @@ namespace Weavers.Core.Handlers.DepItems {
               invPropEntity.Value = inverseName;
               _context.ItemProperties.Update(invPropEntity);
               dirty = true;
+              await _context.MarkItemUpdated(inboundEntityNavItem.Id, cancellationToken);
             }
           }
 
@@ -138,7 +146,7 @@ namespace Weavers.Core.Handlers.DepItems {
         }
 
         if (dirty) {
-          await _context.SaveChangesAsync(cancellationToken);
+          await _context.SaveChangesAsync(cancellationToken);          
         }
 
       } else if (inboundEntityNavItem != null && !request.IsAdd) {  // its a remove, we need to remove both the inbound nav and its config if exists
@@ -169,13 +177,15 @@ namespace Weavers.Core.Handlers.DepItems {
       return null;
     }
 
-    private async Task<ItemDto> GetCachedItemById(int ItemId, CancellationToken cancellationToken) {
+    private async Task<ItemDto?> GetCachedItemById(int ItemId, CancellationToken cancellationToken) {
       if (_cache.Keys.Contains(ItemId)) {
         var item = _cache[ItemId];
         return item;
       } else {
         var item = await _context.GetItemDtoById(ItemId, cancellationToken);
-        _cache[item.Id] = item;
+        if (item != null) {
+          _cache[item.Id] = item;
+        }
         return item;
       }
     }

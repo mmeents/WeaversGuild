@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using MediatR;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Weavers.Core.Entities;
 using Weavers.Core.Handlers.Templates;
 
 namespace Weavers.Core.Service {
 
   public interface IAppItemTemplateService {
     Task<string?> GetSolutionTemplateCommand(int solutionItemId);
+    Task<string?> GetLibraryTemplate(int LibraryItemId);
     Task<string?> GetDependencyInjectionTemplate(int classItemId);
     Task<string?> GetDbContextTemplate(int dbContextItemId);
     Task<string?> GetClassTemplate(int classItemId);
@@ -24,6 +26,12 @@ namespace Weavers.Core.Service {
     public async Task<string?> GetSolutionTemplateCommand(int solutionItemId) { 
       var mediator = GetMediator();
       var result = await mediator.Send(new  GetSolutionTemplateCommand(solutionItemId));
+      return result;
+    }
+
+    public async Task<string?> GetLibraryTemplate(int LibraryItemId) { 
+      var mediator = GetMediator();
+      var result = await mediator.Send(new GetLibraryTemplateCommand(LibraryItemId));
       return result;
     }
 

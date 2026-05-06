@@ -15,7 +15,8 @@ namespace Weavers.Core.Handlers.Items {
      string Name,
      string Description,
      string Data,
-     bool IsActive
+     bool IsActive,
+     DateTime? WrittenAt
    ) : IRequest<ItemDto?>;
 
 
@@ -43,6 +44,8 @@ namespace Weavers.Core.Handlers.Items {
       item.Description = request.Description;
       item.Data = request.Data;
       item.ItemTypeId = request.ItemTypeId;
+      item.Established = DateTime.UtcNow;  //updates to current time on update.
+      item.WrittenAt = request.WrittenAt;  //carries last time written to disk.
       item.IsActive = request.IsActive;
 
       _context.Items.Update(item);
@@ -50,9 +53,33 @@ namespace Weavers.Core.Handlers.Items {
 
       var itemDto = await _context.GetItemDtoById(item.Id, cancellationToken);
 
+      if (itemDto == null) { throw new Exception("Reload after save failed."); }
+
+      if (itemDto.ItemTypeId == (int)WeItemType.LibraryModel) {
+        
+        var isTestLibrary = itemDto.Properties.FirstOrDefault(p => p.Name == Cx.ItIsTestLibrary)?.Value.AsBoolean() ?? false;
+        if (isTestLibrary) {
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, false);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, true);
+        } else {
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, true);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, false);
+        }        
+      }
+            
+      if (itemDto.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
+        var libItem = await _mediator.Send(new GetLibraryRelativeCommand(itemDto.Id), cancellationToken);
+        if (libItem != null) {
+          var hasDbContext = itemDto.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
+          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, hasDbContext);
+          var hasMediatR = itemDto.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
+          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.Mediatr, hasMediatR);
+        }
+      }
+
       if (itemDto.ItemTypeId == (int)WeItemType.EntityClassModel && nameWas != itemDto.Name) {
         // EntityClassModel has dependent EntityConfigurationModel and DbContextEntityImportModel names that also need to change.
-        var libraryItem = await _mediator.Send(new GetLibDiModelCommand(itemDto.Id), cancellationToken);
+        var libraryItem = await _mediator.Send(new GetLibraryRelativeCommand(itemDto.Id), cancellationToken);
         if (libraryItem != null) { 
           var dbContextItem = await _context.ResolveDbContextFromLib(libraryItem, cancellationToken);
           if (dbContextItem != null) {
@@ -61,6 +88,7 @@ namespace Weavers.Core.Handlers.Items {
              var entity = await _context.Items.FindAsync(dbContextEntityItem.Id);
               if (entity != null) {
                 entity.Name = item.Name;
+                entity.Established = DateTime.UtcNow;
                 _context.Items.Update(entity);
                 await _context.SaveChangesAsync(cancellationToken);
               }
@@ -105,6 +133,7 @@ namespace Weavers.Core.Handlers.Items {
         var entityConfig = await _context.Items.FindAsync(theId);
         if (entityConfig != null) {
           entityConfig.Name = newName;
+          entityConfig.Established = DateTime.UtcNow;
           _context.Items.Update(entityConfig);
           await _context.SaveChangesAsync(cancellationToken);
         }

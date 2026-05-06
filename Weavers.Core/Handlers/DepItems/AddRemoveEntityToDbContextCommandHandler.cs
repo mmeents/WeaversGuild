@@ -24,7 +24,7 @@ namespace Weavers.Core.Handlers.DepItems {
 
     public async Task<bool> Handle(AddRemoveEntityToDbContextCommand request, CancellationToken cancellationToken) {
 
-      var LibraryItem = await _mediator.Send(new GetLibDiModelCommand(request.EntityItemId), cancellationToken);
+      var LibraryItem = await _mediator.Send(new GetLibraryRelativeCommand(request.EntityItemId), cancellationToken);
       if (LibraryItem == null) { return false; }
       var dbContextItem = await _context.ResolveDbContextFromLib(LibraryItem, cancellationToken);
       if (dbContextItem == null) { return false; }

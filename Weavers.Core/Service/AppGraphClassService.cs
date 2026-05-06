@@ -44,7 +44,7 @@ namespace Weavers.Core.Service {
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(libraryName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
-      var name = libraryName == null ? $"File {nextRank}" : libraryName;
+      var name = libraryName == null ? $"Library{nextRank}" : libraryName;
       var newSubItem = await mediator.Send(
         new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.LibraryModel, name, "", "{}"));
       if (newSubItem == null) {

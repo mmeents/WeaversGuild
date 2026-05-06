@@ -27,7 +27,7 @@ namespace Weavers.Core.Handlers.DepItems {
 
     public async Task<bool> Handle(AddRemoveClassToLibDiCommand request, CancellationToken cancellationToken) {
       
-      var LibraryItem = await _mediator.Send(new GetLibDiModelCommand(request.ClassItemId), cancellationToken);
+      var LibraryItem = await _mediator.Send(new GetLibraryRelativeCommand(request.ClassItemId), cancellationToken);
       if (LibraryItem == null) {
         return false;
       }

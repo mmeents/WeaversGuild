@@ -89,6 +89,7 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
+      cbShowPkgInLib = new CheckBox();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -168,7 +169,7 @@
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 440);
+      cmsTreeMenus.Size = new Size(209, 418);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -194,7 +195,7 @@
       // 
       miAddSubProject.Name = "miAddSubProject";
       miAddSubProject.Size = new Size(208, 22);
-      miAddSubProject.Text = "Add Project";
+      miAddSubProject.Text = "Add Folder";
       miAddSubProject.Click += miAddSubProject_Click;
       // 
       // miAddSolution
@@ -369,6 +370,7 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(cbShowPkgInLib);
       tpSettings.Controls.Add(btnShowErrors);
       tpSettings.Controls.Add(btnCancelAppDefaultF);
       tpSettings.Controls.Add(btnSaveDefaultFolder);
@@ -386,7 +388,7 @@
       // 
       // btnShowErrors
       // 
-      btnShowErrors.Location = new Point(25, 53);
+      btnShowErrors.Location = new Point(31, 138);
       btnShowErrors.Name = "btnShowErrors";
       btnShowErrors.Size = new Size(80, 23);
       btnShowErrors.TabIndex = 5;
@@ -720,7 +722,7 @@
       lbType.AutoSize = true;
       lbType.Location = new Point(65, 197);
       lbType.Name = "lbType";
-      lbType.Size = new Size(31, 15);
+      lbType.Size = new Size(32, 15);
       lbType.TabIndex = 29;
       lbType.Text = "Type";
       // 
@@ -802,6 +804,17 @@
       splitter1.Size = new Size(4, 632);
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
+      // 
+      // cbShowPkgInLib
+      // 
+      cbShowPkgInLib.AutoSize = true;
+      cbShowPkgInLib.Location = new Point(22, 58);
+      cbShowPkgInLib.Name = "cbShowPkgInLib";
+      cbShowPkgInLib.Size = new Size(182, 19);
+      cbShowPkgInLib.TabIndex = 6;
+      cbShowPkgInLib.Text = "Show Library Packages in tree";
+      cbShowPkgInLib.UseVisualStyleBackColor = true;
+      cbShowPkgInLib.CheckedChanged += cbShowPkgInLib_CheckedChanged;
       // 
       // Form1
       // 
@@ -909,5 +922,6 @@
     private FastColoredTextBoxNS.FastColoredTextBox edItemDesc;
     private ToolStripMenuItem miAddEntity;
     private ToolStripMenuItem miAddEntityProperty;
+    private CheckBox cbShowPkgInLib;
   }
 }

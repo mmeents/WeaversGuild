@@ -217,13 +217,18 @@ namespace TheLoomApp {
       if (itemId == null) return null;
 
       if (toLoad.Contains(itemId.Value)) {
-        var bItem = await _appDataService.GetItemById(itemId.Value);
+        var bItem = await _appDataService.GetItemById(itemId.Value);  // get new item
         if (bItem != null) {
           ItemNode newNode = relation == null ? bItem.ToItemNode() : relation.ToItemNode(bItem);
           _itemCache[bItem.Id] = newNode;
-          parent.Nodes.Add(newNode);
+
+          if (!_showPkgInLib && bItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
+            return null;  // skip adding to tree.
+          }
+          parent.Nodes.Add(newNode);   // add the node to the tree
+
           if (bItem.Relations.Count() > 0) {
-            foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
+            foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {              
               var relatedItem = await AddNodeById(toLoad, newNode, rel.RelatedItemId, rel);
             }
           }
@@ -231,14 +236,19 @@ namespace TheLoomApp {
         }
       } else {
         if (relation == null || !relation.RelatedItemId.HasValue) { return null; }
-        var aItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);
-        if (aItem != null) {
-          ItemNode projectsChildNode = relation.ToItemNode(aItem);
+        var aItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);  // get new item
+        if (aItem != null) {          
+          ItemNode projectsChildNode = relation.ToItemNode(aItem);  // make the node
           _itemCache[aItem.Id] = projectsChildNode;
-          parent.Nodes.Add(projectsChildNode);
+
+          if (!_showPkgInLib && aItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
+            return null;  // skip adding to tree.
+          }
+          parent.Nodes.Add(projectsChildNode);  // add the node to the tree
           if (aItem.Relations.Count() > 0) {
             projectsChildNode.Nodes.Add(new ItemNode());
           }
+
         }
       }
       return null;
@@ -260,6 +270,9 @@ namespace TheLoomApp {
             if (itemChild != null) {
               ItemNode itemsChildNode = rel.ToItemNode(itemChild);
               _itemCache[itemChild.Id] = itemsChildNode;
+              if (!_showPkgInLib && itemChild.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
+                continue;
+              }
               node.Nodes.Add(itemsChildNode);
               if (itemChild.Relations.Count() > 0) {
                 itemsChildNode.Nodes.Add(new ItemNode());
@@ -309,7 +322,7 @@ namespace TheLoomApp {
 
     }
 
-    private async void RefreshNode(int itemId) {        
+    private async void RefreshNode(int itemId) {
       if (_itemCache.ContainsKey(itemId)) {
         var node = _itemCache[itemId];
         tvKb.BeginUpdate();
@@ -321,12 +334,12 @@ namespace TheLoomApp {
             var newNode = node.Relation.ToItemNode(itemDto);
             node.Item = itemDto;
             _itemCache[itemId] = node;
-          }          
+          }
           node.Expand();
           node.ExpandAll();
         } finally {
           tvKb.EndUpdate();
-        }        
+        }
 
       }
     }
@@ -335,23 +348,19 @@ namespace TheLoomApp {
       if (_itemCache.ContainsKey(itemId)) {
         var node = _itemCache[itemId];
         tvKb.BeginUpdate();
-        try
-        {
+        try {
           node.Collapse();
 
           var itemDto = await _appDataService.GetItemById(itemId);
-          if (itemDto != null && node.Relation != null)
-          {
-              var newNode = node.Relation.ToItemNode(itemDto);
-              node.Item = itemDto;
-              _itemCache[itemId] = node;
+          if (itemDto != null && node.Relation != null) {
+            var newNode = node.Relation.ToItemNode(itemDto);
+            node.Item = itemDto;
+            _itemCache[itemId] = node;
 
           }
           node.Expand();
           node.ExpandAll();
-        }
-        finally
-        {
+        } finally {
           tvKb.EndUpdate();
         }
 
@@ -361,12 +370,17 @@ namespace TheLoomApp {
       }
     }
 
-        #endregion
+    private bool _showPkgInLib = false;
+    private void cbShowPkgInLib_CheckedChanged(object sender, EventArgs e) {
+      _showPkgInLib = cbShowPkgInLib.Checked;
+      
+    }
+    #endregion
 
-        // ----------------------- Tree View Selection and Property Editing -------------------------//
-        #region Tree View Selection tracking
+    // ----------------------- Tree View Selection and Property Editing -------------------------//
+    #region Tree View Selection tracking
 
-        private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
+    private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
       if (e.Node is not ItemNode) {
         _selectedNode = null;
         return;
@@ -519,7 +533,7 @@ namespace TheLoomApp {
 
     // ---------------post event ------------------------------------------------//
     private async void ProjectTab_OnPostEvent() {
-      try { 
+      try {
         if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
           _itemPropertiesTab.ItemProps = _selectedNode.Item.Properties.ToList();
           _itemPropertiesTab.SetEditingMode(false);
@@ -581,7 +595,7 @@ namespace TheLoomApp {
               }
             }
 
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel || _selectedNode.Item.ItemTypeId ==(int)WeItemType.EntityNavigationModel) {
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel || _selectedNode.Item.ItemTypeId == (int)WeItemType.EntityNavigationModel) {
             ItemNode? parent = _selectedNode.Parent as ItemNode;
             if (parent != null) {
               var prevParent = _selectedNode;
@@ -589,8 +603,8 @@ namespace TheLoomApp {
                 prevParent = parent;
                 parent = parent.Parent as ItemNode;
               }
-              if (parent != null) {            
-                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);                
+              if (parent != null) {
+                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);
               }
             }
           }
@@ -639,7 +653,7 @@ namespace TheLoomApp {
             string newNamespace = parentNode.Item.ResolveParentNamespace(_selectedNode.Item.Name); // library case previous no namespace.
             await UpdateNamespacePathIfNeededAsync(_selectedNode.Item, newNamespace);            //  name is the library though.
           }
-          
+
           if (selectedItemTypeId == (int)WeItemType.DependencyInjectionModel) {
             var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
             var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
@@ -657,16 +671,16 @@ namespace TheLoomApp {
             }
             // ugly, starts at nav update walks up to prop then class. process property needs to land on a property.            
             if (parentNode != null) {
-              await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);            
+              await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);
             }
           }
           await Task.Delay(100);
           if (parentNode != null && parentNode.Item != null) {
             this.Invoke(() => RefreshSelectedNode(parentNode.Item.Id));
           }
-        }        
+        }
 
-        
+
       }
     }
 
@@ -1045,6 +1059,13 @@ namespace TheLoomApp {
                 await _appDataService.UpdateItemAsync(item);
               }
               break;
+            case WeItemType.LibraryModel:
+              var libCode = await _itemTemplateService.GetLibraryTemplate(item.Id);
+              if (libCode != null) {
+                item.Description = libCode;
+                await _appDataService.UpdateItemAsync(item);
+              }
+              break;
             case WeItemType.DependencyInjectionModel:
               var diCode = await _itemTemplateService.GetDependencyInjectionTemplate(item.Id);
               if (diCode != null) {
@@ -1079,7 +1100,7 @@ namespace TheLoomApp {
                 item.Description = entityConfigCode;
                 await _appDataService.UpdateItemAsync(item);
               }
-               break;
+              break;
             default:
               break;
           }

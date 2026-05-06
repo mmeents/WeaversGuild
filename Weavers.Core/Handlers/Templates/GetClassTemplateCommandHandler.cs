@@ -55,15 +55,17 @@ namespace Weavers.Core.Handlers.Templates {
       var propBaseType = item.Properties.FirstOrDefault(p => p.Name == Cx.ItBaseType);
       if (propBaseType != null && propBaseType.Value != null) { 
         if (int.TryParse( propBaseType.Value, out int baseItemId)){ 
-          var baseClass = await _context.GetItemDtoById(baseItemId);           
-          var propBcGenIntf = baseClass.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
-          if (propBcGenIntf != null && propBcGenIntf.Value != null) { 
-            useIntf = propBcGenIntf.Value.AsBoolean();
-          }
-          if (useIntf) { 
-            baseType = "I"+baseClass.Name;
-          } else { 
-            baseType = baseClass.Name;
+          var baseClass = await _context.GetItemDtoById(baseItemId);
+          if (baseClass != null) {
+            var propBcGenIntf = baseClass.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
+            if (propBcGenIntf != null && propBcGenIntf.Value != null) {
+              useIntf = propBcGenIntf.Value.AsBoolean();
+            }
+            if (useIntf) {
+              baseType = "I" + baseClass.Name;
+            } else {
+              baseType = baseClass.Name;
+            }
           }
         }
       }

@@ -35,7 +35,7 @@ namespace Weavers.Core.Extensions {
       return result ?? throw new Exception($"Relation with Id {relationId} not found");
     }
 
-    public static async Task<ItemDto> GetItemDtoById(this FabricDbContext context, int Id, CancellationToken cancellationToken = default) {
+    public static async Task<ItemDto?> GetItemDtoById(this FabricDbContext context, int Id, CancellationToken cancellationToken = default) {
       var result = await context.Items
         .AsNoTracking()
         .Where(i => i.Id == Id)
@@ -47,6 +47,7 @@ namespace Weavers.Core.Extensions {
           Description = i.Description,
           Data = i.Data,
           Established = i.Established,
+          WrittenAt = i.WrittenAt,
           IsActive = i.IsActive,
           Relations = i.Relations.Select(r => new RelationDto {
             Id = r.Id,
@@ -110,7 +111,7 @@ namespace Weavers.Core.Extensions {
         }
       }
 
-      return result ?? throw new Exception($"Item with Id {Id} not found");
+      return result;
     }
 
     public static async Task<bool> SyncDefaultsByModelIdAsync(this FabricDbContext context, int itemlId, int itemTypeId, CancellationToken cancellationToken = default) {
@@ -145,121 +146,12 @@ namespace Weavers.Core.Extensions {
       return updated;
     }
 
-    public static ItemDto Clone(this ItemDto item) {
-      return new ItemDto {
-        Id = item.Id,
-        ItemTypeId = item.ItemTypeId,
-        ItemTypeName = item.ItemTypeName,
-        Name = item.Name,
-        Description = item.Description,
-        Data = item.Data,
-        Established = item.Established,
-        IsActive = item.IsActive,
-        Relations = item.Relations.Select(r => new RelationDto {
-          Id = r.Id,
-          ItemId = r.ItemId,
-          ItemName = r.ItemName ?? string.Empty,
-          RelatedItemId = r.RelatedItemId,
-          RelatedItemName = r.RelatedItemName ?? string.Empty,
-          RelatedItemTypeId = r.RelatedItemTypeId,
-          RelationTypeId = r.RelationTypeId,
-          RelationTypeName = r.RelationTypeName ?? string.Empty,
-          Rank = r.Rank,
-          Established = r.Established,
-          RelatedItemHasChildren = r.RelatedItemHasChildren
-        }).ToList(),
-        IncomingRelations = item.IncomingRelations.Select(r => new RelationDto {
-          Id = r.Id,
-          ItemId = r.ItemId,
-          ItemName = r.ItemName ?? string.Empty,
-          RelatedItemId = r.RelatedItemId,
-          RelatedItemName = r.RelatedItemName ?? string.Empty,
-          RelatedItemTypeId = r.RelatedItemTypeId,
-          RelationTypeId = r.RelationTypeId,
-          RelationTypeName = r.RelationTypeName ?? string.Empty,
-          Rank = r.Rank,
-          Established = r.Established,
-          RelatedItemHasChildren = r.RelatedItemHasChildren
-        }).ToList(),
-        Properties = item.Properties.Select(p => new ItemPropertyDto {
-          Id = p.Id,
-          ItemId = p.ItemId,
-          Name = p.Name,
-          Value = p.Value,
-          ValueDataTypeId = p.ValueDataTypeId,
-          ReferenceItemTypeId = p.ReferenceItemTypeId,
-          EditorTypeId = p.EditorTypeId,
-          IsRequired = p.IsRequired,
-          IsReadOnly = p.IsReadOnly,
-          IsVisible = p.IsVisible,
-          ValueType = (p.ValueType == null) 
-            ? new DataTypeDto() { 
-              Id = (int)WeDataType.None, 
-              Name = WeDataType.None.ToString()} 
-            : new DataTypeDto {
-              Id = p.ValueType.Id,
-              Name = p.ValueType.Name
-            },
-          Editor = (p.Editor == null) 
-            ? new EditorTypeDto{ Id = (int)WeEditorType.None, Name = WeEditorType.None.ToString() } 
-            : new EditorTypeDto{ Id = p.Editor.Id, Name = p.Editor.Name, Description = p.Editor.Description,
-              IsVisible = p.Editor.IsVisible, IsReadOnly = p.Editor.IsReadOnly, Rank=p.Editor.Rank},
-          ReferenceItemType = (p.ReferenceItemType == null) 
-            ? null : new ItemTypeDto { Id = p.ReferenceItemType.Id, Name = p.ReferenceItemType.Name }
-        }).ToList()
-      };
-    }
-
-    public static RelationDto Clone(this RelationDto relation) {
-      return new RelationDto {
-        Id = relation.Id,
-        ItemId = relation.ItemId,
-        ItemName = relation.ItemName ?? string.Empty,
-        RelatedItemId = relation.RelatedItemId,
-        RelatedItemName = relation.RelatedItemName ?? string.Empty,
-        RelatedItemTypeId = relation.RelatedItemTypeId,
-        RelationTypeId = relation.RelationTypeId,
-        RelationTypeName = relation.RelationTypeName ?? string.Empty,
-        Rank = relation.Rank,
-        Established = relation.Established,
-        RelatedItemHasChildren = relation.RelatedItemHasChildren
-      };
-    }
-
-    public static bool IsValidFolderParent(this ItemDto item) =>
-      item.ItemTypeId == (int)WeItemType.ProjectFolderModel ||
-      item.ItemTypeId == (int)WeItemType.RelativeFolderModel;
-
-    public static string ResolveParentFolderPath(this ItemDto? item, string defaultPath) {
-      if (item == null) return defaultPath;
-      string propertyKey = item.ItemTypeId.GetFolderPropertyName();                  
-      string Value = item.Properties.FirstOrDefault(p => p.Name == propertyKey)?.Value ?? defaultPath;
-      if (item.ItemTypeId == (int)WeItemType.LibraryModel 
-        || item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
-        Value = Path.GetDirectoryName(Value) ?? defaultPath; 
-      }
-      return Value;
-    }
-
-    public static string ResolveParentNamespace(this ItemDto? item, string defaultNamespace) {
-      if (item == null) return defaultNamespace;
-      var propKey = item.ItemTypeId.GetNamespacePropertyName();
-      return item.Properties.FirstOrDefault(p => p.Name == propKey)?.Value ?? defaultNamespace;
-    }
-
-    public static async Task<ItemDto?> ResolveDependencyInjectionFromLib(this FabricDbContext _context, ItemDto? LibraryItem, CancellationToken cancellationToken = default) {
-      if (LibraryItem == null) { return null; }
-      var diItemid = LibraryItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel).Select(r => r.RelatedItemId).FirstOrDefault();
-      if (diItemid == null) { return null; }
-      var DiItem = await _context.GetItemDtoById(diItemid.Value);
-      return DiItem;
-    }
-
     public static async Task<ItemDto?> ResolveDbContextFromLib(this FabricDbContext _context, ItemDto? LibraryItem, CancellationToken cancellationToken = default) {
       if (LibraryItem == null) { return null; }
       var diItemid = LibraryItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel).Select(r => r.RelatedItemId).FirstOrDefault();
       if (diItemid == null) { return null; }
       var DiItem = await _context.GetItemDtoById(diItemid.Value, cancellationToken);      
+      if (DiItem == null) { return null; }
       var dbContextItemid = DiItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextModel).Select(r => r.RelatedItemId).FirstOrDefault();
       if (dbContextItemid == null) { return null; }
       var dbContextItem = await _context.GetItemDtoById(dbContextItemid.Value, cancellationToken);
@@ -270,7 +162,7 @@ namespace Weavers.Core.Extensions {
       if (_context == null || dbContextItem == null || entityClassItem == null) { return null;}
       ItemDto? foundImportItem = null;
       var itemIds = dbContextItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextEntityImportModel)
-        .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(i => i.Value).ToList();
+        .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(i => i!.Value).ToList();
       foreach(var importId in itemIds) {
         var importItem = await _context.GetItemDtoById(importId, cancellationToken);
         if (importItem != null) {
@@ -284,7 +176,23 @@ namespace Weavers.Core.Extensions {
       return foundImportItem;
     }
 
+    public static async Task<bool> MarkItemUpdated(this FabricDbContext context, int itemId, CancellationToken cancellationToken = default) {
+      var item = await context.Items.Where(i => i.Id == itemId).FirstOrDefaultAsync(cancellationToken);
+      if (item == null) { return false; }
+      item.Established = DateTime.UtcNow;
+      context.Items.Update(item);
+      await context.SaveChangesAsync(cancellationToken);
+      return true;
+    }
 
+    public static async Task<bool> MarkItemWritten(this FabricDbContext context, int itemId, CancellationToken cancellationToken = default) {
+      var item = await context.Items.Where(i => i.Id == itemId).FirstOrDefaultAsync(cancellationToken);
+      if (item == null) { return false; }
+      item.WrittenAt = DateTime.UtcNow;
+      context.Items.Update(item);
+      await context.SaveChangesAsync(cancellationToken);
+      return true;
+    }
 
 
     // namespace and class below, no need to edit.

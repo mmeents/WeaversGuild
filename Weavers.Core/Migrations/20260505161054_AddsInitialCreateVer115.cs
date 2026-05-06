@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class AddsInitialCreateVersion113 : Migration
+    public partial class AddsInitialCreateVer115 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -339,6 +339,7 @@ namespace Weavers.Core.Migrations
                     { 5, "Entity Nav Types", 10, "", true, "NavigationTypes", null, 1 },
                     { 10, "Owner Type of SQL Types", 10, "", true, "SqlTypes", null, 1 },
                     { 21, "sql float type", -1, "", true, "SqlFloatType", 21, 0 },
+                    { 31, "Test Method Attributes", 10, "", true, "TestMethodTypes", null, 1 },
                     { 40, "Owner Type of C# Lifetimes", 10, "", true, "CSharpLifetimes", null, 1 },
                     { 50, "Owner Type of C# Types", 10, "", true, "CSharpTypes", null, 1 },
                     { 90, "Accessibility Lookups", 10, "", true, "AccessibilityLookups", null, 1 },
@@ -351,7 +352,7 @@ namespace Weavers.Core.Migrations
                 values: new object[,]
                 {
                     { 1, "", 13, true, 100, "RootFolder", 1, null, 6 },
-                    { 2, "", 4, true, 100, "RepositoryUrl", 2, null, 6 }
+                    { 2, "", 4, true, 100, "RepoUrl", 2, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -377,6 +378,13 @@ namespace Weavers.Core.Migrations
                     { 28, "sql time type", 7, "", true, "SqlTimeType", 10, 13 },
                     { 29, "sql datetimeoffset type", 4, "", true, "SqlDateTimeOffsetType", 10, 14 },
                     { 30, "sql binary type", -1, "", true, "SqlBinaryType", 10, 15 },
+                    { 32, "Not A Test", 2, "", true, "NoTestAttribute", 31, 1 },
+                    { 33, "Ignore Test", 2, "", true, "TestIgnoreAttribute", 31, 2 },
+                    { 34, "TestMethod", 2, "", true, "TestMethodAttribute", 31, 3 },
+                    { 35, "TestInitialize", 2, "", true, "TestInitialize", 31, 4 },
+                    { 36, "TestCleanup", 2, "", true, "TestCleanup", 31, 5 },
+                    { 37, "TestClassInitialize", 2, "", true, "TestClassInitialize", 31, 6 },
+                    { 38, "TestClassCleanup", 2, "", true, "TestClassCleanup", 31, 7 },
                     { 41, "C# Singleton Lifetime", -1, "", true, "CSLifetimeSingleton", 40, 1 },
                     { 42, "C# Scoped Lifetime", -1, "", true, "CSLifetimeScoped", 40, 2 },
                     { 43, "C# Transient Lifetime", -1, "", true, "CSLifetimeTransient", 40, 3 },
@@ -431,12 +439,18 @@ namespace Weavers.Core.Migrations
                     { 4, "", 5, true, 150, "FilePath", 1, null, 6 },
                     { 5, ".md", 4, true, 150, "FileExtension", 2, null, 6 },
                     { 6, "", 5, true, 160, "FilePath", 1, null, 6 },
-                    { 7, ".sln", 4, true, 160, "FileExtension", 2, null, 6 },
-                    { 8, "", 4, true, 160, "SolutionGuid", 3, null, 6 },
+                    { 7, ".sln", 1, true, 160, "FileExtension", 2, null, 6 },
+                    { 8, "", 4, true, 160, "SlnGuid", 3, null, 6 },
                     { 11, "", 4, true, 200, "FilePath", 1, null, 6 },
-                    { 12, ".csproj", 4, true, 200, "FileExtension", 2, null, 6 },
-                    { 13, "", 4, true, 200, "NamespaceRoot", 3, null, 6 },
-                    { 14, "0", 2, true, 200, "IsTestLibrary", 4, null, 1 }
+                    { 12, "", 4, true, 200, "NamespaceRoot", 2, null, 6 },
+                    { 13, "net9.0", 4, true, 200, "TargetFramework", 3, null, 6 },
+                    { 14, "1", 2, true, 200, "IsNullable", 4, null, 1 },
+                    { 15, "1", 2, true, 200, "ImplicitUsing", 5, null, 1 },
+                    { 16, "1.0.0", 4, true, 200, "Version", 6, null, 6 },
+                    { 17, "1.0.0.0", 4, true, 200, "AssemblyVersion", 7, null, 6 },
+                    { 18, "1.0.0.0", 4, true, 200, "FileVersion", 8, null, 6 },
+                    { 19, "0", 2, true, 200, "IsTestLibrary", 9, null, 1 },
+                    { 20, ".csproj", 1, true, 200, "FileExtension", 10, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -445,7 +459,8 @@ namespace Weavers.Core.Migrations
                 values: new object[,]
                 {
                     { 162, "Solution Import", 4, "pi pi-sitemap", true, "SolutionImportModel", 160, 162 },
-                    { 210, "Library Import", 4, "", true, "LibraryImportModel", 200, 1 },
+                    { 210, "Package Ref", 4, "", true, "LibPackageRefModel", 200, 1 },
+                    { 220, "Library Ref", 4, "", true, "LibLibraryRefModel", 200, 2 },
                     { 300, "Dependency Injection", 4, "pi pi-cog", true, "DependencyInjectionModel", 200, 1 },
                     { 400, "Namespace", 4, "pi pi-globe", true, "NamespaceModel", 200, 400 }
                 });
@@ -457,18 +472,18 @@ namespace Weavers.Core.Migrations
                 {
                     { 9, "", 10, true, 162, "RegisterObject", 2, 200, 3 },
                     { 10, "", 4, true, 162, "ProjectGuid", 3, null, 6 },
-                    { 15, "0", 2, true, 210, "IsPackageReference", 1, null, 1 },
-                    { 16, "", 4, true, 210, "PackageInclude", 2, null, 6 },
-                    { 17, "", 4, true, 210, "PackageVersion", 3, null, 6 },
-                    { 18, "0", 2, true, 210, "IsLibraryReference", 4, null, 1 },
-                    { 19, "", 10, true, 210, "LibraryInclude", 5, 200, 3 },
-                    { 20, "", 4, true, 300, "FilePath", 1, null, 6 },
-                    { 21, ".cs", 4, true, 300, "FileExtension", 2, null, 6 },
-                    { 22, "", 4, true, 300, "Namespace", 3, null, 6 },
-                    { 23, "", 2, true, 300, "HasDbContext", 4, null, 1 },
-                    { 24, "", 2, true, 300, "HasMediator", 6, null, 1 },
-                    { 32, "", 14, true, 400, "FilePath", 1, null, 6 },
-                    { 33, "", 4, true, 400, "Namespace", 2, null, 6 }
+                    { 21, "", 4, true, 210, "PackageInclude", 2, null, 6 },
+                    { 22, "", 4, true, 210, "PackageVersion", 3, null, 6 },
+                    { 23, "", 4, true, 210, "PrivateAssets", 4, null, 6 },
+                    { 24, "", 4, true, 210, "IncludeAssets", 5, null, 6 },
+                    { 25, "", 10, true, 220, "LibraryInclude", 1, 200, 3 },
+                    { 26, "", 4, true, 300, "FilePath", 1, null, 6 },
+                    { 27, ".cs", 1, true, 300, "FileExtension", 2, null, 6 },
+                    { 28, "", 4, true, 300, "Namespace", 3, null, 6 },
+                    { 29, "", 2, true, 300, "HasDbContext", 4, null, 1 },
+                    { 30, "", 2, true, 300, "HasMediator", 6, null, 1 },
+                    { 38, "", 14, true, 400, "FilePath", 1, null, 6 },
+                    { 39, "", 4, true, 400, "Namespace", 2, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -491,37 +506,38 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 25, "42", 10, true, 306, "LifetimeScope", 1, 40, 3 },
-                    { 26, "", 10, true, 306, "RegisterObject", 2, 500, 3 },
-                    { 27, "", 2, true, 306, "RegisterInterface", 3, null, 1 },
-                    { 28, "", 4, true, 310, "FilePath", 1, null, 6 },
-                    { 29, ".cs", 4, true, 310, "FileExtension", 2, null, 6 },
-                    { 30, "", 4, true, 310, "Namespace", 3, null, 6 },
-                    { 34, "91", 10, true, 440, "AccessModifier", 11, 90, 3 },
-                    { 35, ".cs", 4, true, 440, "FileExtension", 12, null, 6 },
-                    { 36, "", 4, true, 440, "FilePath", 13, null, 6 },
-                    { 37, "", 4, true, 440, "Namespace", 14, null, 6 },
-                    { 38, "", 10, true, 440, "BaseType", 15, 50, 3 },
-                    { 39, "", 10, true, 440, "Interface", 16, 500, 3 },
-                    { 40, "91", 10, true, 460, "AccessModifier", 11, 90, 3 },
-                    { 41, ".cs", 4, true, 460, "FileExtension", 12, null, 6 },
-                    { 42, "", 4, true, 460, "FilePath", 13, null, 6 },
-                    { 43, "", 4, true, 460, "Namespace", 14, null, 6 },
-                    { 44, "", 10, true, 460, "BaseType", 15, 50, 3 },
-                    { 45, "", 2, true, 460, "GenerateInterface", 16, null, 1 },
-                    { 46, "91", 10, true, 500, "AccessModifier", 11, 90, 3 },
-                    { 47, ".cs", 4, true, 500, "FileExtension", 12, null, 6 },
-                    { 48, "", 4, true, 500, "FilePath", 13, null, 6 },
-                    { 49, "", 4, true, 500, "Namespace", 14, null, 6 },
-                    { 50, "", 10, true, 500, "BaseType", 15, 500, 3 },
-                    { 51, "", 2, true, 500, "GenerateInterface", 16, null, 1 },
-                    { 52, "", 2, true, 500, "RegisterDI", 17, null, 1 },
-                    { 53, "0", 2, true, 500, "IsStatic", 18, null, 1 },
-                    { 72, ".cs", 4, true, 600, "FileExtension", 12, null, 6 },
-                    { 73, "", 4, true, 600, "FilePath", 13, null, 6 },
-                    { 74, "", 4, true, 600, "Namespace", 14, null, 6 },
-                    { 75, "dbo", 4, true, 600, "DbSchema", 15, null, 6 },
-                    { 76, "", 4, true, 600, "DbTableName", 16, null, 6 }
+                    { 31, "42", 10, true, 306, "LifetimeScope", 1, 40, 3 },
+                    { 32, "", 10, true, 306, "RegisterObject", 2, 500, 3 },
+                    { 33, "", 2, true, 306, "RegisterInterface", 3, null, 1 },
+                    { 34, "", 4, true, 310, "FilePath", 1, null, 6 },
+                    { 35, ".cs", 4, true, 310, "FileExtension", 2, null, 6 },
+                    { 36, "", 4, true, 310, "Namespace", 3, null, 6 },
+                    { 40, "91", 10, true, 440, "AccessModifier", 11, 90, 3 },
+                    { 41, ".cs", 4, true, 440, "FileExtension", 12, null, 6 },
+                    { 42, "", 4, true, 440, "FilePath", 13, null, 6 },
+                    { 43, "", 4, true, 440, "Namespace", 14, null, 6 },
+                    { 44, "", 10, true, 440, "BaseType", 15, 50, 3 },
+                    { 45, "", 10, true, 440, "Interface", 16, 500, 3 },
+                    { 46, "91", 10, true, 460, "AccessModifier", 11, 90, 3 },
+                    { 47, ".cs", 4, true, 460, "FileExtension", 12, null, 6 },
+                    { 48, "", 4, true, 460, "FilePath", 13, null, 6 },
+                    { 49, "", 4, true, 460, "Namespace", 14, null, 6 },
+                    { 50, "", 10, true, 460, "BaseType", 15, 50, 3 },
+                    { 51, "", 2, true, 460, "GenerateInterface", 16, null, 1 },
+                    { 52, "0", 2, true, 500, "TestClass", 11, null, 1 },
+                    { 53, "91", 10, true, 500, "AccessModifier", 11, 90, 3 },
+                    { 54, ".cs", 1, true, 500, "FileExtension", 12, null, 6 },
+                    { 55, "", 4, true, 500, "FilePath", 13, null, 6 },
+                    { 56, "", 4, true, 500, "Namespace", 14, null, 6 },
+                    { 57, "", 10, true, 500, "BaseType", 15, 500, 3 },
+                    { 58, "", 2, true, 500, "GenerateInterface", 16, null, 1 },
+                    { 59, "", 2, true, 500, "RegisterDI", 17, null, 1 },
+                    { 60, "0", 2, true, 500, "IsStatic", 18, null, 1 },
+                    { 80, ".cs", 1, true, 600, "FileExtension", 12, null, 6 },
+                    { 81, "", 4, true, 600, "FilePath", 13, null, 6 },
+                    { 82, "", 4, true, 600, "Namespace", 14, null, 6 },
+                    { 83, "dbo", 4, true, 600, "DbSchema", 15, null, 6 },
+                    { 84, "", 4, true, 600, "DbTableName", 16, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -549,37 +565,38 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 31, "", 10, true, 312, "RegisterObject", 2, 600, 3 },
-                    { 54, "", 10, true, 510, "ImportObject", 2, 500, 3 },
-                    { 55, "", 2, true, 510, "UseInterface", 3, null, 1 },
-                    { 56, "64", 10, true, 522, "PropertyType", 1, 50, 3 },
-                    { 57, "", 10, true, 522, "PropertyClass", 2, 500, 3 },
-                    { 58, "1", 2, true, 522, "IsNullable", 3, null, 1 },
-                    { 59, "1", 2, true, 522, "HasSetter", 4, null, 1 },
-                    { 60, "91", 10, true, 524, "AccessModifier", 11, 90, 3 },
-                    { 61, "64", 10, true, 524, "ReturnType", 12, 50, 3 },
-                    { 62, "", 10, true, 524, "ReturnClass", 13, 500, 3 },
-                    { 63, "0", 2, true, 524, "IsAsync", 14, null, 1 },
-                    { 64, "0", 2, true, 524, "IsVirtual", 15, null, 1 },
-                    { 65, "0", 2, true, 524, "IsStatic", 16, null, 1 },
-                    { 66, "0", 2, true, 524, "IsAbstract", 17, null, 1 },
-                    { 67, "0", 2, true, 524, "IsSealed", 18, null, 1 },
-                    { 77, "", 10, true, 605, "ImportObject", 2, 500, 3 },
-                    { 78, "", 2, true, 605, "UseInterface", 3, null, 1 },
-                    { 79, "64", 10, true, 610, "PropertyType", 1, 50, 3 },
-                    { 80, "0", 2, true, 610, "IsNullable", 3, null, 1 },
-                    { 81, "1", 2, true, 610, "HasSetter", 4, null, 1 },
-                    { 82, "0", 2, true, 610, "HasNavigation", 5, null, 1 },
-                    { 83, "0", 2, true, 610, "IsPrimaryKey", 6, null, 1 },
-                    { 84, "-1", 3, true, 610, "MaxSize", 7, null, 3 },
-                    { 88, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
-                    { 89, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
-                    { 90, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
-                    { 91, "1", 2, true, 616, "IsNullable", 5, null, 1 },
-                    { 92, "", 4, true, 616, "InverseNav", 6, null, 6 },
-                    { 93, ".cs", 4, true, 620, "FileExtension", 12, null, 6 },
-                    { 94, "", 4, true, 620, "FilePath", 13, null, 6 },
-                    { 95, "", 4, true, 620, "Namespace", 14, null, 6 }
+                    { 37, "", 10, true, 312, "RegisterObject", 2, 600, 3 },
+                    { 61, "", 10, true, 510, "ImportObject", 2, 500, 3 },
+                    { 62, "", 2, true, 510, "UseInterface", 3, null, 1 },
+                    { 63, "64", 10, true, 522, "PropertyType", 1, 50, 3 },
+                    { 64, "", 10, true, 522, "PropertyClass", 2, 500, 3 },
+                    { 65, "1", 2, true, 522, "IsNullable", 3, null, 1 },
+                    { 66, "1", 2, true, 522, "HasSetter", 4, null, 1 },
+                    { 67, "32", 10, true, 524, "TestMethod", 10, 31, 3 },
+                    { 68, "91", 10, true, 524, "AccessModifier", 11, 90, 3 },
+                    { 69, "64", 10, true, 524, "ReturnType", 12, 50, 3 },
+                    { 70, "", 10, true, 524, "ReturnClass", 13, 500, 3 },
+                    { 71, "0", 2, true, 524, "IsAsync", 14, null, 1 },
+                    { 72, "0", 2, true, 524, "IsVirtual", 15, null, 1 },
+                    { 73, "0", 2, true, 524, "IsStatic", 16, null, 1 },
+                    { 74, "0", 2, true, 524, "IsAbstract", 17, null, 1 },
+                    { 75, "0", 2, true, 524, "IsSealed", 18, null, 1 },
+                    { 85, "", 10, true, 605, "ImportObject", 2, 500, 3 },
+                    { 86, "", 2, true, 605, "UseInterface", 3, null, 1 },
+                    { 87, "64", 10, true, 610, "PropertyType", 1, 50, 3 },
+                    { 88, "0", 2, true, 610, "IsNullable", 3, null, 1 },
+                    { 89, "1", 2, true, 610, "HasSetter", 4, null, 1 },
+                    { 90, "0", 2, true, 610, "HasNavigation", 5, null, 1 },
+                    { 91, "0", 2, true, 610, "IsPrimaryKey", 6, null, 1 },
+                    { 92, "-1", 3, true, 610, "MaxSize", 7, null, 3 },
+                    { 96, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
+                    { 97, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
+                    { 98, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
+                    { 99, "1", 2, true, 616, "IsNullable", 5, null, 1 },
+                    { 100, "", 4, true, 616, "InverseNav", 6, null, 6 },
+                    { 101, ".cs", 1, true, 620, "FileExtension", 12, null, 6 },
+                    { 102, "", 4, true, 620, "FilePath", 13, null, 6 },
+                    { 103, "", 4, true, 620, "Namespace", 14, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -599,13 +616,13 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 68, "64", 10, true, 526, "ParamType", 1, 50, 3 },
-                    { 69, "", 10, true, 526, "ParamClass", 2, 500, 3 },
-                    { 70, "1", 2, true, 526, "IsNullable", 3, null, 1 },
-                    { 71, "0", 2, true, 526, "UseThis", 4, null, 1 },
-                    { 85, "", 10, true, 614, "PropertyClass", 2, 600, 3 },
-                    { 86, "6", 10, true, 614, "HasNavigation", 3, 5, 3 },
-                    { 87, "1", 2, true, 614, "IsNullable", 5, null, 1 }
+                    { 76, "64", 10, true, 526, "ParamType", 1, 50, 3 },
+                    { 77, "", 10, true, 526, "ParamClass", 2, 500, 3 },
+                    { 78, "1", 2, true, 526, "IsNullable", 3, null, 1 },
+                    { 79, "0", 2, true, 526, "UseThis", 4, null, 1 },
+                    { 93, "", 10, true, 614, "PropertyClass", 2, 600, 3 },
+                    { 94, "6", 10, true, 614, "HasNavigation", 3, 5, 3 },
+                    { 95, "1", 2, true, 614, "IsNullable", 5, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(

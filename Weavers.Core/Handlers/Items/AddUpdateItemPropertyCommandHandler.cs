@@ -46,6 +46,7 @@ namespace Weavers.Core.Handlers.Items {
 
         await _context.ItemProperties.AddAsync(property, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+
       } else {
         // Update existing property
         id = request.Id;
@@ -65,5 +66,20 @@ namespace Weavers.Core.Handlers.Items {
       
       return response;
     }
+  }
+
+  public static class propToUpdateExt {
+    public static AddUpdateItemPropertyCommand ToSaveCmd(this ItemPropertyDto itemProperty) { 
+      return new AddUpdateItemPropertyCommand(
+        Id: itemProperty.Id,
+        ItemId: itemProperty.ItemId,
+        PropertyName: itemProperty.Name,
+        PropertyValue: itemProperty.Value,
+        PropertyValueTypeId: itemProperty.ValueDataTypeId,
+        PropertyEditorTypeId: itemProperty.EditorTypeId,
+        ReferenceItemTypeId: itemProperty.ReferenceItemTypeId
+      );  
+}
+
   }
 }

@@ -71,10 +71,16 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var command = new UpdateItemCommand(id, itemTypeId, name, description, data, true);
-        var result = await mediator.Send(command);
-        var opResult = McpOpResult.CreateSuccess("update-item", "Successfully updated", result);
-        return JsonSerializer.Serialize(opResult);
+        var item = await mediator.Send(new GetItemByIdQuery(id, false));
+        if (item != null) {
+          var command = new UpdateItemCommand(id, itemTypeId, name, description, data, true, item.WrittenAt);
+          var result = await mediator.Send(command);
+          var opResult = McpOpResult.CreateSuccess("update-item", "Successfully updated", result);
+          return JsonSerializer.Serialize(opResult);
+        } else {
+          var opResult = McpOpResult.CreateFailure("update-item", "Item not found");
+          return JsonSerializer.Serialize(opResult);
+        }         
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating item");
         var opResult = McpOpResult.CreateFailure("update-item", "Failed to update item", ex);

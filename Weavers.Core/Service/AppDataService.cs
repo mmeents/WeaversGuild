@@ -78,7 +78,7 @@ namespace Weavers.Core.Service {
     }
     public async Task<ItemDto?> UpdateItemAsync(ItemDto request) {
       var mediator = GetMediator();
-      var command = new UpdateItemCommand(request.Id, request.ItemTypeId, request.Name, request.Description, request.Data, request.IsActive);
+      var command = new UpdateItemCommand(request.Id, request.ItemTypeId, request.Name, request.Description, request.Data, request.IsActive, request.WrittenAt);
       var result = await mediator.Send(command);
       return result;
     }

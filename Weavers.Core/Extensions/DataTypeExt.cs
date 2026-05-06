@@ -30,6 +30,9 @@ namespace Weavers.Core.Extensions {
         _ => "Unknown data type"
       };
     }
+
+
+
     public static bool IsNumeric(this WeDataType baseDataType) {
       return baseDataType switch {
         WeDataType.Int16 => true,
@@ -165,47 +168,6 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-    public static bool AsBoolean(this string? value) {
-      if (value == null) return false;
-      return value switch {
-        "1" => true,
-        "0" => false,
-        "true" => true,
-        "false" => false,
-        "True" => true,
-        "False" => false,
-        _ => false
-      };
-
-    }
-
-    public static int AsInt32(this string? value) { 
-      if (value == null) return 0;
-      if (int.TryParse(value, out int result)) return result;
-      return 0;
-    }
-
-    /// <summary>
-    /// lower case first letter of content concat with remainder.
-    /// </summary>
-    /// <param name="content"></param>
-    /// <returns></returns>    
-    public static string AsLowerCaseFirstLetter(this string content) {
-      if (string.IsNullOrEmpty(content)) return "";
-      var newName = content.Substring(0, 1).ToLower() + content.Substring(1);
-      return newName.UrlSafe();
-    }
-
-    /// <summary>
-    /// Uppercase first letter of content concat with rest of content.
-    /// </summary>
-    /// <param name="content"></param>
-    /// <returns></returns>
-    public static string AsUpperCaseFirstLetter(this string content) {
-      if (string.IsNullOrEmpty(content)) return "";
-      var newName = content.Substring(0, 1).ToUpper() + content.Substring(1);
-      return newName.UrlSafe();
-    }
 
 
   }

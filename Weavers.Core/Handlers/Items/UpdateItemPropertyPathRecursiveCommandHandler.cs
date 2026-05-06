@@ -71,6 +71,9 @@ namespace Weavers.Core.Handlers.Items {
         itemProp.Value = path;
         _context.ItemProperties.Update(itemProp);
         await _context.SaveChangesAsync();
+        await _context.MarkItemUpdated(itemProp.ItemId);
+         
+        
       }
     }
 

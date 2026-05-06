@@ -36,6 +36,9 @@ namespace Weavers.Core.Constants {
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
 
+    // code gen defaults
+    public const string DefaultSDK = "Microsoft.NET.Sdk";
+    public const string DefaultTestSDK = "MSTest.Sdk/3.6.4";
 
     public const string ApsDefaultFolder = "AppDefaultFolder";
 
@@ -64,8 +67,8 @@ namespace Weavers.Core.Constants {
     public const string ItIsTestLibrary = "IsTestLibrary";
     public const string ItIsNullable = "IsNullable";
     public const string ItIsPrimaryKey = "IsPrimaryKey";
-    public const string ItIsLibraryReference = "IsLibraryReference";
-    public const string ItIsPackageReference = "IsPackageReference";
+    public const string ItIsLibraryReference = "LibReference";
+    public const string ItIsPackageReference = "PkgReference";
     public const string ItIsSealed = "IsSealed";
     public const string ItIsStatic = "IsStatic";
     public const string ItIsVirtual = "IsVirtual";
@@ -74,8 +77,6 @@ namespace Weavers.Core.Constants {
     public const string ItMaxSize = "MaxSize";
     public const string ItNamespace = "Namespace";
     public const string ItNamespaceRoot = "NamespaceRoot";    
-    public const string ItPackageInclude = "PackageInclude";
-    public const string ItPackageVersion = "PackageVersion";
     public const string ItParameterDataType = "ParamType";
     public const string ItParameterClassType = "ParamClass";
     public const string ItPropertyDataType = "PropertyType";
@@ -91,10 +92,26 @@ namespace Weavers.Core.Constants {
     public const string ItRegisterInterface = "RegisterInterface";
     public const string ItRelativeFolder = "RelativeFolder";    
     public const string ItRootFolder = "RootFolder";
-    public const string ItRepoUrl = "RepositoryUrl";
-    public const string ItSolutionGuid = "SolutionGuid";
+    public const string ItRepoUrl = "RepoUrl";
+    public const string ItSolutionGuid = "SlnGuid";
+    public const string ItTestClassAttribute = "TestClass";
+    public const string ItTestMethodAttribute = "TestMethod";
     public const string ItUseThis = "UseThis";
 
+    public const string TestMethodType = "TestMethod";
+
+    // library specific properties
+    public const string ItVersion = "Version";
+    public const string ItFileVersion = "FileVersion";
+    public const string ItAssemblyVersion = "AssemblyVersion";
+    public const string ItTargetFramework = "TargetFramework";
+    public const string ItImplicitUsing = "ImplicitUsing";
+
+    // package specific properties
+    public const string ItPackageInclude = "PackageInclude";
+    public const string ItPackageVersion = "PackageVersion";
+    public const string ItPrivateAssets = "PrivateAssets";
+    public const string ItIncludeAssets = "IncludeAssets";
 
 
 
