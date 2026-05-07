@@ -15,7 +15,14 @@ using Weavers.Core.Service;
 
 
 namespace Weavers.Core.Handlers.DepItems {
-  public record AddRemoveEntityInboundNavCommand(int TargetEntityItemId, int AddPropertyItemId, int FromEntityItemId, bool IsAdd) : IRequest<bool>;
+  public record AddRemoveEntityInboundNavCommand(
+    int TargetEntityItemId, 
+    int AddPropertyItemId, 
+    int FromEntityItemId, 
+    bool IsAdd
+  ) : IRequest<bool>;
+
+
   public class AddEntityInboundNavCommandHandler : IRequestHandler<AddRemoveEntityInboundNavCommand, bool> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
@@ -44,23 +51,25 @@ namespace Weavers.Core.Handlers.DepItems {
       var propertyItem = await _context.GetItemDtoById(request.AddPropertyItemId, cancellationToken);   // property added  
       if (propertyItem == null) return false; 
 
-      var originalNavItem = await GetEntityNavForProperty(propertyItem, cancellationToken);             // propertys navigation item.
-      if (originalNavItem == null)  return false; 
+      var originalNavItem = await GetEntityNavForProperty(propertyItem, cancellationToken);     // properties navigation item.  This is thd deriving nav already exists.
+      if (originalNavItem == null)  return false;
 
 
-      var origalNavTypeProp = originalNavItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
-      WeItemType navType = WeItemType.NavHasOneToOne;
-      if (origalNavTypeProp != null) { 
-        var navTypeValue = int.TryParse(origalNavTypeProp.Value, out var result) ? result : (int?)navType;
+      var originalNavTypeProp = originalNavItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
+      WeItemType originalNavType = WeItemType.NavHasOneToOne;
+      if (originalNavTypeProp != null) { 
+        var navTypeValue = int.TryParse(originalNavTypeProp.Value, out var result) ? result : (int?)originalNavType;
         if (navTypeValue != null) { 
-          navType = (WeItemType)navTypeValue.Value;          
+          originalNavType = (WeItemType)navTypeValue.Value;          
         }
       }
 
       var inboundEntityNavItem = await FindEntityInboundNavForProperty(targetEntityItem, propertyItem, cancellationToken);
       if ( request.IsAdd) {
         if (inboundEntityNavItem == null) {
-          var cmd1 = new CreateRelatedItemCommand(targetEntityItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.EntityInboundNavigationModel, propertyItem.Name, "", "{}");
+          var inboundNavName = propertyItem.Name.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
+            ? propertyItem.Name[..^2] : propertyItem.Name; // trim Id suffix.
+          var cmd1 = new CreateRelatedItemCommand(targetEntityItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.EntityInboundNavigationModel, inboundNavName, "", "{}");
           inboundEntityNavItem = await _mediator.Send(cmd1, cancellationToken);
           await _context.MarkItemUpdated(targetEntityItem.Id, cancellationToken);
         } 
@@ -105,17 +114,17 @@ namespace Weavers.Core.Handlers.DepItems {
           }
 
           var propNavTypeProp = inboundEntityNavItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
-          WeItemType inboundNavType = navType;
+          WeItemType inboundNavType = originalNavType;
           if (propNavTypeProp != null) {
             var propNavType = _context.ItemProperties.Where(p => p.Id == propNavTypeProp.Id).FirstOrDefault();
             if (propNavType != null) {
 
-              inboundNavType = navType switch {
+              inboundNavType = originalNavType switch {
                 WeItemType.NavHasOneToMany => WeItemType.NavHasManyToOne,   // Collection on one side → Reference on the other
                 WeItemType.NavHasManyToOne => WeItemType.NavHasOneToMany,   // Reference on one side → Collection on the other
                 WeItemType.NavHasOneToOne => WeItemType.NavHasOneToOne,
                 WeItemType.NavHasManyToMany => WeItemType.NavHasManyToMany,
-                _ => navType
+                _ => originalNavType
               };
 
               propNavType.Value = ((int)inboundNavType).ToString();

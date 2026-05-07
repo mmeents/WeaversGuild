@@ -229,7 +229,8 @@ namespace Weavers.Core.Extensions {
       },
       { WeItemType.EntityNavigationModel, new List<ItemPropertyDefault>() {
           new() { Rank=2, Key = Cx.ItPropertyClassType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.EntityClassModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
-          new() { Rank=3, Key = Cx.ItHasNavigation, DefaultValue = "6", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.NavigationTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },          
+          new() { Rank=3, Key = Cx.ItHasNavigation, DefaultValue = "7", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.NavigationTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() { Rank=4, Key = Cx.ItDeleteBehavior, DefaultValue = "84", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.EntityDeleteBehaviors, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() { Rank=5, Key = Cx.ItIsNullable, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
         }
       },

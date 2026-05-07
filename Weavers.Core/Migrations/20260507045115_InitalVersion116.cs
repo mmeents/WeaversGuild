@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class AddsInitialCreateVer115 : Migration
+    public partial class InitalVersion116 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -166,6 +166,7 @@ namespace Weavers.Core.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", maxLength: -1, nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "{}"),
                     Established = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    WrittenAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -175,6 +176,30 @@ namespace Weavers.Core.Migrations
                         name: "FK_Items_ItemTypes_ItemTypeId",
                         column: x => x.ItemTypeId,
                         principalTable: "ItemTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Builds",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CompletedAt = table.Column<DateTime>(type: "datetime", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    BuildOutput = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompilerOutput = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LibraryItemId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Builds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Builds_Items_LibraryItemId",
+                        column: x => x.LibraryItemId,
+                        principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -266,6 +291,35 @@ namespace Weavers.Core.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BuildFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BuildId = table.Column<int>(type: "int", nullable: false),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(500)", nullable: false),
+                    WasWritten = table.Column<bool>(type: "bit", nullable: false),
+                    WasDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BuildFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BuildFiles_Builds_BuildId",
+                        column: x => x.BuildId,
+                        principalTable: "Builds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BuildFiles_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.InsertData(
                 table: "DataTypes",
                 columns: new[] { "Id", "Description", "Name" },
@@ -338,10 +392,11 @@ namespace Weavers.Core.Migrations
                 {
                     { 5, "Entity Nav Types", 10, "", true, "NavigationTypes", null, 1 },
                     { 10, "Owner Type of SQL Types", 10, "", true, "SqlTypes", null, 1 },
-                    { 21, "sql float type", -1, "", true, "SqlFloatType", 21, 0 },
+                    { 18, "sql float type", -1, "", true, "SqlFloatType", 18, 0 },
                     { 31, "Test Method Attributes", 10, "", true, "TestMethodTypes", null, 1 },
                     { 40, "Owner Type of C# Lifetimes", 10, "", true, "CSharpLifetimes", null, 1 },
                     { 50, "Owner Type of C# Types", 10, "", true, "CSharpTypes", null, 1 },
+                    { 80, "Entity Delete Behaviors", -1, "", true, "EntityDeleteBehaviors", null, 1 },
                     { 90, "Accessibility Lookups", 10, "", true, "AccessibilityLookups", null, 1 },
                     { 100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", null, 100 }
                 });
@@ -368,16 +423,16 @@ namespace Weavers.Core.Migrations
                     { 12, "sql smallint type", 3, "", true, "SqlSmallIntType", 10, 3 },
                     { 13, "sql int type", 3, "", true, "SqlIntType", 10, 4 },
                     { 14, "sql bigint type", 3, "", true, "SqlBigIntType", 10, 5 },
-                    { 16, "sql uniqueidentifier type", 4, "", true, "SqlGuidType", 10, 6 },
-                    { 18, "sql varchar type", 4, "", true, "SqlVarcharType", 10, 7 },
-                    { 20, "sql nvarchar type", 4, "", true, "SqlNVarcharType", 10, 8 },
-                    { 22, "sql decimal type", 8, "", true, "SqlDecimalType", 10, 9 },
-                    { 24, "sql datetime type", 6, "", true, "SqlDateTimeType", 10, 10 },
-                    { 25, "sql datetime2 type", 6, "", true, "SqlDateTime2Type", 10, 11 },
-                    { 26, "sql date type", 6, "", true, "SqlDateType", 10, 12 },
-                    { 28, "sql time type", 7, "", true, "SqlTimeType", 10, 13 },
-                    { 29, "sql datetimeoffset type", 4, "", true, "SqlDateTimeOffsetType", 10, 14 },
-                    { 30, "sql binary type", -1, "", true, "SqlBinaryType", 10, 15 },
+                    { 15, "sql uniqueidentifier type", 4, "", true, "SqlGuidType", 10, 6 },
+                    { 16, "sql varchar type", 4, "", true, "SqlVarcharType", 10, 7 },
+                    { 17, "sql nvarchar type", 4, "", true, "SqlNVarcharType", 10, 8 },
+                    { 19, "sql decimal type", 8, "", true, "SqlDecimalType", 10, 9 },
+                    { 20, "sql datetime type", 6, "", true, "SqlDateTimeType", 10, 10 },
+                    { 21, "sql datetime2 type", 6, "", true, "SqlDateTime2Type", 10, 11 },
+                    { 22, "sql date type", 6, "", true, "SqlDateType", 10, 12 },
+                    { 23, "sql time type", 7, "", true, "SqlTimeType", 10, 13 },
+                    { 24, "sql datetimeoffset type", 4, "", true, "SqlDateTimeOffsetType", 10, 14 },
+                    { 25, "sql binary type", -1, "", true, "SqlBinaryType", 10, 15 },
                     { 32, "Not A Test", 2, "", true, "NoTestAttribute", 31, 1 },
                     { 33, "Ignore Test", 2, "", true, "TestIgnoreAttribute", 31, 2 },
                     { 34, "TestMethod", 2, "", true, "TestMethodAttribute", 31, 3 },
@@ -388,26 +443,32 @@ namespace Weavers.Core.Migrations
                     { 41, "C# Singleton Lifetime", -1, "", true, "CSLifetimeSingleton", 40, 1 },
                     { 42, "C# Scoped Lifetime", -1, "", true, "CSLifetimeScoped", 40, 2 },
                     { 43, "C# Transient Lifetime", -1, "", true, "CSLifetimeTransient", 40, 3 },
-                    { 52, "C# Class Type", 11, "", true, "CSharpClassType", 50, 2 },
-                    { 54, "C# Record Type", 11, "", true, "CSharpRecordType", 50, 3 },
-                    { 56, "C# Struct Type", 11, "", true, "CSharpStructType", 50, 4 },
-                    { 58, "C# String Type", 4, "", true, "CSharpStringType", 50, 5 },
-                    { 60, "C# Bool Type", 2, "", true, "CSharpBoolType", 50, 6 },
-                    { 62, "C# Char Type", 4, "", true, "CSharpCharType", 50, 7 },
-                    { 64, "C# Int Type", 3, "", true, "CSharpIntType", 50, 8 },
-                    { 66, "C# Long Type", 3, "", true, "CSharpLongType", 50, 9 },
-                    { 68, "C# Short Type", 3, "", true, "CSharpShortType", 50, 10 },
-                    { 70, "C# Decimal Type", 8, "", true, "CSharpDecimalType", 50, 11 },
-                    { 72, "C# Double Type", 8, "", true, "CSharpDoubleType", 50, 12 },
-                    { 74, "C# Float Type", 8, "", true, "CSharpFloatType", 50, 13 },
-                    { 76, "C# Byte Type", 3, "", true, "CSharpByteType", 50, 14 },
-                    { 78, "C# DateTime Type", 6, "", true, "CSharpDateTimeType", 50, 15 },
-                    { 79, "C# DateTime2 Type", 6, "", true, "CSharpDateTime2Type", 50, 16 },
-                    { 80, "C# Date Type", 6, "", true, "CSharpDateType", 50, 17 },
-                    { 82, "C# Time Type", 7, "", true, "CSharpTimeType", 50, 18 },
-                    { 84, "C# DateTimeOffset Type", 4, "", true, "CSharpDateTimeOffsetType", 50, 19 },
-                    { 86, "C# Byte Array Type", -1, "", true, "CSharpByteArrayType", 50, 20 },
-                    { 88, "C# Guid Type", 4, "", true, "CSharpGuidType", 50, 21 },
+                    { 51, "C# Class Type", 11, "", true, "CSharpClassType", 50, 2 },
+                    { 52, "C# Record Type", 11, "", true, "CSharpRecordType", 50, 3 },
+                    { 53, "C# Struct Type", 11, "", true, "CSharpStructType", 50, 4 },
+                    { 54, "C# String Type", 4, "", true, "CSharpStringType", 50, 5 },
+                    { 55, "C# Bool Type", 2, "", true, "CSharpBoolType", 50, 6 },
+                    { 56, "C# Char Type", 4, "", true, "CSharpCharType", 50, 7 },
+                    { 57, "C# Int Type", 3, "", true, "CSharpIntType", 50, 8 },
+                    { 58, "C# Long Type", 3, "", true, "CSharpLongType", 50, 9 },
+                    { 59, "C# Short Type", 3, "", true, "CSharpShortType", 50, 10 },
+                    { 60, "C# Decimal Type", 8, "", true, "CSharpDecimalType", 50, 11 },
+                    { 61, "C# Double Type", 8, "", true, "CSharpDoubleType", 50, 12 },
+                    { 62, "C# Float Type", 8, "", true, "CSharpFloatType", 50, 13 },
+                    { 63, "C# Byte Type", 3, "", true, "CSharpByteType", 50, 14 },
+                    { 64, "C# DateTime Type", 6, "", true, "CSharpDateTimeType", 50, 15 },
+                    { 65, "C# Date Type", 6, "", true, "CSharpDateType", 50, 17 },
+                    { 66, "C# Time Type", 7, "", true, "CSharpTimeType", 50, 18 },
+                    { 67, "C# DateTimeOffset Type", 4, "", true, "CSharpDateTimeOffsetType", 50, 19 },
+                    { 68, "C# Byte Array Type", -1, "", true, "CSharpByteArrayType", 50, 20 },
+                    { 69, "C# Guid Type", 4, "", true, "CSharpGuidType", 50, 21 },
+                    { 81, "ClientSetNull", -1, "", true, "EntityDeleteClientSetNull", 80, 1 },
+                    { 82, "Restrict", -1, "", true, "EntityDeleteRestrict", 80, 2 },
+                    { 83, "SetNull", -1, "", true, "EntityDeleteSetNull", 80, 3 },
+                    { 84, "Cascade", -1, "", true, "EntityDeleteCascade", 80, 4 },
+                    { 85, "ClientCascade", -1, "", true, "EntityDeleteClientCascade", 80, 5 },
+                    { 86, "NoAction", -1, "", true, "EntityDeleteNoAction", 80, 6 },
+                    { 87, "ClientNoAction", -1, "", true, "EntityDeleteClientNoAction", 80, 7 },
                     { 91, "public", 4, "", true, "WePublic", 90, 1 },
                     { 92, "internal", 4, "", true, "WeInternal", 90, 2 },
                     { 93, "private", 4, "", true, "WePrivate", 90, 3 },
@@ -589,14 +650,14 @@ namespace Weavers.Core.Migrations
                     { 90, "0", 2, true, 610, "HasNavigation", 5, null, 1 },
                     { 91, "0", 2, true, 610, "IsPrimaryKey", 6, null, 1 },
                     { 92, "-1", 3, true, 610, "MaxSize", 7, null, 3 },
-                    { 96, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
-                    { 97, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
-                    { 98, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
-                    { 99, "1", 2, true, 616, "IsNullable", 5, null, 1 },
-                    { 100, "", 4, true, 616, "InverseNav", 6, null, 6 },
-                    { 101, ".cs", 1, true, 620, "FileExtension", 12, null, 6 },
-                    { 102, "", 4, true, 620, "FilePath", 13, null, 6 },
-                    { 103, "", 4, true, 620, "Namespace", 14, null, 6 }
+                    { 97, "", 10, true, 616, "PropertyClass", 2, 600, 3 },
+                    { 98, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
+                    { 99, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
+                    { 100, "1", 2, true, 616, "IsNullable", 5, null, 1 },
+                    { 101, "", 4, true, 616, "InverseNav", 6, null, 6 },
+                    { 102, ".cs", 1, true, 620, "FileExtension", 12, null, 6 },
+                    { 103, "", 4, true, 620, "FilePath", 13, null, 6 },
+                    { 104, "", 4, true, 620, "Namespace", 14, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -621,8 +682,9 @@ namespace Weavers.Core.Migrations
                     { 78, "1", 2, true, 526, "IsNullable", 3, null, 1 },
                     { 79, "0", 2, true, 526, "UseThis", 4, null, 1 },
                     { 93, "", 10, true, 614, "PropertyClass", 2, 600, 3 },
-                    { 94, "6", 10, true, 614, "HasNavigation", 3, 5, 3 },
-                    { 95, "1", 2, true, 614, "IsNullable", 5, null, 1 }
+                    { 94, "7", 10, true, 614, "HasNavigation", 3, 5, 3 },
+                    { 95, "84", 10, true, 614, "DeleteBehavior", 4, 80, 3 },
+                    { 96, "1", 2, true, 614, "IsNullable", 5, null, 1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -630,6 +692,21 @@ namespace Weavers.Core.Migrations
                 table: "AppSettings",
                 column: "Key",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BuildFiles_BuildId",
+                table: "BuildFiles",
+                column: "BuildId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BuildFiles_ItemId",
+                table: "BuildFiles",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Builds_LibraryItemId",
+                table: "Builds",
+                column: "LibraryItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DataTypes_Name",
@@ -757,19 +834,25 @@ namespace Weavers.Core.Migrations
                 name: "AppSettings");
 
             migrationBuilder.DropTable(
+                name: "BuildFiles");
+
+            migrationBuilder.DropTable(
                 name: "ItemProperties");
 
             migrationBuilder.DropTable(
                 name: "Relations");
 
             migrationBuilder.DropTable(
+                name: "Builds");
+
+            migrationBuilder.DropTable(
                 name: "ItemPropertyDefaults");
 
             migrationBuilder.DropTable(
-                name: "Items");
+                name: "RelationTypes");
 
             migrationBuilder.DropTable(
-                name: "RelationTypes");
+                name: "Items");
 
             migrationBuilder.DropTable(
                 name: "DataTypes");

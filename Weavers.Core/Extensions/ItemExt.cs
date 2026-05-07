@@ -102,6 +102,7 @@ namespace Weavers.Core.Extensions {
               ? null : new ItemTypeDto { Id = p.ReferenceItemType.Id, Name = p.ReferenceItemType.Name }
 
           }).ToList()
+         
         })
         .FirstOrDefaultAsync(cancellationToken);
 
@@ -192,6 +193,18 @@ namespace Weavers.Core.Extensions {
       context.Items.Update(item);
       await context.SaveChangesAsync(cancellationToken);
       return true;
+    }
+
+
+    public static string ResolveDeleteBehavior(this ItemDto navItem) {
+      if (navItem == null) { return ""; }
+      var deleteBehaviorProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeleteBehavior);
+      var deleteBehaviorId = deleteBehaviorProp != null && deleteBehaviorProp.Value != null && int.TryParse(deleteBehaviorProp.Value, out var tempDeleteBehaviorId) ? tempDeleteBehaviorId : 0;
+      if (deleteBehaviorId == 0) { return ""; }
+      if (deleteBehaviorId > (int)WeItemType.EntityDeleteBehaviors && deleteBehaviorId <= (int)WeItemType.EntityDeleteClientNoAction) {
+        return ((WeItemType)deleteBehaviorId).GetDeleteBehavior();
+      }
+      return "";
     }
 
 

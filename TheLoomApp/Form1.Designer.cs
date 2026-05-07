@@ -54,6 +54,7 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      cbShowPkgInLib = new CheckBox();
       btnShowErrors = new Button();
       btnCancelAppDefaultF = new Button();
       btnSaveDefaultFolder = new Button();
@@ -61,6 +62,7 @@
       label2 = new Label();
       edAppDefaultFolder = new TextBox();
       tpItem = new TabPage();
+      btnWriteFile = new Button();
       btnGenerateDesc = new Button();
       tabControl2 = new TabControl();
       tpItemDesc = new TabPage();
@@ -68,15 +70,7 @@
       tpData = new TabPage();
       edItemData = new TextBox();
       btnArchive = new Button();
-      btnCancelRelation = new Button();
-      btnUpdateRelation = new Button();
-      label7 = new Label();
-      edRank = new NumericUpDown();
-      label4 = new Label();
-      cbRelRelation = new ComboBox();
       lbRelationId = new Label();
-      lbRelItemName = new Label();
-      label1 = new Label();
       lbItemId = new Label();
       btnAbortItem = new Button();
       btnUpdateItem = new Button();
@@ -89,7 +83,6 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
-      cbShowPkgInLib = new CheckBox();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -109,7 +102,6 @@
       tpItemDesc.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)edItemDesc).BeginInit();
       tpData.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)edRank).BeginInit();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -160,7 +152,6 @@
       tvKb.SelectedImageIndex = 0;
       tvKb.Size = new Size(265, 569);
       tvKb.TabIndex = 0;
-      tvKb.AfterCollapse += tvKb_AfterCollapse;
       tvKb.BeforeExpand += tvKb_BeforeExpand;
       tvKb.AfterSelect += tvKb_AfterSelect;
       // 
@@ -386,6 +377,17 @@
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
       // 
+      // cbShowPkgInLib
+      // 
+      cbShowPkgInLib.AutoSize = true;
+      cbShowPkgInLib.Location = new Point(22, 58);
+      cbShowPkgInLib.Name = "cbShowPkgInLib";
+      cbShowPkgInLib.Size = new Size(182, 19);
+      cbShowPkgInLib.TabIndex = 6;
+      cbShowPkgInLib.Text = "Show Library Packages in tree";
+      cbShowPkgInLib.UseVisualStyleBackColor = true;
+      cbShowPkgInLib.CheckedChanged += cbShowPkgInLib_CheckedChanged;
+      // 
       // btnShowErrors
       // 
       btnShowErrors.Location = new Point(31, 138);
@@ -450,18 +452,11 @@
       // 
       // tpItem
       // 
+      tpItem.Controls.Add(btnWriteFile);
       tpItem.Controls.Add(btnGenerateDesc);
       tpItem.Controls.Add(tabControl2);
       tpItem.Controls.Add(btnArchive);
-      tpItem.Controls.Add(btnCancelRelation);
-      tpItem.Controls.Add(btnUpdateRelation);
-      tpItem.Controls.Add(label7);
-      tpItem.Controls.Add(edRank);
-      tpItem.Controls.Add(label4);
-      tpItem.Controls.Add(cbRelRelation);
       tpItem.Controls.Add(lbRelationId);
-      tpItem.Controls.Add(lbRelItemName);
-      tpItem.Controls.Add(label1);
       tpItem.Controls.Add(lbItemId);
       tpItem.Controls.Add(btnAbortItem);
       tpItem.Controls.Add(btnUpdateItem);
@@ -478,10 +473,22 @@
       tpItem.Text = "Details";
       tpItem.UseVisualStyleBackColor = true;
       // 
+      // btnWriteFile
+      // 
+      btnWriteFile.Anchor = AnchorStyles.Top;
+      btnWriteFile.Location = new Point(349, 35);
+      btnWriteFile.Margin = new Padding(3, 2, 3, 2);
+      btnWriteFile.Name = "btnWriteFile";
+      btnWriteFile.Size = new Size(92, 21);
+      btnWriteFile.TabIndex = 47;
+      btnWriteFile.Text = "Write updated";
+      btnWriteFile.UseVisualStyleBackColor = true;
+      btnWriteFile.Click += btnWriteFile_Click;
+      // 
       // btnGenerateDesc
       // 
       btnGenerateDesc.Anchor = AnchorStyles.Top;
-      btnGenerateDesc.Location = new Point(452, 148);
+      btnGenerateDesc.Location = new Point(447, 35);
       btnGenerateDesc.Margin = new Padding(3, 2, 3, 2);
       btnGenerateDesc.Name = "btnGenerateDesc";
       btnGenerateDesc.Size = new Size(92, 21);
@@ -530,7 +537,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(154, 14);
+      edItemDesc.AutoScrollMinSize = new Size(179, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -538,7 +545,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -583,7 +589,7 @@
       // btnArchive
       // 
       btnArchive.Anchor = AnchorStyles.Top;
-      btnArchive.Location = new Point(545, 148);
+      btnArchive.Location = new Point(540, 35);
       btnArchive.Margin = new Padding(3, 2, 3, 2);
       btnArchive.Name = "btnArchive";
       btnArchive.Size = new Size(66, 21);
@@ -592,102 +598,21 @@
       btnArchive.UseVisualStyleBackColor = true;
       btnArchive.Click += btnArchive_Click;
       // 
-      // btnCancelRelation
-      // 
-      btnCancelRelation.Location = new Point(291, 74);
-      btnCancelRelation.Margin = new Padding(3, 2, 3, 2);
-      btnCancelRelation.Name = "btnCancelRelation";
-      btnCancelRelation.Size = new Size(66, 21);
-      btnCancelRelation.TabIndex = 43;
-      btnCancelRelation.Text = "Cancel";
-      btnCancelRelation.UseVisualStyleBackColor = true;
-      btnCancelRelation.Click += btnCancelRelation_Click;
-      // 
-      // btnUpdateRelation
-      // 
-      btnUpdateRelation.Location = new Point(220, 73);
-      btnUpdateRelation.Margin = new Padding(3, 2, 3, 2);
-      btnUpdateRelation.Name = "btnUpdateRelation";
-      btnUpdateRelation.Size = new Size(66, 21);
-      btnUpdateRelation.TabIndex = 42;
-      btnUpdateRelation.Text = "Update";
-      btnUpdateRelation.UseVisualStyleBackColor = true;
-      btnUpdateRelation.Click += btnUpdateRelation_Click;
-      // 
-      // label7
-      // 
-      label7.AutoSize = true;
-      label7.Location = new Point(30, 76);
-      label7.Name = "label7";
-      label7.Size = new Size(66, 15);
-      label7.TabIndex = 41;
-      label7.Text = "Rank Order";
-      // 
-      // edRank
-      // 
-      edRank.Location = new Point(108, 74);
-      edRank.Margin = new Padding(3, 2, 3, 2);
-      edRank.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-      edRank.Name = "edRank";
-      edRank.Size = new Size(88, 23);
-      edRank.TabIndex = 40;
-      edRank.ValueChanged += edRank_ValueChanged;
-      // 
-      // label4
-      // 
-      label4.AutoSize = true;
-      label4.Location = new Point(43, 100);
-      label4.Name = "label4";
-      label4.Size = new Size(50, 15);
-      label4.TabIndex = 39;
-      label4.Text = "Relation";
-      // 
-      // cbRelRelation
-      // 
-      cbRelRelation.DisplayMember = "Name";
-      cbRelRelation.FormattingEnabled = true;
-      cbRelRelation.Location = new Point(108, 98);
-      cbRelRelation.Margin = new Padding(3, 2, 3, 2);
-      cbRelRelation.MinimumSize = new Size(176, 0);
-      cbRelRelation.Name = "cbRelRelation";
-      cbRelRelation.Size = new Size(179, 23);
-      cbRelRelation.TabIndex = 38;
-      cbRelRelation.ValueMember = "Id";
-      cbRelRelation.SelectedValueChanged += cbRelRelation_SelectedValueChanged;
-      // 
       // lbRelationId
       // 
       lbRelationId.AutoSize = true;
       lbRelationId.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-      lbRelationId.Location = new Point(21, 23);
+      lbRelationId.Location = new Point(6, 6);
       lbRelationId.Name = "lbRelationId";
       lbRelationId.Size = new Size(94, 21);
       lbRelationId.TabIndex = 37;
       lbRelationId.Text = "RelationId: x";
       // 
-      // lbRelItemName
-      // 
-      lbRelItemName.AutoSize = true;
-      lbRelItemName.Location = new Point(108, 54);
-      lbRelItemName.Name = "lbRelItemName";
-      lbRelItemName.Size = new Size(66, 15);
-      lbRelItemName.TabIndex = 36;
-      lbRelItemName.Text = "Item Name";
-      // 
-      // label1
-      // 
-      label1.AutoSize = true;
-      label1.Location = new Point(52, 54);
-      label1.Name = "label1";
-      label1.Size = new Size(41, 15);
-      label1.TabIndex = 35;
-      label1.Text = "Parent";
-      // 
       // lbItemId
       // 
       lbItemId.AutoSize = true;
       lbItemId.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-      lbItemId.Location = new Point(49, 142);
+      lbItemId.Location = new Point(6, 35);
       lbItemId.Name = "lbItemId";
       lbItemId.Size = new Size(68, 21);
       lbItemId.TabIndex = 34;
@@ -696,7 +621,7 @@
       // btnAbortItem
       // 
       btnAbortItem.Anchor = AnchorStyles.Top;
-      btnAbortItem.Location = new Point(548, 196);
+      btnAbortItem.Location = new Point(505, 93);
       btnAbortItem.Margin = new Padding(3, 2, 3, 2);
       btnAbortItem.Name = "btnAbortItem";
       btnAbortItem.Size = new Size(66, 21);
@@ -708,7 +633,7 @@
       // btnUpdateItem
       // 
       btnUpdateItem.Anchor = AnchorStyles.Top;
-      btnUpdateItem.Location = new Point(478, 196);
+      btnUpdateItem.Location = new Point(435, 93);
       btnUpdateItem.Margin = new Padding(3, 2, 3, 2);
       btnUpdateItem.Name = "btnUpdateItem";
       btnUpdateItem.Size = new Size(66, 21);
@@ -720,7 +645,7 @@
       // lbType
       // 
       lbType.AutoSize = true;
-      lbType.Location = new Point(65, 197);
+      lbType.Location = new Point(22, 94);
       lbType.Name = "lbType";
       lbType.Size = new Size(32, 15);
       lbType.TabIndex = 29;
@@ -729,7 +654,7 @@
       // lbItemName
       // 
       lbItemName.AutoSize = true;
-      lbItemName.Location = new Point(58, 176);
+      lbItemName.Location = new Point(15, 69);
       lbItemName.Name = "lbItemName";
       lbItemName.Size = new Size(39, 15);
       lbItemName.TabIndex = 28;
@@ -740,7 +665,7 @@
       edItemType.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       edItemType.DisplayMember = "Name";
       edItemType.FormattingEnabled = true;
-      edItemType.Location = new Point(108, 195);
+      edItemType.Location = new Point(65, 92);
       edItemType.Margin = new Padding(3, 2, 3, 2);
       edItemType.MinimumSize = new Size(176, 0);
       edItemType.Name = "edItemType";
@@ -751,7 +676,7 @@
       // 
       // edItemName
       // 
-      edItemName.Location = new Point(108, 173);
+      edItemName.Location = new Point(65, 66);
       edItemName.Margin = new Padding(3, 2, 3, 2);
       edItemName.Name = "edItemName";
       edItemName.Size = new Size(490, 23);
@@ -805,17 +730,6 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
-      // cbShowPkgInLib
-      // 
-      cbShowPkgInLib.AutoSize = true;
-      cbShowPkgInLib.Location = new Point(22, 58);
-      cbShowPkgInLib.Name = "cbShowPkgInLib";
-      cbShowPkgInLib.Size = new Size(182, 19);
-      cbShowPkgInLib.TabIndex = 6;
-      cbShowPkgInLib.Text = "Show Library Packages in tree";
-      cbShowPkgInLib.UseVisualStyleBackColor = true;
-      cbShowPkgInLib.CheckedChanged += cbShowPkgInLib_CheckedChanged;
-      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -850,7 +764,6 @@
       ((System.ComponentModel.ISupportInitialize)edItemDesc).EndInit();
       tpData.ResumeLayout(false);
       tpData.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)edRank).EndInit();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -877,15 +790,7 @@
     private ToolStripButton tsBtnDismiss;
     private TextBox tbErrorOut;
     private Button btnArchive;
-    private Button btnCancelRelation;
-    private Button btnUpdateRelation;
-    private Label label7;
-    private NumericUpDown edRank;
-    private Label label4;
-    private ComboBox cbRelRelation;
     private Label lbRelationId;
-    private Label lbRelItemName;
-    private Label label1;
     private Label lbItemId;
     private Button btnAbortItem;
     private Button btnUpdateItem;
@@ -923,5 +828,6 @@
     private ToolStripMenuItem miAddEntity;
     private ToolStripMenuItem miAddEntityProperty;
     private CheckBox cbShowPkgInLib;
+    private Button btnWriteFile;
   }
 }

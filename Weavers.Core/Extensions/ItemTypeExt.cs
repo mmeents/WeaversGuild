@@ -24,7 +24,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpFloatType => "float",
         WeItemType.CSharpByteType => "byte",
         WeItemType.CSharpDateTimeType => "DateTime",
-        WeItemType.CSharpDateTime2Type => "DateTime2",
         WeItemType.CSharpDateType => "Date",
         WeItemType.CSharpTimeType => "Time",
         WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset",
@@ -117,8 +116,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.DependencyInjectionModel,
         WeItemType.DbContextModel,
         WeItemType.ClassModel,
-        WeItemType.EntityClassModel,
-        WeItemType.EntityConfigurationModel
+        WeItemType.EntityClassModel
       };
       return nodeTypes;
     }
@@ -131,6 +129,7 @@ namespace Weavers.Core.Extensions {
           WeItemType.TestMethodTypes,
           WeItemType.CSharpLifetimes,
           WeItemType.CSharpTypes,
+          WeItemType.EntityDeleteBehaviors,
           WeItemType.AccessibilityLookups
       };
       return lookupTypes;
@@ -173,7 +172,6 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.StructModel => Cx.ItFilePath,
         (int)WeItemType.ClassModel => Cx.ItFilePath,        
         (int)WeItemType.EntityClassModel => Cx.ItFilePath,
-        (int)WeItemType.EntityConfigurationModel => Cx.ItFilePath,
         _ => ""
       };
     }
@@ -212,8 +210,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpDecimalType => $".HasColumnType(\"decimal({vmSize})\")",
         WeItemType.CSharpDoubleType => $".HasColumnType(\"decimal({vmSize})\")",
         WeItemType.CSharpFloatType => $".HasColumnType(\"float({vmSize})\")",
-        WeItemType.CSharpDateTimeType => ".HasColumnType(\"datetime\")",
-        WeItemType.CSharpDateTime2Type => ".HasColumnType(\"datetime2\")",
+        WeItemType.CSharpDateTimeType => ".HasColumnType(\"datetime2\")",
         WeItemType.CSharpDateType => ".HasColumnType(\"date\")",
         WeItemType.CSharpTimeType => ".HasColumnType(\"time\")",
         WeItemType.CSharpDateTimeOffsetType => ".HasColumnType(\"datetimeoffset\")",
@@ -254,6 +251,19 @@ namespace Weavers.Core.Extensions {
       return $"{precision},{scale}";
     }
 
+
+    public static string GetDeleteBehavior(this WeItemType deleteBehavior) {
+      return deleteBehavior switch {
+        WeItemType.EntityDeleteClientSetNull => ".OnDelete(DeleteBehavior.ClientSetNull)",
+        WeItemType.EntityDeleteRestrict => ".OnDelete(DeleteBehavior.Restrict)",
+        WeItemType.EntityDeleteSetNull => ".OnDelete(DeleteBehavior.SetNull)",
+        WeItemType.EntityDeleteCascade => ".OnDelete(DeleteBehavior.Cascade)",
+        WeItemType.EntityDeleteClientCascade => ".OnDelete(DeleteBehavior.ClientCascade)",
+        WeItemType.EntityDeleteNoAction => ".OnDelete(DeleteBehavior.NoAction)",
+        WeItemType.EntityDeleteClientNoAction => ".OnDelete(DeleteBehavior.ClientNoAction)",
+        _ => ""
+      };
+    }
 
   }
 }

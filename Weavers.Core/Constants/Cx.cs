@@ -47,6 +47,7 @@ namespace Weavers.Core.Constants {
     public const string ItBaseType = "BaseType";
     public const string ItClassType = "ClassType";
     public const string ItDataType = "DataType";
+    public const string ItDeleteBehavior = "DeleteBehavior";
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
     public const string ItDbTableName = "DbTableName";

@@ -10,8 +10,10 @@ namespace Weavers.Core.Handlers.Templates {
 
   public class GetEntityClassTemplateCommandHandler :IRequestHandler<GetEntityClassTemplateCommand, string?>  {
     private readonly FabricDbContext _context;
-    public GetEntityClassTemplateCommandHandler(FabricDbContext context) { 
+    private readonly IMediator _mediator;
+    public GetEntityClassTemplateCommandHandler(FabricDbContext context, IMediator mediator) { 
       _context = context;
+      _mediator = mediator;
     }
 
     public async Task<string?> Handle(GetEntityClassTemplateCommand request, CancellationToken ct) { 
@@ -27,6 +29,7 @@ namespace Weavers.Core.Handlers.Templates {
       var sbConstParams = new StringBuilder();
       var sbConstructor = new StringBuilder();      
       var sbProperties = new StringBuilder();
+      var sbProps = new StringBuilder();
       var sbNavs = new StringBuilder();
 
       var namespaceName = item.ResolveParentNamespace(item.Name);
@@ -94,6 +97,7 @@ namespace Weavers.Core.Handlers.Templates {
             var navItemId = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId??0;
             if (navItemId > 0) {
               var navItem = await _context.GetItemDtoById(navItemId, ct);
+              var navClassVarName = navItem?.Name;
               if (navItem == null) continue;
               var isNavNullableProp = navItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable);
               bool isNavNullable = isNavNullableProp != null && isNavNullableProp.Value.AsBoolean();
@@ -114,10 +118,10 @@ namespace Weavers.Core.Handlers.Templates {
                     navPrinted = true;
                   }
                   // print the too part:
-                  if ((navType == WeItemType.NavHasManyToOne || navType == WeItemType.NavHasOneToOne)) {
-                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {classTypeName}{setterClause}{navNulClause2}");
-                  } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasOneToMany) {
-                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navName}{setterClause} = [];");
+                  if ((navType == WeItemType.NavHasOneToOne || navType == WeItemType.NavHasOneToMany)) {
+                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {navClassVarName}{setterClause}{navNulClause2}");
+                  } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) {
+                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navClassVarName}{setterClause} = [];");
                   }
                 } else {
                   sbNavs.AppendLine("    // WeaverError: ");
@@ -181,8 +185,19 @@ namespace Weavers.Core.Handlers.Templates {
 
       cSb.AppendLine(sbProperties.ToString());      
       cSb.AppendLine(sbNavs.ToString());
-
       cSb.AppendLine($"  }}");
+
+      // check if there's an entity configuration related to this class and if so, print the config template as well:
+      var configItemId = item.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityConfigurationModel)?.RelatedItemId ?? 0;
+      if (configItemId > 0) {
+        var configItem = await _context.GetItemDtoById(configItemId, ct);
+        if (configItem != null) {
+          var configStr = await _mediator.Send(new GetEntityConfigTemplateCommand(configItem.Id, false), ct);
+          cSb.AppendLine(configStr);
+        }
+      }     
+
+
       cSb.AppendLine($"}}");
 
       return sbUses.ToString() + Environment.NewLine + cSb.ToString();

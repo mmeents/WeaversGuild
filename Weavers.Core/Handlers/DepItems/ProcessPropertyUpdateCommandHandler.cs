@@ -60,10 +60,13 @@ namespace Weavers.Core.Handlers.DepItems {
 
       if (isNavProp) { // is a nav
         
-        if (entityNavItem == null) {  
+        if (entityNavItem == null) {
           // add the navigation if not there as child.
+          var aNavName = propertyItem.Name.EndsWith("Id", StringComparison.OrdinalIgnoreCase)
+            ? propertyItem.Name[..^2] : propertyItem.Name; // trim Id suffix.;
+
           entityNavItem = await _mediator.Send(new CreateRelatedItemCommand(propertyItem.Id, 
-            (int)WeRelationTypes.Contains, (int)WeItemType.EntityNavigationModel, propertyItem.Name, "", "{}"));
+            (int)WeRelationTypes.Contains, (int)WeItemType.EntityNavigationModel, aNavName, "", "{}"));
 
           if (entityNavItem != null) {    // update navs nullable prop to match the property.                     
             var nullableProp = entityNavItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable);

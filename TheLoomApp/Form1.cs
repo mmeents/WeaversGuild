@@ -50,8 +50,6 @@ namespace TheLoomApp {
       _itemPropertiesTab.SetLabelRight(76);
       _itemPropertiesTab.OnPostEvent += ProjectTab_OnPostEvent;
       splitContainer3.Panel2Collapsed = true;
-      btnCancelRelation.Visible = false;
-      btnUpdateRelation.Visible = false;
       btnAbortItem.Visible = false;
       btnUpdateItem.Visible = false;
       btnGenerateDesc.Visible = false;
@@ -74,12 +72,15 @@ namespace TheLoomApp {
       var verticalSpace = splitContainer1.Panel2.Height - (splitContainer3.Panel2Collapsed ? 0 : splitContainer3.Panel2.Height + 4);
       btnArchive.Left = horizonalSpace - btnArchive.Width - 10;
       btnGenerateDesc.Left = btnArchive.Left - btnGenerateDesc.Width - 4;
+      btnWriteFile.Left = btnGenerateDesc.Left - btnWriteFile.Width - 4;
+
+
       btnAbortItem.Left = horizonalSpace - btnAbortItem.Width - 10;
       btnUpdateItem.Left = btnAbortItem.Left - btnUpdateItem.Width - 4;
       edItemName.Width = horizonalSpace - edItemName.Left - 10;
       edItemType.Width = horizonalSpace - edItemType.Left - 14 - (btnUpdateItem.Width * 2);
 
-      tabControl2.Height = verticalSpace - (lbType.Top + (lbType.Height * 4));
+      tabControl2.Height = verticalSpace - (edItemType.Top + (edItemType.Height * 4));
       _inResize = false;
     }
 
@@ -228,7 +229,7 @@ namespace TheLoomApp {
           parent.Nodes.Add(newNode);   // add the node to the tree
 
           if (bItem.Relations.Count() > 0) {
-            foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {              
+            foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
               var relatedItem = await AddNodeById(toLoad, newNode, rel.RelatedItemId, rel);
             }
           }
@@ -237,7 +238,7 @@ namespace TheLoomApp {
       } else {
         if (relation == null || !relation.RelatedItemId.HasValue) { return null; }
         var aItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);  // get new item
-        if (aItem != null) {          
+        if (aItem != null) {
           ItemNode projectsChildNode = relation.ToItemNode(aItem);  // make the node
           _itemCache[aItem.Id] = projectsChildNode;
 
@@ -286,17 +287,6 @@ namespace TheLoomApp {
       _isExpanding = false;
     }
 
-    private void tvKb_AfterCollapse(object sender, TreeViewEventArgs e) {
-      // if (e.Node is ItemNode node) {
-      //   if (node.Nodes.Count > 0) {
-      //     foreach (ItemNode child in node.Nodes) {
-      //       child.Nodes.Clear();
-      //       child.Nodes.Add(new ItemNode());
-      //     }
-      //   }
-      // }
-    }
-
     private async Task LoadItemTypesCache() {
       try {
         _inSetupTpItems = true;
@@ -309,14 +299,6 @@ namespace TheLoomApp {
 
       } catch (Exception ex) {
         MessageBox.Show($"An error occurred while loading project types: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-      try {
-        var RelationTypes = await _appDataService.GetRelationTypesAsync();
-        cbRelRelation.DataSource = RelationTypes;
-        cbRelRelation.DisplayMember = "Name";
-        cbRelRelation.ValueMember = "Id";
-      } catch (Exception ex) {
-        MessageBox.Show($"An error occurred while loading relation types: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
       _inSetupTpItems = false;
 
@@ -373,7 +355,7 @@ namespace TheLoomApp {
     private bool _showPkgInLib = false;
     private void cbShowPkgInLib_CheckedChanged(object sender, EventArgs e) {
       _showPkgInLib = cbShowPkgInLib.Checked;
-      
+
     }
     #endregion
 
@@ -426,11 +408,7 @@ namespace TheLoomApp {
     public bool RelationTabDirty {
       get { return _RelationTabDirty; }
       set {
-        _RelationTabDirty = value;
-        if (!_inSetupTpRelations) {
-          btnCancelRelation.Visible = value;
-          btnUpdateRelation.Visible = value;
-        }
+        _RelationTabDirty = value;        
       }
     }
 
@@ -442,7 +420,9 @@ namespace TheLoomApp {
     private void SetupTpItems() {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
-        var item = _selectedNode.Item;
+        var item = _selectedNode.Item;        
+        btnWriteFile.Visible = WeItemTypeExtensions.GetGenerativeTypes().Contains((WeItemType)item.ItemTypeId) 
+          && ( item.WrittenAt == null || item.Established > item.WrittenAt);
 
         _CurrentItemBackup = _selectedNode.Item.Clone();
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
@@ -462,28 +442,13 @@ namespace TheLoomApp {
 
     private void SetupTpRelations() {
       _inSetupTpRelations = true;
-      if (_selectedNode != null && _selectedNode.Relation != null) {
-
-        _CurrentRelationBackup = _selectedNode.Relation.Clone();
-        lbRelationId.Text = "RelationId: " + _selectedNode.Relation.Id.ToString();
-
-        var rank = _selectedNode.Relation.Rank.HasValue ? _selectedNode.Relation.Rank.Value : 0;
-        edRank.Value = rank;
-
-        lbRelItemName.DataBindings.Clear();
-        lbRelItemName.DataBindings.Add("Text", _selectedNode.Relation, "ItemName", true, DataSourceUpdateMode.OnPropertyChanged);
-
-        if (!cbRelRelation.Enabled) cbRelRelation.Enabled = true;
-        cbRelRelation.DataBindings.Clear();
-        cbRelRelation.DataBindings.Add("SelectedValue", _selectedNode.Relation, "RelationTypeId", true, DataSourceUpdateMode.OnPropertyChanged);
-
+      if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Relation != null) {
+        var rel = _selectedNode.Relation;
+        _CurrentRelationBackup = rel.Clone();
+        lbRelationId.Text = "Parent Id:" + rel.ItemId.ToString() + " " +
+          rel.RelationTypeName + " itemId:" + _selectedNode.Item.Id.ToString();        
       } else {
-        lbRelationId.Text = "RelationId: N/A";
-        lbRelItemName.DataBindings.Clear();
-
-        cbRelRelation.DataBindings.Clear();
-        cbRelRelation.Text = "";
-        if (cbRelRelation.Enabled) cbRelRelation.Enabled = false;
+        lbRelationId.Text = "Parent Id: N/A";
       }
       _inSetupTpRelations = false;
       RelationTabDirty = false;
@@ -1116,5 +1081,8 @@ namespace TheLoomApp {
     #endregion
 
 
+    private void btnWriteFile_Click(object sender, EventArgs e) {
+
+    }
   }
 }

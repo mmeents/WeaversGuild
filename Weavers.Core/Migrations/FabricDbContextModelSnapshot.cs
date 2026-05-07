@@ -60,6 +60,72 @@ namespace Weavers.Core.Migrations
                     b.ToTable("AppSettings");
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BuildOutput")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompilerOutput")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("LibraryItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LibraryItemId");
+
+                    b.ToTable("Builds", (string)null);
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.BuildFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BuildId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("WasDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("WasWritten")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuildId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("BuildFiles", (string)null);
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.DataType", b =>
                 {
                     b.Property<int>("Id")
@@ -1822,7 +1888,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 94,
-                            DefaultValue = "6",
+                            DefaultValue = "7",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1836,6 +1902,20 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 95,
+                            DefaultValue = "84",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 614,
+                            Key = "DeleteBehavior",
+                            Rank = 4,
+                            ReferenceItemTypeId = 80,
+                            ValueDataTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 96,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1848,7 +1928,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 96,
+                            Id = 97,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1862,7 +1942,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 97,
+                            Id = 98,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1876,7 +1956,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 98,
+                            Id = 99,
                             DefaultValue = "6",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1890,7 +1970,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 99,
+                            Id = 100,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1903,7 +1983,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 100,
+                            Id = 101,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1916,7 +1996,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 102,
                             DefaultValue = ".cs",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -1929,7 +2009,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 103,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1942,7 +2022,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 104,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2133,7 +2213,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 16,
+                            Id = 15,
                             Description = "sql uniqueidentifier type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2145,7 +2225,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 16,
                             Description = "sql varchar type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2157,7 +2237,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 20,
+                            Id = 17,
                             Description = "sql nvarchar type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2169,19 +2249,19 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 18,
                             Description = "sql float type",
                             EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "SqlFloatType",
-                            ParentTypeId = 21,
+                            ParentTypeId = 18,
                             Rank = 0
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 19,
                             Description = "sql decimal type",
                             EditorTypeId = 8,
                             IconName = "",
@@ -2193,7 +2273,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 20,
                             Description = "sql datetime type",
                             EditorTypeId = 6,
                             IconName = "",
@@ -2205,7 +2285,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 21,
                             Description = "sql datetime2 type",
                             EditorTypeId = 6,
                             IconName = "",
@@ -2217,7 +2297,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 26,
+                            Id = 22,
                             Description = "sql date type",
                             EditorTypeId = 6,
                             IconName = "",
@@ -2229,7 +2309,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 28,
+                            Id = 23,
                             Description = "sql time type",
                             EditorTypeId = 7,
                             IconName = "",
@@ -2241,7 +2321,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 29,
+                            Id = 24,
                             Description = "sql datetimeoffset type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2253,7 +2333,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 30,
+                            Id = 25,
                             Description = "sql binary type",
                             EditorTypeId = -1,
                             IconName = "",
@@ -2418,7 +2498,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 52,
+                            Id = 51,
                             Description = "C# Class Type",
                             EditorTypeId = 11,
                             IconName = "",
@@ -2430,7 +2510,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 54,
+                            Id = 52,
                             Description = "C# Record Type",
                             EditorTypeId = 11,
                             IconName = "",
@@ -2442,7 +2522,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 56,
+                            Id = 53,
                             Description = "C# Struct Type",
                             EditorTypeId = 11,
                             IconName = "",
@@ -2454,7 +2534,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 58,
+                            Id = 54,
                             Description = "C# String Type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2466,7 +2546,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 60,
+                            Id = 55,
                             Description = "C# Bool Type",
                             EditorTypeId = 2,
                             IconName = "",
@@ -2478,7 +2558,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 62,
+                            Id = 56,
                             Description = "C# Char Type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2490,7 +2570,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 64,
+                            Id = 57,
                             Description = "C# Int Type",
                             EditorTypeId = 3,
                             IconName = "",
@@ -2502,7 +2582,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 66,
+                            Id = 58,
                             Description = "C# Long Type",
                             EditorTypeId = 3,
                             IconName = "",
@@ -2514,7 +2594,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 68,
+                            Id = 59,
                             Description = "C# Short Type",
                             EditorTypeId = 3,
                             IconName = "",
@@ -2526,7 +2606,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 70,
+                            Id = 60,
                             Description = "C# Decimal Type",
                             EditorTypeId = 8,
                             IconName = "",
@@ -2538,7 +2618,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 72,
+                            Id = 61,
                             Description = "C# Double Type",
                             EditorTypeId = 8,
                             IconName = "",
@@ -2550,7 +2630,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 74,
+                            Id = 62,
                             Description = "C# Float Type",
                             EditorTypeId = 8,
                             IconName = "",
@@ -2562,7 +2642,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 76,
+                            Id = 63,
                             Description = "C# Byte Type",
                             EditorTypeId = 3,
                             IconName = "",
@@ -2574,7 +2654,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 78,
+                            Id = 64,
                             Description = "C# DateTime Type",
                             EditorTypeId = 6,
                             IconName = "",
@@ -2586,19 +2666,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 79,
-                            Description = "C# DateTime2 Type",
-                            EditorTypeId = 6,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CSharpDateTime2Type",
-                            ParentTypeId = 50,
-                            Rank = 16
-                        },
-                        new
-                        {
-                            Id = 80,
+                            Id = 65,
                             Description = "C# Date Type",
                             EditorTypeId = 6,
                             IconName = "",
@@ -2610,7 +2678,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 82,
+                            Id = 66,
                             Description = "C# Time Type",
                             EditorTypeId = 7,
                             IconName = "",
@@ -2622,7 +2690,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 84,
+                            Id = 67,
                             Description = "C# DateTimeOffset Type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2634,7 +2702,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 86,
+                            Id = 68,
                             Description = "C# Byte Array Type",
                             EditorTypeId = -1,
                             IconName = "",
@@ -2646,7 +2714,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 88,
+                            Id = 69,
                             Description = "C# Guid Type",
                             EditorTypeId = 4,
                             IconName = "",
@@ -2655,6 +2723,101 @@ namespace Weavers.Core.Migrations
                             Name = "CSharpGuidType",
                             ParentTypeId = 50,
                             Rank = 21
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Description = "Entity Delete Behaviors",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteBehaviors",
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Description = "ClientSetNull",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteClientSetNull",
+                            ParentTypeId = 80,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Description = "Restrict",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteRestrict",
+                            ParentTypeId = 80,
+                            Rank = 2
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Description = "SetNull",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteSetNull",
+                            ParentTypeId = 80,
+                            Rank = 3
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Description = "Cascade",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteCascade",
+                            ParentTypeId = 80,
+                            Rank = 4
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Description = "ClientCascade",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteClientCascade",
+                            ParentTypeId = 80,
+                            Rank = 5
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Description = "NoAction",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteNoAction",
+                            ParentTypeId = 80,
+                            Rank = 6
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Description = "ClientNoAction",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityDeleteClientNoAction",
+                            ParentTypeId = 80,
+                            Rank = 7
                         },
                         new
                         {
@@ -3238,6 +3401,36 @@ namespace Weavers.Core.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.Item", "LibraryItem")
+                        .WithMany("Builds")
+                        .HasForeignKey("LibraryItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LibraryItem");
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.BuildFile", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.Build", "Build")
+                        .WithMany("BuildFiles")
+                        .HasForeignKey("BuildId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.Item", "Item")
+                        .WithMany("BuildFiles")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Build");
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.Item", b =>
                 {
                     b.HasOne("Weavers.Core.Entities.ItemType", "ItemType")
@@ -3363,8 +3556,17 @@ namespace Weavers.Core.Migrations
                     b.Navigation("RelationType");
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
+                {
+                    b.Navigation("BuildFiles");
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.Item", b =>
                 {
+                    b.Navigation("BuildFiles");
+
+                    b.Navigation("Builds");
+
                     b.Navigation("IncomingRelations");
 
                     b.Navigation("Properties");

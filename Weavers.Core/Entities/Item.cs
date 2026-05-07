@@ -19,7 +19,8 @@ namespace Weavers.Core.Entities {
     public ICollection<Relation> Relations { get; set; } = [];
     public ICollection<Relation> IncomingRelations { get; set; } = [];
     public ICollection<ItemProperty> Properties { get; set; } = [];
-
+    public ICollection<Build> Builds { get; set; } = [];
+    public ICollection<BuildFile> BuildFiles { get; set; } = [];
 
     public Item() { }
 
@@ -40,7 +41,10 @@ namespace Weavers.Core.Entities {
 
       builder.HasOne(x => x.ItemType).WithMany(x => x.Items).HasForeignKey(x => x.ItemTypeId).OnDelete(DeleteBehavior.Restrict);
       builder.HasMany(m => m.Properties).WithOne(p => p.Item).HasForeignKey(p => p.ItemId).OnDelete(DeleteBehavior.Cascade);
-      }
+      builder.HasMany(x => x.Builds).WithOne(y => y.LibraryItem).HasForeignKey(y => y.LibraryItemId).OnDelete(DeleteBehavior.Restrict);
+      builder.HasMany(x => x.BuildFiles).WithOne(y => y.Item).HasForeignKey(y => y.ItemId).OnDelete(DeleteBehavior.Restrict);
+
+    }
   }
 
 
