@@ -27,21 +27,25 @@ namespace Weavers.Core.Handlers.Items {
       if (item == null) return;
 
       string? parentPath = null;
-      if (item.ItemTypeId == (int)WeItemType.ProjectFolderModel) { 
-        parentPath = newBase; 
+      if (item.ItemTypeId == (int)WeItemType.ProjectFolderModel) {
+        parentPath = newBase;
       } else {
         parentPath = await _mediator.Send(new GetParentItemPathPropertyQuery(itemId));
-      }      
+      }
       if (parentPath == null) return;
 
       string propKey = item.ItemTypeId.GetFolderPropertyName();
-      if (propKey == "") return;      
-      if (propKey != null) {
-        var prop = item.Properties.FirstOrDefault(p => p.Name == propKey);
-        if (prop != null ) {      
+      if (propKey == "") return;
+
+      var prop = item.Properties.FirstOrDefault(p => p.Name == propKey);
+      if (prop != null) { 
+        if (item.ItemTypeId == (int)WeItemType.NamespaceModel || item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
+          var fullPath = Path.Combine(parentPath, item.Name.UrlSafe());
+          await UpdatePathProperty(prop, fullPath);
+        } else if (propKey == Cx.ItFilePath) {          
           var fullPath = "";
           var fileName = "";
-          if (propKey == Cx.ItFilePath) {            
+          if (propKey == Cx.ItFilePath) {
             fileName = item.GetFileName();
             fullPath = Path.Combine(parentPath, fileName);
           } else if (item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
@@ -49,9 +53,9 @@ namespace Weavers.Core.Handlers.Items {
           } else {
             fullPath = parentPath;
           }
-          await UpdatePathProperty(prop, fullPath);
+          await UpdatePathProperty(prop, fullPath);          
         }
-      }     
+      }
       
       var childIds = item.Relations
         .Where(r => r.RelationTypeId == (int)WeRelationTypes.Contains)

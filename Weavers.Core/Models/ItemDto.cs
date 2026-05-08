@@ -16,6 +16,7 @@ namespace Weavers.Core.Models {
     public ICollection<RelationDto> Relations { get; set; } = [];
     public ICollection<RelationDto> IncomingRelations { get; set; } = [];
     public ICollection<ItemPropertyDto> Properties { get; set; } = [];
+
   }
 
 

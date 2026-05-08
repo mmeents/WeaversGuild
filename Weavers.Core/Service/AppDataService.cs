@@ -7,6 +7,7 @@ using Weavers.Core.Handlers.RelationTypes;
 using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.DepItems;
 using System.Runtime.CompilerServices;
+using Weavers.Core.Handlers.Builds;
 
 
 namespace Weavers.Core.Service {
@@ -31,6 +32,7 @@ namespace Weavers.Core.Service {
     Task AddRemoveDbContextToLibDi(int DiItemId, bool add);
     //Task AddRemoveEntityToDbContext(int entityItemId, bool add);
     Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem);
+    Task<BuildContext> BuildLibrary(int libraryItemId, bool forceWrite);
 
   }
   public class AppDataService : IAppDataService {
@@ -177,6 +179,13 @@ namespace Weavers.Core.Service {
       var mediator = GetMediator();
       var command = new ProcessPropertyUpdateCommand(entityItem, propertyItem);
       await mediator.Send(command);
+    }
+
+    public async Task<BuildContext> BuildLibrary(int libraryItemId, bool forceWrite){ 
+      var mediator = GetMediator();
+      var command = new BuildLibraryCommand(libraryItemId, forceWrite); 
+      var result = await mediator.Send(command);
+      return result;
     }
 
 

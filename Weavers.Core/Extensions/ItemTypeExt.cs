@@ -155,6 +155,24 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+
+    public static bool IsLibraryType(this int? itemTypeId) {
+      if (itemTypeId == null) return false;
+      return itemTypeId switch {        
+        (int)WeItemType.LibraryModel => true,
+        (int)WeItemType.DependencyInjectionModel => true,
+        (int)WeItemType.DbContextModel => true,
+        (int)WeItemType.NamespaceModel => true,
+        (int)WeItemType.InterfaceModel => true,
+        (int)WeItemType.RecordModel => true,
+        (int)WeItemType.StructModel => true,
+        (int)WeItemType.ClassModel => true,
+        (int)WeItemType.EntityClassModel => true,        
+        _ => false
+      };
+    }
+
+
     // For the types Path as a property, this gets the property name
     // that should be used to lookup it up.
     public static string GetFolderPropertyName(this int itemTypeId) {

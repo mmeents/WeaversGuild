@@ -420,9 +420,8 @@ namespace TheLoomApp {
     private void SetupTpItems() {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
-        var item = _selectedNode.Item;        
-        btnWriteFile.Visible = WeItemTypeExtensions.GetGenerativeTypes().Contains((WeItemType)item.ItemTypeId) 
-          && ( item.WrittenAt == null || item.Established > item.WrittenAt);
+        var item = _selectedNode.Item;
+        btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel;           
 
         _CurrentItemBackup = _selectedNode.Item.Clone();
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
@@ -639,10 +638,9 @@ namespace TheLoomApp {
               await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);
             }
           }
-          await Task.Delay(100);
-          if (parentNode != null && parentNode.Item != null) {
-            this.Invoke(() => RefreshSelectedNode(parentNode.Item.Id));
-          }
+          await Task.Delay(100);         
+          this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
+          
         }
 
 
@@ -659,14 +657,14 @@ namespace TheLoomApp {
       var fullPath = "";
       var fileName = "";  // namespaces are folders within a file and get add to the path the file is in.
       var fileBasePath = basePath;
-      if (propKey == Cx.ItFilePath) {
-        if (fileBasePath.Contains(".csproj")) {
+      if (item.ItemTypeId == (int)WeItemType.NamespaceModel || item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
+        fullPath = Path.Combine(basePath, item.Name.UrlSafe());
+      } else if (propKey == Cx.ItFilePath) {
+        if (item.ItemTypeId.IsFileNameType()) {
           fileBasePath = Path.GetDirectoryName(fileBasePath) ?? basePath;
         }
         fileName = item.GetFileName();
-        fullPath = Path.Combine(fileBasePath, fileName);
-      } else if (item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
-        fullPath = Path.Combine(basePath, item.Name.UrlSafe());
+        fullPath = Path.Combine(fileBasePath, fileName);        
       } else {
         fullPath = basePath;
       }
@@ -1081,7 +1079,26 @@ namespace TheLoomApp {
     #endregion
 
 
-    private void btnWriteFile_Click(object sender, EventArgs e) {
+    private async void btnWriteFile_Click(object sender, EventArgs e) {
+      if (_selectedNode == null || _selectedNode.Item == null) {
+        MessageBox.Show("Please select a library item to write.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        return;
+      }
+      if (_selectedNode.Item.ItemTypeId != (int)WeItemType.LibraryModel) {
+        MessageBox.Show("Selected item is not a library. Please select a library item to write.", "Invalid Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        return;
+      }
+      var result = await _appDataService.BuildLibrary(_selectedNode.Item.Id, true);
+
+      foreach (var errorLine in result.Errors) { 
+        DoLogMessage("Error: " + errorLine);
+      }
+      foreach (var warnLine in result.Warnings) {
+        DoLogMessage("Warning: " + warnLine);
+      }
+      DoLogMessage($"Written: {result.FilesWritten}");
+      DoLogMessage($"Skipped: {result.FilesSkipped}");
+      DoLogMessage($"Removed: {result.FilesRemoved}");
 
     }
   }

@@ -16,6 +16,10 @@ namespace Weavers.Core {
     public DbSet<Relation> Relations => Set<Relation>();
     public DbSet<RelationType> RelationTypes => Set<RelationType>();
 
+    public DbSet<Build> Builds => Set<Build>();
+    public DbSet<BuildFile> BuildFiles => Set<BuildFile>();
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
       base.OnModelCreating(modelBuilder);

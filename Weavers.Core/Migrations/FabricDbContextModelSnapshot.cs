@@ -57,7 +57,7 @@ namespace Weavers.Core.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("AppSettings");
+                    b.ToTable("AppSettings", (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
@@ -583,7 +583,7 @@ namespace Weavers.Core.Migrations
                     b.HasIndex("ItemId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ItemProperties");
+                    b.ToTable("ItemProperties", (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.ItemPropertyDefault", b =>
