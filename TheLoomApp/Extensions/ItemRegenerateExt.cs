@@ -88,11 +88,17 @@ namespace TheLoomApp.Extensions {
         if (item.Description.Length <= 0) {
           log.Add($"Item '{item.Name}' (Id: {item.Id}) has an empty description. Skipping file generation.");
         } else {
+          if (File.Exists(filePath)) { 
+            File.Delete(filePath);
+          }
           File.WriteAllText(filePath, $"{item.Description}");
           log.Add($"Generated file for item '{item.Name}' at '{filePath}'.");
         }
         if (item.Data.Length > "{  }".Length) { // added space to simulate hard returns.
           var dataFilePath = Path.GetFileNameWithoutExtension(filePath) + ".json";
+          if (File.Exists(filePath)) {
+            File.Delete(filePath);
+          }
           File.WriteAllText(dataFilePath, item.Data);
           log.Add($"Generated data file for item '{item.Name}' at '{dataFilePath}'.");
         }
@@ -121,6 +127,9 @@ namespace TheLoomApp.Extensions {
           return;
         }
         var libraryContent = $"{item.Description}";
+        if (File.Exists(filePath)) {
+          File.Delete(filePath);
+        }
         File.WriteAllText(filePath, libraryContent);
         log.Add($"Generated library file for item '{item.Name}' at '{filePath}'.");
       } catch (Exception ex) {

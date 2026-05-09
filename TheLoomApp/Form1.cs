@@ -84,6 +84,11 @@ namespace TheLoomApp {
       _inResize = false;
     }
 
+
+    private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e) {
+      Form1_Resize(sender, e);
+    }
+
     #endregion
 
     #region Error Display
@@ -106,6 +111,7 @@ namespace TheLoomApp {
       } else {
         if (splitContainer3.Panel2Collapsed) {
           splitContainer3.Panel2Collapsed = false;
+          Form1_Resize(this, EventArgs.Empty);
         }
         StringBuilder sb = new StringBuilder();
         sb.AppendLine($"[{DateTime.Now:HH:mm:ss}] {message}");
@@ -408,7 +414,7 @@ namespace TheLoomApp {
     public bool RelationTabDirty {
       get { return _RelationTabDirty; }
       set {
-        _RelationTabDirty = value;        
+        _RelationTabDirty = value;
       }
     }
 
@@ -421,7 +427,7 @@ namespace TheLoomApp {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
-        btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel;           
+        btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel || (WeItemType)item.ItemTypeId == WeItemType.SolutionModel;
 
         _CurrentItemBackup = _selectedNode.Item.Clone();
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
@@ -445,7 +451,7 @@ namespace TheLoomApp {
         var rel = _selectedNode.Relation;
         _CurrentRelationBackup = rel.Clone();
         lbRelationId.Text = "Parent Id:" + rel.ItemId.ToString() + " " +
-          rel.RelationTypeName + " itemId:" + _selectedNode.Item.Id.ToString();        
+          rel.RelationTypeName + " itemId:" + _selectedNode.Item.Id.ToString();
       } else {
         lbRelationId.Text = "Parent Id: N/A";
       }
@@ -638,9 +644,9 @@ namespace TheLoomApp {
               await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);
             }
           }
-          await Task.Delay(100);         
+          await Task.Delay(100);
           this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
-          
+
         }
 
 
@@ -664,7 +670,7 @@ namespace TheLoomApp {
           fileBasePath = Path.GetDirectoryName(fileBasePath) ?? basePath;
         }
         fileName = item.GetFileName();
-        fullPath = Path.Combine(fileBasePath, fileName);        
+        fullPath = Path.Combine(fileBasePath, fileName);
       } else {
         fullPath = basePath;
       }
@@ -1084,22 +1090,37 @@ namespace TheLoomApp {
         MessageBox.Show("Please select a library item to write.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
-      if (_selectedNode.Item.ItemTypeId != (int)WeItemType.LibraryModel) {
-        MessageBox.Show("Selected item is not a library. Please select a library item to write.", "Invalid Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        return;
-      }
-      var result = await _appDataService.BuildLibrary(_selectedNode.Item.Id, true);
+      if (_selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel) {
+        var result = await _appDataService.WriteLibrary(_selectedNode.Item.Id, true);
 
-      foreach (var errorLine in result.Errors) { 
-        DoLogMessage("Error: " + errorLine);
+        foreach (var errorLine in result.Errors) {
+          DoLogMessage("Error: " + errorLine);
+        }
+        foreach (var warnLine in result.Warnings) {
+          DoLogMessage("Warning: " + warnLine);
+        }
+        DoLogMessage($"Written: {result.FilesWritten}");
+        DoLogMessage($"Skipped: {result.FilesSkipped}");
+        DoLogMessage($"Removed: {result.FilesRemoved}");
+
       }
-      foreach (var warnLine in result.Warnings) {
-        DoLogMessage("Warning: " + warnLine);
+      if (_selectedNode.Item.ItemTypeId == (int)WeItemType.SolutionModel) {
+        var result = await _appDataService.WriteSolution(_selectedNode.Item.Id, true);
+
+        foreach (var errorLine in result.Errors) {
+          DoLogMessage("Error: " + errorLine);
+        }
+        foreach (var warnLine in result.Warnings) {
+          DoLogMessage("Warning: " + warnLine);
+        }
+        DoLogMessage($"Written: {result.FilesWritten}");
+        DoLogMessage($"Skipped: {result.FilesSkipped}");
+        DoLogMessage($"Removed: {result.FilesRemoved}");
+        DoLogMessage($"Shell Output: {result.ShellOutput}");
+        DoLogMessage($"Success: {result.Success}");
       }
-      DoLogMessage($"Written: {result.FilesWritten}");
-      DoLogMessage($"Skipped: {result.FilesSkipped}");
-      DoLogMessage($"Removed: {result.FilesRemoved}");
 
     }
+
   }
 }

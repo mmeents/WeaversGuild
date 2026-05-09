@@ -79,11 +79,15 @@ namespace Weavers.Core.Handlers.Templates {
           var isPrimaryKeyProp = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsPrimaryKey);          
           bool isNullable = isNullableProp != null && isNullableProp.Value.AsBoolean();
           bool hasSetter = hasSetterProp != null && hasSetterProp.Value.AsBoolean();
-          string setterClause = hasSetter ? " { get; set; }" : " { get; }";          
+          string navSetterClause = hasSetter ? " { get; set; }" : " { get; }";          
           bool isNav = isNavProp != null && isNavProp.Value.AsBoolean();
           bool isPrimaryKey = isPrimaryKeyProp != null && isPrimaryKeyProp.Value.AsBoolean();
           string nullableClause = isNullable && !isPrimaryKey ? "?" : "";
-          int dataTypeId = dataTypeProp != null && dataTypeProp.Value != null ? int.Parse(dataTypeProp.Value) : 0;           
+          int dataTypeId = dataTypeProp != null && dataTypeProp.Value != null ? int.Parse(dataTypeProp.Value) : 0;
+          string entSetterClause = navSetterClause;
+          if (!isNullable) {            
+            entSetterClause = entSetterClause + $" = {((WeItemType)dataTypeId).AsDefault()};";
+          }
           string propTypeName = "";
           if (dataTypeId == (int)WeItemType.CSharpClassType) {                        
               propTypeName = "object";            
@@ -91,8 +95,7 @@ namespace Weavers.Core.Handlers.Templates {
             propTypeName = dataTypeId != 0 ? ((WeItemType)dataTypeId).AsCsCode() : "object";
           }
 
-          sbProperties.AppendLine($"    public {propTypeName}{nullableClause} {propName} {setterClause}");
-
+          sbProperties.AppendLine($"    public {propTypeName}{nullableClause} {propName} {entSetterClause}");
           if (isNav) {
             var navItemId = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId??0;
             if (navItemId > 0) {
@@ -119,9 +122,9 @@ namespace Weavers.Core.Handlers.Templates {
                   }
                   // print the too part:
                   if ((navType == WeItemType.NavHasOneToOne || navType == WeItemType.NavHasOneToMany)) {
-                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {navClassVarName}{setterClause}{navNulClause2}");
+                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {navClassVarName}{navSetterClause}{navNulClause2}");
                   } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) {
-                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navClassVarName}{setterClause} = [];");
+                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navClassVarName}{navSetterClause} = [];");
                   }
                 } else {
                   sbNavs.AppendLine("    // WeaverError: ");
@@ -170,7 +173,10 @@ namespace Weavers.Core.Handlers.Templates {
         }
       }
 
-          cSb.AppendLine($"namespace {namespaceName} {{");
+      cSb.AppendLine("using Microsoft.EntityFrameworkCore;");
+      cSb.AppendLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
+
+      cSb.AppendLine($"namespace {namespaceName} {{");
       cSb.AppendLine("");  
 
       cSb.AppendLine($"  public class {className} {{");

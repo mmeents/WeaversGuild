@@ -346,6 +346,7 @@
       splitContainer3.SplitterDistance = 513;
       splitContainer3.SplitterWidth = 3;
       splitContainer3.TabIndex = 1;
+      splitContainer3.SplitterMoved += splitContainer3_SplitterMoved;
       // 
       // tabControl1
       // 
@@ -545,6 +546,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;

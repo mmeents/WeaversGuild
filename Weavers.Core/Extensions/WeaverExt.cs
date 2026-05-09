@@ -43,11 +43,15 @@ namespace Weavers.Core.Extensions {
     public static string ClaudeExecutablePath {
       get {
         string claudePath = Path.Combine(CommonAppPath, "claude").ResolvePath();
+        string filePath = Path.Combine(claudePath, ".mcp.json");
         if (!Directory.Exists(claudePath)) Directory.CreateDirectory(claudePath);
-        if (!File.Exists(Path.Combine(claudePath, ".mcp.json"))) {
+        if (!File.Exists(filePath)) {
           StringBuilder sb = new();
           sb.Append($"{{\r\n\t\"mcpServers\": {{\r\n\t  \"weavers-mcp\": {{\r\n\t\t\"type\": \"stdio\",\r\n\t\t\"command\": \"{claudePath}\\\\WeaversMCP.exe\",\r\n\t\t\"args\": []\r\n\t  }}\r\n\t}}\r\n}}");
-          File.WriteAllText(Path.Combine(claudePath, ".mcp.json"), sb.ToString());
+          if (File.Exists(filePath)) {
+            File.Delete(filePath);
+          }
+          File.WriteAllText(filePath, sb.ToString());
         }
         return claudePath;
       }

@@ -42,7 +42,7 @@ namespace Weavers.Core.Handlers.Templates {
         if (fileNamePath == "") { return buildContext.Fail("Item path property is empty."); }
         var path = Path.GetDirectoryName(fileNamePath);
         if (!Directory.Exists(path)) {
-          Directory.CreateDirectory(path);  // except if it fails.
+          Directory.CreateDirectory(path!);  // except if it fails.
         } 
       } catch {
         return buildContext.Fail("Failed to locate directory.");

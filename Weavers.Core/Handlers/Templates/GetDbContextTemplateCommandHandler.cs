@@ -19,7 +19,8 @@ namespace Weavers.Core.Handlers.Templates {
       StringBuilder sbUse = new StringBuilder();
 
       HashSet<string> sbUses = new HashSet<string>();
-      sbUses.Add("using Microsoft.EntityFrameworkCore;");      
+      sbUses.Add("using Microsoft.EntityFrameworkCore;");
+      sbUse.AppendLine("using Microsoft.EntityFrameworkCore;");
 
       var importItemIds = dbContextItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DbContextEntityImportModel)
         .Select(r => r.RelatedItemId).Where(r => r.HasValue).Select(v => v!.Value).ToList();

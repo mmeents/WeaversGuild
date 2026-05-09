@@ -60,6 +60,9 @@ namespace Weavers.Core.Handlers.Builds {
       }
 
       try {
+        if (File.Exists(fileNamePath)) {
+          File.Delete(fileNamePath);
+        }
         System.IO.File.WriteAllText(fileNamePath, templateContent);
 
 

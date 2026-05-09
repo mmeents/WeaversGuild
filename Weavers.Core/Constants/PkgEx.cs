@@ -45,7 +45,7 @@ namespace Weavers.Core.Constants {
       {
         PkgType.Mediatr,
         new List<PackageDetailsDef>() {
-          new PackageDetailsDef("MediatR", "12.2.1"),
+          new PackageDetailsDef("MediatR", "12.5.0"),
         }
       }
     };

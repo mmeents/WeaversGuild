@@ -32,7 +32,8 @@ namespace Weavers.Core.Service {
     Task AddRemoveDbContextToLibDi(int DiItemId, bool add);
     //Task AddRemoveEntityToDbContext(int entityItemId, bool add);
     Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem);
-    Task<BuildContext> BuildLibrary(int libraryItemId, bool forceWrite);
+    Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite);
+    Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite);
 
   }
   public class AppDataService : IAppDataService {
@@ -181,14 +182,20 @@ namespace Weavers.Core.Service {
       await mediator.Send(command);
     }
 
-    public async Task<BuildContext> BuildLibrary(int libraryItemId, bool forceWrite){ 
+    public async Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite){ 
       var mediator = GetMediator();
-      var command = new BuildLibraryCommand(libraryItemId, forceWrite); 
+      var command = new WriteLibraryCommand(libraryItemId, forceWrite); 
+      var result = await mediator.Send(command);
+      return result;
+    }
+
+    public async Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite) { 
+      var mediator = GetMediator();
+      var command = new WriteSolutionCommand(solutionItemId, forceWrite);
       var result = await mediator.Send(command);
       return result;
     }
 
 
-
-  }
+}
 }

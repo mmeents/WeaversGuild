@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Text.Json;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -13,29 +10,31 @@ using Weavers.Core.Handlers.Templates;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Builds {
-  public record BuildLibraryCommand(int LibraryItemId, bool ForceWrite) : IRequest<BuildContext> { }
-  public class BuildLibraryCommandHandler : IRequestHandler<BuildLibraryCommand, BuildContext?> {
+  
+  public record WriteLibraryCommand(int LibraryItemId, bool ForceWrite) : IRequest<BuildContext> { }
+
+  public class WriteLibraryCommandHandler : IRequestHandler<WriteLibraryCommand, BuildContext?> {
     public readonly FabricDbContext _context;
     public readonly IMediator _mediator;
-    public BuildLibraryCommandHandler(FabricDbContext context, IMediator mediator) {
+    private HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
+    public WriteLibraryCommandHandler(FabricDbContext context, IMediator mediator) {
       _context = context;
       _mediator = mediator;
     }
 
-    public async Task<BuildContext?> Handle(BuildLibraryCommand request, CancellationToken cancellationToken) {
+    public async Task<BuildContext?> Handle(WriteLibraryCommand request, CancellationToken cancellationToken) {
 
       var buildContext = new BuildContext {
         ForceWrite = request.ForceWrite
       };
       var libraryItem = await _context.GetLibraryItemDtoById(request.LibraryItemId);
-      if (libraryItem == null) return buildContext.Fail("Library item not found");      
-
-      bool NoLastBuild = !libraryItem.Builds.Any();
+      if (libraryItem == null) return buildContext.Fail($" LibraryId:{request.LibraryItemId} item not found");      
+            
       BuildDto? lastBuild = null;
-      if (!NoLastBuild) {
+      if (libraryItem.Builds.Any()) {
         lastBuild = libraryItem.Builds.OrderByDescending(b => b.StartedAt).FirstOrDefault();
         if (lastBuild != null && lastBuild.BuildStatus == BuildStatus.InProgress) {
-          return buildContext.Fail("Library has build in progress.");
+          return buildContext.Fail($" LibraryId:{request.LibraryItemId} has build in progress.");
         }
       }
 
@@ -56,6 +55,8 @@ namespace Weavers.Core.Handlers.Builds {
       buildContext = await WalkAnWrite(libraryItem.Id, build.Id, buildContext, cancellationToken);
 
       if (lastBuild != null && buildContext.Success) {
+
+        // cleanup of previous build files that are no longer relevant.
         foreach (var buildFile in lastBuild.BuildFiles) {
           if (!buildContext.LibItems.Keys.Contains(buildFile.ItemId)) {
 
@@ -66,7 +67,7 @@ namespace Weavers.Core.Handlers.Builds {
               await _context.MarkBuildFileRemoved(buildFile.Id, cancellationToken);
             }
 
-          } else { // was there...
+          } else { // was there... check for differences in path, if different then remove the old named version.
             var bi = buildContext.LibItems[buildFile.ItemId];
             var biprop = bi.Properties.FirstOrDefault(p => p.Name == bi.ItemTypeId.GetFolderPropertyName());
             if (biprop != null) {
@@ -78,17 +79,33 @@ namespace Weavers.Core.Handlers.Builds {
                   await _context.MarkBuildFileRemoved(buildFile.Id, cancellationToken);
                 }
               }
-            }
-            
-              
+            }              
           }
-
         }
       }
 
-      // TODO: shell compile here and update buildContext with results.
+      // save status and output to build record.
+      var result = buildContext.Ok($"{libraryItem.Name} build completed.");
+      var sbOutput = new StringBuilder();
+      sbOutput.AppendLine($"{DateTime.UtcNow} Utc, {DateTime.Now} Local, {libraryItem.Name} Sync to file system results.");
+      foreach (var x in buildContext.Errors) {
+        if (x!= null && x != "") {
+          sbOutput.AppendLine($"Error: {x}");
+        }        
+      }
+      foreach (var x in buildContext.Warnings) {
+        if (x != null && x != "") {
+          sbOutput.AppendLine($"Warning: {x}");
+        }
+      }
+      sbOutput.AppendLine($"Written: {result.FilesWritten}");
+      sbOutput.AppendLine($"Skipped: {result.FilesSkipped}");
+      sbOutput.AppendLine($"Removed: {result.FilesRemoved}");
+      build.BuildOutput = sbOutput.ToString();
+      build.Status = (int)(buildContext.Success ? BuildStatus.Success : BuildStatus.Failed);
+      await _context.SaveChangesAsync();
 
-      return buildContext.Ok($"{libraryItem.Name} build completed.");
+      return result;
     }
 
 
@@ -112,15 +129,17 @@ namespace Weavers.Core.Handlers.Builds {
         if (fileNamePath == "") { return buildContext.Fail($"Item {item.Name} path property is empty."); }
         var path = Path.GetDirectoryName(fileNamePath);
         if (!Directory.Exists(path)) {
-          Directory.CreateDirectory(path);  // except if it fails.
+          Directory.CreateDirectory(path!);  // except if it fails.
         }
 
-        if (buildContext.ForceWrite || item.WrittenAt == null || item.Established > item.WrittenAt) {
-          var bc = await _mediator.Send(new GenerateWriteItemByTypeCommand(item.Id, buildId, buildContext));          
-          buildContext.FilesWritten++;
-        } else {
-          buildContext.FilesSkipped++;
-          buildContext.Warnings.Add($"Item {item.Name} path property is up to date.");
+        if (_generatableTypes.Contains((WeItemType)item.ItemTypeId)) {  // namespaces are not generatable.
+          if (buildContext.ForceWrite || item.WrittenAt == null || item.Established > item.WrittenAt) {
+            var bc = await _mediator.Send(new GenerateWriteItemByTypeCommand(item.Id, buildId, buildContext));
+            buildContext.FilesWritten++;
+          } else {
+            buildContext.FilesSkipped++;
+            buildContext.Warnings.Add($"Item {item.Name} path property is up to date.");
+          }
         }
 
         var childIds = item.Relations
@@ -149,6 +168,7 @@ namespace Weavers.Core.Handlers.Builds {
     public ConcurrentDictionary<int, ItemDto> LibItems { get; init; } = new ConcurrentDictionary<int, ItemDto>();
     public List<string> Errors { get; } = new List<string>();
     public List<string> Warnings { get; } = new List<string>();
+    public string ShellOutput { get; set; } = string.Empty;
     public int FilesWritten { get; set; } = 0;
     public int FilesSkipped { get; set; } = 0; 
     public int FilesRemoved { get; set; } = 0;

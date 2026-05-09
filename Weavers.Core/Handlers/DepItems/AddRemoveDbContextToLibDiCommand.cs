@@ -67,7 +67,7 @@ namespace Weavers.Core.Handlers.DepItems {
       var fileName = "";  // namespaces are folders within a file and get add to the path the file is in.
       var fileBasePath = basePath;
       if (propKey == Cx.ItFilePath) {
-        if (fileBasePath.Contains(".csproj")) {
+        if (item.ItemTypeId.IsFileNameType()){
           fileBasePath = Path.GetDirectoryName(fileBasePath) ?? basePath;
         }
         fileName = item.GetFileName();

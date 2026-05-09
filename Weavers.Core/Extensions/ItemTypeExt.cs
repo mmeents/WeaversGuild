@@ -33,6 +33,29 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static string AsDefault(this WeItemType itemType) {
+      return itemType switch {
+        WeItemType.CSharpStringType => "string.Empty",
+        WeItemType.CSharpBoolType => "false",
+        WeItemType.CSharpCharType => "'\\0'",
+        WeItemType.CSharpIntType => "0",
+        WeItemType.CSharpLongType => "0L",
+        WeItemType.CSharpShortType => "0",
+        WeItemType.CSharpDecimalType => "0m",
+        WeItemType.CSharpDoubleType => "0d",
+        WeItemType.CSharpFloatType => "0f",
+        WeItemType.CSharpByteType => "0",
+        WeItemType.CSharpDateTimeType => "DateTime.MinValue",
+        WeItemType.CSharpDateType => "DateTime.MinValue.Date",
+        WeItemType.CSharpTimeType => "TimeSpan.Zero",
+        WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset.MinValue",
+        WeItemType.CSharpByteArrayType => "Array.Empty<byte>()",
+        WeItemType.CSharpGuidType => "Guid.Empty",
+        _ => "null"
+      };
+    }
+
+
     public static int ImageIndex(this WeItemType itemType) {
       return itemType switch {
         WeItemType.ProjectFolderModel => 1,
@@ -150,7 +173,6 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.StructModel => true,
         (int)WeItemType.ClassModel => true,
         (int)WeItemType.EntityClassModel => true,
-        (int)WeItemType.EntityConfigurationModel => true,
         _ => false
       };
     }
