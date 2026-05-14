@@ -18,6 +18,7 @@ namespace Weavers.Core {
 
     public DbSet<Build> Builds => Set<Build>();
     public DbSet<BuildFile> BuildFiles => Set<BuildFile>();
+    public DbSet<McpLogEntry> McpLogEntries => Set<McpLogEntry>();
 
 
 

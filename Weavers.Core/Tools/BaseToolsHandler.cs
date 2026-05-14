@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace Weavers.Core.Tools {
-  public interface IStorytimeToolsHandler {    
+  public interface IBaseToolsHandler {    
     Task<string> GetItemById(int id);
     Task<string> GetSubgraph(int itemId, int depth = 2);
     Task<string> CreateRelatedItem(int parentItemId, int relationTypeId, int itemTypeId, string name, string description, string data);
@@ -18,9 +18,9 @@ namespace Weavers.Core.Tools {
   }
 
 
-  public class StorytimeToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<StorytimeToolsHandler> logger) : IStorytimeToolsHandler {
+  public class BaseToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<BaseToolsHandler> logger) : IBaseToolsHandler {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
-    private readonly ILogger<StorytimeToolsHandler> _logger = logger;   
+    private readonly ILogger<BaseToolsHandler> _logger = logger;   
 
     public async Task<string> GetItemById(int id) {
       try {
@@ -28,7 +28,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var query = new GetItemByIdQuery(id, true);
         var result = await mediator.Send(query);
-        var opResult = McpOpResult.CreateSuccess("get-item-by-id", "Successfully retrieved item", result);
+        var opResult = McpOpResult.CreateSuccess("get-item-by-id", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error retrieving item by id");
@@ -43,7 +43,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var command = new CreateRelatedItemCommand(parentItemId, relationTypeId, itemTypeId, name, description, data);
         var result = await mediator.Send(command);
-        var opResult = McpOpResult.CreateSuccess("create-related-item", "Successfully created related item", result);
+        var opResult = McpOpResult.CreateSuccess("create-related-item", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error creating related item");
@@ -58,7 +58,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var command = new CreateItemCommand(name, itemTypeId, description, data);
         var result = await mediator.Send(command);
-        var opResult = McpOpResult.CreateSuccess("create-item", "Successfully created", result);
+        var opResult = McpOpResult.CreateSuccess("create-item", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error creating item");
@@ -75,7 +75,7 @@ namespace Weavers.Core.Tools {
         if (item != null) {
           var command = new UpdateItemCommand(id, itemTypeId, name, description, data, true, item.WrittenAt);
           var result = await mediator.Send(command);
-          var opResult = McpOpResult.CreateSuccess("update-item", "Successfully updated", result);
+          var opResult = McpOpResult.CreateSuccess("update-item", result);
           return JsonSerializer.Serialize(opResult);
         } else {
           var opResult = McpOpResult.CreateFailure("update-item", "Item not found");
@@ -94,7 +94,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var query = new GetRelationsQuery(id, null, null, null);
         var result = await mediator.Send(query);
-        var opResult = McpOpResult.CreateSuccess("get-relation-by-id", "Successfully retrieved relation", result);
+        var opResult = McpOpResult.CreateSuccess("get-relation-by-id", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error retrieving relation by id");
@@ -109,7 +109,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var command = new CreateRelationCommand(fromItemId, relationTypeId, toItemId);
         var result = await mediator.Send(command);
-        var opResult = McpOpResult.CreateSuccess("create-relation", "Successfully created relation", result);
+        var opResult = McpOpResult.CreateSuccess("create-relation", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error creating item relation");
@@ -124,7 +124,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var command = new UpdateRelationCommand(relationId, fromItemId, relationTypeId, toItemId, rank);
         var result = await mediator.Send(command);
-        var opResult = McpOpResult.CreateSuccess("update-relation", "Successfully updated relation", result);
+        var opResult = McpOpResult.CreateSuccess("update-relation", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating item relation");
@@ -139,7 +139,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var query = new GetSubgraphQuery(itemId, depth);
         var result = await mediator.Send(query);
-        var opResult = McpOpResult.CreateSuccess("get-subgraph", "Successfully retrieved subgraph", result);
+        var opResult = McpOpResult.CreateSuccess("get-subgraph", result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error retrieving subgraph");

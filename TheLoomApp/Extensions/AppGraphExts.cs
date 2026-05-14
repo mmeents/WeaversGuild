@@ -46,7 +46,7 @@ namespace TheLoomApp.Extensions {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || !item.IsValidFolderParent()) { return; }
-      var newSubItem = await graphSrvs.AddFile(item, (string?)null);
+      var newSubItem = await graphSrvs.AddFile(item, (string?)null, (string?)null);
       if (newSubItem == null) { return; }
       _tv.AddNewItem(newSubItem);      
     }
@@ -127,7 +127,7 @@ namespace TheLoomApp.Extensions {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || (item.ItemTypeId != (int)WeItemType.NamespaceModel && item.ItemTypeId != (int)WeItemType.LibraryModel)) { return; }
-      var newSubItem = await graphSrvs.AddEntityClassModel(item, (string?)null);
+      var newSubItem = await graphSrvs.AddEntityClassModel(item, (string?)null, (string?)null);
       if (newSubItem == null) { return; }
       _tv.AddNewItem(newSubItem);
     }

@@ -15,9 +15,22 @@ namespace Weavers.Core.Handlers.Items {
   public record UpdateItemPropertyNamespaceRecursiveCommand(int ItemId, string OldNamespace, string NewNamespace) : IRequest;
 
   public class UpdateItemPropertyNamespaceRecursiveCommandHandler(FabricDbContext context) :IRequestHandler<UpdateItemPropertyNamespaceRecursiveCommand> {
-    private readonly FabricDbContext _context = context;    
+    private readonly FabricDbContext _context = context;  
+    private readonly HashSet<int> _packageRefs = new HashSet<int>();
     public async Task Handle(UpdateItemPropertyNamespaceRecursiveCommand request, CancellationToken cancellationToken) {
       await WalkAndUpdate(request.ItemId, request.OldNamespace, request.NewNamespace, cancellationToken);
+      _packageRefs.Add((int)WeItemType.LibPackageRefModel);
+      _packageRefs.Add((int)WeItemType.LibLibraryRefModel);
+      _packageRefs.Add((int)WeItemType.DiImportModel);
+      _packageRefs.Add((int)WeItemType.DbContextEntityImportModel);
+      _packageRefs.Add((int)WeItemType.ClassImportModel);
+      _packageRefs.Add((int)WeItemType.ClassPropertyModel);
+      _packageRefs.Add((int)WeItemType.ClassMethodModel);
+      _packageRefs.Add((int)WeItemType.ClassMethodParameterModel);
+      _packageRefs.Add((int)WeItemType.EntityClassImportModel);
+      _packageRefs.Add((int)WeItemType.EntityPropertyModel);
+      _packageRefs.Add((int)WeItemType.EntityNavigationModel);
+      _packageRefs.Add((int)WeItemType.EntityInboundNavigationModel);
     }
     private async Task WalkAndUpdate(int itemId, string oldBase, string newBase, CancellationToken ct) {
       var item = await _context.GetItemDtoById(itemId, ct);
@@ -25,6 +38,7 @@ namespace Weavers.Core.Handlers.Items {
       string? propKey = item.ItemTypeId switch {
         (int)WeItemType.LibraryModel => Cx.ItNamespaceRoot,
         (int)WeItemType.DependencyInjectionModel => Cx.ItNamespace,
+        (int)WeItemType.DbContextModel => Cx.ItNamespace,
         (int)WeItemType.NamespaceModel => Cx.ItNamespace,
         (int)WeItemType.InterfaceModel => Cx.ItNamespace,
         (int)WeItemType.RecordModel => Cx.ItNamespace,
@@ -36,13 +50,19 @@ namespace Weavers.Core.Handlers.Items {
       };      
       if (propKey != null) {
         var prop = item.Properties.FirstOrDefault(p => p.Name == propKey);
-        if (prop != null && prop.Value?.StartsWith(oldBase) == true) {       
-          var fullNamespace = newBase + prop.Value.Substring(oldBase.Length);          
-          await UpdateNamespaceProperty(prop, fullNamespace);
+        if (prop != null ) {       
+          var oldNamespace = prop.Value ?? "";
+          var fullNamespace = newBase;
+          if (item.ItemTypeId == (int)WeItemType.NamespaceModel) {
+            fullNamespace = fullNamespace + item.Name.NameSafe();
+          }
+          if (oldNamespace != fullNamespace) {
+            await UpdateNamespaceProperty(prop, fullNamespace);
+          }
         }
       }
       var childIds = item.Relations
-        .Where(r => r.RelationTypeId == (int)WeRelationTypes.Contains)
+        .Where(r => !_packageRefs.Contains( r?.RelatedItemTypeId ?? 0))
         .Select(r => r.RelatedItemId)
         .Where(id => id.HasValue)
         .Select(id => id!.Value)

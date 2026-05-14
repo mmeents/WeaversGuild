@@ -1,12 +1,13 @@
 ﻿using MediatR;
-using Weavers.Core.Models;
-using Weavers.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Enums;
+using Weavers.Core.Handlers.Pipeline;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
 
-  public record GetRootProjectsQuery() : IRequest<List<ItemDto>>;
+  public record GetRootProjectsQuery() : IMcpRequest, IRequest<List<ItemDto>>;
 
   public class GetRootProjectsQueryHandler : IRequestHandler<GetRootProjectsQuery, List<ItemDto>> {
     private readonly FabricDbContext _context;

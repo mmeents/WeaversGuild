@@ -148,7 +148,7 @@ namespace Weavers.Core.Service {
 
     public async Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath) { 
       var mediator = GetMediator();
-      var command = new UpdateItemPropertyPathRecursiveCommand(itemId, oldPath, newPath);
+      var command = new UpdateItemPropertyPathRecursiveCommand(itemId, newPath);
       await mediator.Send(command);   
     }
 

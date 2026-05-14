@@ -12,8 +12,8 @@ using Weavers.Core;
 namespace Weavers.Core.Migrations
 {
     [DbContext(typeof(FabricDbContext))]
-    [Migration("20260507045115_InitalVersion116")]
-    partial class InitalVersion116
+    [Migration("20260513141953_InitialVersion117")]
+    partial class InitialVersion117
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1477,7 +1477,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 63,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1559,7 +1559,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 69,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1652,7 +1652,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 76,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1995,45 +1995,6 @@ namespace Weavers.Core.Migrations
                             ItemTypeId = 616,
                             Key = "InverseNav",
                             Rank = 6,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 102,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 1,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 103,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 104,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "Namespace",
-                            Rank = 14,
                             ValueDataTypeId = 6
                         });
                 });

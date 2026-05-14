@@ -12,12 +12,12 @@ namespace Weavers.Core.Handlers.Items {
     }
     public async Task<string?> Handle(GetParentItemPathPropertyQuery request, CancellationToken cancellationToken) {     
       if (request == null) { return null;}
-      var item = await _context.GetItemDtoById(request.ItemId);
+      var item = await _context.GetItemDtoById(request.ItemId, cancellationToken);
       if (item == null) { return null; }
       var parentRelation = item.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains);
       if (parentRelation == null) { return null; }
       var parentId = parentRelation.ItemId;
-      var parentItem = await _context.GetItemDtoById(parentId);
+      var parentItem = await _context.GetItemDtoById(parentId, cancellationToken);
       if (parentItem == null) { return null; }
       var propKey = parentItem.ItemTypeId.GetFolderPropertyName();
       if (propKey == "") { return null; }
@@ -25,7 +25,7 @@ namespace Weavers.Core.Handlers.Items {
       var pathProp = parentItem.Properties.FirstOrDefault(p => p.Name == propKey);
       if (pathProp == null) { return null; }
       var path = pathProp.Value;
-      if (parentItem.ItemTypeId == (int)WeItemType.LibraryModel || parentItem.ItemTypeId == (int)WeItemType.EntityConfigurationModel) {     
+      if (parentItem.ItemTypeId.IsParentFileWithFileLikeKids()) {     
         path = Path.GetDirectoryName(path) ?? "";
       }
       return path;

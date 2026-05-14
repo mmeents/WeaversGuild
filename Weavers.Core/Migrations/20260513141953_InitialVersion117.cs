@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitalVersion116 : Migration
+    public partial class InitialVersion117 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -629,13 +629,13 @@ namespace Weavers.Core.Migrations
                     { 37, "", 10, true, 312, "RegisterObject", 2, 600, 3 },
                     { 61, "", 10, true, 510, "ImportObject", 2, 500, 3 },
                     { 62, "", 2, true, 510, "UseInterface", 3, null, 1 },
-                    { 63, "64", 10, true, 522, "PropertyType", 1, 50, 3 },
+                    { 63, "57", 10, true, 522, "PropertyType", 1, 50, 3 },
                     { 64, "", 10, true, 522, "PropertyClass", 2, 500, 3 },
                     { 65, "1", 2, true, 522, "IsNullable", 3, null, 1 },
                     { 66, "1", 2, true, 522, "HasSetter", 4, null, 1 },
                     { 67, "32", 10, true, 524, "TestMethod", 10, 31, 3 },
                     { 68, "91", 10, true, 524, "AccessModifier", 11, 90, 3 },
-                    { 69, "64", 10, true, 524, "ReturnType", 12, 50, 3 },
+                    { 69, "57", 10, true, 524, "ReturnType", 12, 50, 3 },
                     { 70, "", 10, true, 524, "ReturnClass", 13, 500, 3 },
                     { 71, "0", 2, true, 524, "IsAsync", 14, null, 1 },
                     { 72, "0", 2, true, 524, "IsVirtual", 15, null, 1 },
@@ -654,10 +654,7 @@ namespace Weavers.Core.Migrations
                     { 98, "", 10, true, 616, "ForeignKey", 3, 610, 3 },
                     { 99, "6", 10, true, 616, "HasNavigation", 4, 5, 3 },
                     { 100, "1", 2, true, 616, "IsNullable", 5, null, 1 },
-                    { 101, "", 4, true, 616, "InverseNav", 6, null, 6 },
-                    { 102, ".cs", 1, true, 620, "FileExtension", 12, null, 6 },
-                    { 103, "", 4, true, 620, "FilePath", 13, null, 6 },
-                    { 104, "", 4, true, 620, "Namespace", 14, null, 6 }
+                    { 101, "", 4, true, 616, "InverseNav", 6, null, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -677,7 +674,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 76, "64", 10, true, 526, "ParamType", 1, 50, 3 },
+                    { 76, "57", 10, true, 526, "ParamType", 1, 50, 3 },
                     { 77, "", 10, true, 526, "ParamClass", 2, 500, 3 },
                     { 78, "1", 2, true, 526, "IsNullable", 3, null, 1 },
                     { 79, "0", 2, true, 526, "UseThis", 4, null, 1 },

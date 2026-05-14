@@ -603,53 +603,7 @@ namespace TheLoomApp {
       if (_selectedNode != null && _selectedNode.Item != null) {
         await _appDataService.UpdateItemAsync(_selectedNode.Item);
         _selectedNode.Text = _selectedNode.Item.Name;
-
-        var selectedItemTypeId = _selectedNode.Item.ItemTypeId;
-        var selectedItemType = (WeItemType)selectedItemTypeId;
-        if (selectedItemType == WeItemType.ProjectFolderModel) {
-          string newPath = Path.Combine(edAppDefaultFolder.Text, edItemName.Text);
-          await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
-          this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
-        } else {
-          var parentNode = (ItemNode?)_selectedNode.Parent;
-          if (parentNode == null) { return; }
-
-          if (_parentFolderTypes.Contains(selectedItemType)) {
-            string newPath = parentNode.Item.ResolveParentFolderPath(edAppDefaultFolder.Text);
-            await UpdateFolderPathIfNeededAsync(_selectedNode.Item, newPath);
-          }
-
-          if (parentNode.Item != null && _parentNamespaceTypes.Contains(selectedItemType)) {
-            string newNamespace = parentNode.Item.ResolveParentNamespace(_selectedNode.Item.Name); // library case previous no namespace.
-            await UpdateNamespacePathIfNeededAsync(_selectedNode.Item, newNamespace);            //  name is the library though.
-          }
-
-          if (selectedItemTypeId == (int)WeItemType.DependencyInjectionModel) {
-            var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
-            var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
-
-            var diCode = await _itemTemplateService.GetDependencyInjectionTemplate(_selectedNode.Item.Id);
-            if (diCode != null) {
-              _selectedNode.Item.Description = diCode;
-              await _appDataService.UpdateItemAsync(_selectedNode.Item);
-            }
-          } else if (selectedItemType == WeItemType.EntityPropertyModel || selectedItemType == WeItemType.EntityNavigationModel) {
-            var preParentNode = _selectedNode;
-            while (parentNode != null && parentNode.Item != null && parentNode.Item.ItemTypeId != (int)WeItemType.EntityClassModel) {
-              preParentNode = parentNode;
-              parentNode = parentNode.Parent as ItemNode;
-            }
-            // ugly, starts at nav update walks up to prop then class. process property needs to land on a property.            
-            if (parentNode != null) {
-              await _appDataService.ProcessPropertyUpdate(parentNode.Item!, preParentNode.Item);
-            }
-          }
-          await Task.Delay(100);
-          this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
-
-        }
-
-
+        this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
       }
     }
 
@@ -955,6 +909,7 @@ namespace TheLoomApp {
           _settings[Cx.ApsDefaultFolder] = setting;
         } else {
           setting.Value = edAppDefaultFolder.Text;
+          _settings[Cx.ApsDefaultFolder] = setting;
         }
         SettingDefaultFolderDirty = false;
       }

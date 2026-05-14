@@ -9,7 +9,7 @@ namespace Weavers.Core.Constants {
     public static string AppName => "WeaversGuild";  // org like name describes project off the app data folder.
     public static string AppExeName => "TheLoomApp.exe";
     public static string AppApiName => "Weavers.Api";
-    public static string McpAppName => "WeaversMCP";
+    public static string McpAppName => "TheLoomMCP";
     public static string AppVersion => "0.1.2";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
@@ -24,6 +24,7 @@ namespace Weavers.Core.Constants {
 
     public const string ClaudeDefaultModel = "sonnet";
 
+    // legacy Cmd from BaseToolsHandler, consider refactor to be more specific to the handler or tool using them.
     public const string CmdGetById = "get-item-by-id";
     public const string CmdGetSubgraph = "get-subgraph";
     public const string CmdAddRelationItem = "create-related-item";
@@ -33,6 +34,35 @@ namespace Weavers.Core.Constants {
     public const string CmdAddRelation = "create-relation";
     public const string CmdUpdateRelation = "update-relation";
 
+    // mcp tool commands
+    public const string CmdListProjects = "listProjects";
+    public const string CmdSearch = "search";
+    public const string CmdGetSummaryById = "getSummaryById";
+    public const string CmdGetTypeDetails = "getTypeDetails";
+    public const string CmdUpdateItemName = "updateItemName";
+    public const string CmdUpdateItemProperty = "updateItemProperty";
+
+    public const string CmdAddProjectRoot = "addProjectRoot";
+    public const string CmdAddSubFolder = "addSubFolder";
+    public const string CmdAddSolution = "addSolution";
+    public const string CmdAddSolutionImport = "addSolutionImport";    
+    public const string CmdAddFile = "addFile";
+
+    public const string CmdAddLibrary = "addLibrary";
+    public const string CmdAddDiModel = "addDiModel";
+    public const string CmdAddNamespace = "addNamespace";
+
+    public const string CmdAddClass = "addClass";
+    public const string CmdAddClassImport = "addClassImport";
+    public const string CmdAddClassProp = "addClassProp";
+    public const string CmdAddClassMethod = "addClassMethod";
+    public const string CmdAddMethodParam = "addMethodParam";
+
+    public const string CmdAddEntityClass = "addEntityClass";
+    public const string CmdAddEntityClassImport = "addEntityClassImport";
+    public const string CmdAddEntityProperty = "addEntityProperty";
+
+
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
 
@@ -40,6 +70,7 @@ namespace Weavers.Core.Constants {
     public const string DefaultSDK = "Microsoft.NET.Sdk";
     public const string DefaultTestSDK = "MSTest.Sdk/3.6.4";
 
+    // AppSettings keys
     public const string ApsDefaultFolder = "AppDefaultFolder";
 
     // itemProperty names constants 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Weavers.Core.Entities;
 
@@ -17,6 +18,7 @@ namespace Weavers.Core.Models {
     public int LibraryItemId { get; set; }
 
     // Nav properties
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public ItemDto? LibraryItem { get; set; } = null;
     // Inbound nav properties
     public ICollection<BuildFileDto> BuildFiles { get; set; } = new List<BuildFileDto>();

@@ -177,6 +177,14 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsFolderType(this int itemTypeId) {
+      return itemTypeId switch {        
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,        
+        _ => false
+      };
+    }
+
 
     public static bool IsLibraryType(this int? itemTypeId) {
       if (itemTypeId == null) return false;
@@ -213,6 +221,16 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.ClassModel => Cx.ItFilePath,        
         (int)WeItemType.EntityClassModel => Cx.ItFilePath,
         _ => ""
+      };
+    }
+    
+    public static bool IsParentFileWithFileLikeKids(this int itemTypeId) {
+      return itemTypeId switch {        
+        (int)WeItemType.LibraryModel => true,
+        (int)WeItemType.DependencyInjectionModel => true,
+        (int)WeItemType.DbContextModel => true,                                
+        (int)WeItemType.EntityClassModel => true,        
+        _ => false
       };
     }
 

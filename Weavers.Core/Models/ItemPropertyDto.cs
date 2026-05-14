@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Weavers.Core.Entities;
 
@@ -20,6 +21,8 @@ namespace Weavers.Core.Models {
     public bool IsVisible { get; set; } = true;
 
     // Navigation properties
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public ItemDto? Item { get; set; } = null!;
     public DataTypeDto? ValueType { get; set; } = null!;
     public EditorTypeDto? Editor { get; set; }

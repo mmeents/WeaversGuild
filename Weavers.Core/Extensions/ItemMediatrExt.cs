@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Weavers.Core.Constants;
-using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
@@ -8,7 +7,7 @@ using Weavers.Core.Models;
 namespace Weavers.Core.Extensions {
   public static class ItemMediatrExt {
     public static async Task SyncLibraryPackageDefaults(this IMediator mediator, 
-      ItemDto? libraryItem, PkgType which, bool isAdd) {
+      ItemDto? libraryItem, PkgType which, bool isAdd, CancellationToken cancellationToken) {
 
       if (libraryItem == null) return;
       var defaultLibPackage = PkgEx.Defaults;
@@ -19,7 +18,7 @@ namespace Weavers.Core.Extensions {
           var foundRelation = libraryItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.LibPackageRefModel && string.Compare(itemName, r.RelatedItemName, true) == 0);
           if (foundRelation == null && isAdd) {   // is add starts
             var newItem = await mediator.Send(new CreateRelatedItemCommand(libraryItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.LibPackageRefModel,
-              itemName, "", "{}"));
+              itemName, "", "{}"), cancellationToken);
             if (newItem != null) {              
 
               var includeProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPackageInclude);
@@ -29,24 +28,24 @@ namespace Weavers.Core.Extensions {
 
               if (includeProp != null) {
                 includeProp.Value = def.PackageInclude;
-                await mediator.Send(includeProp.ToSaveCmd());
+                await mediator.Send(includeProp.ToSaveCmd(), cancellationToken);
               }
               if (versionProp != null) {
                 versionProp.Value = def.PackageVersion;
-                await mediator.Send(versionProp.ToSaveCmd());
+                await mediator.Send(versionProp.ToSaveCmd(), cancellationToken);
               }
               if (privateProp != null && def.PrivateAssets != "") {
                 privateProp.Value = def.PrivateAssets;
-                await mediator.Send(privateProp.ToSaveCmd());
+                await mediator.Send(privateProp.ToSaveCmd(), cancellationToken);
               }
               if (includeAssetProp != null && def.IncludeAssets != "") {
                 includeAssetProp.Value = def.IncludeAssets;
-                await mediator.Send(includeAssetProp.ToSaveCmd());
+                await mediator.Send(includeAssetProp.ToSaveCmd(), cancellationToken);
               }
             }
           } else if (foundRelation != null && !isAdd) {  // is remove starts
             if (foundRelation != null && foundRelation.RelatedItemId != null) {
-              await mediator.Send(new DeleteItemCommand(foundRelation.RelatedItemId.Value));
+              await mediator.Send(new DeleteItemCommand(foundRelation.RelatedItemId.Value), cancellationToken);
             }
           }
         }

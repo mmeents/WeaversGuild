@@ -10,7 +10,7 @@ using Weavers.Core.Constants;
 
 namespace Weavers.Core.Tools {
   public class BaseTools {
-    private static IStorytimeToolsHandler GetTools() => DiBridgeService.GetService<IStorytimeToolsHandler>();
+    private static IBaseToolsHandler GetTools() => DiBridgeService.GetService<IBaseToolsHandler>();
 
 
 

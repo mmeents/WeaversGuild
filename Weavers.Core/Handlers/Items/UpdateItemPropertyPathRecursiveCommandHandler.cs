@@ -12,17 +12,17 @@ using Weavers.Core.Models;
 
 
 namespace Weavers.Core.Handlers.Items {
-  public record UpdateItemPropertyPathRecursiveCommand(int ItemId, string OldPath, string NewPath) : IRequest;
+  public record UpdateItemPropertyPathRecursiveCommand(int ItemId, string NewPath) : IRequest;
   public class UpdateItemPropertyPathRecursiveCommandHandler(
     FabricDbContext context, IMediator mediator
   ) : IRequestHandler<UpdateItemPropertyPathRecursiveCommand> {
     private readonly FabricDbContext _context = context;
     private readonly IMediator _mediator = mediator;
     public async Task Handle(UpdateItemPropertyPathRecursiveCommand request, CancellationToken cancellationToken) {
-      await WalkAndUpdate(request.ItemId, request.OldPath, request.NewPath, cancellationToken);
+      await WalkAndUpdate(request.ItemId, request.NewPath, cancellationToken);
     }
 
-    private async Task WalkAndUpdate(int itemId, string oldBase, string newBase, CancellationToken ct) {
+    private async Task WalkAndUpdate(int itemId, string newBase, CancellationToken ct) {
       var item = await _context.GetItemDtoById(itemId, ct);
       if (item == null) return;
 
@@ -65,7 +65,7 @@ namespace Weavers.Core.Handlers.Items {
         .ToList();
 
       foreach (var childId in childIds)
-        await WalkAndUpdate(childId, oldBase, newBase, ct);
+        await WalkAndUpdate(childId, newBase, ct);
       
     }
 

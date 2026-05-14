@@ -175,7 +175,7 @@ namespace Weavers.Core.Extensions {
       },
       { WeItemType.ClassPropertyModel,
         new List<ItemPropertyDefault>() {
-          new() { Rank=1, Key = Cx.ItPropertyDataType, DefaultValue = "64", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.CSharpTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() { Rank=1, Key = Cx.ItPropertyDataType, DefaultValue = "57", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.CSharpTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() { Rank=2, Key = Cx.ItPropertyClassType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.ClassModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() { Rank=3, Key = Cx.ItIsNullable, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() { Rank=4, Key = Cx.ItHasSetter, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
@@ -185,7 +185,7 @@ namespace Weavers.Core.Extensions {
         new List<ItemPropertyDefault>() {
           new() { Rank=10, Key = Cx.ItTestMethodAttribute, DefaultValue = "32", ValueDataTypeId=(int)WeDataType.Int32,  ReferenceItemTypeId =(int) WeItemType.TestMethodTypes, EditorTypeId =(int) WeEditorType.LookupTypeEditor},
           new() { Rank=11, Key = Cx.ItAccessModifier, DefaultValue = "91", ValueDataTypeId=(int)WeDataType.Int32,  ReferenceItemTypeId =(int) WeItemType.AccessibilityLookups, EditorTypeId =(int) WeEditorType.LookupTypeEditor},
-          new() { Rank=12, Key = Cx.ItReturnDataType, DefaultValue = "64", ValueDataTypeId =(int)WeDataType.Int32, ReferenceItemTypeId =(int)WeItemType.CSharpTypes, EditorTypeId =(int)WeEditorType.LookupTypeEditor },
+          new() { Rank=12, Key = Cx.ItReturnDataType, DefaultValue = "57", ValueDataTypeId =(int)WeDataType.Int32, ReferenceItemTypeId =(int)WeItemType.CSharpTypes, EditorTypeId =(int)WeEditorType.LookupTypeEditor },
           new() { Rank=13, Key = Cx.ItReturnClassType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.ClassModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() { Rank=14, Key = Cx.ItIsAsync, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean  },
           new() { Rank=15, Key = Cx.ItIsVirtual, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean  },
@@ -196,7 +196,7 @@ namespace Weavers.Core.Extensions {
       }, 
       { WeItemType.ClassMethodParameterModel,
           new List<ItemPropertyDefault>() {
-              new() { Rank=1, Key = Cx.ItParameterDataType, DefaultValue = "64", ValueDataTypeId =(int) WeDataType.Int32, ReferenceItemTypeId =(int) WeItemType.CSharpTypes, EditorTypeId =(int) WeEditorType.LookupTypeEditor },
+              new() { Rank=1, Key = Cx.ItParameterDataType, DefaultValue = "57", ValueDataTypeId =(int) WeDataType.Int32, ReferenceItemTypeId =(int) WeItemType.CSharpTypes, EditorTypeId =(int) WeEditorType.LookupTypeEditor },
               new() { Rank=2, Key = Cx.ItParameterClassType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.ClassModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
               new() { Rank=3, Key = Cx.ItIsNullable, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
               new() { Rank=4, Key = Cx.ItUseThis, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
@@ -241,13 +241,6 @@ namespace Weavers.Core.Extensions {
           new() { Rank=4, Key = Cx.ItHasNavigation, DefaultValue = "6", ValueDataTypeId=(int)WeDataType.Int32, ReferenceItemTypeId=(int)WeItemType.NavigationTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() { Rank=5, Key = Cx.ItIsNullable, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() { Rank=6, Key = Cx.ItInverseNavigation, DefaultValue="", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-        }
-      },
-      { WeItemType.EntityConfigurationModel,
-        new List<ItemPropertyDefault>() {          
-          new() { Rank = 12, Key = Cx.ItFileExt, DefaultValue = ".cs", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Hidden },
-          new() { Rank = 13, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() { Rank = 14, Key = Cx.ItNamespace, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
         }
       }
 

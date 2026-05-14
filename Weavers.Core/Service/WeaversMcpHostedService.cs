@@ -16,7 +16,11 @@ namespace Weavers.Core.Service {
       await Task.Delay(1500, stoppingToken);
       _logger.LogInformation("🚀 Weavers MCP Server starting");
       DiBridgeService.Initialize(_serviceProvider);
-      MCPServer.Register<BaseTools>();
+      MCPServer.Register<SummaryTools>();
+      MCPServer.Register<AppGraphFileTools>();
+      MCPServer.Register<AppGraphLibraryTools>();
+      MCPServer.Register<AppGraphClassTools>();
+      MCPServer.Register<AppGraphEntityTools>();
       await MCPServer.StartAsync(Cx.McpAppName, Cx.AppVersion);
     }
   }

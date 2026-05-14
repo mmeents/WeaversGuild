@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Core;
+using Weavers.Api.Extensions;
 using Weavers.Core;
 using Weavers.Core.Constants;
 using Weavers.Core.Extensions;
@@ -59,7 +60,8 @@ namespace Weavers.Api {
       app.UseHttpsRedirection();
 
 
-      app.MapGet("/", () => "Hello World!");
+      app.MapSummaryEndpoints()
+         .MapGraphFileEndpoints();
 
 
       await app.RunAsync();

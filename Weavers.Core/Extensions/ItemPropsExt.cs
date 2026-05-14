@@ -37,8 +37,24 @@ namespace Weavers.Core.Extensions {
         }
       }
     }
-      
 
+    public static async Task<ItemDto> UpdateItemProp(this IMediator mediator, ItemDto importItem, ItemPropertyDto itemProp) {
+      if (itemProp == null) {
+        throw new ArgumentNullException(nameof(itemProp));
+      }
+      var command = new AddUpdateItemPropertyCommand(
+        itemProp.Id,
+        itemProp.ItemId,
+        itemProp.Name,
+        itemProp.Value,
+        itemProp.ValueDataTypeId,
+        itemProp.EditorTypeId,
+        itemProp.ReferenceItemTypeId
+      );
+      var result = await mediator.Send(command);
+      importItem.AddOrUpdateProperty(itemProp);
+      return importItem;
+    }
 
 
   }

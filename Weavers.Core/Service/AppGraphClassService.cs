@@ -23,7 +23,7 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> AddClassPropModel(ItemDto classItem, string? propertyName);
     Task<ItemDto?> AddClassMethodModel(ItemDto classItem, string? methodName);
     Task<ItemDto?> AddClassMethodParam(ItemDto methodItem, string? paramName);
-    Task<ItemDto?> AddEntityClassModel(ItemDto parentItem, string? className);
+    Task<ItemDto?> AddEntityClassModel(ItemDto parentItem, string? className, string? entityDbTableName);
     Task<ItemDto?> AddEntityClassImportModel(ItemDto classItem, string? importNamespace);
     Task<ItemDto?> AddEntityPropertyModel(ItemDto classItem, string? propertyName);
 
@@ -226,7 +226,7 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddEntityClassModel(ItemDto parentItem, string? className) {
+    public async Task<ItemDto?> AddEntityClassModel(ItemDto parentItem, string? className, string? entityDbTableName = null) {
       var mediator = GetMediator();
       if (parentItem.ItemTypeId != (int)WeItemType.LibraryModel && parentItem.ItemTypeId != (int)WeItemType.NamespaceModel) return null;
       var nextRank = 1;
@@ -273,9 +273,14 @@ namespace Weavers.Core.Service {
 
       var newDbTableProp = newEntityItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName);
       if (newDbTableProp != null) {
-        var newTableName = newEntityItem.Name.UrlSafe()+"s";
-        if (newDbTableProp.Value != newTableName) {
-          newDbTableProp.Value = newTableName;
+        string newDbTablename = "";
+        if (!string.IsNullOrEmpty(entityDbTableName)) {
+          newDbTablename = entityDbTableName;
+        } else { 
+          newDbTablename = newEntityItem.Name.UrlSafe()+"s";
+        }        
+        if (newDbTableProp.Value != newDbTablename) {
+          newDbTableProp.Value = newDbTablename;
           await newDbTableProp.SaveProp(newEntityItem, mediator);
         }
       }

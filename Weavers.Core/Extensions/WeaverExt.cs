@@ -68,71 +68,7 @@ namespace Weavers.Core.Extensions {
     }
 
 
-    public static char[] InvalidFileNameChars() => [.. Path.GetInvalidFileNameChars(), .. MyInvalidList()];
-    public static char[] MyInvalidList() => " `~!@#$%^&*()_-+=[]{},.;'".ToCharArray();
-    public static string UrlSafe(this string str) {
-      return string.Concat(str.Split(InvalidFileNameChars()));
-    }
-
-    // same as UrlSafe but allows for period.
-    public static char[] NamesafeChars() => " `~!@#$%^&*()_-+=[]{},;'".ToCharArray();
-    public static char[] InvalidNamesafeChars() => [.. Path.GetInvalidFileNameChars(), .. NamesafeChars()];
-    public static string NameSafe(this string str) {
-      return string.Concat(str.Split(InvalidNamesafeChars()));
-    }
-
-    public static bool AsBoolean(this string? value) {
-      if (value == null) return false;
-      return value switch {
-        "1" => true,
-        "0" => false,
-        "true" => true,
-        "false" => false,
-        "True" => true,
-        "False" => false,
-        _ => false
-      };
-    }
-
-    public static string[] Parse(this string content, string delims) {
-      return content.Split(delims.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-    }
-
-    public static int AsInt32(this string? value) { 
-      if (value == null) return 0;
-      if (int.TryParse(value, out int result)) return result;
-      return 0;
-    }
-   
-    public static string AsLowerCaseFirstLetter(this string content) {
-      if (string.IsNullOrEmpty(content)) return "";
-      var newName = content.Substring(0, 1).ToLower() + content.Substring(1);
-      return newName.UrlSafe();
-    }
-
-    public static string AsUpperCaseFirstLetter(this string content) {
-      if (string.IsNullOrEmpty(content)) return "";
-      var newName = content.Substring(0, 1).ToUpper() + content.Substring(1);
-      return newName.UrlSafe();
-    }
-
-
-    public static string ResolvePath(this string path) {
-      if (!Path.IsPathRooted(path)) {
-        return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
-      }
-      return Path.GetFullPath(path);
-    }
-
-    public static bool IsValidBrowserUrl(this string url) {
-      // 1. Try to create the Uri object
-      if (!Uri.TryCreate(url, UriKind.Absolute, out var result))
-        return false;
-
-      // 2. Ensure it's a web protocol (not file:// or mailto: unless intended)
-      return result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps;
-    }
-
+  
 
   }
 }

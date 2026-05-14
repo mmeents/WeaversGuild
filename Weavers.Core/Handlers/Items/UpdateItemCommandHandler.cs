@@ -6,7 +6,10 @@ using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.DepItems;
+using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
   public record UpdateItemCommand(
@@ -17,18 +20,35 @@ namespace Weavers.Core.Handlers.Items {
      string Data,
      bool IsActive,
      DateTime? WrittenAt
-   ) : IRequest<ItemDto?>;
+   ) : IMcpRequest, IRequest<ItemDto?>;
+
+  public static class UpdateItemCommandExtensions {
+    public static UpdateItemCommand ToUpdateCmd(this ItemDto item) {
+      return new UpdateItemCommand(
+        item.Id,
+        item.ItemTypeId,
+        item.Name,
+        item.Description,
+        item.Data,
+        item.IsActive,
+        item.WrittenAt
+      );
+    }
+  }
 
 
   public class UpdateItemCommandHandler(
     FabricDbContext context, 
     IMediator mediator,
-    ILogger<UpdateItemCommandHandler> logger
+    ILogger<UpdateItemCommandHandler> logger,
+    IAppSettingService appSettingService
   ) : IRequestHandler<UpdateItemCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<UpdateItemCommandHandler> _logger = logger;
-
+    private readonly IAppSettingService _appSettingService = appSettingService;
+    private readonly HashSet<WeItemType> _parentFolderTypes = WeItemTypeExtensions.GetParentFileFolderDependTypes();
+    private readonly HashSet<WeItemType> _parentNamespaceTypes = WeItemTypeExtensions.GetParentNamespaceDependTypes();
     public async Task<ItemDto?> Handle(UpdateItemCommand request, CancellationToken cancellationToken) {
 
       var item = await _context.Items.FindAsync(request.Id);
@@ -55,15 +75,43 @@ namespace Weavers.Core.Handlers.Items {
 
       if (itemDto == null) { throw new Exception("Reload after save failed."); }
 
+      ItemDto? parentItem = null;
+      if (itemDto.ItemTypeId == (int)WeItemType.ProjectFolderModel) {
+        string defaultPath = _appSettingService.DefaultProjectsPath;
+        string newPath = Path.Combine(defaultPath, itemDto.Name);
+        await UpdateFolderPathIfNeededAsync(itemDto, newPath);
+      } else { 
+
+        var parentItemId = itemDto.IncomingRelations.FirstOrDefault(r => r.ItemId != itemDto.Id)?.ItemId;
+        if (parentItemId != null) {
+
+          parentItem = await _context.GetItemDtoById(parentItemId.Value, cancellationToken);
+          if (parentItem != null) {
+
+            if (_parentFolderTypes.Contains((WeItemType)itemDto.ItemTypeId)) {
+              string newPath = parentItem.ResolveParentFolderPath(_appSettingService.DefaultProjectsPath);
+              await UpdateFolderPathIfNeededAsync(itemDto, newPath);
+            }
+          
+            if (_parentNamespaceTypes.Contains((WeItemType)itemDto.ItemTypeId)) {
+              string newNamespace = parentItem.ResolveParentNamespace(itemDto.Name);
+              await UpdateNamespacePathIfNeededAsync(itemDto, newNamespace);
+            }                
+
+          }  // parent null
+        }  // parent id null
+      }  // should have a parent.
+
+
       if (itemDto.ItemTypeId == (int)WeItemType.LibraryModel) {
         
         var isTestLibrary = itemDto.Properties.FirstOrDefault(p => p.Name == Cx.ItIsTestLibrary)?.Value.AsBoolean() ?? false;
         if (isTestLibrary) {
-          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, false);
-          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, true);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, false, cancellationToken);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, true, cancellationToken);
         } else {
-          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, true);
-          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, false);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.LibraryBase, true, cancellationToken);
+          await _mediator.SyncLibraryPackageDefaults(itemDto, PkgType.TestLibrary, false, cancellationToken);
         }        
       }
             
@@ -71,9 +119,9 @@ namespace Weavers.Core.Handlers.Items {
         var libItem = await _mediator.Send(new GetLibraryRelativeCommand(itemDto.Id), cancellationToken);
         if (libItem != null) {
           var hasDbContext = itemDto.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
-          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, hasDbContext);
+          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, hasDbContext, cancellationToken);
           var hasMediatR = itemDto.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
-          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.Mediatr, hasMediatR);
+          await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.Mediatr, hasMediatR, cancellationToken);
         }
       }
 
@@ -120,6 +168,22 @@ namespace Weavers.Core.Handlers.Items {
         }
       }
 
+      if (itemDto.ItemTypeId == (int)WeItemType.EntityPropertyModel || itemDto.ItemTypeId == (int)WeItemType.EntityNavigationModel) {
+        ItemDto? preParentNode = itemDto;
+        while (parentItem != null && parentItem.ItemTypeId > (int)WeItemType.EntityClassModel) {
+          preParentNode = parentItem;
+          var newParentId = preParentNode.IncomingRelations.FirstOrDefault(r => r.ItemId != preParentNode.Id)?.ItemId;
+          if (!newParentId.HasValue) { parentItem = null; continue; }
+          parentItem = await _context.GetItemDtoById(newParentId.Value, cancellationToken);
+        }
+
+        // ugly, starts at nav update walks up to prop then class. process property needs to land on a property.            
+        if (parentItem != null && parentItem.ItemTypeId == (int)WeItemType.EntityClassModel 
+          && preParentNode != null && preParentNode.ItemTypeId == (int)WeItemType.EntityPropertyModel) {
+          await _mediator.Send(new ProcessPropertyUpdateCommand(parentItem, preParentNode));
+        }
+      }
+
       return itemDto;
 
     }
@@ -140,6 +204,52 @@ namespace Weavers.Core.Handlers.Items {
       } else return false;
       return true;
     }
+
+    private async Task UpdateFolderPathIfNeededAsync(ItemDto item, string basePath) {
+      string propKey = item.ItemTypeId.GetFolderPropertyName();
+      if (propKey == "") return;
+
+      var folderProp = item.Properties.FirstOrDefault(p => p.Name == propKey);
+      if (folderProp == null) return;
+
+      var fullPath = "";
+      var fileName = "";  // namespaces are folders within a file and get add to the path the file is in.
+      var fileBasePath = basePath;
+      if (item.ItemTypeId == (int)WeItemType.NamespaceModel || item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
+        fullPath = Path.Combine(basePath, item.Name.UrlSafe());
+      } else if (propKey == Cx.ItFilePath) {
+        if (item.ItemTypeId.IsFileNameType()) {
+          fileBasePath = Path.GetDirectoryName(fileBasePath) ?? basePath;
+        }
+        fileName = item.GetFileName();
+        fullPath = Path.Combine(fileBasePath, fileName);
+      } else {
+        fullPath = basePath;
+      }
+
+      folderProp.Value = fullPath;
+      var updated = await _mediator.UpdateItemProp(item, folderProp);
+      await _mediator.Send(new UpdateItemPropertyPathRecursiveCommand(item.Id, fullPath));
+
+    }
+
+    private async Task UpdateNamespacePathIfNeededAsync(ItemDto item, string basePath) {
+      var namespaceProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace || p.Name == Cx.ItNamespaceRoot);
+      if (namespaceProp == null) return;
+      var newNamespace = "";
+      var folderPropKey = item.ItemTypeId.GetFolderPropertyName();
+      if (folderPropKey == Cx.ItFilePath && (item.ItemTypeId != (int)WeItemType.NamespaceModel)) {
+        newNamespace = basePath.NameSafe(); // files use the parents namespace.
+      } else {  // vs a folder, we include items name.
+        newNamespace = basePath.NameSafe() + "." + item.Name.NameSafe();
+      }
+
+      if (namespaceProp.Value != newNamespace) {
+        namespaceProp.Value = newNamespace;
+        await _mediator.Send(new UpdateItemPropertyNamespaceRecursiveCommand(item.Id, basePath, newNamespace));      
+      }
+    }
+
 
 
   }

@@ -33,8 +33,26 @@ namespace Weavers.Core.Handlers.Builds {
       BuildDto? lastBuild = null;
       if (libraryItem.Builds.Any()) {
         lastBuild = libraryItem.Builds.OrderByDescending(b => b.StartedAt).FirstOrDefault();
-        if (lastBuild != null && lastBuild.BuildStatus == BuildStatus.InProgress) {
+        if (lastBuild == null) {
+          return buildContext.Fail($"Item claimed there was build but returned null.");
+        }
+        if (lastBuild.BuildStatus == BuildStatus.InProgress) {
           return buildContext.Fail($" LibraryId:{request.LibraryItemId} has build in progress.");
+        }
+        var oldBuildIdList = libraryItem.Builds
+          .Where(bf => bf.Id != lastBuild.Id).Select(bf => bf.Id).ToList();
+
+        bool buildsRemoved = false;
+        foreach (var buildId in oldBuildIdList) {
+          var aBuild = await _context.Builds.FindAsync(buildId, cancellationToken);
+          if (aBuild != null) {
+            _context.Builds.Remove(aBuild);
+            buildsRemoved = true;
+            buildContext.Warnings.Add($"Note: Older build {buildId} was removed.");
+          }
+        }
+        if (buildsRemoved) {
+          await _context.SaveChangesAsync(cancellationToken);
         }
       }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Weavers.Core.Entities;
 
@@ -16,7 +17,10 @@ namespace Weavers.Core.Models {
     public bool WasDeleted { get; set; }
 
     // Nav properties
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public BuildDto? Build { get; set; } = null;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public ItemDto? Item { get; set; } = null;  
   
   }

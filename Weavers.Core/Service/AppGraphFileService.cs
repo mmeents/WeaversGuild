@@ -12,7 +12,7 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> AddSubFolder(ItemDto parentItem, string? subFolderName);
     Task<ItemDto?> AddSolution(ItemDto projectFolderItem, string? solutionName);
     Task<ItemDto?> AddSolutionImport(ItemDto slnItem, string? importName);
-    Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName);
+    Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName, string? fileContent);
   }
 
 
@@ -127,14 +127,14 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName) {
+    public async Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName, string? fileContent) {
       var mediator = GetMediator();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
       var name = fileName == null ? $"File {nextRank}" : fileName;
       var newSubItem = await mediator.Send(
-        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileModel, name, "", "{}"));
+        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileModel, name, fileContent ?? "", "{}"));
       if (newSubItem == null) {
         // add error logging.
         return null;

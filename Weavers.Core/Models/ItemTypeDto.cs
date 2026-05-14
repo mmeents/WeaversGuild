@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Weavers.Core.Entities;
 
@@ -17,7 +18,7 @@ namespace Weavers.Core.Models {
     public bool IsReadOnly { get; set; } = false;
     public string IconName { get; set; } = string.Empty;
 
-
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public ItemTypeDto? ParentType { get; set; }
     public ICollection<ItemTypeDto> ChildTypes { get; set; } = new List<ItemTypeDto>();
 

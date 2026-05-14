@@ -7,6 +7,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Models;
 using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
 
 namespace Weavers.Core.Extensions {
   public static class ItemResolveExt {
@@ -30,6 +31,11 @@ namespace Weavers.Core.Extensions {
     public static bool IsValidFolderParent(this ItemDto item) =>
       item.ItemTypeId == (int)WeItemType.ProjectFolderModel ||
       item.ItemTypeId == (int)WeItemType.RelativeFolderModel;
+
+    public static bool IsValidNamespaceParent(this ItemDto item) {       
+      var propKey = item.ItemTypeId.GetNamespacePropertyName();
+      return propKey != "";
+    }
 
     public static string GetFileName(this ItemDto item) {
       if (item.ItemTypeId.IsFileNameType()) {

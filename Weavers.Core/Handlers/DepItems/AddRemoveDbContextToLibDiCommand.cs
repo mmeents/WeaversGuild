@@ -38,12 +38,12 @@ namespace Weavers.Core.Handlers.DepItems {
         if (dbContextItem == null) return false;
 
         string newPath = diItem.ResolveParentFolderPath("NoPath");
-        await UpdateFolderPathIfNeededAsync(dbContextItem, newPath);
+        await UpdateFolderPathIfNeededAsync(dbContextItem, newPath, cancellationToken);
         
         string newNamespace = diItem.ResolveParentNamespace(dbContextItem.Name);
         await UpdateNamespacePathIfNeededAsync(dbContextItem, newNamespace);  
 
-        await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, request.HasDbContext);
+        await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, request.HasDbContext, cancellationToken);
         await _context.MarkItemUpdated(libItem!.Id,cancellationToken);
 
       } else if ( !request.HasDbContext && DbContextRel != null && DbContextRel.RelatedItemId != null) {
@@ -56,7 +56,7 @@ namespace Weavers.Core.Handlers.DepItems {
     }
 
 
-    private async Task UpdateFolderPathIfNeededAsync(ItemDto item, string basePath) {
+    private async Task UpdateFolderPathIfNeededAsync(ItemDto item, string basePath, CancellationToken cancellationToken) {
       string propKey = item.ItemTypeId.GetFolderPropertyName();
       if (propKey == "") return;
 
@@ -90,8 +90,8 @@ namespace Weavers.Core.Handlers.DepItems {
           folderProp.EditorTypeId,
           folderProp.ReferenceItemTypeId
          );
-        var updated = await _mediator.Send(command);
-        await _context.MarkItemUpdated(item.Id);
+        var updated = await _mediator.Send(command, cancellationToken);
+        await _context.MarkItemUpdated(item.Id, cancellationToken);
 
         if (updated != null) item.AddOrUpdateProperty(updated);
       }

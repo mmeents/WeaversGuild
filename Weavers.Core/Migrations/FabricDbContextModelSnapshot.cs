@@ -57,7 +57,7 @@ namespace Weavers.Core.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("AppSettings", (string)null);
+                    b.ToTable("AppSettings");
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
@@ -583,7 +583,7 @@ namespace Weavers.Core.Migrations
                     b.HasIndex("ItemId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ItemProperties", (string)null);
+                    b.ToTable("ItemProperties");
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.ItemPropertyDefault", b =>
@@ -1474,7 +1474,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 63,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1556,7 +1556,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 69,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1649,7 +1649,7 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 76,
-                            DefaultValue = "64",
+                            DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1992,45 +1992,6 @@ namespace Weavers.Core.Migrations
                             ItemTypeId = 616,
                             Key = "InverseNav",
                             Rank = 6,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 102,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 1,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 103,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 104,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 620,
-                            Key = "Namespace",
-                            Rank = 14,
                             ValueDataTypeId = 6
                         });
                 });
@@ -3321,6 +3282,42 @@ namespace Weavers.Core.Migrations
                             ParentTypeId = 730,
                             Rank = 734
                         });
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.McpLogEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CalledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationMs")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ErrorMsg")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InputJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OpName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OutputJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("McpLogEntries", (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.Relation", b =>
