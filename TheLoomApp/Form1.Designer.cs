@@ -54,6 +54,7 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      button1 = new Button();
       cbShowPkgInLib = new CheckBox();
       btnShowErrors = new Button();
       btnCancelAppDefaultF = new Button();
@@ -325,6 +326,8 @@
       ilTreeImages.Images.SetKeyName(13, "story.png");
       ilTreeImages.Images.SetKeyName(14, "EntityProperty.png");
       ilTreeImages.Images.SetKeyName(15, "importBrick.png");
+      ilTreeImages.Images.SetKeyName(16, "globe.png");
+      ilTreeImages.Images.SetKeyName(17, "scroll.png");
       // 
       // splitContainer3
       // 
@@ -362,6 +365,7 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(button1);
       tpSettings.Controls.Add(cbShowPkgInLib);
       tpSettings.Controls.Add(btnShowErrors);
       tpSettings.Controls.Add(btnCancelAppDefaultF);
@@ -377,6 +381,16 @@
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
+      // 
+      // button1
+      // 
+      button1.Location = new Point(245, 138);
+      button1.Name = "button1";
+      button1.Size = new Size(125, 23);
+      button1.TabIndex = 7;
+      button1.Text = "Test Create dialog";
+      button1.UseVisualStyleBackColor = true;
+      button1.Click += button1_Click;
       // 
       // cbShowPkgInLib
       // 
@@ -538,7 +552,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.AutoScrollMinSize = new Size(154, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -546,7 +560,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -831,5 +844,6 @@
     private ToolStripMenuItem miAddEntityProperty;
     private CheckBox cbShowPkgInLib;
     private Button btnWriteFile;
+    private Button button1;
   }
 }

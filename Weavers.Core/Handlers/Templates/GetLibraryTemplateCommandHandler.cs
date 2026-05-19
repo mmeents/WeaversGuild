@@ -30,7 +30,7 @@ namespace Weavers.Core.Handlers.Templates {
       var ImplicitUsings = item.Properties.FirstOrDefault(p => p.Name == Cx.ItImplicitUsing)?.Value.AsBoolean() ?? true;
       var isNullable = item.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable)?.Value.AsBoolean() ?? true;
       var version = item.Properties.FirstOrDefault(p => p.Name == Cx.ItVersion)?.Value ?? "0.0.1";
-      var namespaceName = item.ResolveParentNamespace("MissingNamespace");
+      var namespaceName = item.ResolveItemsNamespace("MissingNamespace");
       var libraryName = item.Name;
 
       string sdk = isTestLibrary ? Cx.DefaultTestSDK : Cx.DefaultSDK;  // switch if test library.

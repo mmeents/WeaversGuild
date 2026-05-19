@@ -154,111 +154,105 @@ namespace Weavers.Core.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Description = "Boolean (true/false)",
-                            Name = "Boolean"
+                            Id = 51,
+                            Description = "Reference to Items graph see ReferenceItemTypeId for Item Properties",
+                            Name = "Reference"
                         },
                         new
                         {
-                            Id = 2,
-                            Description = "16-bit integer",
-                            Name = "Int16"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "32-bit integer",
-                            Name = "Int32"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "64-bit integer",
-                            Name = "Int64"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Globally Unique Identifier",
-                            Name = "Guid"
-                        },
-                        new
-                        {
-                            Id = 6,
+                            Id = 54,
                             Description = "ASCII string",
                             Name = "StrAscii"
                         },
                         new
                         {
-                            Id = 7,
-                            Description = "Unicode string",
-                            Name = "StrUnicode"
+                            Id = 55,
+                            Description = "Boolean (true/false)",
+                            Name = "Boolean"
                         },
                         new
                         {
-                            Id = 8,
-                            Description = "32-bit floating point number",
-                            Name = "Float32"
+                            Id = 56,
+                            Description = "Unknown data type",
+                            Name = "Char"
                         },
                         new
                         {
-                            Id = 9,
-                            Description = "64-bit floating point number",
-                            Name = "Float64"
+                            Id = 57,
+                            Description = "32-bit integer",
+                            Name = "Int"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 58,
+                            Description = "64-bit integer",
+                            Name = "Long"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Description = "16-bit integer",
+                            Name = "Short"
+                        },
+                        new
+                        {
+                            Id = 60,
                             Description = "128-bit decimal number",
-                            Name = "Decimal128"
+                            Name = "Decimal"
                         },
                         new
                         {
-                            Id = 11,
-                            Description = "Date (year, month, day)",
-                            Name = "Date"
+                            Id = 61,
+                            Description = "64-bit floating point number",
+                            Name = "Double"
                         },
                         new
                         {
-                            Id = 12,
-                            Description = "Time (hour, minute, second)",
-                            Name = "Time"
+                            Id = 62,
+                            Description = "32-bit floating point number",
+                            Name = "Float"
                         },
                         new
                         {
-                            Id = 13,
-                            Description = "Small date and time (1900-01-01 to 2079-06-06)",
-                            Name = "SmallDateTime"
+                            Id = 63,
+                            Description = "Unknown data type",
+                            Name = "Byte"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 64,
                             Description = "Date and time (1753-01-01 to 9999-12-31)",
                             Name = "DateTime"
                         },
                         new
                         {
-                            Id = 15,
-                            Description = "Date and time with larger range and precision than DateTime",
-                            Name = "DateTime2"
+                            Id = 65,
+                            Description = "Date (year, month, day)",
+                            Name = "Date"
                         },
                         new
                         {
-                            Id = 16,
+                            Id = 66,
+                            Description = "Time (hour, minute, second)",
+                            Name = "Time"
+                        },
+                        new
+                        {
+                            Id = 67,
                             Description = "Date and time with time zone awareness",
                             Name = "DateTimeOffset"
                         },
                         new
                         {
-                            Id = 17,
+                            Id = 68,
                             Description = "Binary data (byte array)",
                             Name = "Binary"
                         },
                         new
                         {
-                            Id = 18,
-                            Description = "Reference to Items graph see ReferenceItemTypeId for Item Properties",
-                            Name = "Reference"
+                            Id = 69,
+                            Description = "Globally Unique Identifier",
+                            Name = "Guid"
                         },
                         new
                         {
@@ -660,10 +654,10 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 100,
+                            ItemTypeId = 1100,
                             Key = "RootFolder",
                             Rank = 1,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -673,245 +667,251 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 100,
+                            ItemTypeId = 1100,
                             Key = "RepoUrl",
                             Rank = 2,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 3,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1101,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DefaultValue = "112",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1107,
+                            Key = "Votes",
+                            Rank = 1,
+                            ReferenceItemTypeId = 110,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 5,
                             DefaultValue = "",
                             EditorTypeId = 14,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 110,
+                            ItemTypeId = 1110,
                             Key = "RelativeFolder",
                             Rank = 1,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
                         },
                         new
                         {
-                            Id = 4,
+                            Id = 6,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1111,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 7,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 150,
+                            ItemTypeId = 1120,
                             Key = "FilePath",
                             Rank = 1,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
                         },
                         new
                         {
-                            Id = 5,
+                            Id = 8,
                             DefaultValue = ".md",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 150,
+                            ItemTypeId = 1120,
                             Key = "FileExtension",
                             Rank = 2,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 6,
-                            DefaultValue = "",
-                            EditorTypeId = 5,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 160,
-                            Key = "FilePath",
-                            Rank = 1,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            DefaultValue = ".sln",
-                            EditorTypeId = 1,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 160,
-                            Key = "FileExtension",
-                            Rank = 2,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 8,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 160,
-                            Key = "SlnGuid",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 9,
-                            DefaultValue = "",
+                            DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 162,
-                            Key = "RegisterObject",
-                            Rank = 2,
-                            ReferenceItemTypeId = 200,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1121,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 10,
                             DefaultValue = "",
-                            EditorTypeId = 4,
+                            EditorTypeId = 5,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 162,
-                            Key = "ProjectGuid",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1130,
+                            Key = "FilePath",
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 11,
-                            DefaultValue = "",
+                            DefaultValue = ".html",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "FilePath",
-                            Rank = 1,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1130,
+                            Key = "FileExtension",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 12,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "NamespaceRoot",
-                            Rank = 2,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1131,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 13,
-                            DefaultValue = "net9.0",
-                            EditorTypeId = 4,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "TargetFramework",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1140,
+                            Key = "FilePath",
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 14,
-                            DefaultValue = "1",
-                            EditorTypeId = 2,
+                            DefaultValue = ".json",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "IsNullable",
-                            Rank = 4,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1140,
+                            Key = "FileExtension",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 15,
-                            DefaultValue = "1",
-                            EditorTypeId = 2,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "ImplicitUsing",
-                            Rank = 5,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1141,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 16,
-                            DefaultValue = "1.0.0",
-                            EditorTypeId = 4,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "Version",
-                            Rank = 6,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1150,
+                            Key = "FilePath",
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 17,
-                            DefaultValue = "1.0.0.0",
+                            DefaultValue = ".png",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "AssemblyVersion",
-                            Rank = 7,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1150,
+                            Key = "FileExtension",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 18,
-                            DefaultValue = "1.0.0.0",
-                            EditorTypeId = 4,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "FileVersion",
-                            Rank = 8,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1151,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 19,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
-                            Key = "IsTestLibrary",
-                            Rank = 9,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1160,
+                            Key = "FilePath",
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 20,
-                            DefaultValue = ".csproj",
+                            DefaultValue = ".sln",
                             EditorTypeId = 1,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 200,
+                            ItemTypeId = 1160,
                             Key = "FileExtension",
-                            Rank = 10,
-                            ValueDataTypeId = 6
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -921,36 +921,38 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 210,
-                            Key = "PackageInclude",
-                            Rank = 2,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1160,
+                            Key = "SlnGuid",
+                            Rank = 3,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 22,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 210,
-                            Key = "PackageVersion",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1161,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 23,
                             DefaultValue = "",
-                            EditorTypeId = 4,
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 210,
-                            Key = "PrivateAssets",
-                            Rank = 4,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1162,
+                            Key = "RegisterObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1200,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
@@ -960,24 +962,23 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 210,
-                            Key = "IncludeAssets",
-                            Rank = 5,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1162,
+                            Key = "ProjectGuid",
+                            Rank = 3,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 25,
                             DefaultValue = "",
-                            EditorTypeId = 10,
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 220,
-                            Key = "LibraryInclude",
+                            ItemTypeId = 1200,
+                            Key = "FilePath",
                             Rank = 1,
-                            ReferenceItemTypeId = 200,
-                            ValueDataTypeId = 3
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -987,129 +988,128 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 300,
-                            Key = "FilePath",
-                            Rank = 1,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1200,
+                            Key = "NamespaceRoot",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 27,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 1,
+                            DefaultValue = "net9.0",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 300,
-                            Key = "FileExtension",
-                            Rank = 2,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1200,
+                            Key = "TargetFramework",
+                            Rank = 3,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 28,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 300,
-                            Key = "Namespace",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1200,
+                            Key = "IsNullable",
+                            Rank = 4,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 29,
-                            DefaultValue = "",
+                            DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 300,
-                            Key = "HasDbContext",
-                            Rank = 4,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1200,
+                            Key = "ImplicitUsing",
+                            Rank = 5,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 30,
-                            DefaultValue = "",
-                            EditorTypeId = 2,
+                            DefaultValue = "1.0.0",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 300,
-                            Key = "HasMediator",
+                            ItemTypeId = 1200,
+                            Key = "Version",
                             Rank = 6,
-                            ValueDataTypeId = 1
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 31,
-                            DefaultValue = "42",
-                            EditorTypeId = 10,
+                            DefaultValue = "1.0.0.0",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 306,
-                            Key = "LifetimeScope",
-                            Rank = 1,
-                            ReferenceItemTypeId = 40,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1200,
+                            Key = "AssemblyVersion",
+                            Rank = 7,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 32,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
+                            DefaultValue = "1.0.0.0",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 306,
-                            Key = "RegisterObject",
-                            Rank = 2,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1200,
+                            Key = "FileVersion",
+                            Rank = 8,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 33,
-                            DefaultValue = "",
+                            DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 306,
-                            Key = "RegisterInterface",
-                            Rank = 3,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1200,
+                            Key = "IsTestLibrary",
+                            Rank = 9,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 34,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = ".csproj",
+                            EditorTypeId = 1,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 310,
-                            Key = "FilePath",
-                            Rank = 1,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1200,
+                            Key = "FileExtension",
+                            Rank = 10,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 35,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 4,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 310,
-                            Key = "FileExtension",
-                            Rank = 2,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1201,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
@@ -1119,37 +1119,36 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 310,
-                            Key = "Namespace",
-                            Rank = 3,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1210,
+                            Key = "PackageInclude",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 37,
                             DefaultValue = "",
-                            EditorTypeId = 10,
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 312,
-                            Key = "RegisterObject",
-                            Rank = 2,
-                            ReferenceItemTypeId = 600,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1210,
+                            Key = "PackageVersion",
+                            Rank = 3,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 38,
                             DefaultValue = "",
-                            EditorTypeId = 14,
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 400,
-                            Key = "FilePath",
-                            Rank = 1,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1210,
+                            Key = "PrivateAssets",
+                            Rank = 4,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -1159,50 +1158,50 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 400,
-                            Key = "Namespace",
-                            Rank = 2,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1210,
+                            Key = "IncludeAssets",
+                            Rank = 5,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 40,
-                            DefaultValue = "91",
+                            DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 440,
-                            Key = "AccessModifier",
-                            Rank = 11,
-                            ReferenceItemTypeId = 90,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1220,
+                            Key = "LibraryInclude",
+                            Rank = 1,
+                            ReferenceItemTypeId = 1200,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 41,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 4,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 440,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 42,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 440,
+                            ItemTypeId = 1300,
                             Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
+                            Rank = 1,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 42,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 1,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1300,
+                            Key = "FileExtension",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -1212,171 +1211,171 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 440,
+                            ItemTypeId = 1300,
                             Key = "Namespace",
-                            Rank = 14,
-                            ValueDataTypeId = 6
+                            Rank = 3,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 44,
                             DefaultValue = "",
-                            EditorTypeId = 10,
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 440,
-                            Key = "BaseType",
-                            Rank = 15,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1300,
+                            Key = "HasDbContext",
+                            Rank = 4,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 45,
                             DefaultValue = "",
-                            EditorTypeId = 10,
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 440,
-                            Key = "Interface",
-                            Rank = 16,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1300,
+                            Key = "HasMediator",
+                            Rank = 6,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 46,
-                            DefaultValue = "91",
+                            DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "AccessModifier",
-                            Rank = 11,
-                            ReferenceItemTypeId = 90,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1301,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 47,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 4,
+                            DefaultValue = "42",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1302,
+                            Key = "LifetimeScope",
+                            Rank = 1,
+                            ReferenceItemTypeId = 40,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 48,
                             DefaultValue = "",
-                            EditorTypeId = 4,
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1302,
+                            Key = "RegisterObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 49,
                             DefaultValue = "",
-                            EditorTypeId = 4,
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "Namespace",
-                            Rank = 14,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1302,
+                            Key = "RegisterInterface",
+                            Rank = 3,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 50,
                             DefaultValue = "",
-                            EditorTypeId = 10,
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "BaseType",
-                            Rank = 15,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1310,
+                            Key = "FilePath",
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 51,
-                            DefaultValue = "",
-                            EditorTypeId = 2,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 460,
-                            Key = "GenerateInterface",
-                            Rank = 16,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1310,
+                            Key = "FileExtension",
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 52,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "TestClass",
-                            Rank = 11,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 53,
-                            DefaultValue = "91",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "AccessModifier",
-                            Rank = 11,
-                            ReferenceItemTypeId = 90,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 54,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 1,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
-                        },
-                        new
-                        {
-                            Id = 55,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 500,
+                            ItemTypeId = 1310,
+                            Key = "Namespace",
+                            Rank = 3,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 53,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1311,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 54,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1312,
+                            Key = "RegisterObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1600,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 55,
+                            DefaultValue = "",
+                            EditorTypeId = 14,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1400,
                             Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
+                            Rank = 1,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -1386,213 +1385,213 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 500,
+                            ItemTypeId = 1400,
                             Key = "Namespace",
-                            Rank = 14,
-                            ValueDataTypeId = 6
+                            Rank = 2,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
                             Id = 57,
-                            DefaultValue = "",
+                            DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "BaseType",
-                            Rank = 15,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1401,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 58,
-                            DefaultValue = "",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "GenerateInterface",
-                            Rank = 16,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 59,
-                            DefaultValue = "",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "RegisterDI",
-                            Rank = 17,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 60,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 500,
-                            Key = "IsStatic",
-                            Rank = 18,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 61,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 510,
-                            Key = "ImportObject",
-                            Rank = 2,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 62,
-                            DefaultValue = "",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 510,
-                            Key = "UseInterface",
-                            Rank = 3,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 63,
-                            DefaultValue = "57",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 522,
-                            Key = "PropertyType",
-                            Rank = 1,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 64,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 522,
-                            Key = "PropertyClass",
-                            Rank = 2,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 65,
-                            DefaultValue = "1",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 522,
-                            Key = "IsNullable",
-                            Rank = 3,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 66,
-                            DefaultValue = "1",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 522,
-                            Key = "HasSetter",
-                            Rank = 4,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 67,
-                            DefaultValue = "32",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "TestMethod",
-                            Rank = 10,
-                            ReferenceItemTypeId = 31,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 68,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 524,
+                            ItemTypeId = 1450,
                             Key = "AccessModifier",
                             Rank = 11,
                             ReferenceItemTypeId = 90,
-                            ValueDataTypeId = 3
+                            ValueDataTypeId = 57
                         },
                         new
                         {
-                            Id = 69,
-                            DefaultValue = "57",
-                            EditorTypeId = 10,
+                            Id = 59,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "ReturnType",
+                            ItemTypeId = 1450,
+                            Key = "FileExtension",
                             Rank = 12,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
+                            ValueDataTypeId = 54
                         },
                         new
                         {
-                            Id = 70,
+                            Id = 60,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1450,
+                            Key = "FilePath",
+                            Rank = 13,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 61,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1450,
+                            Key = "Namespace",
+                            Rank = 14,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 62,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "ReturnClass",
-                            Rank = 13,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1450,
+                            Key = "BaseType",
+                            Rank = 15,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
-                            Id = 71,
-                            DefaultValue = "0",
+                            Id = 63,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1450,
+                            Key = "Interface",
+                            Rank = 16,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 64,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1451,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 65,
+                            DefaultValue = "91",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1460,
+                            Key = "AccessModifier",
+                            Rank = 11,
+                            ReferenceItemTypeId = 90,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 66,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1460,
+                            Key = "FileExtension",
+                            Rank = 12,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 67,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1460,
+                            Key = "FilePath",
+                            Rank = 13,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 68,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1460,
+                            Key = "Namespace",
+                            Rank = 14,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 69,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1460,
+                            Key = "BaseType",
+                            Rank = 15,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 70,
+                            DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "IsAsync",
-                            Rank = 14,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1460,
+                            Key = "GenerateInterface",
+                            Rank = 16,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 71,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1461,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
@@ -1602,63 +1601,63 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "IsVirtual",
-                            Rank = 15,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1500,
+                            Key = "TestClass",
+                            Rank = 11,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 73,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "IsStatic",
-                            Rank = 16,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 74,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "IsAbstract",
-                            Rank = 17,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 75,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 524,
-                            Key = "IsSealed",
-                            Rank = 18,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 76,
-                            DefaultValue = "57",
+                            DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 526,
-                            Key = "ParamType",
-                            Rank = 1,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1500,
+                            Key = "AccessModifier",
+                            Rank = 11,
+                            ReferenceItemTypeId = 90,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 74,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 1,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1500,
+                            Key = "FileExtension",
+                            Rank = 12,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 75,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1500,
+                            Key = "FilePath",
+                            Rank = 13,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 76,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1500,
+                            Key = "Namespace",
+                            Rank = 14,
+                            ValueDataTypeId = 54
                         },
                         new
                         {
@@ -1668,102 +1667,105 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 526,
-                            Key = "ParamClass",
-                            Rank = 2,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1500,
+                            Key = "BaseType",
+                            Rank = 15,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 78,
-                            DefaultValue = "1",
+                            DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 526,
-                            Key = "IsNullable",
-                            Rank = 3,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1500,
+                            Key = "GenerateInterface",
+                            Rank = 16,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 79,
+                            DefaultValue = "",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1500,
+                            Key = "RegisterDI",
+                            Rank = 17,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 80,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 526,
-                            Key = "UseThis",
-                            Rank = 4,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 80,
-                            DefaultValue = ".cs",
-                            EditorTypeId = 1,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 600,
-                            Key = "FileExtension",
-                            Rank = 12,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1500,
+                            Key = "IsStatic",
+                            Rank = 18,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 81,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 600,
-                            Key = "FilePath",
-                            Rank = 13,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1501,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 82,
                             DefaultValue = "",
-                            EditorTypeId = 4,
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 600,
-                            Key = "Namespace",
-                            Rank = 14,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1502,
+                            Key = "ImportObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 83,
-                            DefaultValue = "dbo",
-                            EditorTypeId = 4,
+                            DefaultValue = "",
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 600,
-                            Key = "DbSchema",
-                            Rank = 15,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1502,
+                            Key = "UseInterface",
+                            Rank = 3,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 84,
-                            DefaultValue = "",
-                            EditorTypeId = 4,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 600,
-                            Key = "DbTableName",
-                            Rank = 16,
-                            ValueDataTypeId = 6
+                            ItemTypeId = 1510,
+                            Key = "PropertyType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
@@ -1773,226 +1775,1023 @@ namespace Weavers.Core.Migrations
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 605,
-                            Key = "ImportObject",
+                            ItemTypeId = 1510,
+                            Key = "PropertyClass",
                             Rank = 2,
-                            ReferenceItemTypeId = 500,
-                            ValueDataTypeId = 3
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 86,
-                            DefaultValue = "",
+                            DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 605,
-                            Key = "UseInterface",
+                            ItemTypeId = 1510,
+                            Key = "IsNullable",
                             Rank = 3,
-                            ValueDataTypeId = 1
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 87,
-                            DefaultValue = "64",
-                            EditorTypeId = 10,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "PropertyType",
-                            Rank = 1,
-                            ReferenceItemTypeId = 50,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1510,
+                            Key = "HasSetter",
+                            Rank = 4,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 88,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "IsNullable",
-                            Rank = 3,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1511,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 89,
-                            DefaultValue = "1",
-                            EditorTypeId = 2,
+                            DefaultValue = "32",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "HasSetter",
-                            Rank = 4,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1520,
+                            Key = "TestMethod",
+                            Rank = 10,
+                            ReferenceItemTypeId = 31,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 90,
-                            DefaultValue = "0",
-                            EditorTypeId = 2,
+                            DefaultValue = "91",
+                            EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "HasNavigation",
-                            Rank = 5,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1520,
+                            Key = "AccessModifier",
+                            Rank = 11,
+                            ReferenceItemTypeId = 90,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 91,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1520,
+                            Key = "ReturnType",
+                            Rank = 12,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 92,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1520,
+                            Key = "ReturnClass",
+                            Rank = 13,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 93,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "IsPrimaryKey",
-                            Rank = 6,
-                            ValueDataTypeId = 1
-                        },
-                        new
-                        {
-                            Id = 92,
-                            DefaultValue = "-1",
-                            EditorTypeId = 3,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 610,
-                            Key = "MaxSize",
-                            Rank = 7,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 93,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 614,
-                            Key = "PropertyClass",
-                            Rank = 2,
-                            ReferenceItemTypeId = 600,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1520,
+                            Key = "ReturnNullable",
+                            Rank = 14,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 94,
-                            DefaultValue = "7",
-                            EditorTypeId = 10,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 614,
-                            Key = "HasNavigation",
-                            Rank = 3,
-                            ReferenceItemTypeId = 5,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1520,
+                            Key = "IsAsync",
+                            Rank = 15,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 95,
-                            DefaultValue = "84",
-                            EditorTypeId = 10,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 614,
-                            Key = "DeleteBehavior",
-                            Rank = 4,
-                            ReferenceItemTypeId = 80,
-                            ValueDataTypeId = 3
+                            ItemTypeId = 1520,
+                            Key = "IsVirtual",
+                            Rank = 16,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 96,
-                            DefaultValue = "1",
+                            DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 614,
-                            Key = "IsNullable",
-                            Rank = 5,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1520,
+                            Key = "IsStatic",
+                            Rank = 17,
+                            ValueDataTypeId = 55
                         },
                         new
                         {
                             Id = 97,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 616,
-                            Key = "PropertyClass",
-                            Rank = 2,
-                            ReferenceItemTypeId = 600,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 98,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 616,
-                            Key = "ForeignKey",
-                            Rank = 3,
-                            ReferenceItemTypeId = 610,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 99,
-                            DefaultValue = "6",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 616,
-                            Key = "HasNavigation",
-                            Rank = 4,
-                            ReferenceItemTypeId = 5,
-                            ValueDataTypeId = 3
-                        },
-                        new
-                        {
-                            Id = 100,
-                            DefaultValue = "1",
+                            DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 616,
-                            Key = "IsNullable",
-                            Rank = 5,
-                            ValueDataTypeId = 1
+                            ItemTypeId = 1520,
+                            Key = "IsAbstract",
+                            Rank = 18,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 98,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1520,
+                            Key = "IsSealed",
+                            Rank = 19,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 99,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1521,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 100,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1530,
+                            Key = "ParamType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
                         },
                         new
                         {
                             Id = 101,
                             DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1530,
+                            Key = "ParamClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 102,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1530,
+                            Key = "IsNullable",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 103,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1530,
+                            Key = "UseThis",
+                            Rank = 4,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 104,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1531,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 105,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 1,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1600,
+                            Key = "FileExtension",
+                            Rank = 12,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 106,
+                            DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 616,
+                            ItemTypeId = 1600,
+                            Key = "FilePath",
+                            Rank = 13,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 107,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1600,
+                            Key = "Namespace",
+                            Rank = 14,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 108,
+                            DefaultValue = "dbo",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1600,
+                            Key = "DbSchema",
+                            Rank = 15,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 109,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1600,
+                            Key = "DbTableName",
+                            Rank = 16,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 110,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1601,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 111,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1602,
+                            Key = "ImportObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 112,
+                            DefaultValue = "",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1602,
+                            Key = "UseInterface",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 113,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "PropertyType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 114,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "IsNullable",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 115,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "HasSetter",
+                            Rank = 4,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 116,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "HasNavigation",
+                            Rank = 5,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 117,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "IsPrimaryKey",
+                            Rank = 6,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 118,
+                            DefaultValue = "-1",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1610,
+                            Key = "MaxSize",
+                            Rank = 7,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 119,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1611,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 120,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1620,
+                            Key = "PropertyClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1600,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 121,
+                            DefaultValue = "7",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1620,
+                            Key = "HasNavigation",
+                            Rank = 3,
+                            ReferenceItemTypeId = 5,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 122,
+                            DefaultValue = "84",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1620,
+                            Key = "DeleteBehavior",
+                            Rank = 4,
+                            ReferenceItemTypeId = 80,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 123,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1620,
+                            Key = "IsNullable",
+                            Rank = 5,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 124,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1621,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 125,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1630,
+                            Key = "PropertyClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1600,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 126,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1630,
+                            Key = "ForeignKey",
+                            Rank = 3,
+                            ReferenceItemTypeId = 1610,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 127,
+                            DefaultValue = "8",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1630,
+                            Key = "HasNavigation",
+                            Rank = 4,
+                            ReferenceItemTypeId = 5,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 128,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1630,
+                            Key = "IsNullable",
+                            Rank = 5,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 129,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1630,
                             Key = "InverseNav",
                             Rank = 6,
-                            ValueDataTypeId = 6
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 130,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1631,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 131,
+                            DefaultValue = ".cs",
+                            EditorTypeId = 1,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1700,
+                            Key = "FileExtension",
+                            Rank = 12,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 132,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1700,
+                            Key = "FilePath",
+                            Rank = 13,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 133,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1700,
+                            Key = "Namespace",
+                            Rank = 14,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 134,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1710,
+                            Key = "PropertyType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 135,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1710,
+                            Key = "PropertyClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 136,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1720,
+                            Key = "PropertyType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 137,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1720,
+                            Key = "PropertyClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 138,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1801,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 139,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1802,
+                            Key = "ImportObject",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 140,
+                            DefaultValue = "",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1802,
+                            Key = "UseInterface",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 141,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1811,
+                            Key = "PropertyType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 142,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1811,
+                            Key = "PropertyClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 143,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1811,
+                            Key = "IsNullable",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 144,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1811,
+                            Key = "HasSetter",
+                            Rank = 4,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 145,
+                            DefaultValue = "32",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "TestMethod",
+                            Rank = 10,
+                            ReferenceItemTypeId = 31,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 146,
+                            DefaultValue = "91",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "AccessModifier",
+                            Rank = 11,
+                            ReferenceItemTypeId = 90,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 147,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "ReturnType",
+                            Rank = 12,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 148,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "ReturnClass",
+                            Rank = 13,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 149,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "ReturnNullable",
+                            Rank = 14,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 150,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "IsAsync",
+                            Rank = 15,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 151,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "IsVirtual",
+                            Rank = 16,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 152,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "IsStatic",
+                            Rank = 17,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 153,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "IsAbstract",
+                            Rank = 18,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 154,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1830,
+                            Key = "IsSealed",
+                            Rank = 19,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 155,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1831,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 156,
+                            DefaultValue = "57",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1840,
+                            Key = "ParamType",
+                            Rank = 1,
+                            ReferenceItemTypeId = 50,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 157,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1840,
+                            Key = "ParamClass",
+                            Rank = 2,
+                            ReferenceItemTypeId = 1500,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 158,
+                            DefaultValue = "1",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1840,
+                            Key = "IsNullable",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 159,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1840,
+                            Key = "UseThis",
+                            Rank = 4,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 160,
+                            DefaultValue = "104",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1841,
+                            Key = "Results",
+                            Rank = 1,
+                            ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
                         });
                 });
 
@@ -2854,433 +3653,911 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 100,
+                            Description = "Review State",
+                            EditorTypeId = 10,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RatingStatus",
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Description = "Unanimous Yes",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "UnanimousYes",
+                            ParentTypeId = 100,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Description = "Majority Yes",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "MajorityYes",
+                            ParentTypeId = 100,
+                            Rank = 2
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Description = "Majority No",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "MajorityNo",
+                            ParentTypeId = 100,
+                            Rank = 3
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Description = "Tie",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "Tie",
+                            ParentTypeId = 100,
+                            Rank = 4
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Description = "Ratings",
+                            EditorTypeId = 10,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "Ratings",
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 111,
+                            Description = "Yes",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RatingYes",
+                            ParentTypeId = 100,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 112,
+                            Description = "No",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RatingNo",
+                            ParentTypeId = 100,
+                            Rank = 2
+                        },
+                        new
+                        {
+                            Id = 1100,
                             Description = "Project Folder",
                             EditorTypeId = 4,
                             IconName = "pi pi-folder",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ProjectFolderModel",
-                            Rank = 100
+                            Rank = 1100
                         },
                         new
                         {
-                            Id = 110,
+                            Id = 1101,
+                            Description = "Project Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ProjectDocs",
+                            ParentTypeId = 1100,
+                            Rank = 1101
+                        },
+                        new
+                        {
+                            Id = 1107,
+                            Description = "DocRating",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "DocRating",
+                            ParentTypeId = 1107,
+                            Rank = 0
+                        },
+                        new
+                        {
+                            Id = 1110,
                             Description = "Relative Folder",
                             EditorTypeId = 4,
                             IconName = "pi pi-folder",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "RelativeFolderModel",
-                            ParentTypeId = 100,
-                            Rank = 110
+                            ParentTypeId = 1100,
+                            Rank = 1110
                         },
                         new
                         {
-                            Id = 150,
-                            Description = "File",
-                            EditorTypeId = 5,
+                            Id = 1111,
+                            Description = "Relative Folder Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RelativeFolderDocs",
+                            ParentTypeId = 1110,
+                            Rank = 1111
+                        },
+                        new
+                        {
+                            Id = 1120,
+                            Description = "Md File",
+                            EditorTypeId = 4,
                             IconName = "pi pi-file",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "FileModel",
-                            ParentTypeId = 110,
-                            Rank = 150
+                            Name = "FileMdModel",
+                            ParentTypeId = 1110,
+                            Rank = 1120
                         },
                         new
                         {
-                            Id = 160,
+                            Id = 1121,
+                            Description = "Md File Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileMdDocs",
+                            ParentTypeId = 1120,
+                            Rank = 1121
+                        },
+                        new
+                        {
+                            Id = 1130,
+                            Description = "Html File",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileHtmlModel",
+                            ParentTypeId = 1110,
+                            Rank = 1130
+                        },
+                        new
+                        {
+                            Id = 1131,
+                            Description = "Html File Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileHtmlDocs",
+                            ParentTypeId = 1130,
+                            Rank = 1131
+                        },
+                        new
+                        {
+                            Id = 1140,
+                            Description = "Config File",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileConfigModel",
+                            ParentTypeId = 1110,
+                            Rank = 1140
+                        },
+                        new
+                        {
+                            Id = 1141,
+                            Description = "Config File Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileConfigDocs",
+                            ParentTypeId = 1140,
+                            Rank = 1141
+                        },
+                        new
+                        {
+                            Id = 1150,
+                            Description = "Image File",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileImageModel",
+                            ParentTypeId = 1110,
+                            Rank = 0
+                        },
+                        new
+                        {
+                            Id = 1151,
+                            Description = "Image File Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "FileImageDocs",
+                            ParentTypeId = 1150,
+                            Rank = 0
+                        },
+                        new
+                        {
+                            Id = 1160,
                             Description = "Solution",
                             EditorTypeId = 4,
                             IconName = "pi pi-sitemap",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "SolutionModel",
-                            ParentTypeId = 110,
-                            Rank = 160
+                            ParentTypeId = 1110,
+                            Rank = 1160
                         },
                         new
                         {
-                            Id = 162,
+                            Id = 1161,
+                            Description = "Solution Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "SolutionDocs",
+                            ParentTypeId = 1160,
+                            Rank = 1161
+                        },
+                        new
+                        {
+                            Id = 1162,
                             Description = "Solution Import",
                             EditorTypeId = 4,
                             IconName = "pi pi-sitemap",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "SolutionImportModel",
-                            ParentTypeId = 160,
-                            Rank = 162
+                            ParentTypeId = 1160,
+                            Rank = 1162
                         },
                         new
                         {
-                            Id = 200,
+                            Id = 1200,
                             Description = "Library",
                             EditorTypeId = 4,
                             IconName = "pi pi-book",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "LibraryModel",
-                            ParentTypeId = 110,
-                            Rank = 200
+                            ParentTypeId = 1110,
+                            Rank = 1200
                         },
                         new
                         {
-                            Id = 210,
+                            Id = 1201,
+                            Description = "Library Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "LibraryDocs",
+                            ParentTypeId = 1200,
+                            Rank = 1201
+                        },
+                        new
+                        {
+                            Id = 1210,
                             Description = "Package Ref",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "LibPackageRefModel",
-                            ParentTypeId = 200,
+                            ParentTypeId = 1200,
                             Rank = 1
                         },
                         new
                         {
-                            Id = 220,
+                            Id = 1220,
                             Description = "Library Ref",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "LibLibraryRefModel",
-                            ParentTypeId = 200,
+                            ParentTypeId = 1200,
                             Rank = 2
                         },
                         new
                         {
-                            Id = 300,
+                            Id = 1300,
                             Description = "Dependency Injection",
                             EditorTypeId = 4,
                             IconName = "pi pi-cog",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "DependencyInjectionModel",
-                            ParentTypeId = 200,
+                            ParentTypeId = 1200,
                             Rank = 1
                         },
                         new
                         {
-                            Id = 306,
+                            Id = 1301,
+                            Description = "Dependency Injection Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "DependencyInjectionDocs",
+                            ParentTypeId = 1300,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 1302,
                             Description = "DI - Import",
                             EditorTypeId = 4,
                             IconName = "pi pi-cogs",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "DiImportModel",
-                            ParentTypeId = 300,
+                            ParentTypeId = 1300,
                             Rank = 1
                         },
                         new
                         {
-                            Id = 310,
+                            Id = 1310,
                             Description = "DbContext",
                             EditorTypeId = 4,
                             IconName = "pi pi-database",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "DbContextModel",
-                            ParentTypeId = 300,
+                            ParentTypeId = 1300,
                             Rank = 2
                         },
                         new
                         {
-                            Id = 312,
+                            Id = 1311,
+                            Description = "DbContext Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "DbContextDocs",
+                            ParentTypeId = 1311,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 1312,
                             Description = "Db Entity Import",
                             EditorTypeId = 4,
                             IconName = "pi pi-database",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "DbContextEntityImportModel",
-                            ParentTypeId = 310,
+                            ParentTypeId = 1310,
                             Rank = 1
                         },
                         new
                         {
-                            Id = 400,
+                            Id = 1400,
                             Description = "Namespace",
                             EditorTypeId = 4,
                             IconName = "pi pi-globe",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "NamespaceModel",
-                            ParentTypeId = 200,
-                            Rank = 400
+                            ParentTypeId = 1200,
+                            Rank = 1400
                         },
                         new
                         {
-                            Id = 420,
+                            Id = 1401,
+                            Description = "Namespace Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "NamespaceDocs",
+                            ParentTypeId = 1400,
+                            Rank = 1401
+                        },
+                        new
+                        {
+                            Id = 1420,
                             Description = "Interface",
                             EditorTypeId = 4,
                             IconName = "pi pi-plug",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "InterfaceModel",
-                            ParentTypeId = 400,
-                            Rank = 420
+                            ParentTypeId = 1400,
+                            Rank = 1420
                         },
                         new
                         {
-                            Id = 422,
+                            Id = 1421,
+                            Description = "Interface Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "InterfaceDocs",
+                            ParentTypeId = 1420,
+                            Rank = 1421
+                        },
+                        new
+                        {
+                            Id = 1422,
                             Description = "Interface Property",
                             EditorTypeId = 4,
                             IconName = "pi pi-plug",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "InterfacePropertyModel",
-                            ParentTypeId = 420,
-                            Rank = 422
+                            ParentTypeId = 1420,
+                            Rank = 1422
                         },
                         new
                         {
-                            Id = 424,
+                            Id = 1430,
                             Description = "Interface Method",
                             EditorTypeId = 4,
                             IconName = "pi pi-plug",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "InterfaceMethodModel",
-                            ParentTypeId = 420,
-                            Rank = 424
+                            ParentTypeId = 1420,
+                            Rank = 1430
                         },
                         new
                         {
-                            Id = 426,
+                            Id = 1440,
                             Description = "Interface Method Parameter",
                             EditorTypeId = 4,
                             IconName = "pi pi-plug",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "InterfaceMethodParameterModel",
-                            ParentTypeId = 424,
-                            Rank = 426
+                            ParentTypeId = 1430,
+                            Rank = 1440
                         },
                         new
                         {
-                            Id = 440,
+                            Id = 1450,
                             Description = "Record",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "RecordModel",
-                            ParentTypeId = 400,
-                            Rank = 440
+                            ParentTypeId = 1400,
+                            Rank = 1450
                         },
                         new
                         {
-                            Id = 460,
+                            Id = 1451,
+                            Description = "Record Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RecordDocs",
+                            ParentTypeId = 1450,
+                            Rank = 1451
+                        },
+                        new
+                        {
+                            Id = 1460,
                             Description = "Struct",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "StructModel",
-                            ParentTypeId = 400,
-                            Rank = 460
+                            ParentTypeId = 1400,
+                            Rank = 1460
                         },
                         new
                         {
-                            Id = 500,
+                            Id = 1461,
+                            Description = "Struct Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "StructDocs",
+                            ParentTypeId = 1460,
+                            Rank = 1461
+                        },
+                        new
+                        {
+                            Id = 1500,
                             Description = "Class",
                             EditorTypeId = 4,
                             IconName = "pi pi-cubes",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ClassModel",
-                            ParentTypeId = 400,
-                            Rank = 500
+                            ParentTypeId = 1400,
+                            Rank = 1500
                         },
                         new
                         {
-                            Id = 510,
+                            Id = 1501,
+                            Description = "Class Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ClassDocs",
+                            ParentTypeId = 1500,
+                            Rank = 1501
+                        },
+                        new
+                        {
+                            Id = 1502,
                             Description = "Class Import",
                             EditorTypeId = 4,
                             IconName = "pi pi-cube",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ClassImportModel",
-                            ParentTypeId = 500,
-                            Rank = 510
+                            ParentTypeId = 1500,
+                            Rank = 1502
                         },
                         new
                         {
-                            Id = 522,
+                            Id = 1510,
                             Description = "Class Property",
                             EditorTypeId = 4,
                             IconName = "pi pi-cube",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ClassPropertyModel",
-                            ParentTypeId = 500,
-                            Rank = 522
+                            ParentTypeId = 1500,
+                            Rank = 1510
                         },
                         new
                         {
-                            Id = 524,
+                            Id = 1511,
+                            Description = "Class Property Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ClassPropertyDocs",
+                            ParentTypeId = 1510,
+                            Rank = 1511
+                        },
+                        new
+                        {
+                            Id = 1520,
                             Description = "Class Method",
                             EditorTypeId = 4,
                             IconName = "pi pi-cube",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ClassMethodModel",
-                            ParentTypeId = 500,
-                            Rank = 524
+                            ParentTypeId = 1500,
+                            Rank = 1520
                         },
                         new
                         {
-                            Id = 526,
+                            Id = 1521,
+                            Description = "Class Method Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ClassMethodDocs",
+                            ParentTypeId = 1520,
+                            Rank = 1521
+                        },
+                        new
+                        {
+                            Id = 1530,
                             Description = "Class Method Parameter",
                             EditorTypeId = 4,
                             IconName = "pi pi-cube",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "ClassMethodParameterModel",
-                            ParentTypeId = 524,
-                            Rank = 526
+                            ParentTypeId = 1520,
+                            Rank = 1530
                         },
                         new
                         {
-                            Id = 600,
+                            Id = 1531,
+                            Description = "Class Method Parameter Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ClassMethodParameterDocs",
+                            ParentTypeId = 1530,
+                            Rank = 1531
+                        },
+                        new
+                        {
+                            Id = 1600,
                             Description = "Entity Class",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityClassModel",
-                            ParentTypeId = 400,
-                            Rank = 600
+                            ParentTypeId = 1400,
+                            Rank = 1600
                         },
                         new
                         {
-                            Id = 605,
+                            Id = 1601,
+                            Description = "Entity Class Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityClassDocs",
+                            ParentTypeId = 1600,
+                            Rank = 1601
+                        },
+                        new
+                        {
+                            Id = 1602,
                             Description = "EntityClassImportModel",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityClassImportModel",
-                            ParentTypeId = 600,
-                            Rank = 605
+                            ParentTypeId = 1600,
+                            Rank = 1602
                         },
                         new
                         {
-                            Id = 610,
+                            Id = 1610,
                             Description = "Entity Property",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityPropertyModel",
-                            ParentTypeId = 600,
-                            Rank = 610
+                            ParentTypeId = 1600,
+                            Rank = 1610
                         },
                         new
                         {
-                            Id = 614,
+                            Id = 1611,
+                            Description = "Entity Property Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityPropertyDocs",
+                            ParentTypeId = 1610,
+                            Rank = 1611
+                        },
+                        new
+                        {
+                            Id = 1620,
                             Description = "Entity Nav Property",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityNavigationModel",
-                            ParentTypeId = 610,
-                            Rank = 614
+                            ParentTypeId = 1610,
+                            Rank = 1620
                         },
                         new
                         {
-                            Id = 616,
+                            Id = 1621,
+                            Description = "Entity Nav Property Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityNavigationDocs",
+                            ParentTypeId = 1620,
+                            Rank = 1621
+                        },
+                        new
+                        {
+                            Id = 1630,
                             Description = "Inbound Nav Property",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityInboundNavigationModel",
-                            ParentTypeId = 600,
-                            Rank = 616
+                            ParentTypeId = 1600,
+                            Rank = 1630
                         },
                         new
                         {
-                            Id = 620,
+                            Id = 1631,
+                            Description = "Inbound Nav Property Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "EntityInboundNavigationDocs",
+                            ParentTypeId = 1630,
+                            Rank = 1631
+                        },
+                        new
+                        {
+                            Id = 1640,
                             Description = "Entity Configuration Class",
                             EditorTypeId = 4,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "EntityConfigurationModel",
-                            ParentTypeId = 600,
-                            Rank = 620
+                            ParentTypeId = 1600,
+                            Rank = 1640
                         },
                         new
                         {
-                            Id = 700,
+                            Id = 1700,
                             Description = "Handler",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerModel",
-                            ParentTypeId = 400,
-                            Rank = 700
+                            ParentTypeId = 1400,
+                            Rank = 1700
                         },
                         new
                         {
-                            Id = 710,
+                            Id = 1710,
                             Description = "Handler Response",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerResponseModel",
-                            ParentTypeId = 700,
-                            Rank = 710
+                            ParentTypeId = 1700,
+                            Rank = 1710
                         },
                         new
                         {
-                            Id = 720,
+                            Id = 1720,
                             Description = "Handler Command",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerCommandModel",
-                            ParentTypeId = 700,
-                            Rank = 720
+                            ParentTypeId = 1700,
+                            Rank = 1720
                         },
                         new
                         {
-                            Id = 730,
+                            Id = 1800,
                             Description = "Handler Class",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerClassModel",
-                            ParentTypeId = 700,
-                            Rank = 730
+                            ParentTypeId = 1700,
+                            Rank = 1800
                         },
                         new
                         {
-                            Id = 732,
+                            Id = 1801,
+                            Description = "Handler Class Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerClassDocs",
+                            ParentTypeId = 1800,
+                            Rank = 1801
+                        },
+                        new
+                        {
+                            Id = 1802,
+                            Description = "Handler Class Import",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerClassImportModel",
+                            ParentTypeId = 1800,
+                            Rank = 1802
+                        },
+                        new
+                        {
+                            Id = 1811,
                             Description = "Handler Property",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerPropertyModel",
-                            ParentTypeId = 730,
-                            Rank = 732
+                            ParentTypeId = 1800,
+                            Rank = 1811
                         },
                         new
                         {
-                            Id = 734,
+                            Id = 1820,
+                            Description = "Primary Handler Method",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerHandlerMethodModel",
+                            ParentTypeId = 1800,
+                            Rank = 1820
+                        },
+                        new
+                        {
+                            Id = 1830,
                             Description = "Handler Method",
                             EditorTypeId = 4,
                             IconName = "pi pi-shield",
                             IsReadOnly = false,
                             IsVisible = true,
                             Name = "HandlerMethodModel",
-                            ParentTypeId = 730,
-                            Rank = 734
+                            ParentTypeId = 1800,
+                            Rank = 1830
+                        },
+                        new
+                        {
+                            Id = 1831,
+                            Description = "Handler Method Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerMethodDocs",
+                            ParentTypeId = 1830,
+                            Rank = 1831
+                        },
+                        new
+                        {
+                            Id = 1840,
+                            Description = "Handler Method Parameter",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerMethodParameterModel",
+                            ParentTypeId = 1830,
+                            Rank = 1840
+                        },
+                        new
+                        {
+                            Id = 1841,
+                            Description = "Handler Method Parameter Documentation",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "HandlerMethodParameterDocs",
+                            ParentTypeId = 1840,
+                            Rank = 1841
                         });
                 });
 
@@ -3395,6 +4672,12 @@ namespace Weavers.Core.Migrations
                             Id = 20,
                             Description = "Structural parent contains child model",
                             Name = "Contains"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Description = "Item has associated documentation",
+                            Name = "HasDocs"
                         });
                 });
 

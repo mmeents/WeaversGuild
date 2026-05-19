@@ -60,8 +60,6 @@ namespace Weavers.Core.Handlers.Items {
         await _context.SaveChangesAsync(cancellationToken);
       }
 
-
-
       property = await _context.ItemProperties.FindAsync(new object[] { id }, cancellationToken);      
       var response = property?.ToDto() ?? throw new Exception("Property not found after update");      
       return response;

@@ -11,7 +11,8 @@ using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using MediatR;
+
 
 namespace TheLoomApp {
   public partial class Form1 : Form {
@@ -21,6 +22,7 @@ namespace TheLoomApp {
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
     private readonly IGraphItemUpdateService _graphItemUpdateService;
+    private readonly IMediator _mediator;
     private ItemNode? _selectedNode = null;
     private Dictionary<int, ItemNode> _itemCache = new Dictionary<int, ItemNode>();
     private Dictionary<int, ItemTypeDto> _itemTypeCache = new Dictionary<int, ItemTypeDto>();
@@ -37,6 +39,7 @@ namespace TheLoomApp {
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
+      _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
       };
@@ -512,7 +515,7 @@ namespace TheLoomApp {
 
           if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ProjectFolderModel
             || _selectedNode.Item.ItemTypeId == (int)WeItemType.RelativeFolderModel
-            || _selectedNode.Item.ItemTypeId == (int)WeItemType.FileModel
+            || _selectedNode.Item.ItemTypeId == (int)WeItemType.FileMdModel
             || _selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel
           ) {
             var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
@@ -737,7 +740,13 @@ namespace TheLoomApp {
 
     private async void miAddProjectRoot_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddProjectRoot(_appGraphService, edAppDefaultFolder.Text);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ProjectFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddProjectRoot(_appGraphService, newItemName, edAppDefaultFolder.Text);          
+        }
+        
       } catch (Exception ex) {
         DoLogMessage("Failed to add project root - error:" + ex.Message);
         MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
@@ -745,7 +754,13 @@ namespace TheLoomApp {
     }
     private async void miAddSubProject_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddSubFolder(_appGraphService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RelativeFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddSubFolder(_appGraphService, newItemName);
+        }
+        
       } catch (Exception ex) {
         DoLogMessage("Failed to add subfolder - error:" + ex.Message);
         MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
@@ -753,7 +768,13 @@ namespace TheLoomApp {
     }
     private async void miAddSolution_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddSolution(_appGraphService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.SolutionModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddSolution(_appGraphService, newItemName);
+        }
+        
       } catch (Exception ex) {
         DoLogMessage("Failed to add solution - error: " + ex.Message);
         MessageBox.Show($"Error adding solution: {ex.Message}", "Add Solution failed");
@@ -769,7 +790,28 @@ namespace TheLoomApp {
     }
     private async void miAddFile_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddFile(_appGraphService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.FileMdModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var fileType = dlg.NewFileType;
+          if (fileType != null) { 
+            switch (fileType) {
+              case WeItemType.FileMdModel:
+                await tvKb.AddMdFile(_appGraphService, newItemName);
+                break;
+              case WeItemType.FileHtmlModel:
+                await tvKb.AddHtmlFile(_appGraphService, newItemName);
+                break;
+              case WeItemType.FileConfigModel:
+                await tvKb.AddConfigFile(_appGraphService, newItemName);
+                break;
+              default:
+                break;
+            }
+          }          
+        }        
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add file - error:" + ex.Message);
         MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
@@ -778,7 +820,15 @@ namespace TheLoomApp {
 
     private async void miAddLibrary_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddLibrary(_appClassService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.LibraryModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator =  scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddLibrary(mediator, _appClassService, newItemName);
+        }
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add library - error:" + ex.Message);
         MessageBox.Show($"Error adding library: {ex.Message}", "Add Library Failed");
@@ -794,7 +844,13 @@ namespace TheLoomApp {
     }
     private async void miAddNamespace_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddNamespaceModel(_appClassService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.NamespaceModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddNamespaceModel(_appClassService, newItemName);
+        }
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add namespace model - error:" + ex.Message);
         MessageBox.Show($"Error adding namespace model: {ex.Message}", "Add Namespace Model Failed");
@@ -802,7 +858,14 @@ namespace TheLoomApp {
     }
     private async void miAddClass_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddClassModel(_appClassService);
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ClassModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddClassModel(_appClassService, newItemName);
+        }
+        
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add class model - error:" + ex.Message);
         MessageBox.Show($"Error adding class model: {ex.Message}", "Add Class Model Failed");
@@ -818,7 +881,13 @@ namespace TheLoomApp {
     }
     private async void miAddClassProp_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddClassPropModel(_appClassService);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ClassPropertyModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          int? newItemTypeId = dlg.NewDataType.HasValue ? (int?)dlg.NewDataType.Value : null;
+          int? newItemClassId = dlg.LookupItemId;
+          await tvKb.AddClassPropModel(_appClassService, newItemName, newItemTypeId, newItemClassId);
+        }
       } catch (Exception ex) {
         DoLogMessage("Failed to add class property - error:" + ex.Message);
         MessageBox.Show($"Error adding class property: {ex.Message}", "Add Class Property Failed");
@@ -826,7 +895,15 @@ namespace TheLoomApp {
     }
     private async void miAddClassMethod_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddClassMethodModel(_appClassService);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ClassMethodModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          bool? isAsync = dlg.IsAsync;
+          int? returnTypeId = dlg.NewDataType.HasValue ? (int?)dlg.NewDataType.Value : null;
+          int? returnClassId = dlg.LookupItemId;
+          await tvKb.AddClassMethodModel(_appClassService, newItemName, isAsync, returnTypeId, returnClassId);
+        }
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add class method - error:" + ex.Message);
         MessageBox.Show($"Error adding class method: {ex.Message}", "Add Class Method Failed");
@@ -834,7 +911,13 @@ namespace TheLoomApp {
     }
     private async void miAddClassMethodParam_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddClassMethodParamModel(_appClassService);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ClassMethodParameterModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          int? paramTypeId = dlg.NewDataType.HasValue ? (int?)dlg.NewDataType.Value : null;
+          int? paramClassId = dlg.LookupItemId;
+          await tvKb.AddClassMethodParameterModel(_appClassService, newItemName, paramTypeId, paramClassId);
+        }        
       } catch (Exception ex) {
         DoLogMessage("Failed to add class method parameter - error:" + ex.Message);
         MessageBox.Show($"Error adding class method parameter: {ex.Message}", "Add Class Method Parameter Failed");
@@ -843,7 +926,12 @@ namespace TheLoomApp {
 
     private async void miAddEntity_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddEntityClassModel(_appClassService);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.EntityClassModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var className = dlg.ItemName;
+          var dbTableName = dlg.DbTableName;
+          await tvKb.AddEntityClassModel(_appClassService, className, dbTableName);
+        }
       } catch (Exception ex) {
         DoLogMessage("Failed to add entity - error:" + ex.Message);
         MessageBox.Show($"Error adding entity: {ex.Message}", "Add Entity Failed");
@@ -852,7 +940,14 @@ namespace TheLoomApp {
 
     private async void miAddEntityProperty_Click(object sender, EventArgs e) {
       try {
-        await tvKb.AddEntityPropertyModel(_appClassService);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.EntityPropertyModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          bool isNavigation = dlg.IsNav;
+          var propertyName = dlg.ItemName;
+          var propertyType = dlg.NewDataType;
+          var entityId = dlg.LookupItemId;
+          await tvKb.AddEntityPropertyModel(_appClassService, propertyName, (int?)propertyType, isNavigation, entityId);
+        }
       } catch (Exception ex) {
         DoLogMessage("Failed to add entity property - error:" + ex.Message);
         MessageBox.Show($"Error adding entity property: {ex.Message}", "Add Entity Property Failed");
@@ -1077,5 +1172,19 @@ namespace TheLoomApp {
 
     }
 
+    private void button1_Click(object sender, EventArgs e) {
+      var itemType = _selectedNode?.Item?.ItemTypeId ?? 0;
+      if (itemType != 0) {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, (WeItemType)itemType);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          MessageBox.Show("You entered: " + newItemName, "Item Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+      }
+        
+    }
+
   }
+
 }

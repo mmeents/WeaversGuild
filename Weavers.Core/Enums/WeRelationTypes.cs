@@ -8,6 +8,7 @@ namespace Weavers.Core.Enums {
   public enum WeRelationTypes {
     TypeOf = 10,
     Contains = 20,
+    HasDocs = 30,
   }
 
 }

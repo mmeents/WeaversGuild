@@ -46,20 +46,26 @@ namespace Weavers.Core.Enums {
       CSharpClassType = 51,
       CSharpRecordType = 52,
       CSharpStructType = 53,
+
       CSharpStringType = 54,
       CSharpBoolType = 55,
       CSharpCharType = 56,
+
       CSharpIntType = 57,
       CSharpLongType = 58,
       CSharpShortType = 59,
+
       CSharpDecimalType = 60,
       CSharpDoubleType = 61,
       CSharpFloatType = 62,
+
       CSharpByteType = 63,
+
       CSharpDateTimeType = 64,
       CSharpDateType = 65,
       CSharpTimeType = 66,
       CSharpDateTimeOffsetType = 67,
+
       CSharpByteArrayType = 68,
       CSharpGuidType = 69,
 
@@ -77,85 +83,136 @@ namespace Weavers.Core.Enums {
       WeInternal = 92,
       WePrivate = 93,
       WeProtected = 94,
-      WeProtectedInternal = 95,  
+      WeProtectedInternal = 95,
 
-    ProjectFolderModel = 100,
+    RatingStatus = 100,
+      UnanimousYes = 101,
+      MajorityYes = 102,
+      MajorityNo = 103,
+      Tie = 104,
 
-      RelativeFolderModel = 110,
-
-      FileModel = 150,   
-
-      SolutionModel = 160,  
-        SolutionImportModel = 162, // import Libraries, apps, apis, mcps into a solution.
-
-      LibraryModel = 200,     // name of project is root namespace.         
-        LibPackageRefModel =210,
-        LibLibraryRefModel = 220, // import other projects as dependencies.
-
-        DependencyInjectionModel = 300,
-          DiImportModel = 306,
-
-        DbContextModel = 310,
-          DbContextEntityImportModel = 312,
+    Ratings = 110,
+      RatingYes = 111,
+      RatingNo = 112,
 
 
-        NamespaceModel = 400,  // folder off the root of a code project
-          InterfaceModel = 420,    // not used, interfaces are a projection of a class.
-            InterfacePropertyModel = 422,
-            InterfaceMethodModel = 424,
-              InterfaceMethodParameterModel = 426,
+    ProjectFolderModel = 1100,
+      ProjectDocs = 1101,
+        DocRating = 1107,      // thinking child for any Docs type. 
+        // for example:
+        // Doc (LibraryDoc, ClassDoc, MethodDoc etc.)
+        //  ├── StateContributorCount(int)      
+        //  └── DocRatings[] (child nodes)
+        //      ├── ModelName
+        //      ├── Vote(yes/no)
+        //      ├── Reason
+        //      └── RatedAt
 
-          RecordModel = 440,
-          StructModel = 460,
+    RelativeFolderModel = 1110,
+        RelativeFolderDocs = 1111,
 
-          ClassModel = 500,
-            ClassImportModel = 510,
-            ClassPropertyModel = 522,
-            ClassMethodModel = 524,
-              ClassMethodParameterModel = 526,
+      FileMdModel = 1120,
+        FileMdDocs = 1121,
+      FileHtmlModel = 1130,
+        FileHtmlDocs = 1131,
+      FileConfigModel = 1140,    // appsettings.json, connection strings sill shell shocked from names with JSON in it.
+        FileConfigDocs = 1141,
+      FileImageModel = 1150,     // placeholder for SlideSketch hook
+        FileImageDocs = 1151,
 
-         EntityClassModel = 600,
-           EntityClassImportModel = 605,
-           EntityPropertyModel = 610,
-           EntityNavigationModel = 614,
-           EntityInboundNavigationModel = 616,
-          EntityConfigurationModel = 620,
+      SolutionModel = 1160, 
+        SolutionDocs = 1161,
+        SolutionImportModel = 1162, // import Libraries, apps, apis, mcps into a solution.
 
-      HandlerModel = 700,
-          HandlerResponseModel = 710,
-          HandlerCommandModel = 720,
-          HandlerClassModel = 730,
-             HandlerPropertyModel = 732,
-             HandlerMethodModel = 734,     
+      LibraryModel = 1200,     // name of project is root namespace.         
+        LibraryDocs = 1201,
+        LibPackageRefModel =1210,
+        LibLibraryRefModel = 1220, // import other projects as dependencies.
+
+        DependencyInjectionModel = 1300,
+          DependencyInjectionDocs = 1301,
+          DiImportModel = 1302,
+
+        DbContextModel = 1310,
+          DbContextDocs = 1311,
+          DbContextEntityImportModel = 1312,
+
+        NamespaceModel = 1400,  // folder off the root of a code project
+          NamespaceDocs = 1401,
+
+          InterfaceModel = 1420,    // not used, interfaces are a projection of a class.
+            InterfaceDocs = 1421,
+            InterfacePropertyModel = 1422,
+            InterfaceMethodModel = 1430,
+              InterfaceMethodParameterModel = 1440,
+
+          RecordModel = 1450,
+            RecordDocs = 1451,             
+          StructModel = 1460,
+            StructDocs = 1461,
+
+          ClassModel = 1500,
+            ClassDocs = 1501,
+            ClassImportModel = 1502,
+            ClassPropertyModel = 1510,
+            ClassPropertyDocs = 1511,
+            ClassMethodModel = 1520,
+            ClassMethodDocs = 1521,
+              ClassMethodParameterModel = 1530,
+              ClassMethodParameterDocs = 1531,
+
+         EntityClassModel = 1600,
+           EntityClassDocs = 1601,
+           EntityClassImportModel = 1602,
+           EntityPropertyModel = 1610,
+           EntityPropertyDocs = 1611,
+           EntityNavigationModel = 1620,
+           EntityNavigationDocs = 1621,
+           EntityInboundNavigationModel = 1630,
+           EntityInboundNavigationDocs = 1631,
+          EntityConfigurationModel = 1640,
+
+         HandlerModel = 1700,
+           HandlerResponseModel = 1710,
+           HandlerCommandModel = 1720,
+           HandlerClassModel = 1800,
+             HandlerClassDocs = 1801,
+             HandlerClassImportModel = 1802,
+             HandlerPropertyModel = 1811,
+             HandlerHandlerMethodModel = 1820,
+             HandlerMethodModel = 1830,     
+             HandlerMethodDocs = 1831,
+             HandlerMethodParameterModel = 1840,
+             HandlerMethodParameterDocs = 1841,
 
   /*
 
 
-    ApiModel = 1000,     
-     ApiSettingsModel = 1010,
-     ApiProgramMainModel = 1020,
-      ApiMainBuilderModel = 1022,
-      ApiMainAppModel = 1024,
-      ApiMainLoggingModel = 1026,           
-    ApiNamespaceModel = 1100,
-      ApiCodeFileModel = 1110,
-       ApiEndpointModel = 1120,
-        ApiGroupMethodModel = 1130,
-       HubsModel = 1140,  
-        HubTaskModel = 1142,
+    ApiModel = 2000,     
+     ApiSettingsModel = 2010,
+     ApiProgramMainModel = 2020,
+      ApiMainBuilderModel = 2022,
+      ApiMainAppModel = 2024,
+      ApiMainLoggingModel = 2026,           
+    ApiNamespaceModel = 2100,
+      ApiCodeFileModel = 2110,
+       ApiEndpointModel = 2120,
+        ApiGroupMethodModel = 2130,
+       HubsModel = 2140,  
+        HubTaskModel = 2142,
     
-    McpModel = 2000,
-     McpSettingsModel = 2010,
-     McpProgramMainModel = 2020,
-      McpMainBuilderModel = 2022,
-      McpMainAppModel = 2024,
-      McpMainLoggingModel = 2026,      
-     McpNamespaceModel = 2100,
-      McpCodeFileModel = 2110,
-       McpToolsModel = 2120,
-         McpToolMethodModel = 2122,
-       McpToolsHandlerModel = 2130,
-         McpToolsHandlerMethodModel = 2132,
+    McpModel = 2200,
+     McpSettingsModel = 2210,
+     McpProgramMainModel = 2220,
+      McpMainBuilderModel = 2222,
+      McpMainAppModel = 2224,
+      McpMainLoggingModel = 2226,      
+     McpNamespaceModel = 2230,
+      McpCodeFileModel = 2231,
+       McpToolsModel = 2240,
+         McpToolMethodModel = 2242,
+       McpToolsHandlerModel = 2250,
+         McpToolsHandlerMethodModel = 2252,
 
      AppModel = 3000,
       AppSettingsModel = 3010,

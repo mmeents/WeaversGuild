@@ -20,12 +20,12 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> AddNamespaceModel(ItemDto parentItem, string? namespaceName);
     Task<ItemDto?> AddClassModel(ItemDto parentItem, string? className);
     Task<ItemDto?> AddClassImportModel(ItemDto classItem, string? importNamespace);
-    Task<ItemDto?> AddClassPropModel(ItemDto classItem, string? propertyName);
-    Task<ItemDto?> AddClassMethodModel(ItemDto classItem, string? methodName);
-    Task<ItemDto?> AddClassMethodParam(ItemDto methodItem, string? paramName);
+    Task<ItemDto?> AddClassPropModel(ItemDto classItem, string? propertyName, int? propertyTypeId, int? propertyClassId);
+    Task<ItemDto?> AddClassMethodModel(ItemDto classItem, string? methodName, bool? isAsync, int? returnTypeId, int? returnClassId);
+    Task<ItemDto?> AddClassMethodParam(ItemDto methodItem, string? paramName, int? paramTypeId, int? paramClassId);
     Task<ItemDto?> AddEntityClassModel(ItemDto parentItem, string? className, string? entityDbTableName);
     Task<ItemDto?> AddEntityClassImportModel(ItemDto classItem, string? importNamespace);
-    Task<ItemDto?> AddEntityPropertyModel(ItemDto classItem, string? propertyName);
+    Task<ItemDto?> AddEntityPropertyModel(ItemDto classItem, string? propertyName, int? propertyTypeId, bool isNav, int? navEntityClassId);
 
   }
   public class AppGraphClassService : IAppGraphClassService {
@@ -82,7 +82,7 @@ namespace Weavers.Core.Service {
       }           
 
       var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
+      if (rootFolderProperty != null) {
         string parentFolderPath = libraryItem.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
         var fileName = "DependencyInjection.cs";
         var fullPath = Path.Combine(parentFolderPath, fileName);
@@ -90,9 +90,10 @@ namespace Weavers.Core.Service {
         await rootFolderProperty.SaveProp(newSubItem, mediator);
       }
 
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespaceRoot);
-      if (rootNamespaceProperty != null && string.IsNullOrEmpty(rootNamespaceProperty.Value)) {
-        rootNamespaceProperty.Value = newSubItem.Name;
+      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace);
+      if (rootNamespaceProperty != null ) {
+        string newNamespace = libraryItem.ResolveItemsNamespace("NoParentNamespace");
+        rootNamespaceProperty.Value = newNamespace;
         await rootNamespaceProperty.SaveProp(newSubItem, mediator);
       }
       return newSubItem;
@@ -122,9 +123,9 @@ namespace Weavers.Core.Service {
         }
       }
 
-      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace || p.Name == Cx.ItNamespaceRoot);
+      var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace);
       if (rootNamespaceProperty != null ) {        
-        string newNamespace = parentItem.ResolveParentNamespace("NoParentNamespace");        
+        string newNamespace = parentItem.ResolveItemsNamespace("NoParentNamespace");        
         rootNamespaceProperty.Value = newNamespace + "." + newSubItem.Name.NameSafe();
         await rootNamespaceProperty.SaveProp(newSubItem, mediator);
       }
@@ -159,7 +160,7 @@ namespace Weavers.Core.Service {
 
       var rootNamespaceProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace || p.Name == Cx.ItNamespaceRoot);
       if (rootNamespaceProperty != null) {
-        string newNamespace = parentItem.ResolveParentNamespace("NoParentNamespace");
+        string newNamespace = parentItem.ResolveItemsNamespace("NoParentNamespace");
         rootNamespaceProperty.Value = newNamespace + "." + newSubItem.Name.NameSafe();
         await rootNamespaceProperty.SaveProp(newSubItem, mediator);
       }
@@ -181,7 +182,7 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddClassPropModel(ItemDto classItem, string? propertyName) {
+    public async Task<ItemDto?> AddClassPropModel(ItemDto classItem, string? propertyName, int? propertyTypeId, int? propertyClassId) {
       var mediator = GetMediator();
       if (classItem.ItemTypeId != (int)WeItemType.ClassModel) return null;
       var nextRank = 1;
@@ -189,29 +190,76 @@ namespace Weavers.Core.Service {
       var name = propertyName == null ? $"Property{nextRank}" : propertyName;
       var newSubItem = await mediator.Send(
         new CreateRelatedItemCommand(classItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.ClassPropertyModel, name, "", "{}"));
-      if (newSubItem == null) {
-        // add error logging.
-        return null;
+      if (newSubItem == null) { return null; }
+
+      if (propertyTypeId.HasValue) {
+        var propTypeProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyDataType);
+        if (propTypeProperty != null) {
+          propTypeProperty.Value = propertyTypeId.Value.ToString();
+          await propTypeProperty.SaveProp(newSubItem, mediator);
+
+          if (propertyTypeId == (int)WeItemType.CSharpClassType || propertyTypeId == (int)WeItemType.CSharpRecordType || propertyTypeId == (int)WeItemType.CSharpStructType) {
+            if (propertyClassId.HasValue) {
+              var propClassProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType);
+              if (propClassProperty != null) {
+                propClassProperty.Value = propertyClassId.Value.ToString();
+                await propClassProperty.SaveProp(newSubItem, mediator);
+              }
+            }
+          }
+        }
       }
+
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddClassMethodModel(ItemDto classItem, string? methodName) {
+    public async Task<ItemDto?> AddClassMethodModel(ItemDto classItem, string? methodName, bool? isAsync, int? returnTypeId, int? returnClassId) {
       var mediator = GetMediator();
       if (classItem.ItemTypeId != (int)WeItemType.ClassModel) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(methodName)) nextRank = await mediator.Send(new GetNextItemRankQuery(classItem.Id)) + 1;
       var name = methodName == null ? $"Method{nextRank}" : methodName;
-      var newSubItem = await mediator.Send(
+      var newMethodItem = await mediator.Send(
         new CreateRelatedItemCommand(classItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.ClassMethodModel, name, "", "{}"));
-      if (newSubItem == null) {
-        // add error logging.
-        return null;
+      if (newMethodItem == null) { return null; }
+      var classIsStatic = classItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsStatic)?.Value.AsBoolean();
+      if (classIsStatic != null && classIsStatic.Value) { // default is false.
+        var methodStaticProp = newMethodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsStatic);
+        if (methodStaticProp != null) {
+          methodStaticProp.Value = "true";
+          await methodStaticProp.SaveProp(newMethodItem, mediator);
+        }
       }
-      return newSubItem;
+      if (isAsync != null && isAsync.Value) {  // default is false.
+        var methodAsyncProp = newMethodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsAsync);
+        if (methodAsyncProp != null) {
+          methodAsyncProp.Value = "1";
+          await methodAsyncProp.SaveProp(newMethodItem, mediator);
+        }
+      }
+
+      if (returnTypeId.HasValue) {
+        var returnTypeProperty = newMethodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnDataType);
+        if (returnTypeProperty != null) {
+          returnTypeProperty.Value = returnTypeId.Value.ToString();
+          await returnTypeProperty.SaveProp(newMethodItem, mediator);
+
+          if (returnTypeId == (int)WeItemType.CSharpClassType || returnTypeId == (int)WeItemType.CSharpRecordType || returnTypeId == (int)WeItemType.CSharpStructType) {
+            if (returnClassId.HasValue) {
+              var propClassProperty = newMethodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnClassType);
+              if (propClassProperty != null) {
+                propClassProperty.Value = returnClassId.Value.ToString();
+                await propClassProperty.SaveProp(newMethodItem, mediator);
+              }
+            }
+          }
+        }
+      }
+
+      return newMethodItem;
     }
 
-    public async Task<ItemDto?> AddClassMethodParam(ItemDto methodItem, string? paramName) {
+    public async Task<ItemDto?> AddClassMethodParam(ItemDto methodItem, string? paramName, int? paramTypeId, int? paramClassId) {
       var mediator = GetMediator();
       if (methodItem.ItemTypeId != (int)WeItemType.ClassMethodModel) return null;
       var nextRank = 1;
@@ -223,6 +271,25 @@ namespace Weavers.Core.Service {
         // add error logging.
         return null;
       }
+
+      if (paramTypeId.HasValue) {
+        var propTypeProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterDataType);
+        if (propTypeProperty != null) {
+          propTypeProperty.Value = paramTypeId.Value.ToString();
+          await propTypeProperty.SaveProp(newSubItem, mediator);
+
+          if (paramTypeId == (int)WeItemType.CSharpClassType || paramTypeId == (int)WeItemType.CSharpRecordType || paramTypeId == (int)WeItemType.CSharpStructType) {
+            if (paramClassId.HasValue) {
+              var propClassProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);
+              if (propClassProperty != null) {
+                propClassProperty.Value = paramClassId.Value.ToString();
+                await propClassProperty.SaveProp(newSubItem, mediator);
+              }
+            }
+          }
+        }
+      }
+
       return newSubItem;
     }
 
@@ -254,7 +321,7 @@ namespace Weavers.Core.Service {
         }
       }
 
-      string newNamespace = parentItem.ResolveParentNamespace("NoParentNamespace");
+      string newNamespace = parentItem.ResolveItemsNamespace("NoParentNamespace");
       var rootNamespaceProperty = newEntityItem.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace || p.Name == Cx.ItNamespaceRoot);
       if (rootNamespaceProperty != null) {      
         rootNamespaceProperty.Value = newNamespace;  // classes sit in parents namespace.
@@ -327,20 +394,51 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddEntityPropertyModel(ItemDto classItem, string? propertyName) {
+    public async Task<ItemDto?> AddEntityPropertyModel(ItemDto classItem, string? propertyName, int? propertyTypeId, bool isNav, int? navEntityClassId) {
       var mediator = GetMediator();
       if (classItem.ItemTypeId != (int)WeItemType.EntityClassModel) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(propertyName)) nextRank = await mediator.Send(new GetNextItemRankQuery(classItem.Id)) + 1;
       var name = propertyName == null ? $"Property{nextRank}" : propertyName;
-      var newSubItem = await mediator.Send(
+      var theNewEntityPropItem = await mediator.Send(
         new CreateRelatedItemCommand(classItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.EntityPropertyModel, name, "", "{}"));
-      if (newSubItem == null) {
-        // add error logging.
-        return null;
+      if (theNewEntityPropItem == null) {
+         return null;
       }
-      
-      return newSubItem;
+
+      if (propertyTypeId.HasValue) {
+        var propTypeProperty = theNewEntityPropItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyDataType);
+        if (propTypeProperty != null) {
+          propTypeProperty.Value = propertyTypeId.Value.ToString();
+          await propTypeProperty.SaveProp(theNewEntityPropItem, mediator);
+        }
+      }
+
+      if (isNav) {
+        var navProp = theNewEntityPropItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasNavigation);
+        if (navProp != null) {
+          navProp.Value = "1";
+          await navProp.SaveProp(theNewEntityPropItem, mediator);
+          await mediator.Send(new UpdateItemPropertyCommand(navProp.Id, "1")); // this adds an extra navigation child item.
+          theNewEntityPropItem = await mediator.Send(new GetItemByIdQuery(theNewEntityPropItem.Id)); // this forces the item to reload with the new navigation child.
+          if (navEntityClassId.HasValue && theNewEntityPropItem != null) {
+            var navEntityNavId = theNewEntityPropItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId;
+            if (navEntityNavId != null) {
+              var navEntityNavItem = await mediator.Send(new GetItemByIdQuery(navEntityNavId.Value));
+              var propClassProperty = navEntityNavItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItPropertyClassType);
+              if (propClassProperty != null && navEntityNavItem != null) {
+                propClassProperty.Value = navEntityClassId.Value.ToString();
+                await propClassProperty.SaveProp(navEntityNavItem, mediator);
+                await mediator.Send(new UpdateItemPropertyCommand(propClassProperty.Id, navEntityClassId.Value.ToString())); // this runs the sync on property which picks up on the class set.    
+              }
+            }
+          }
+        }
+
+        
+      }
+
+      return theNewEntityPropItem;
     }
 
 

@@ -22,7 +22,7 @@ namespace Weavers.Core.Extensions {
       return Value;
     }
 
-    public static string ResolveParentNamespace(this ItemDto? item, string defaultNamespace) {
+    public static string ResolveItemsNamespace(this ItemDto? item, string defaultNamespace) {
       if (item == null) return defaultNamespace;
       var propKey = item.ItemTypeId.GetNamespacePropertyName();
       return item.Properties.FirstOrDefault(p => p.Name == propKey)?.Value ?? defaultNamespace;
@@ -40,7 +40,7 @@ namespace Weavers.Core.Extensions {
     public static string GetFileName(this ItemDto item) {
       if (item.ItemTypeId.IsFileNameType()) {
         var result = item.ItemTypeId switch {
-          (int)WeItemType.FileModel => item.Name.UrlSafe() + ".md",
+          (int)WeItemType.FileMdModel => item.Name.UrlSafe() + ".md",
           (int)WeItemType.SolutionModel => item.Name.UrlSafe() + ".sln",
           (int)WeItemType.LibraryModel => item.Name.UrlSafe() + ".csproj",
           (int)WeItemType.NamespaceModel => item.Name.UrlSafe(),

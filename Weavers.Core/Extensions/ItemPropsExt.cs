@@ -56,6 +56,11 @@ namespace Weavers.Core.Extensions {
       return importItem;
     }
 
+    public static string AsIntString(this WeItemType item) {
+      int itemValue = (int)item;
+      return itemValue.ToString();
+    } 
+
 
   }
 }

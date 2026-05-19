@@ -69,13 +69,46 @@ namespace Weavers.Api.Extensions {
           if (!int.TryParse(parentFolderId, out int parentId)) {
             return Results.BadRequest("Invalid parent folder ID.");
           }
-          var result = await handler.AddFile(parentId, fileName, fileContent);
+          var result = await handler.AddMdFile(parentId, fileName, fileContent);
           return Results.Ok(result);
         } catch (Exception ex) {
           Console.WriteLine($"Error adding file: {ex.Message}");
           return Results.BadRequest("Failed to add file.");
         }
       }).WithName("AddFile").WithDescription("Adds a new file under the specified parent folder.");
+
+
+      group.MapPost("addLibrary", async (IAppGraphLibraryToolsHandler handler, string parentFolderId, string libraryName) => {
+        try {
+          if (!int.TryParse(parentFolderId, out int parentId)) {
+            return Results.BadRequest("Invalid parent folder ID.");
+          }
+          var result = await handler.AddLibrary(parentId, libraryName);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error adding library: {ex.Message}");
+          return Results.BadRequest("Failed to add library.");
+        }
+      }).WithName("AddLibrary").WithDescription("Adds a new library file under the specified parent folder.");
+
+      group.MapPost("addEntityPropertyModel", async (IAppGraphEntityToolsHandler handler, 
+        string parentLibOrNamespaceId, 
+        string entityNewPropertyName,
+        int? entityNewPropertyType,
+        bool isNav,
+        int? navEntityClassId
+      ) => {
+        try {
+          if (!int.TryParse(parentLibOrNamespaceId, out int parentId)) {
+            return Results.BadRequest("Invalid parent folder ID.");
+          }
+          var result = await handler.AddEntityPropertyModel(parentId, entityNewPropertyName, entityNewPropertyType, isNav, navEntityClassId);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error adding entity: {ex.Message}");
+          return Results.BadRequest("Failed to add entity.");
+        }
+      }).WithName("AddEntity").WithDescription("Adds a new entity file under the specified parent folder.");
 
       return app;
 

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MCPSharp;
 using Weavers.Core.Service;
 using Weavers.Core.Constants;
+using System.ComponentModel;
 
 namespace Weavers.Core.Tools {
   public class AppGraphClassTools {
@@ -14,10 +15,10 @@ namespace Weavers.Core.Tools {
 
     [McpTool(Cx.CmdAddClass, "Adds a new class model, with options to generate interface and register DI.")]
     public static Task<string> AddClassModel(
-      int parentItemId, 
-      string className, 
-      bool generateInterface, 
-      bool registerDI
+      [Description("The ID of the parent item. (an item with type either Library 1200 or Namespace 1400 type Models)")] int parentItemId, 
+      [Description("The name of the new class.")] string className, 
+      [Description("Generate an interface for the class?")] bool generateInterface, 
+      [Description("Register the class with dependency injection model?")] bool registerDI
     ) {
         return GetTools().AddClassModel(parentItemId, className, generateInterface, registerDI);
     }
@@ -25,37 +26,45 @@ namespace Weavers.Core.Tools {
 
     [McpTool(Cx.CmdAddClassImport, "Adds a new class import model to an existing class. makes private _var and sets via constructor and di.")]
     public static Task<string> AddClassImportModel(
-      int classItemId, 
-      int importClassId
+      [Description("The ID of the class item.")] int classItemId, 
+      [Description("The ID of the class model to import.")] int importClassId
     ) {
       return GetTools().AddClassImportModel(classItemId, importClassId);
     }
 
 
-    [McpTool(Cx.CmdAddEntityProperty, "Adds a new entity class property model to an existing class.")]
+    [McpTool(Cx.CmdAddClassProperty, "Adds a new class property model to an existing class. "+
+      "Note: when propertyTypeId is ClassType 51, RecordType 52, StructType 53 then propertyClassId is reference to that item else ignored... also, full list of types see {Cx.CmdGetTypeDetails} using ItemTypeId 50 for CSharpTypes.")]
     public static Task<string> AddClassPropModel(
-      int classItemId, 
-      string propertyName
+      [Description("The ID of the class item.")] int classItemId, 
+      [Description("The name of the property.")] string propertyName,
+      [Description("The ID of the property type. Property types: string 54, int 57, long 58;")] int? propertyTypeId,
+      [Description("The Id of an item with type ClassType, RecordType, or StructType.")] int? propertyClassId
     ) {
-      return GetTools().AddClassPropModel(classItemId, propertyName);
+      return GetTools().AddClassPropModel(classItemId, propertyName, propertyTypeId, propertyClassId);
     }
 
 
     [McpTool(Cx.CmdAddClassMethod, "Adds a new class method model to an existing class.")]
     public static Task<string> AddClassMethodModel(
-      int classItemId, 
-      string methodName
+      [Description("The ID of the class item.")] int classItemId, 
+      [Description("The name of the method.")] string methodName,
+      [Description("Is the method asynchronous?")] bool? isAsync,
+      [Description("The ID of the return type.")] int? returnTypeId,
+      [Description("The ID of the return class.")] int? returnClassId
     ) {
-      return GetTools().AddClassMethodModel(classItemId, methodName);
+      return GetTools().AddClassMethodModel(classItemId, methodName, isAsync, returnTypeId, returnClassId);
     }
 
 
-    [McpTool(Cx.CmdAddMethodParam, "Adds a new class method param model to an existing method.")]
+    [McpTool(Cx.CmdAddClassMethodParam, "Adds a new class method param model to an existing method.")]
     public static Task<string> AddClassMethodParamModel(
-      int methodItemId,
-      string paramName
+      [Description("The ID of the method item.")] int methodItemId,
+      [Description("The name of the parameter.")] string paramName,
+      [Description("The ID of the parameter type.")] int? paramTypeId,
+      [Description("The ID of the parameter class.")] int? paramClassId
     ) { 
-      return GetTools().AddClassMethodParam(methodItemId, paramName);
+      return GetTools().AddClassMethodParam(methodItemId, paramName, paramTypeId, paramClassId);
     }
 
   }

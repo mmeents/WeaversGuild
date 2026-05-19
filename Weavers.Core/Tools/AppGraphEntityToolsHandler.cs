@@ -13,7 +13,7 @@ namespace Weavers.Core.Tools {
   public interface IAppGraphEntityToolsHandler {
     Task<string> AddEntityClassModel(int parentItemId, string? className, string? entityDbTableName);
     //Task<string> AddEntityClassImportModel(int classItemId, string? importNamespace);
-    Task<string> AddEntityPropertyModel(int entityClassId, string? propertyName);
+    Task<string> AddEntityPropertyModel(int entityClassId, string? propertyName, int? propertyTypeId, bool isNav, int? navEntityClassId);
   }
 
 
@@ -71,7 +71,7 @@ namespace Weavers.Core.Tools {
           }
         }  */
 
-    public async Task<string> AddEntityPropertyModel(int entityClassId, string? propertyName) {
+    public async Task<string> AddEntityPropertyModel(int entityClassId, string? propertyName, int? propertyTypeId, bool isNav, int? navEntityClassId) {
       try {
 
         using var scope = _serviceScopeFactory.CreateScope();
@@ -84,7 +84,7 @@ namespace Weavers.Core.Tools {
           return _logger.DefaultInvalidParentMessage(Cx.CmdAddEntityProperty, entityClassId);
         }
 
-        var addedItem = await service.AddEntityPropertyModel(parentItem, propertyName);
+        var addedItem = await service.AddEntityPropertyModel(parentItem, propertyName, propertyTypeId, isNav, navEntityClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddEntityProperty, entityClassId);
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityProperty, addedItem.ToSummary());
         return opResult.ToString();

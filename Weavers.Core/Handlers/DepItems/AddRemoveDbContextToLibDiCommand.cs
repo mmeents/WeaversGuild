@@ -37,10 +37,11 @@ namespace Weavers.Core.Handlers.DepItems {
         var dbContextItem = await _mediator.Send(command);
         if (dbContextItem == null) return false;
 
-        string newPath = diItem.ResolveParentFolderPath("NoPath");
+        
+        string newPath = libItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value ?? "missingPath";
         await UpdateFolderPathIfNeededAsync(dbContextItem, newPath, cancellationToken);
         
-        string newNamespace = diItem.ResolveParentNamespace(dbContextItem.Name);
+        string newNamespace = libItem?.ResolveItemsNamespace(dbContextItem.Name) ?? "NoNamespace";
         await UpdateNamespacePathIfNeededAsync(dbContextItem, newNamespace);  
 
         await _mediator.SyncLibraryPackageDefaults(libItem, PkgType.DbContext, request.HasDbContext, cancellationToken);
@@ -78,7 +79,7 @@ namespace Weavers.Core.Handlers.DepItems {
         fullPath = basePath;
       }
 
-      if (folderProp != null && string.Compare(folderProp.Value, fullPath, true) == 0) {
+      if (folderProp != null && string.Compare(folderProp.Value, fullPath, true) != 0) {
 
         folderProp.Value = fullPath;
         var command = new AddUpdateItemPropertyCommand(

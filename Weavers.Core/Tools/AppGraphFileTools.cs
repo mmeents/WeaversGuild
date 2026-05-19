@@ -29,9 +29,17 @@ namespace Weavers.Core.Tools {
     public static Task<string> AddSolutionImport(int solutionItemId, int importLibraryId)
       => GetTools().AddSolutionImport(solutionItemId, importLibraryId);
 
-    [McpTool(Cx.CmdAddFile, "Adds a new file item under the specified folder, adds default ext to name as filename. default is .md")]
-    public static Task<string> AddFile(int folderItemId, string fileName, string fileContent)
-      => GetTools().AddFile(folderItemId, fileName, fileContent);
+    [McpTool(Cx.CmdAddMdFile, "Adds a new .md file item in the specified folder item, infra adds ext to name.")]
+    public static Task<string> AddMdFile(int folderItemId, string fileName, string fileContent)
+      => GetTools().AddMdFile(folderItemId, fileName, fileContent);
+
+    [McpTool(Cx.CmdAddHtmlFile, "Adds a new .html file item in the specified folder item, infra adds ext to name.")]
+    public static Task<string> AddHtmlFile(int folderItemId, string fileName, string fileContent)
+      => GetTools().AddHtmlFile(folderItemId, fileName, fileContent);
+
+    [McpTool(Cx.CmdAddConfigFile, "Adds a new .json file item in the specified folder item, infra adds ext to name.")]
+    public static Task<string> AddConfigFile(int folderItemId, string fileName, string fileContent)
+      => GetTools().AddConfigFile(folderItemId, fileName, fileContent);
 
   }
 }

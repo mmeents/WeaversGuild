@@ -69,8 +69,8 @@ namespace TheLoomApp.Editors {
       if (char.IsControl(e.KeyChar)) return;
       if (_columnType == null) return;
       switch ((WeDataType)_columnType.Id) {
-        case WeDataType.Int32:
-        case WeDataType.Int64:
+        case WeDataType.Int:
+        case WeDataType.Long:
           // Allow digits, minus sign at start
           if (!char.IsDigit(e.KeyChar) &&
               !(e.KeyChar == '-' && textBox1.SelectionStart == 0 && !textBox1.Text.Contains('-'))) {
@@ -78,7 +78,7 @@ namespace TheLoomApp.Editors {
           }
           break;
 
-        case WeDataType.Decimal128:
+        case WeDataType.Decimal:
           // Allow digits, minus sign at start, one decimal point
           if (!char.IsDigit(e.KeyChar) &&
               !(e.KeyChar == '-' && textBox1.SelectionStart == 0 && !textBox1.Text.Contains('-')) &&
@@ -104,19 +104,19 @@ namespace TheLoomApp.Editors {
 
       try {
         switch ((WeDataType)_columnType.Id) {
-          case WeDataType.Int32:
+          case WeDataType.Int:
             var int32Value = int.Parse(textBox1.Text);
             textBox1.Text = int32Value.ToString();
             textBox1.BackColor = _isEditing ? PropertiesTabColors.EditingBackground : PropertiesTabColors.NormalBackground;
             break;
 
-          case WeDataType.Int64:
+          case WeDataType.Long:
             var int64Value = long.Parse(textBox1.Text);
             textBox1.Text = int64Value.ToString();
             textBox1.BackColor = _isEditing ? PropertiesTabColors.EditingBackground : PropertiesTabColors.NormalBackground;
             break;
 
-          case WeDataType.Decimal128:
+          case WeDataType.Decimal:
             var decimalValue = decimal.Parse(textBox1.Text);
             textBox1.Text = decimalValue.ToString("F2");
             textBox1.BackColor = _isEditing ? PropertiesTabColors.EditingBackground : PropertiesTabColors.NormalBackground;
@@ -133,13 +133,13 @@ namespace TheLoomApp.Editors {
         if (_columnType == null) return;
         try {
           switch ((WeDataType)_columnType.Id) {
-            case WeDataType.Int32:
+            case WeDataType.Int:
               Field.Value = int.Parse(textBox1.Text).ToString();
               break;
-            case WeDataType.Int64:
+            case WeDataType.Long:
               Field.Value = long.Parse(textBox1.Text).ToString();
               break;
-            case WeDataType.Decimal128:
+            case WeDataType.Decimal:
               Field.Value = decimal.Parse(textBox1.Text).ToString();
               break;
           }

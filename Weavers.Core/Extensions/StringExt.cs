@@ -42,6 +42,12 @@ namespace Weavers.Core.Extensions {
       return 0;
     }
 
+    public static int AsInt(this object? value) { 
+      if (value == null) return 0; 
+      if (int.TryParse(value.ToString(), out int result)) return result; 
+      return 0; 
+    }
+
     public static string AsLowerCaseFirstLetter(this string content) {
       if (string.IsNullOrEmpty(content)) return "";
       var newName = content.Substring(0, 1).ToLower() + content.Substring(1);

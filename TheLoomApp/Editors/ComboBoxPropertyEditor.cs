@@ -9,7 +9,7 @@ using TheLoomApp.Components;
 
 namespace TheLoomApp.Editors {
 
-  [PropertyEditor(WeEditorType.LookupTypeEditor, WeDataType.Int32)]
+  [PropertyEditor(WeEditorType.LookupTypeEditor, WeDataType.Int)]
   public partial class ComboBoxPropertyEditor : UserControl, IAmAFieldEditor, IEditStateAware {
     public ComboBoxPropertyEditor() {
       InitializeComponent();

@@ -7,11 +7,15 @@ namespace Weavers.Core.Tools {
   public class SummaryTools {
     private static ISummaryToolsHandler GetTools() => DiBridgeService.GetService<ISummaryToolsHandler>();
 
+    [McpTool(Cx.CmdHelp, "Displays helpful documentation describing how to use the available commands.")]
+    public static async Task<string> Help() 
+      => await GetTools().Help();
+
     [McpTool(Cx.CmdListProjects, "Lists all root level projects.")]
     public static async Task<string> ListProjects() 
       => await GetTools().ListProjects();
 
-    [McpTool(Cx.CmdSearch, "Searches for items")]
+    [McpTool(Cx.CmdSearch, "Searches for items by name")]
     public static async Task<string> Search(
       [Description("The search query")] string query,
       [Description("The type of items to search for, 0 means all types")] int byType = 0,
@@ -19,11 +23,11 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().Search(query, byType, maxResults);
 
     /// <summary>
-    ///Retrieves a summary description for the specified item by its unique identifier.
+    ///Retrieves a summary description for the specified item by its int identifier.
     /// </summary>
-    /// <param name="id">The unique identifier of the item for which to retrieve the summary.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a string with the summary of the
-    [McpTool(Cx.CmdGetSummaryById, "Gets a summary of the item")]
+    /// <param name="id">The int identifier of the item for which to retrieve the summary.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a string with the summary of the item.</returns>
+    [McpTool(Cx.CmdGetSummaryById, "Gets the summary of an item.")]
     public static async Task<string> GetSummaryById(
       [Description("Item Id to get")] int id,
       [Description("Include all child nodes")] bool nodesUp = false,

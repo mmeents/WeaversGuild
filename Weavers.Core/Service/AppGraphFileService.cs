@@ -12,7 +12,11 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> AddSubFolder(ItemDto parentItem, string? subFolderName);
     Task<ItemDto?> AddSolution(ItemDto projectFolderItem, string? solutionName);
     Task<ItemDto?> AddSolutionImport(ItemDto slnItem, string? importName);
-    Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName, string? fileContent);
+    Task<ItemDto?> AddMdFile(ItemDto folderItem, string? fileName, string? fileContent);
+    Task<ItemDto?> AddHtmlFile(ItemDto folderItem, string? fileName, string? fileContent);
+    Task<ItemDto?> AddConfigFile(ItemDto folderItem, string? fileName, string? fileContent);
+
+
   }
 
 
@@ -127,14 +131,14 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
-    public async Task<ItemDto?> AddFile(ItemDto folderItem, string? fileName, string? fileContent) {
+    public async Task<ItemDto?> AddMdFile(ItemDto folderItem, string? fileName, string? fileContent) {
       var mediator = GetMediator();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
       var name = fileName == null ? $"File {nextRank}" : fileName;
       var newSubItem = await mediator.Send(
-        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileModel, name, fileContent ?? "", "{}"));
+        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileMdModel, name, fileContent ?? "", "{}"));
       if (newSubItem == null) {
         // add error logging.
         return null;
@@ -150,7 +154,57 @@ namespace Weavers.Core.Service {
         await rootFolderProperty.SaveProp(newSubItem, mediator);
       }
       return newSubItem;
-    }   
+    }
+
+    public async Task<ItemDto?> AddHtmlFile(ItemDto folderItem, string? fileName, string? fileContent) {
+      var mediator = GetMediator();
+      if (!folderItem.IsValidFolderParent()) return null;
+      var nextRank = 1;
+      if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
+      var name = fileName == null ? $"File {nextRank}" : fileName;
+      var newSubItem = await mediator.Send(
+        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileHtmlModel, name, fileContent ?? "", "{}"));
+      if (newSubItem == null) {
+        // add error logging.
+        return null;
+      }
+
+      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
+      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
+        string parentFolderPath = folderItem.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+        var fileExt = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFileExt)?.Value ?? ".html";
+        var filesName = newSubItem.Name.Contains('.') ? newSubItem.Name : newSubItem.Name.UrlSafe() + fileExt;
+        var fullPath = Path.Combine(parentFolderPath, filesName);
+        rootFolderProperty.Value = fullPath;
+        await rootFolderProperty.SaveProp(newSubItem, mediator);
+      }
+      return newSubItem;
+    }
+
+    public async Task<ItemDto?> AddConfigFile(ItemDto folderItem, string? fileName, string? fileContent) {
+      var mediator = GetMediator();
+      if (!folderItem.IsValidFolderParent()) return null;
+      var nextRank = 1;
+      if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
+      var name = fileName == null ? $"appSettings{nextRank}" : fileName;
+      var newSubItem = await mediator.Send(
+        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.FileConfigModel, name, fileContent ?? "", "{}"));
+      if (newSubItem == null) {
+        // add error logging.
+        return null;
+      }
+
+      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
+      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
+        string parentFolderPath = folderItem.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+        var fileExt = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFileExt)?.Value ?? ".json";
+        var filesName = newSubItem.Name.Contains('.') ? newSubItem.Name : newSubItem.Name.UrlSafe() + fileExt;
+        var fullPath = Path.Combine(parentFolderPath, filesName);
+        rootFolderProperty.Value = fullPath;
+        await rootFolderProperty.SaveProp(newSubItem, mediator);
+      }
+      return newSubItem;
+    }
 
   }
 }

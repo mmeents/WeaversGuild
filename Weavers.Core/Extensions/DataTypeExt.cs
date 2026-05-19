@@ -10,20 +10,17 @@ namespace Weavers.Core.Extensions {
       return baseDataType switch {
         WeDataType.None => "None",
         WeDataType.Boolean => "Boolean (true/false)",
-        WeDataType.Int16 => "16-bit integer",
-        WeDataType.Int32 => "32-bit integer",
-        WeDataType.Int64 => "64-bit integer",
+        WeDataType.Short => "16-bit integer",
+        WeDataType.Int => "32-bit integer",
+        WeDataType.Long => "64-bit integer",
         WeDataType.Guid => "Globally Unique Identifier",
-        WeDataType.StrAscii => "ASCII string",
-        WeDataType.StrUnicode => "Unicode string",
-        WeDataType.Float32 => "32-bit floating point number",
-        WeDataType.Float64 => "64-bit floating point number",
-        WeDataType.Decimal128 => "128-bit decimal number",
+        WeDataType.StrAscii => "ASCII string",        
+        WeDataType.Float => "32-bit floating point number",
+        WeDataType.Double => "64-bit floating point number",
+        WeDataType.Decimal => "128-bit decimal number",
         WeDataType.Date => "Date (year, month, day)",
-        WeDataType.Time => "Time (hour, minute, second)",
-        WeDataType.SmallDateTime => "Small date and time (1900-01-01 to 2079-06-06)",
-        WeDataType.DateTime => "Date and time (1753-01-01 to 9999-12-31)",
-        WeDataType.DateTime2 => "Date and time with larger range and precision than DateTime",
+        WeDataType.Time => "Time (hour, minute, second)",        
+        WeDataType.DateTime => "Date and time (1753-01-01 to 9999-12-31)",        
         WeDataType.DateTimeOffset => "Date and time with time zone awareness",
         WeDataType.Binary => "Binary data (byte array)",
         WeDataType.Reference => "Reference to Items graph see ReferenceItemTypeId for Item Properties",
@@ -31,33 +28,28 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-
-
     public static bool IsNumeric(this WeDataType baseDataType) {
       return baseDataType switch {
-        WeDataType.Int16 => true,
-        WeDataType.Int32 => true,
-        WeDataType.Int64 => true,
-        WeDataType.Float32 => true,
-        WeDataType.Float64 => true,
-        WeDataType.Decimal128 => true,
+        WeDataType.Short => true,
+        WeDataType.Int => true,
+        WeDataType.Long => true,
+        WeDataType.Float => true,
+        WeDataType.Double => true,
+        WeDataType.Decimal => true,
         _ => false
       };
     }
     public static bool IsString(this WeDataType baseDataType) {
       return baseDataType switch {
         WeDataType.StrAscii => true,
-        WeDataType.StrUnicode => true,
         _ => false
       };
     }
     public static bool IsDateTime(this WeDataType baseDataType) {
       return baseDataType switch {
         WeDataType.Date => true,
-        WeDataType.Time => true,
-        WeDataType.SmallDateTime => true,
-        WeDataType.DateTime => true,
-        WeDataType.DateTime2 => true,
+        WeDataType.Time => true,        
+        WeDataType.DateTime => true,        
         WeDataType.DateTimeOffset => true,
         _ => false
       };
@@ -78,8 +70,7 @@ namespace Weavers.Core.Extensions {
         WeSqlDataType.Decimal => "Decimal",
         WeSqlDataType.Date => "Date",
         WeSqlDataType.Time => "Time",        
-        WeSqlDataType.DateTime => "DateTime",
-        WeSqlDataType.DateTime2 => "DateTime2",
+        WeSqlDataType.DateTime => "DateTime2",        
         WeSqlDataType.DateTimeOffset => "DateTimeOffset",
         WeSqlDataType.VarBinary => "VarBinary",
         _ => "Unknown"
@@ -122,8 +113,7 @@ namespace Weavers.Core.Extensions {
         WeSqlDataType.Decimal => "Fixed precision and scale numeric data",
         WeSqlDataType.Date => "Date (year, month, day)",
         WeSqlDataType.Time => "Time (hour, minute, second)",        
-        WeSqlDataType.DateTime => "Date and time (1753-01-01 to 9999-12-31)",
-        WeSqlDataType.DateTime2 => "Date and time with larger range and precision than DateTime",
+        WeSqlDataType.DateTime => "Date and time is datetime2 by default",        
         WeSqlDataType.DateTimeOffset => "Date and time with time zone awareness",
         WeSqlDataType.VarBinary => "Variable-length binary data",
         _ => "Unknown SQL data type"

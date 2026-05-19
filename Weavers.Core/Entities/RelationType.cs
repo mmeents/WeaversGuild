@@ -25,7 +25,8 @@ namespace Weavers.Core.Entities {
 
       builder.HasData(
         new RelationType { Id = (int)WeRelationTypes.TypeOf, Name = "TypeOf", Description = "Item belongs to a type category" },
-        new RelationType { Id = (int)WeRelationTypes.Contains , Name = "Contains", Description = "Structural parent contains child model" }
+        new RelationType { Id = (int)WeRelationTypes.Contains , Name = "Contains", Description = "Structural parent contains child model" },
+        new RelationType { Id = (int)WeRelationTypes.HasDocs, Name = "HasDocs", Description = "Item has associated documentation" }
       );
 
     }

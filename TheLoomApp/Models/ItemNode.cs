@@ -36,7 +36,7 @@ namespace TheLoomApp.Models {
         SelectedImageIndex = type.ImageIndex(),
         Text = item.Name,
         Item = item,
-        IsLoaded = true
+        IsLoaded = false
       };
       return node;
     }
@@ -51,7 +51,7 @@ namespace TheLoomApp.Models {
         Text = item.Name,
         Item = item,
         Relation = relation,
-        IsLoaded = true
+        IsLoaded = false,
       };
       return node;
     }

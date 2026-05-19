@@ -35,6 +35,7 @@ namespace Weavers.Core.Constants {
     public const string CmdUpdateRelation = "update-relation";
 
     // mcp tool commands
+    public const string CmdHelp = "help";
     public const string CmdListProjects = "listProjects";
     public const string CmdSearch = "search";
     public const string CmdGetSummaryById = "getSummaryById";
@@ -46,7 +47,10 @@ namespace Weavers.Core.Constants {
     public const string CmdAddSubFolder = "addSubFolder";
     public const string CmdAddSolution = "addSolution";
     public const string CmdAddSolutionImport = "addSolutionImport";    
-    public const string CmdAddFile = "addFile";
+
+    public const string CmdAddMdFile = "addMdFile";
+    public const string CmdAddHtmlFile = "addHtmlFile";
+    public const string CmdAddConfigFile = "addConfigFile";
 
     public const string CmdAddLibrary = "addLibrary";
     public const string CmdAddDiModel = "addDiModel";
@@ -54,14 +58,13 @@ namespace Weavers.Core.Constants {
 
     public const string CmdAddClass = "addClass";
     public const string CmdAddClassImport = "addClassImport";
-    public const string CmdAddClassProp = "addClassProp";
+    public const string CmdAddClassProperty = "addClassProperty";
     public const string CmdAddClassMethod = "addClassMethod";
-    public const string CmdAddMethodParam = "addMethodParam";
+    public const string CmdAddClassMethodParam = "addClassMethodParam";
 
     public const string CmdAddEntityClass = "addEntityClass";
     public const string CmdAddEntityClassImport = "addEntityClassImport";
     public const string CmdAddEntityProperty = "addEntityProperty";
-
 
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
@@ -118,17 +121,20 @@ namespace Weavers.Core.Constants {
     public const string ItRecordContent = "RecordContent";
     public const string ItStructContent = "StructContent";
     public const string ItReturnDataType = "ReturnType";
-    public const string ItReturnClassType = "ReturnClass"; 
+    public const string ItReturnClassType = "ReturnClass";
+    public const string ItReturnNullable = "ReturnNullable";
     public const string ItRegisterDi = "RegisterDI";   
     public const string ItRegisterObject = "RegisterObject";
     public const string ItRegisterInterface = "RegisterInterface";
-    public const string ItRelativeFolder = "RelativeFolder";    
+    public const string ItRelativeFolder = "RelativeFolder";
+    public const string ItResultingState = "Results";
     public const string ItRootFolder = "RootFolder";
     public const string ItRepoUrl = "RepoUrl";
     public const string ItSolutionGuid = "SlnGuid";
     public const string ItTestClassAttribute = "TestClass";
     public const string ItTestMethodAttribute = "TestMethod";
     public const string ItUseThis = "UseThis";
+    public const string ItVote = "Votes";
 
     public const string TestMethodType = "TestMethod";
 

@@ -94,7 +94,7 @@ namespace Weavers.Core.Handlers.Items {
             }
           
             if (_parentNamespaceTypes.Contains((WeItemType)itemDto.ItemTypeId)) {
-              string newNamespace = parentItem.ResolveParentNamespace(itemDto.Name);
+              string newNamespace = parentItem.ResolveItemsNamespace(itemDto.Name);
               await UpdateNamespacePathIfNeededAsync(itemDto, newNamespace);
             }                
 

@@ -39,7 +39,7 @@ namespace TheLoomApp.Extensions {
         case (int)WeItemType.HandlerModel:
           await RegenerateHandlerFileAsync(node, log); break; 
         // Tier 3 — leaves
-        case (int)WeItemType.FileModel:
+        case (int)WeItemType.FileMdModel:
           RegenerateFileModelAsync(node.Item, log); break;
         case (int)WeItemType.InterfaceModel:
           await RegenerateInterfaceFileAsync(node, log); break;

@@ -18,7 +18,7 @@ namespace Weavers.Core.Handlers.Templates {
       var item = await _context.GetItemDtoById(request.DependencyInjectionItemId, cancellationToken);
       if (item == null) { return ""; }
 
-      var namespaceName = item.ResolveParentNamespace(item.Name);
+      var namespaceName = item.ResolveItemsNamespace(item.Name);
       var libName = namespaceName.UrlSafe();
       var HasDbProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasDbContext);
       bool hasDbContext = false;

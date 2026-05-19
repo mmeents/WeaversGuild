@@ -7,7 +7,7 @@ namespace TheLoomApp.Extensions {
   public static class ItemDefaultsByTypeExt {
     public static string GetTypeTemplate(this ItemDto folerItem, WeItemType targetType) {
       switch ((WeItemType)targetType) {
-        case WeItemType.FileModel:
+        case WeItemType.FileMdModel:
           return "";
         case WeItemType.LibraryModel:
           return GetLibraryModelTemplate(null);
@@ -42,7 +42,7 @@ namespace TheLoomApp.Extensions {
 
     public static string GetDependencyInjectionTemplate(ItemDto itemParent, bool HasDbContext, bool hasMediatR) {
       if (itemParent == null) { return ""; }
-      var namespaceName = itemParent.ResolveParentNamespace(itemParent.Name);      
+      var namespaceName = itemParent.ResolveItemsNamespace(itemParent.Name);      
       var libName = namespaceName.UrlSafe().Trim();
       StringBuilder sb = new StringBuilder();
       sb.AppendLine("using Microsoft.Extensions.DependencyInjection;");

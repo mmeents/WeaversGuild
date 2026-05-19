@@ -15,9 +15,9 @@ namespace Weavers.Core.Tools {
   public interface IAppGraphClassToolsHandler {
     Task<string> AddClassModel(int parentItemId, string? className, bool generateInterface, bool registerDI);
     Task<string> AddClassImportModel(int classItemId, int importClassId);
-    Task<string> AddClassPropModel(int classItemId, string? propertyName);
-    Task<string> AddClassMethodModel(int classItemId, string? methodName);
-    Task<string> AddClassMethodParam(int methodItemId, string? paramName);
+    Task<string> AddClassPropModel(int classItemId, string? propertyName, int? propertyTypeId, int? propertyClassId);
+    Task<string> AddClassMethodModel(int classItemId, string? methodName, bool? isAsync, int? returnTypeId, int? returnClassId);
+    Task<string> AddClassMethodParam(int methodItemId, string? paramName, int? paramTypeId, int? paramClassId);
   }
 
 
@@ -110,7 +110,7 @@ namespace Weavers.Core.Tools {
       }
     }
 
-    public async Task<string> AddClassPropModel(int classItemId, string? propertyName) {
+    public async Task<string> AddClassPropModel(int classItemId, string? propertyName, int? propertyTypeId, int? propertyClassId) {
       try {
 
         using var scope = _serviceScopeFactory.CreateScope();
@@ -119,21 +119,21 @@ namespace Weavers.Core.Tools {
 
         var classItem = await context.GetItemDtoById(classItemId);
         if (classItem == null || classItem.ItemTypeId != (int)WeItemType.ClassModel) {
-          return _logger.DefaultInvalidParentMessage(Cx.CmdAddClassProp, classItemId);
+          return _logger.DefaultInvalidParentMessage(Cx.CmdAddClassProperty, classItemId);
         }
 
-        var addedItem = await service.AddClassPropModel(classItem, propertyName);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassProp, classItemId);
+        var addedItem = await service.AddClassPropModel(classItem, propertyName, propertyTypeId, propertyClassId);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassProperty, classItemId);
 
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassImport, addedItem.ToSummary());
         return opResult.ToString();
 
       } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddClassProp, classItemId, $"Failed to add Class Property id:{classItemId}");
+        return ex.ToOpResult(_logger, Cx.CmdAddClassProperty, classItemId, $"Failed to add Class Property id:{classItemId}");
       }
     }
 
-    public async Task<string> AddClassMethodModel(int classItemId, string? methodName) {
+    public async Task<string> AddClassMethodModel(int classItemId, string? methodName, bool? isAsync, int? returnTypeId, int? returnClassId) {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
@@ -144,7 +144,7 @@ namespace Weavers.Core.Tools {
           return _logger.DefaultInvalidParentMessage(Cx.CmdAddClassMethod, classItemId);
         }
 
-        var addedItem = await service.AddClassMethodModel(classItem, methodName);
+        var addedItem = await service.AddClassMethodModel(classItem, methodName, isAsync, returnTypeId, returnClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassMethod, classItemId);
 
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethod, addedItem.ToSummary());
@@ -155,7 +155,7 @@ namespace Weavers.Core.Tools {
       }
     }
 
-    public async Task<string> AddClassMethodParam(int methodItemId, string? paramName) {
+    public async Task<string> AddClassMethodParam(int methodItemId, string? paramName, int? paramTypeId, int? paramClassId) {
       try {
 
         using var scope = _serviceScopeFactory.CreateScope();
@@ -165,17 +165,17 @@ namespace Weavers.Core.Tools {
 
         var classItem = await context.GetItemDtoById(methodItemId);
         if (classItem == null || !classItem.IsValidNamespaceParent() || classItem.ItemTypeId != (int)WeItemType.ClassModel) {
-          return _logger.DefaultInvalidParentMessage(Cx.CmdAddMethodParam, methodItemId);
+          return _logger.DefaultInvalidParentMessage(Cx.CmdAddClassMethodParam, methodItemId);
         }
 
-        var addedItem = await service.AddClassMethodParam(classItem, paramName);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddMethodParam, methodItemId);
+        var addedItem = await service.AddClassMethodParam(classItem, paramName, paramTypeId, paramClassId);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassMethodParam, methodItemId);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddMethodParam, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethodParam, addedItem.ToSummary());
         return opResult.ToString();
 
       } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddMethodParam, methodItemId, $"Failed to add Class Method Parameter id:{methodItemId}");
+        return ex.ToOpResult(_logger, Cx.CmdAddClassMethodParam, methodItemId, $"Failed to add Class Method Parameter id:{methodItemId}");
       }
     }
 

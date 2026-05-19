@@ -33,7 +33,7 @@ namespace Weavers.Core.Handlers.Templates {
       var sbPropNavs = new StringBuilder();
       var sbNavs = new StringBuilder();
 
-      var namespaceName = item.ResolveParentNamespace("missingNamespace");
+      var namespaceName = item.ResolveItemsNamespace("missingNamespace");
       var className = item.Name;
 
       var classProps = item.Relations

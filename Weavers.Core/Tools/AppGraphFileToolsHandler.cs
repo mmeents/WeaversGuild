@@ -14,7 +14,10 @@ namespace Weavers.Core.Tools {
     Task<string> AddSubFolder(int itemId, string subFolderName);
     Task<string> AddSolution(int folderItemId, string solutionName);
     Task<string> AddSolutionImport(int solutionItemId, int importLibraryId);
-    Task<string> AddFile(int folderItemId, string fileName, string fileContent);
+    Task<string> AddMdFile(int folderItemId, string fileName, string fileContent);
+    Task<string> AddHtmlFile(int folderItemId, string fileName, string fileContent);
+    Task<string> AddConfigFile(int folderItemId, string fileName, string fileContent);
+
 
   }
 
@@ -115,22 +118,59 @@ namespace Weavers.Core.Tools {
       }
     }
 
-    public async Task<string> AddFile(int folderItemId, string fileName, string fileContent) {
+    public async Task<string> AddMdFile(int folderItemId, string fileName, string fileContent) {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
         var dbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
         var item = await dbContext.GetItemDtoById(folderItemId);
-        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddFile, folderItemId);
-        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddFile, folderItemId);
-        var addedItem = await service.AddFile(item, fileName, fileContent);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddFile, folderItemId);        
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddFile, addedItem.ToSummary());
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddMdFile, folderItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddMdFile, folderItemId);
+        var addedItem = await service.AddMdFile(item, fileName, fileContent);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddMdFile, folderItemId);        
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddMdFile, addedItem.ToSummary());
         return opResult.ToString();       
       } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
+        return ex.ToOpResult(_logger, Cx.CmdAddMdFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
       }
     }
+
+    public async Task<string> AddHtmlFile(int folderItemId, string fileName, string fileContent) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await dbContext.GetItemDtoById(folderItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddHtmlFile, folderItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddHtmlFile, folderItemId);
+        var addedItem = await service.AddHtmlFile(item, fileName, fileContent);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddHtmlFile, folderItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddHtmlFile, addedItem.ToSummary());
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddHtmlFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
+      }
+    }
+
+    public async Task<string> AddConfigFile(int folderItemId, string fileName, string fileContent) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await dbContext.GetItemDtoById(folderItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddConfigFile, folderItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddConfigFile, folderItemId);
+        var addedItem = await service.AddConfigFile(item, fileName, fileContent);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddConfigFile, folderItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddConfigFile, addedItem.ToSummary());
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddConfigFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
+      }
+    }
+
+
+
 
   }
 }

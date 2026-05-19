@@ -38,7 +38,7 @@ namespace Weavers.Core.Handlers.Templates {
       var sbProperties = new StringBuilder();
       var sbMethod = new StringBuilder();
 
-      var namespaceName = item.ResolveParentNamespace(item.Name);
+      var namespaceName = item.ResolveItemsNamespace(item.Name);
       var usesHashSet = new HashSet<string>();
       usesHashSet.Add(namespaceName);
       var className = item.Name;
@@ -96,7 +96,7 @@ namespace Weavers.Core.Handlers.Templates {
           if (importObjId != null) { 
             var importObj = await _context.GetItemDtoById(int.Parse(importObjId), ct);
             if (importObj != null) { 
-              var importNamespace = importObj.ResolveParentNamespace(importObj.Name);
+              var importNamespace = importObj.ResolveItemsNamespace(importObj.Name);
               var importObjName = importObj.Name.AsUpperCaseFirstLetter();
               var varName = $"{importObj.Name.AsLowerCaseFirstLetter()}";
               if (!usesHashSet.Contains(importNamespace)) { 
@@ -179,11 +179,7 @@ namespace Weavers.Core.Handlers.Templates {
           
           var msgContent = (methodItem.Description ?? "").TrimEnd('\r', '\n');
           string mParms = msgParams.ToString().TrimEnd(',', '\r', '\n').TrimStart(' ');
-          if (mParms == "") {
-            sbMethod.AppendLine($"    {accessModifier}{returnType} {methodName}() {{");
-          } else {
-            sbMethod.AppendLine($"    {accessModifier}{returnType} {methodName}({mParms}) {{");
-          }          
+          sbMethod.AppendLine($"    {accessModifier}{returnType} {methodName}({mParms}) {{");         
           sbMethod.AppendLine($"{msgContent}");
           sbMethod.AppendLine($"    }}");
 
@@ -256,13 +252,15 @@ namespace Weavers.Core.Handlers.Templates {
       bool isAbstract = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsAbstract)?.Value.AsBoolean() ?? false;
       bool isSealed = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsSealed)?.Value.AsBoolean() ?? false;
       
-      string AccessibilityClause = $"{accessibility} {(isAsync ? "async " : "")}{(isVirtual ? "virtual " : "")}{(isStatic ? "static " : "")}{(isAbstract ? "abstract " : "")}{(isSealed ? "sealed " : "")}";
+      string AccessibilityClause = $"{accessibility} {(isStatic ? "static " : "")}{(isAsync ? "async " : "")}{(isVirtual ? "virtual " : "")}{(isAbstract ? "abstract " : isSealed ? "sealed " : "")}";
       return AccessibilityClause;     
     }
 
     private async Task<string> GenerateReturnType(ItemDto methodItem) {
       string returnType = "void";
       var returnTypeProp = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnDataType);
+      var retNullable = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnNullable)?.Value.AsBoolean() ?? false;
+      string nullableClause = retNullable ? "?" : "";
       if (returnTypeProp != null && returnTypeProp.Value != null) {
         bool isAsync = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsAsync)?.Value.AsBoolean() ?? false;
         if (int.TryParse(returnTypeProp.Value, out int dataTypeId)) { 
@@ -274,22 +272,22 @@ namespace Weavers.Core.Handlers.Templates {
                 var returnClassItem = await _context.GetItemDtoById(returnClassId);
                 if (returnClassItem != null) { 
                   var propUseInterface = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
-                  returnType = (propUseInterface ? "I":"") + returnClassItem.Name.AsUpperCaseFirstLetter();                  
+                  returnType = (propUseInterface ? "I":"") + returnClassItem.Name.AsUpperCaseFirstLetter() + nullableClause;                  
                 } else { 
-                  returnType = "object";                  
+                  returnType = "object" + nullableClause;                  
                 }
               } else { 
-                returnType = "object";                
+                returnType = "object" + nullableClause;                
               }
             } else { 
-              returnType = returnDataType.AsCsCode();         
+              returnType = returnDataType.AsCsCode() + nullableClause;         
             }
           } else { 
-            returnType = returnDataType.AsCsCode();         
+            returnType = returnDataType.AsCsCode() + nullableClause;         
           }
         }
         if (isAsync) {
-          returnType = $"Task<{returnType}>";
+          returnType = returnType == "void" ? "void" : $"Task<{returnType}>"; 
         }
       }
 
@@ -299,28 +297,30 @@ namespace Weavers.Core.Handlers.Templates {
     private async Task<string> GenerateParameterType(ItemDto methodParameterItem) {
       string returnType = "void";
       var dataTypeProp = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterDataType);
+      var nullable = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable)?.Value.AsBoolean() ?? false;
       if (dataTypeProp != null && dataTypeProp.Value != null) {
         if (int.TryParse(dataTypeProp.Value, out int dataTypeId)) {
           var returnDataType = ((WeItemType)dataTypeId);
+          var nullableClause = nullable ? "?" : "";
           if (returnDataType == WeItemType.CSharpClassType) {
-            var returnClassProp = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);
+            var returnClassProp = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);         
             if (returnClassProp != null && returnClassProp.Value != null) {
               if (int.TryParse(returnClassProp.Value, out int returnClassId)) {
                 var returnClassItem = await _context.GetItemDtoById(returnClassId);
                 if (returnClassItem != null) {
                   var propUseInterface = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
-                  returnType = (propUseInterface ? "I" : "") + returnClassItem.Name.AsUpperCaseFirstLetter();
+                  returnType = (propUseInterface ? "I" : "") + returnClassItem.Name.AsUpperCaseFirstLetter()+nullableClause;
                 } else {
-                  returnType = "object";
+                  returnType = "object"+nullableClause;
                 }
               } else {
-                returnType = "object";
+                returnType = "object"+nullableClause;
               }
             } else {
-              returnType = returnDataType.AsCsCode();
+              returnType = returnDataType.AsCsCode() + nullableClause;
             }
           } else { 
-            returnType = returnDataType.AsCsCode();
+            returnType = returnDataType.AsCsCode() + nullableClause;
           }
         }
       }

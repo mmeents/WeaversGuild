@@ -32,7 +32,7 @@ namespace Weavers.Core.Handlers.Templates {
       var sbProps = new StringBuilder();
       var sbNavs = new StringBuilder();
 
-      var namespaceName = item.ResolveParentNamespace(item.Name);
+      var namespaceName = item.ResolveItemsNamespace(item.Name);
       var usesHashSet = new HashSet<string>();
       usesHashSet.Add(namespaceName);
       var className = item.Name;     
@@ -50,7 +50,7 @@ namespace Weavers.Core.Handlers.Templates {
           if (importObjId != null) {
             var importObj = await _context.GetItemDtoById(int.Parse(importObjId), ct);
             if (importObj != null) {
-              var importNamespace = importObj.ResolveParentNamespace(importObj.Name);
+              var importNamespace = importObj.ResolveItemsNamespace(importObj.Name);
               var importObjName = importObj.Name.AsUpperCaseFirstLetter();
               var varName = $"{importObj.Name.AsLowerCaseFirstLetter()}";
               if (!usesHashSet.Contains(importNamespace)) {

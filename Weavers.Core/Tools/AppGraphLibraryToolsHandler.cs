@@ -3,8 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Weavers.Core.Constants;
+using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.DepItems;
+using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 
@@ -62,7 +64,7 @@ namespace Weavers.Core.Tools {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
         var parentItem = await context.GetItemDtoById(libraryItemId);
-        if (parentItem == null || !parentItem.IsValidFolderParent()) { 
+        if (parentItem == null || parentItem.ItemTypeId != (int)WeItemType.LibraryModel) { 
           return _logger.DefaultInvalidParentMessage(Cx.CmdAddDiModel, libraryItemId); 
         }
 
@@ -77,12 +79,11 @@ namespace Weavers.Core.Tools {
 
         var dbContextProp = addedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasDbContext);
         if (dbContextProp != null && hasDbContext) {
-          dbContextProp.Value = "1";
-          addedItem = await mediator.UpdateItemProp(addedItem, dbContextProp);
-          await mediator.Send(new AddRemoveDbContextToLibDiCommand(addedItem.Id, true));            
+          dbContextProp.Value = "1";          
+          addedItem = await mediator.Send(new UpdateItemPropertyCommand( dbContextProp.Id, "1"));          
         }
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDiModel, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDiModel, addedItem?.ToSummary());
         return opResult.ToString();
 
       } catch (Exception ex) {

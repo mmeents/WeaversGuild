@@ -60,7 +60,9 @@ namespace Weavers.Core.Extensions {
       return itemType switch {
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
-        WeItemType.FileModel => 2,
+        WeItemType.FileMdModel => 2,
+        WeItemType.FileHtmlModel => 16,
+        WeItemType.FileConfigModel => 17,
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
         WeItemType.LibraryModel => 12,        
@@ -100,7 +102,7 @@ namespace Weavers.Core.Extensions {
       HashSet<WeItemType> fileNodeTypes = new HashSet<WeItemType>(){
  //     WeItemType.ProjectFolderModel,  removed because root is different than folder of leaf, no parent dependency.
         WeItemType.RelativeFolderModel,        
-        WeItemType.FileModel,
+        WeItemType.FileMdModel,
         WeItemType.SolutionModel,
         WeItemType.LibraryModel,
         WeItemType.DependencyInjectionModel,
@@ -153,17 +155,27 @@ namespace Weavers.Core.Extensions {
           WeItemType.CSharpLifetimes,
           WeItemType.CSharpTypes,
           WeItemType.EntityDeleteBehaviors,
-          WeItemType.AccessibilityLookups
+          WeItemType.AccessibilityLookups,
+          WeItemType.RatingStatus,
+          WeItemType.Ratings
       };
       return lookupTypes;
     }
 
+    public static bool IsCSharpLookupType(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.CSharpClassType => true,
+        (int)WeItemType.CSharpRecordType => true,
+        (int)WeItemType.CSharpStructType => true,                
+        _ => false
+      };
+    }
 
     // Does the ItFilePath property has a file when item parent type is needed
     // as a folder, so trim filenames if in the set.
     public static bool IsFileNameType(this int itemTypeId) {
       return itemTypeId switch {        
-        (int)WeItemType.FileModel => true,
+        (int)WeItemType.FileMdModel => true,
         (int)WeItemType.SolutionModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
@@ -209,7 +221,7 @@ namespace Weavers.Core.Extensions {
       return itemTypeId switch {
         (int)WeItemType.ProjectFolderModel => Cx.ItRootFolder,
         (int)WeItemType.RelativeFolderModel => Cx.ItRelativeFolder,
-        (int)WeItemType.FileModel => Cx.ItFilePath,
+        (int)WeItemType.FileMdModel => Cx.ItFilePath,
         (int)WeItemType.SolutionModel => Cx.ItFilePath,
         (int)WeItemType.LibraryModel => Cx.ItFilePath,
         (int)WeItemType.DependencyInjectionModel => Cx.ItFilePath,

@@ -5,7 +5,7 @@ using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetItemByIdQuery(int Id, bool IncludeRelations = false) : IMcpRequest, IRequest<ItemDto?>;
+  public record GetItemByIdQuery(int Id) : IMcpRequest, IRequest<ItemDto?>;
 
   public class GetItemByIdQueryHandler(
     FabricDbContext context

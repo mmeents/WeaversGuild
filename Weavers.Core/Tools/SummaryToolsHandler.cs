@@ -8,11 +8,13 @@ using MediatR;
 using Weavers.Core.Models;
 using System.Text.Json;
 using Weavers.Core.Enums;
+using Weavers.Core.Handlers.Documentation;
 
 namespace Weavers.Core.Tools {
 
   public interface ISummaryToolsHandler {
 
+    Task<string> Help();
     Task<string> ListProjects(); 
     Task<string> Search(string searchTerms, int byType = 0, int maxResults = 10);
     Task<string> GetSummaryDtoById(int id, bool nodesUp = false, bool includeProps = true);
@@ -29,6 +31,20 @@ namespace Weavers.Core.Tools {
     public SummaryToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<SummaryToolsHandler> logger) {
       _serviceScopeFactory = serviceScopeFactory;
       _logger = logger;
+    }
+
+    public async Task<string> Help() {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var helpText = await mediator.Send(new HelpQuery(null));        
+        var opResult = McpOpResult.CreateSuccess("Help", helpText);
+        return JsonSerializer.Serialize(opResult);
+      } catch (Exception ex) {
+        _logger.LogError(ex, "Error retrieving help");
+        var opResult = McpOpResult.CreateFailure("Help", "Failed to retrieve help", ex);
+        return JsonSerializer.Serialize(opResult);
+      }
     }
 
     public async Task<string> ListProjects() {

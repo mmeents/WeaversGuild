@@ -26,7 +26,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var query = new GetItemByIdQuery(id, true);
+        var query = new GetItemByIdQuery(id);
         var result = await mediator.Send(query);
         var opResult = McpOpResult.CreateSuccess("get-item-by-id", result);
         return JsonSerializer.Serialize(opResult);
@@ -71,7 +71,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-        var item = await mediator.Send(new GetItemByIdQuery(id, false));
+        var item = await mediator.Send(new GetItemByIdQuery(id));
         if (item != null) {
           var command = new UpdateItemCommand(id, itemTypeId, name, description, data, true, item.WrittenAt);
           var result = await mediator.Send(command);

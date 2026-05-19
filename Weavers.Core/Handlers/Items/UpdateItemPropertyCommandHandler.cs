@@ -87,13 +87,12 @@ namespace Weavers.Core.Handlers.Items {
             await UpdateFolderPathIfNeededAsync(item, newPath, cancellationToken);
             propUpdated = true;
           } else if (itemPropertyName == Cx.ItNamespace) {
-            string parentNs = parentItem.ResolveParentNamespace(item.Name);
+            string parentNs = parentItem.ResolveItemsNamespace(item.Name);
             await UpdateNamespacePathIfNeededAsync(item, parentNs, newValue, cancellationToken);
             propUpdated = true;
           } else if (itemPropertyName == Cx.ItHasDbContext) {
             var newBoolValue = newValue.AsBoolean();
-            await _mediator.Send(new AddRemoveDbContextToLibDiCommand(item.Id, newBoolValue), cancellationToken);
-            propUpdated = true;
+            await _mediator.Send(new AddRemoveDbContextToLibDiCommand(item.Id, newBoolValue), cancellationToken);            
           }
           break;
         case WeItemType.NamespaceModel:
@@ -102,7 +101,7 @@ namespace Weavers.Core.Handlers.Items {
             await UpdateFolderPathIfNeededAsync(item, newPath, cancellationToken);
             propUpdated = true;
           } else if (itemPropertyName == Cx.ItNamespace) {
-            string parentNS = parentItem.ResolveParentNamespace(item.Name);
+            string parentNS = parentItem.ResolveItemsNamespace(item.Name);
             await UpdateNamespacePathIfNeededAsync(item, parentNS, newValue, cancellationToken);
             propUpdated = true;
           }

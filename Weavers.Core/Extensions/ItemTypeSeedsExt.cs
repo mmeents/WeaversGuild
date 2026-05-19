@@ -52,20 +52,26 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpClassType => WeItemType.CSharpTypes,
         WeItemType.CSharpRecordType => WeItemType.CSharpTypes,
         WeItemType.CSharpStructType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpStringType => WeItemType.CSharpTypes,
         WeItemType.CSharpBoolType => WeItemType.CSharpTypes,
         WeItemType.CSharpCharType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpIntType => WeItemType.CSharpTypes,
         WeItemType.CSharpLongType => WeItemType.CSharpTypes,
         WeItemType.CSharpShortType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpDecimalType => WeItemType.CSharpTypes,
         WeItemType.CSharpDoubleType => WeItemType.CSharpTypes,
         WeItemType.CSharpFloatType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpByteType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpDateTimeType => WeItemType.CSharpTypes,        
         WeItemType.CSharpDateType => WeItemType.CSharpTypes,
         WeItemType.CSharpTimeType => WeItemType.CSharpTypes,
         WeItemType.CSharpDateTimeOffsetType => WeItemType.CSharpTypes,
+
         WeItemType.CSharpByteArrayType => WeItemType.CSharpTypes,
         WeItemType.CSharpGuidType => WeItemType.CSharpTypes,
 
@@ -85,48 +91,96 @@ namespace Weavers.Core.Extensions {
         WeItemType.WeProtected => WeItemType.AccessibilityLookups,
         WeItemType.WeProtectedInternal => WeItemType.AccessibilityLookups,
 
+        WeItemType.RatingStatus => (WeItemType?)null,
+        WeItemType.UnanimousYes => WeItemType.RatingStatus,
+        WeItemType.MajorityYes => WeItemType.RatingStatus,
+        WeItemType.MajorityNo => WeItemType.RatingStatus,
+        WeItemType.Tie => WeItemType.RatingStatus,
+
+        WeItemType.Ratings => (WeItemType?)null,
+        WeItemType.RatingYes => WeItemType.RatingStatus,
+        WeItemType.RatingNo => WeItemType.RatingStatus,
+
         WeItemType.ProjectFolderModel => (WeItemType?)null,
+        WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
         WeItemType.RelativeFolderModel => WeItemType.ProjectFolderModel,
-        WeItemType.FileModel => WeItemType.RelativeFolderModel,
+        WeItemType.RelativeFolderDocs => WeItemType.RelativeFolderModel,
+
+        WeItemType.FileMdModel => WeItemType.RelativeFolderModel,
+        WeItemType.FileMdDocs => WeItemType.FileMdModel,
+
+        WeItemType.FileHtmlModel => WeItemType.RelativeFolderModel,
+        WeItemType.FileHtmlDocs => WeItemType.FileHtmlModel,
+
+        WeItemType.FileConfigModel => WeItemType.RelativeFolderModel,
+        WeItemType.FileConfigDocs => WeItemType.FileConfigModel,
+
+        WeItemType.FileImageModel => WeItemType.RelativeFolderModel,
+        WeItemType.FileImageDocs => WeItemType.FileImageModel,
+
         WeItemType.SolutionModel => WeItemType.RelativeFolderModel,
+        WeItemType.SolutionDocs => WeItemType.SolutionModel,
         WeItemType.SolutionImportModel => WeItemType.SolutionModel,
+
         WeItemType.LibraryModel => WeItemType.RelativeFolderModel,
+        WeItemType.LibraryDocs => WeItemType.LibraryModel,
         WeItemType.LibPackageRefModel => WeItemType.LibraryModel,
         WeItemType.LibLibraryRefModel => WeItemType.LibraryModel,
 
         WeItemType.DependencyInjectionModel => WeItemType.LibraryModel,
+        WeItemType.DependencyInjectionDocs => WeItemType.DependencyInjectionModel,
+
         WeItemType.DiImportModel => WeItemType.DependencyInjectionModel,
         WeItemType.DbContextModel => WeItemType.DependencyInjectionModel,
         WeItemType.DbContextEntityImportModel => WeItemType.DbContextModel,
 
         WeItemType.NamespaceModel => WeItemType.LibraryModel,
+        WeItemType.NamespaceDocs => WeItemType.NamespaceModel,
+
         WeItemType.InterfaceModel => WeItemType.NamespaceModel,
+        WeItemType.InterfaceDocs => WeItemType.InterfaceModel,
         WeItemType.InterfacePropertyModel => WeItemType.InterfaceModel,
         WeItemType.InterfaceMethodModel => WeItemType.InterfaceModel,
         WeItemType.InterfaceMethodParameterModel => WeItemType.InterfaceMethodModel,
 
         WeItemType.RecordModel => WeItemType.NamespaceModel,
+        WeItemType.RecordDocs => WeItemType.RecordModel,
         WeItemType.StructModel => WeItemType.NamespaceModel,
+        WeItemType.StructDocs => WeItemType.StructModel,
 
         WeItemType.ClassModel => WeItemType.NamespaceModel,
-        WeItemType.ClassImportModel => WeItemType.ClassModel,
+        WeItemType.ClassDocs => WeItemType.ClassModel,
+        WeItemType.ClassImportModel => WeItemType.ClassModel,        
         WeItemType.ClassPropertyModel => WeItemType.ClassModel,
+        WeItemType.ClassPropertyDocs => WeItemType.ClassPropertyModel,
         WeItemType.ClassMethodModel => WeItemType.ClassModel,
+        WeItemType.ClassMethodDocs => WeItemType.ClassMethodModel,
         WeItemType.ClassMethodParameterModel => WeItemType.ClassMethodModel,
+        WeItemType.ClassMethodParameterDocs => WeItemType.ClassMethodParameterModel,
 
         WeItemType.EntityClassModel => WeItemType.NamespaceModel,
+        WeItemType.EntityClassDocs => WeItemType.EntityClassModel,
         WeItemType.EntityClassImportModel => WeItemType.EntityClassModel,
         WeItemType.EntityPropertyModel => WeItemType.EntityClassModel,
+        WeItemType.EntityPropertyDocs => WeItemType.EntityPropertyModel,
         WeItemType.EntityNavigationModel => WeItemType.EntityPropertyModel,
+        WeItemType.EntityNavigationDocs => WeItemType.EntityNavigationModel,
         WeItemType.EntityInboundNavigationModel => WeItemType.EntityClassModel,
+        WeItemType.EntityInboundNavigationDocs => WeItemType.EntityInboundNavigationModel,
         WeItemType.EntityConfigurationModel => WeItemType.EntityClassModel,
 
         WeItemType.HandlerModel => WeItemType.NamespaceModel,
         WeItemType.HandlerResponseModel => WeItemType.HandlerModel,
         WeItemType.HandlerCommandModel => WeItemType.HandlerModel,
         WeItemType.HandlerClassModel => WeItemType.HandlerModel,
+        WeItemType.HandlerClassDocs => WeItemType.HandlerClassModel,
+        WeItemType.HandlerClassImportModel => WeItemType.HandlerClassModel,
         WeItemType.HandlerPropertyModel => WeItemType.HandlerClassModel,
-        WeItemType.HandlerMethodModel => WeItemType.HandlerClassModel,
+        WeItemType.HandlerHandlerMethodModel => WeItemType.HandlerClassModel,  // primary handler method. 
+        WeItemType.HandlerMethodModel => WeItemType.HandlerClassModel,         // private supporting methods. 
+        WeItemType.HandlerMethodDocs => WeItemType.HandlerMethodModel,
+        WeItemType.HandlerMethodParameterModel => WeItemType.HandlerMethodModel,
+        WeItemType.HandlerMethodParameterDocs => WeItemType.HandlerMethodParameterModel,
 
         _ => itemType
       };
@@ -209,48 +263,93 @@ namespace Weavers.Core.Extensions {
         WeItemType.WeProtected => (int)WeEditorType.String,
         WeItemType.WeProtectedInternal => (int)WeEditorType.String,
 
+        WeItemType.RatingStatus => (int)WeEditorType.LookupTypeEditor,
+        WeItemType.UnanimousYes => (int)WeEditorType.String,
+        WeItemType.MajorityYes => (int)WeEditorType.String,
+        WeItemType.MajorityNo => (int)WeEditorType.String,
+        WeItemType.Tie => (int)WeEditorType.String,
+
+        WeItemType.Ratings => (int)WeEditorType.LookupTypeEditor,
+        WeItemType.RatingYes => (int)WeEditorType.String,
+        WeItemType.RatingNo => (int)WeEditorType.String,
+
         WeItemType.ProjectFolderModel => (int)WeEditorType.String,
+        WeItemType.ProjectDocs => (int)WeEditorType.String,
         WeItemType.RelativeFolderModel => (int)WeEditorType.String,
-        WeItemType.FileModel => (int)WeEditorType.FileName,
+        WeItemType.RelativeFolderDocs => (int)WeEditorType.String,
+
+        WeItemType.FileMdModel => (int)WeEditorType.String,
+        WeItemType.FileMdDocs => (int)WeEditorType.String,
+        WeItemType.FileHtmlModel => (int)WeEditorType.String,
+        WeItemType.FileHtmlDocs => (int)WeEditorType.String,
+        WeItemType.FileConfigModel => (int)WeEditorType.String,
+        WeItemType.FileConfigDocs => (int)WeEditorType.String,
+        WeItemType.FileImageModel => (int)WeEditorType.String,
+        WeItemType.FileImageDocs => (int)WeEditorType.String,
+
+
         WeItemType.SolutionModel => (int)WeEditorType.String,
+        WeItemType.SolutionDocs => (int)WeEditorType.String,
         WeItemType.SolutionImportModel => (int)WeEditorType.String,
+
         WeItemType.LibraryModel => (int)WeEditorType.String,        
+        WeItemType.LibraryDocs => (int)WeEditorType.String,
         WeItemType.LibPackageRefModel => (int)WeEditorType.String,
         WeItemType.LibLibraryRefModel => (int)WeEditorType.String,
-        WeItemType.DependencyInjectionModel => (int)WeEditorType.String,        
+
+        WeItemType.DependencyInjectionModel => (int)WeEditorType.String,   
+        WeItemType.DependencyInjectionDocs => (int)WeEditorType.String,
         WeItemType.DiImportModel => (int)WeEditorType.String,
         WeItemType.DbContextModel => (int)WeEditorType.String,
+        WeItemType.DbContextDocs => (int)WeEditorType.String,
         WeItemType.DbContextEntityImportModel => (int)WeEditorType.String,
 
         WeItemType.NamespaceModel => (int)WeEditorType.String,
+        WeItemType.NamespaceDocs => (int)WeEditorType.String,
 
         WeItemType.InterfaceModel => (int)WeEditorType.String,
+        WeItemType.InterfaceDocs => (int)WeEditorType.String,
         WeItemType.InterfacePropertyModel => (int)WeEditorType.String,
         WeItemType.InterfaceMethodModel => (int)WeEditorType.String,
         WeItemType.InterfaceMethodParameterModel => (int)WeEditorType.String,
 
         WeItemType.RecordModel => (int)WeEditorType.String,
+        WeItemType.RecordDocs => (int)WeEditorType.String,
         WeItemType.StructModel => (int)WeEditorType.String,
+        WeItemType.StructDocs => (int)WeEditorType.String,
 
         WeItemType.ClassModel => (int)WeEditorType.String,
+        WeItemType.ClassDocs => (int)WeEditorType.String,
         WeItemType.ClassImportModel => (int)WeEditorType.String,
         WeItemType.ClassPropertyModel => (int)WeEditorType.String,
+        WeItemType.ClassPropertyDocs => (int)WeEditorType.String,
         WeItemType.ClassMethodModel => (int)WeEditorType.String,
+        WeItemType.ClassMethodDocs => (int)WeEditorType.String,
         WeItemType.ClassMethodParameterModel => (int)WeEditorType.String,
-                
+        WeItemType.ClassMethodParameterDocs => (int)WeEditorType.String,
+
         WeItemType.EntityClassModel => (int)WeEditorType.String,
+        WeItemType.EntityClassDocs => (int)WeEditorType.String,
         WeItemType.EntityClassImportModel => (int)WeEditorType.String,
         WeItemType.EntityPropertyModel => (int)WeEditorType.String,
+        WeItemType.EntityPropertyDocs => (int)WeEditorType.String,
         WeItemType.EntityNavigationModel => (int)WeEditorType.String,
+        WeItemType.EntityNavigationDocs => (int)WeEditorType.String,
         WeItemType.EntityInboundNavigationModel => (int)WeEditorType.String,
+        WeItemType.EntityInboundNavigationDocs => (int)WeEditorType.String,
         WeItemType.EntityConfigurationModel => (int)WeEditorType.String,
 
         WeItemType.HandlerModel => (int)WeEditorType.String,
         WeItemType.HandlerResponseModel => (int)WeEditorType.String,
         WeItemType.HandlerCommandModel => (int)WeEditorType.String,
         WeItemType.HandlerClassModel => (int)WeEditorType.String,
+        WeItemType.HandlerClassDocs => (int)WeEditorType.String,
         WeItemType.HandlerPropertyModel => (int)WeEditorType.String,
+        WeItemType.HandlerHandlerMethodModel => (int)WeEditorType.String,
         WeItemType.HandlerMethodModel => (int)WeEditorType.String,
+        WeItemType.HandlerMethodDocs => (int)WeEditorType.String,
+        WeItemType.HandlerMethodParameterModel => (int)WeEditorType.String,
+        WeItemType.HandlerMethodParameterDocs => (int)WeEditorType.String,
 
         _ => (int)WeEditorType.None
       };
@@ -333,47 +432,92 @@ namespace Weavers.Core.Extensions {
         WeItemType.WeProtected => 4,
         WeItemType.WeProtectedInternal => 5,
 
+        WeItemType.RatingStatus => 1,
+        WeItemType.UnanimousYes => 1,
+        WeItemType.MajorityYes => 2,
+        WeItemType.MajorityNo => 3,
+        WeItemType.Tie => 4,
+
+        WeItemType.Ratings => 1,
+        WeItemType.RatingYes => 1,
+        WeItemType.RatingNo => 2,
+
         WeItemType.ProjectFolderModel => (int)WeItemType.ProjectFolderModel,
+        WeItemType.ProjectDocs => (int)WeItemType.ProjectDocs,
         WeItemType.RelativeFolderModel => (int)WeItemType.RelativeFolderModel,
-        WeItemType.FileModel => (int)WeItemType.FileModel,
+        WeItemType.RelativeFolderDocs => (int)WeItemType.RelativeFolderDocs,
+
+        WeItemType.FileMdModel => (int)WeItemType.FileMdModel,
+        WeItemType.FileMdDocs => (int)WeItemType.FileMdDocs,
+        WeItemType.FileHtmlModel => (int)WeItemType.FileHtmlModel,
+        WeItemType.FileHtmlDocs => (int)WeItemType.FileHtmlDocs,
+        WeItemType.FileConfigModel => (int)WeItemType.FileConfigModel,
+        WeItemType.FileConfigDocs => (int)WeItemType.FileConfigDocs,
+
         WeItemType.SolutionModel => (int)WeItemType.SolutionModel,
+        WeItemType.SolutionDocs => (int)WeItemType.SolutionDocs,
         WeItemType.SolutionImportModel => (int)WeItemType.SolutionImportModel,
+
         WeItemType.LibraryModel => (int)WeItemType.LibraryModel,
+        WeItemType.LibraryDocs => (int)WeItemType.LibraryDocs,
         WeItemType.LibPackageRefModel => 1,
         WeItemType.LibLibraryRefModel => 2,
+
         WeItemType.DependencyInjectionModel => 1,
+        WeItemType.DependencyInjectionDocs => 1,
         WeItemType.DiImportModel => 1,
         WeItemType.DbContextModel => 2,
+        WeItemType.DbContextDocs => 1,
         WeItemType.DbContextEntityImportModel => 1,
 
         WeItemType.NamespaceModel => (int)WeItemType.NamespaceModel,
+        WeItemType.NamespaceDocs => (int)WeItemType.NamespaceDocs,
 
         WeItemType.InterfaceModel => (int)WeItemType.InterfaceModel,
+        WeItemType.InterfaceDocs => (int)WeItemType.InterfaceDocs,
         WeItemType.InterfacePropertyModel => (int)WeItemType.InterfacePropertyModel,
         WeItemType.InterfaceMethodModel => (int)WeItemType.InterfaceMethodModel,
         WeItemType.InterfaceMethodParameterModel => (int)WeItemType.InterfaceMethodParameterModel,
 
         WeItemType.RecordModel => (int)WeItemType.RecordModel,
+        WeItemType.RecordDocs => (int)WeItemType.RecordDocs,
         WeItemType.StructModel => (int)WeItemType.StructModel,
+        WeItemType.StructDocs => (int)WeItemType.StructDocs,
+
         WeItemType.ClassModel => (int)WeItemType.ClassModel,
+        WeItemType.ClassDocs => (int)WeItemType.ClassDocs,
         WeItemType.ClassImportModel => (int)WeItemType.ClassImportModel,
         WeItemType.ClassPropertyModel => (int)WeItemType.ClassPropertyModel,
+        WeItemType.ClassPropertyDocs => (int)WeItemType.ClassPropertyDocs,
         WeItemType.ClassMethodModel => (int)WeItemType.ClassMethodModel,
+        WeItemType.ClassMethodDocs => (int)WeItemType.ClassMethodDocs,
         WeItemType.ClassMethodParameterModel => (int)WeItemType.ClassMethodParameterModel,
+        WeItemType.ClassMethodParameterDocs => (int)WeItemType.ClassMethodParameterDocs,
 
         WeItemType.EntityClassModel => (int)WeItemType.EntityClassModel,
+        WeItemType.EntityClassDocs => (int)WeItemType.EntityClassDocs,
         WeItemType.EntityClassImportModel => (int)WeItemType.EntityClassImportModel,
         WeItemType.EntityPropertyModel => (int)WeItemType.EntityPropertyModel,
+        WeItemType.EntityPropertyDocs => (int)WeItemType.EntityPropertyDocs,
         WeItemType.EntityNavigationModel => (int)WeItemType.EntityNavigationModel,
+        WeItemType.EntityNavigationDocs => (int)WeItemType.EntityNavigationDocs,
         WeItemType.EntityInboundNavigationModel => (int)WeItemType.EntityInboundNavigationModel,
+        WeItemType.EntityInboundNavigationDocs => (int)WeItemType.EntityInboundNavigationDocs,
         WeItemType.EntityConfigurationModel => (int)WeItemType.EntityConfigurationModel,
 
         WeItemType.HandlerModel => (int)WeItemType.HandlerModel,
         WeItemType.HandlerResponseModel => (int)WeItemType.HandlerResponseModel,
         WeItemType.HandlerCommandModel => (int)WeItemType.HandlerCommandModel,
         WeItemType.HandlerClassModel => (int)WeItemType.HandlerClassModel,
+        WeItemType.HandlerClassDocs => (int)WeItemType.HandlerClassDocs,
+        WeItemType.HandlerClassImportModel => (int)WeItemType.HandlerClassImportModel,
         WeItemType.HandlerPropertyModel => (int)WeItemType.HandlerPropertyModel,
+        WeItemType.HandlerHandlerMethodModel => (int)WeItemType.HandlerHandlerMethodModel,
         WeItemType.HandlerMethodModel => (int)WeItemType.HandlerMethodModel,
+        WeItemType.HandlerMethodDocs => (int)WeItemType.HandlerMethodDocs,
+        WeItemType.HandlerMethodParameterModel => (int)WeItemType.HandlerMethodParameterModel,
+        WeItemType.HandlerMethodParameterDocs => (int)WeItemType.HandlerMethodParameterDocs,
+
         _ => 0
       };
     }
@@ -456,54 +600,103 @@ namespace Weavers.Core.Extensions {
         WeItemType.WeProtected => "protected",
         WeItemType.WeProtectedInternal => "protected internal",
 
+        WeItemType.RatingStatus => "Review State",
+        WeItemType.UnanimousYes => "Unanimous Yes",
+        WeItemType.MajorityYes => "Majority Yes",
+        WeItemType.MajorityNo => "Majority No",
+        WeItemType.Tie => "Tie",
+
+        WeItemType.Ratings => "Ratings",
+        WeItemType.RatingYes => "Yes",
+        WeItemType.RatingNo => "No",
+
         WeItemType.ProjectFolderModel => "Project Folder",
+        WeItemType.ProjectDocs => "Project Documentation",
         WeItemType.RelativeFolderModel => "Relative Folder",
-        WeItemType.FileModel => "File",
+        WeItemType.RelativeFolderDocs => "Relative Folder Documentation",
+
+        WeItemType.FileMdModel => "Md File",
+        WeItemType.FileMdDocs => "Md File Documentation",
+        WeItemType.FileHtmlModel => "Html File",
+        WeItemType.FileHtmlDocs => "Html File Documentation",
+        WeItemType.FileConfigModel => "Config File",
+        WeItemType.FileConfigDocs => "Config File Documentation",
+        WeItemType.FileImageModel => "Image File",
+        WeItemType.FileImageDocs => "Image File Documentation",
+
         WeItemType.SolutionModel => "Solution",
+        WeItemType.SolutionDocs => "Solution Documentation",
         WeItemType.SolutionImportModel => "Solution Import",
+
         WeItemType.LibraryModel => "Library",        
+        WeItemType.LibraryDocs => "Library Documentation",
         WeItemType.LibPackageRefModel => "Package Ref",
         WeItemType.LibLibraryRefModel => "Library Ref",
 
-        WeItemType.DependencyInjectionModel => "Dependency Injection",        
+        WeItemType.DependencyInjectionModel => "Dependency Injection",
+        WeItemType.DependencyInjectionDocs => "Dependency Injection Documentation",
+
         WeItemType.DiImportModel => "DI - Import",
         WeItemType.DbContextModel => "DbContext",
+        WeItemType.DbContextDocs => "DbContext Documentation",
         WeItemType.DbContextEntityImportModel => "Db Entity Import",
+
         WeItemType.NamespaceModel => "Namespace",
+        WeItemType.NamespaceDocs => "Namespace Documentation",
+
         WeItemType.InterfaceModel => "Interface",
+        WeItemType.InterfaceDocs => "Interface Documentation",
         WeItemType.InterfacePropertyModel => "Interface Property",
         WeItemType.InterfaceMethodModel => "Interface Method",
         WeItemType.InterfaceMethodParameterModel => "Interface Method Parameter",
+
         WeItemType.RecordModel => "Record",
+        WeItemType.RecordDocs => "Record Documentation",
         WeItemType.StructModel => "Struct",
+        WeItemType.StructDocs => "Struct Documentation",
         WeItemType.ClassModel => "Class",
+        WeItemType.ClassDocs => "Class Documentation",
         WeItemType.ClassImportModel => "Class Import",
         WeItemType.ClassPropertyModel => "Class Property",
+        WeItemType.ClassPropertyDocs => "Class Property Documentation",
         WeItemType.ClassMethodModel => "Class Method",
+        WeItemType.ClassMethodDocs => "Class Method Documentation",
         WeItemType.ClassMethodParameterModel => "Class Method Parameter",
-        
+        WeItemType.ClassMethodParameterDocs => "Class Method Parameter Documentation",
+
         WeItemType.EntityClassModel => "Entity Class",
+        WeItemType.EntityClassDocs => "Entity Class Documentation",
         WeItemType.EntityPropertyModel => "Entity Property",
+        WeItemType.EntityPropertyDocs => "Entity Property Documentation",
         WeItemType.EntityNavigationModel => "Entity Nav Property",
+        WeItemType.EntityNavigationDocs => "Entity Nav Property Documentation",
         WeItemType.EntityInboundNavigationModel => "Inbound Nav Property",
-        WeItemType.EntityConfigurationModel => "Entity Configuration Class",
+        WeItemType.EntityInboundNavigationDocs => "Inbound Nav Property Documentation",
+        WeItemType.EntityConfigurationModel => "Entity Configuration Class",        
 
         WeItemType.HandlerModel => "Handler",
         WeItemType.HandlerResponseModel => "Handler Response",
         WeItemType.HandlerCommandModel => "Handler Command",
         WeItemType.HandlerClassModel => "Handler Class",
+        WeItemType.HandlerClassDocs => "Handler Class Documentation",
+        WeItemType.HandlerClassImportModel => "Handler Class Import",
         WeItemType.HandlerPropertyModel => "Handler Property",
+        WeItemType.HandlerHandlerMethodModel => "Primary Handler Method",
         WeItemType.HandlerMethodModel => "Handler Method",
+        WeItemType.HandlerMethodDocs => "Handler Method Documentation",
+        WeItemType.HandlerMethodParameterModel => "Handler Method Parameter",
+        WeItemType.HandlerMethodParameterDocs => "Handler Method Parameter Documentation",
+
         _ => itemType.ToString()
       };
     }
 
-
+    // not used yet.
     public static string DefaultIconName(this WeItemType itemType) {
       return itemType switch {
         WeItemType.ProjectFolderModel => "pi pi-folder",
         WeItemType.RelativeFolderModel => "pi pi-folder",
-        WeItemType.FileModel => "pi pi-file",
+        WeItemType.FileMdModel => "pi pi-file",
         WeItemType.SolutionModel => "pi pi-sitemap",
         WeItemType.SolutionImportModel => "pi pi-sitemap",
         WeItemType.LibraryModel => "pi pi-book",
