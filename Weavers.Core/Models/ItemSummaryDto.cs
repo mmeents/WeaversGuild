@@ -20,6 +20,9 @@ namespace Weavers.Core.Models {
     public bool NodesUp { get; set; } = false;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Content { get; set; } = null;
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<ItemSummaryDto>? Nodes { get; set; } = null;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

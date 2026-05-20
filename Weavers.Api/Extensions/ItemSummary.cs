@@ -75,6 +75,16 @@ namespace Weavers.Api.Extensions {
         }
       }).WithName("UpdateItemName").WithDescription("Update the name of an item by its ID.");
 
+      group.MapPost("/itemContent/{itemId}", async (ISummaryToolsHandler SummaryToolsHandler, int itemId, string content) => {
+        try {
+          var result = await SummaryToolsHandler.UpdateItemContent(itemId, content);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error mapping summary endpoints: {ex.Message}");
+          return Results.BadRequest("yea, no. excepted, check logs...");
+        }
+      }).WithName("UpdateItemContent").WithDescription("Update the content of an item of one of the File types or Method types.");
+
       group.MapPost("/property/{itemPropertyId}", async (ISummaryToolsHandler SummaryToolsHandler, int itemPropertyId, string propertyValue) => {
         try {
           var result = await SummaryToolsHandler.UpdateItemProperty(itemPropertyId, propertyValue);

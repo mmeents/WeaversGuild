@@ -197,6 +197,32 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsClassType(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.ClassModel => true,
+        (int)WeItemType.EntityClassModel => true,
+        _ => false
+      };
+    }
+
+    public static bool IsContentType(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.FileMdModel => true,
+        (int)WeItemType.FileHtmlModel => true,
+        (int)WeItemType.FileConfigModel => true,
+        _ => false
+      };
+    }
+
+    public static bool IsMethodCodeType(this int itemTypeId) {      
+      return itemTypeId switch {
+        (int)WeItemType.ClassMethodModel => true,
+        (int)WeItemType.HandlerHandlerMethodModel=> true,
+        (int)WeItemType.HandlerMethodModel => true,
+        _ => false
+      };
+    }
+
 
     public static bool IsLibraryType(this int? itemTypeId) {
       if (itemTypeId == null) return false;

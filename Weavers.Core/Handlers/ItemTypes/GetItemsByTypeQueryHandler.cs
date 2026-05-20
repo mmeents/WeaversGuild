@@ -52,12 +52,21 @@ namespace Weavers.Core.Handlers.ItemTypes {
         }
         return new List<ItemLookup>();
       } else { 
-        if (rt >= WeItemType.ProjectFolderModel) { 
-          var items = await _context.Items
-            .Where(i => i.ItemTypeId == request.ItemTypeId)
-            .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
-            .ToListAsync(cancellationToken);    
-          return items;
+        if (rt >= WeItemType.ProjectFolderModel) {
+
+          if (rt == WeItemType.ClassModel) {
+            var items = await _context.Items
+              .Where(i => i.ItemTypeId == (int)WeItemType.ClassModel || i.ItemTypeId == (int)WeItemType.EntityClassModel)
+              .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
+              .ToListAsync(cancellationToken);
+            return items;
+          } else {
+            var items = await _context.Items
+              .Where(i => i.ItemTypeId == request.ItemTypeId)
+              .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
+              .ToListAsync(cancellationToken);
+            return items;
+          }
         }  
         
         else return new List<ItemLookup>();

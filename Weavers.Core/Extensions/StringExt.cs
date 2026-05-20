@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Weavers.Core.Constants;
 
 namespace Weavers.Core.Extensions {
   public static class StringExt {
@@ -160,6 +161,33 @@ namespace Weavers.Core.Extensions {
       }
     }
 
+    public static string CutMethodMarkers(this string content) {
+      if (string.IsNullOrEmpty(content)) return content;
+      // start marker is Cx.MethodStartMarker plan to cut everything between start of file to marker, including the marker.
+      // end marker is Cx.MethodEndMarker plan to cut everything between marker and end of file, including the marker.
+      var startIndex = content.IndexOf(Cx.MethodStartMarker);
+      if (startIndex >= 0) {
+        content = content.Substring(startIndex + Cx.MethodStartMarker.Length).TrimStart(Environment.NewLine.ToCharArray());
+      } else {
+        var firstBraceIndex = content.IndexOf("{");
+        var lastBraceIndex = content.LastIndexOf("}");
+        if (firstBraceIndex >= 0 && lastBraceIndex > firstBraceIndex) {
+          content = content.Substring(firstBraceIndex + 1, lastBraceIndex - firstBraceIndex - 1);
+          return content;
+        }
+      }
+
+      var endIndex = content.IndexOf(Cx.MethodEndMarker);
+      if (endIndex >= 0) {
+        content = content.Substring(0, endIndex).TrimEnd(Environment.NewLine.ToCharArray());
+      } else {
+        var lastBraceIndex = content.LastIndexOf("}");
+        if ( lastBraceIndex > 0) {
+          content = content.Substring(0, content.Length - lastBraceIndex-1);
+        }
+      }
+      return content;
+    }
 
   }
 }

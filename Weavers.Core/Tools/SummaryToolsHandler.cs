@@ -9,6 +9,8 @@ using Weavers.Core.Models;
 using System.Text.Json;
 using Weavers.Core.Enums;
 using Weavers.Core.Handlers.Documentation;
+using Weavers.Core.Constants;
+
 
 namespace Weavers.Core.Tools {
 
@@ -21,6 +23,7 @@ namespace Weavers.Core.Tools {
     Task<string> GetSummaryByIdRecursive(int id);
     Task<string> GetTypeDetails(int itemTypeId = 0);
     Task<string> UpdateItemName(int id, string name);
+    Task<string> UpdateItemContent(int id, string content);
     Task<string> UpdateItemProperty(int itemPropertyId, string propertyValue);
   }
 
@@ -50,11 +53,12 @@ namespace Weavers.Core.Tools {
     public async Task<string> ListProjects() {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();        
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
         var ItemDtoList = await mediator.Send(new GetRootProjectsQuery());
         List<ItemSummaryDto> result = new List<ItemSummaryDto>();
         foreach (var item in ItemDtoList) {
-          result.Add(item.ToSummary()); 
+          result.Add(await context.ToSummary(item));
         }
         var opResult = McpOpResult.CreateSuccess("ListProjects", result);
         return JsonSerializer.Serialize(opResult);
@@ -148,6 +152,7 @@ namespace Weavers.Core.Tools {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
         var item = await mediator.Send(new GetItemByIdQuery(id));
         if (item == null) {
           var notFoundResult = McpOpResult.CreateFailure("UpdateSummary", $"No item found for id {id}");
@@ -159,7 +164,7 @@ namespace Weavers.Core.Tools {
           var updateFailedResult = McpOpResult.CreateFailure("UpdateSummary", $"Failed to update item with id {id}");
           return JsonSerializer.Serialize(updateFailedResult);
         }
-        var opResult = McpOpResult.CreateSuccess("UpdateSummary", updatedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess("UpdateSummary", await context.ToSummary(updatedItem));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating summary");
@@ -169,17 +174,54 @@ namespace Weavers.Core.Tools {
 
     }
 
+    public async Task<string> UpdateItemContent(int id, string content) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await mediator.Send(new GetItemByIdQuery(id));
+        if (item == null) {
+          var notFoundResult = McpOpResult.CreateFailure(Cx.CmdUpdateItemContent, $"No item found for id {id}");
+          return JsonSerializer.Serialize(notFoundResult);
+        }
+
+        if (item.ItemTypeId.IsContentType()) {
+          item.Description = content;
+        } else if (item.ItemTypeId.IsMethodCodeType()) {
+          // Handle method code type update
+          item.Description = content.CutMethodMarkers();
+        } else {
+          var updateFailedResult = McpOpResult.CreateFailure(Cx.CmdUpdateItemContent, "Unsupported item type for content update");
+          return JsonSerializer.Serialize(updateFailedResult);
+        }
+
+        var updatedItem = await mediator.Send(item.ToUpdateCmd());
+        if (updatedItem == null) {
+          var updateFailedResult = McpOpResult.CreateFailure(Cx.CmdUpdateItemContent, $"Failed to update item with id {id}");
+          return JsonSerializer.Serialize(updateFailedResult);
+        }
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdUpdateItemContent, await context.ToSummary(updatedItem));
+        return JsonSerializer.Serialize(opResult);
+
+      } catch (Exception ex) {
+        _logger.LogError(ex, "Error updating item content");
+        var opResult = McpOpResult.CreateFailure(Cx.CmdUpdateItemContent, "Failed to update item content", ex);
+        return JsonSerializer.Serialize(opResult);
+      }
+    }
+
     public async Task<string> UpdateItemProperty(int itemPropertyId, string propertyValue) {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
         var command = new UpdateItemPropertyCommand(itemPropertyId, propertyValue);
         var result = await mediator.Send(command);
         if (result == null) {
           var notFoundResult = McpOpResult.CreateFailure("UpdateItemProperty", $"No item property found for id {itemPropertyId}");
           return JsonSerializer.Serialize(notFoundResult);
         }
-        var opResult = McpOpResult.CreateSuccess("UpdateItemProperty", result.ToSummary());
+        var opResult = McpOpResult.CreateSuccess("UpdateItemProperty", await context.ToSummary(result));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating item property");

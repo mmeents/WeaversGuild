@@ -32,6 +32,7 @@ namespace TheLoomApp {
     #region Initialization and Setup
     public Form1(IServiceScopeFactory serviceScopeFactory) {
       InitializeComponent();
+
       _serviceScopeFactory = serviceScopeFactory;
       using var scope = _serviceScopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
@@ -135,6 +136,9 @@ namespace TheLoomApp {
       await LoadRootProjects();
       await LoadItemTypesCache();
       Form1_Resize(sender, e);
+      this.Invoke((Action)(async () => {
+        await wvDescription.EnsureCoreWebView2Async().ConfigureAwait(false);
+      }));
     }
 
     private async Task LoadRootProjects(int? NodeIdToExpand = null, CancellationToken ct = default) {
@@ -431,8 +435,14 @@ namespace TheLoomApp {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
         btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel || (WeItemType)item.ItemTypeId == WeItemType.SolutionModel;
-
         _CurrentItemBackup = _selectedNode.Item.Clone();
+
+        if (item.ItemTypeId == (int)WeItemType.FileHtmlModel ) {
+          wvDescription.CoreWebView2.NavigateToString(item.Description);
+        } else {
+          wvDescription.CoreWebView2.NavigateToString("Pick a html type.");
+        }
+
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
         edItemType.DataBindings.Clear();
         edItemType.DataBindings.Add("SelectedValue", _selectedNode.Item, "ItemTypeId", true, DataSourceUpdateMode.OnPropertyChanged);

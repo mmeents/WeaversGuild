@@ -70,6 +70,7 @@
       edItemDesc = new FastColoredTextBoxNS.FastColoredTextBox();
       tpData = new TabPage();
       edItemData = new TextBox();
+      tpHtml = new TabPage();
       btnArchive = new Button();
       lbRelationId = new Label();
       lbItemId = new Label();
@@ -84,6 +85,7 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
+      wvDescription = new Microsoft.Web.WebView2.WinForms.WebView2();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -103,7 +105,9 @@
       tpItemDesc.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)edItemDesc).BeginInit();
       tpData.SuspendLayout();
+      tpHtml.SuspendLayout();
       tsErrorPopup.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)wvDescription).BeginInit();
       SuspendLayout();
       // 
       // splitContainer1
@@ -516,6 +520,7 @@
       // 
       tabControl2.Controls.Add(tpItemDesc);
       tabControl2.Controls.Add(tpData);
+      tabControl2.Controls.Add(tpHtml);
       tabControl2.Dock = DockStyle.Bottom;
       tabControl2.Location = new Point(3, 247);
       tabControl2.Margin = new Padding(3, 2, 3, 2);
@@ -552,7 +557,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(154, 14);
+      edItemDesc.AutoScrollMinSize = new Size(179, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -600,6 +605,17 @@
       edItemData.Size = new Size(595, 204);
       edItemData.TabIndex = 27;
       edItemData.TextChanged += edItemName_TextChanged;
+      // 
+      // tpHtml
+      // 
+      tpHtml.Controls.Add(wvDescription);
+      tpHtml.Location = new Point(4, 24);
+      tpHtml.Name = "tpHtml";
+      tpHtml.Padding = new Padding(3);
+      tpHtml.Size = new Size(601, 208);
+      tpHtml.TabIndex = 2;
+      tpHtml.Text = "Html";
+      tpHtml.UseVisualStyleBackColor = true;
       // 
       // btnArchive
       // 
@@ -745,6 +761,18 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
+      // wvDescription
+      // 
+      wvDescription.AllowExternalDrop = true;
+      wvDescription.CreationProperties = null;
+      wvDescription.DefaultBackgroundColor = Color.White;
+      wvDescription.Dock = DockStyle.Fill;
+      wvDescription.Location = new Point(3, 3);
+      wvDescription.Name = "wvDescription";
+      wvDescription.Size = new Size(595, 202);
+      wvDescription.TabIndex = 0;
+      wvDescription.ZoomFactor = 1D;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -779,8 +807,10 @@
       ((System.ComponentModel.ISupportInitialize)edItemDesc).EndInit();
       tpData.ResumeLayout(false);
       tpData.PerformLayout();
+      tpHtml.ResumeLayout(false);
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)wvDescription).EndInit();
       ResumeLayout(false);
     }
 
@@ -845,5 +875,7 @@
     private CheckBox cbShowPkgInLib;
     private Button btnWriteFile;
     private Button button1;
+    private TabPage tpHtml;
+    private Microsoft.Web.WebView2.WinForms.WebView2 wvDescription;
   }
 }

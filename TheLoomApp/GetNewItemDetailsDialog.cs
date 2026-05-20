@@ -125,7 +125,7 @@ namespace TheLoomApp {
     private void loadDataTypes() {
       cbDataType.Items.Clear();
       int defaultsToIntIndex = 0;
-      WeItemType startAt = WeItemType.CSharpIntType;
+      WeItemType startAt = WeItemType.CSharpStringType;
       if (_targetTypeToCreate == WeItemType.EntityPropertyModel) {
         startAt = WeItemType.CSharpStringType;
       }

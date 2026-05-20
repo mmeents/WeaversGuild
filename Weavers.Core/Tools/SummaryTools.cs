@@ -45,6 +45,11 @@ namespace Weavers.Core.Tools {
       [Description("New name for the item")] string newName
     ) => await GetTools().UpdateItemName(id, newName);
 
+    [McpTool(Cx.CmdUpdateItemContent, "Update the content of an item of one of the File types or Method types.")]
+    public static async Task<string> UpdateItemContent(
+      [Description("Item Id to update")] int id,
+      [Description("Updated content for the item")] string content
+    ) => await GetTools().UpdateItemContent(id, content);
 
     [McpTool(Cx.CmdUpdateItemProperty, "Update a property of an item by its property ID.")]
     public static async Task<string> UpdateItemProperty(

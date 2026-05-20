@@ -61,7 +61,7 @@ namespace Weavers.Core.Tools {
           }
         }
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClass, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClass, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -102,7 +102,7 @@ namespace Weavers.Core.Tools {
           addedItem = await mediator.UpdateItemProp(addedItem, importClassInterfaceProp);
         }
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassImport, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassImport, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -125,7 +125,7 @@ namespace Weavers.Core.Tools {
         var addedItem = await service.AddClassPropModel(classItem, propertyName, propertyTypeId, propertyClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassProperty, classItemId);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassImport, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassProperty, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -147,7 +147,7 @@ namespace Weavers.Core.Tools {
         var addedItem = await service.AddClassMethodModel(classItem, methodName, isAsync, returnTypeId, returnClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassMethod, classItemId);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethod, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethod, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -171,7 +171,7 @@ namespace Weavers.Core.Tools {
         var addedItem = await service.AddClassMethodParam(classItem, paramName, paramTypeId, paramClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClassMethodParam, methodItemId);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethodParam, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddClassMethodParam, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {

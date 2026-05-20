@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Weavers.Core.Constants;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Models;
 
@@ -7,8 +9,7 @@ namespace Weavers.Core.Extensions {
 
 
     public static async Task<ItemSummaryDto?> GetSummaryDtoById(this FabricDbContext context, 
-      int id, bool nodesUp, bool includeProps = true, CancellationToken cancellationToken = default) 
-    {
+      int id, bool nodesUp, bool includeProps = true, CancellationToken cancellationToken = default) {
 
       var result = await context.Items
         .AsNoTracking()
@@ -19,6 +20,7 @@ namespace Weavers.Core.Extensions {
           TypeId = i.ItemTypeId,
           TypeName = i.ItemType.Name,
           Name = i.Name,
+          Content = i.ItemTypeId.IsContentType() ? i.Description : null,
           NodesUp = nodesUp,
           Nodes = !nodesUp ? null : i.Relations.Select(r => new ItemSummaryDto {
             Id = r.RelatedItemId ?? 0,
@@ -41,6 +43,15 @@ namespace Weavers.Core.Extensions {
 
         })
         .FirstOrDefaultAsync(cancellationToken);
+
+      if (result != null && result.TypeId.IsMethodCodeType()) {
+        var codeProps = await context.BuildMethod(result.Id, cancellationToken);
+        if (codeProps != null) {
+          var code = codeProps.MethodSignature + "{" + Environment.NewLine + Cx.MethodStartMarker + Environment.NewLine
+            + codeProps.MethodBody + Environment.NewLine + Cx.MethodEndMarker;
+          result.Content = code;
+        }
+      }
 
       if (nodesUp && result != null) {
         result = await context.LoadSummaryRecursively(result, includeProps, cancellationToken);
@@ -67,6 +78,7 @@ namespace Weavers.Core.Extensions {
           Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
           TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
           TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
+          Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
           Props = !includeProps ? null : r.RelatedItem != null
             ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,
@@ -83,7 +95,17 @@ namespace Weavers.Core.Extensions {
       itemSummary.Nodes = children;
       itemSummary.NodesUp = true;
 
-      foreach(var child in itemSummary.Nodes) {
+      string? code = null;
+      if (itemSummary.TypeId.IsMethodCodeType()) {               
+        var codeProps = await context.BuildMethod(itemSummary.Id, cancellationToken);
+        if (codeProps != null) {
+          code = codeProps.MethodSignature + $"{{" + Environment.NewLine + Cx.MethodStartMarker + Environment.NewLine
+            + codeProps.MethodBody + Environment.NewLine + Cx.MethodEndMarker;
+          itemSummary.Content = code;
+        }        
+      }
+
+      foreach (var child in itemSummary.Nodes) {
         await context.LoadSummaryRecursively(child, includeProps, cancellationToken);
       }
 
@@ -91,13 +113,24 @@ namespace Weavers.Core.Extensions {
     }
 
 
-    public static ItemSummaryDto ToSummary(this ItemDto item) {
+    public static async Task<ItemSummaryDto> ToSummary(this FabricDbContext context, ItemDto item, CancellationToken cancellationToken = default) {
+      if (item == null) throw new ArgumentNullException(nameof(item));
+      string? code = null;
+      if (item.ItemTypeId.IsMethodCodeType()) {
+        var codeProps = await context.BuildMethod(item.Id, cancellationToken);
+        if (codeProps != null) {
+          code = codeProps.MethodSignature + $"{{" + Environment.NewLine+Cx.MethodStartMarker + Environment.NewLine
+            + codeProps.MethodBody + Environment.NewLine + Cx.MethodEndMarker;
+        }
+      }
+
       return new ItemSummaryDto {
         Id = item.Id,
         Name = item.Name,
         TypeId = item.ItemTypeId,
         TypeName = item.ItemType != null ? item.ItemType.Name : "",
-        ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),
+        ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),        
+        Content = item.ItemTypeId.IsContentType() ? item.Description : item.ItemTypeId.IsMethodCodeType() ? code : null,
         Props = item.Properties.Select(p => new PropSummaryDto {
           Id = p.Id,
           Name = p.Name,

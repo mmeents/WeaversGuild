@@ -46,7 +46,7 @@ namespace Weavers.Core.Tools {
 
         await this.AddDiModel(addedItem.Id, true);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddLibrary, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddLibrary, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -83,7 +83,7 @@ namespace Weavers.Core.Tools {
           addedItem = await mediator.Send(new UpdateItemPropertyCommand( dbContextProp.Id, "1"));          
         }
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDiModel, addedItem?.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDiModel, await context.ToSummary(addedItem!));
         return opResult.ToString();
 
       } catch (Exception ex) {
@@ -107,7 +107,7 @@ namespace Weavers.Core.Tools {
         var addedItem = await service.AddNamespaceModel(parentItem, namespaceName);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddNamespace, parentItemId);
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddNamespace, addedItem.ToSummary());
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddNamespace, await context.ToSummary(addedItem));
         return opResult.ToString();
 
       } catch (Exception ex) {

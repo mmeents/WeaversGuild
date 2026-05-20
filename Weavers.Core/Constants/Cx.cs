@@ -41,6 +41,7 @@ namespace Weavers.Core.Constants {
     public const string CmdGetSummaryById = "getSummaryById";
     public const string CmdGetTypeDetails = "getTypeDetails";
     public const string CmdUpdateItemName = "updateItemName";
+    public const string CmdUpdateItemContent = "updateItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
 
     public const string CmdAddProjectRoot = "addProjectRoot";
@@ -151,7 +152,9 @@ namespace Weavers.Core.Constants {
     public const string ItPrivateAssets = "PrivateAssets";
     public const string ItIncludeAssets = "IncludeAssets";
 
-
+    // Above is the method signiture and body start tag. Then MethodStartMarker, then body, then MethodEndMarker.
+    public const string MethodStartMarker = $"//Method Marker Start, edit below, leave above and Markers as is.";
+    public const string MethodEndMarker = "} //Method Marker End";  // this line needs to be stripped when saving.
 
   }
 
