@@ -189,5 +189,19 @@ namespace Weavers.Core.Extensions {
       return content;
     }
 
+    public static string AsBase64Encoded(this string content) {
+      var bytes = Encoding.UTF8.GetBytes(content);
+      return Convert.ToBase64String(bytes);
+    }
+
+    public static string AsBase64Decoded(this string content) {
+      try {
+        var bytes = Convert.FromBase64String(content);
+        return Encoding.UTF8.GetString(bytes);
+      } catch {
+        return content;
+      }
+    }
+
   }
 }

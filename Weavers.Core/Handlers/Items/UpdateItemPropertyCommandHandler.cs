@@ -34,14 +34,14 @@ namespace Weavers.Core.Handlers.Items {
       var parentItemId = item.IncomingRelations.FirstOrDefault(r => r.ItemId != item.Id)?.ItemId;
       bool hasParent = parentItemId != null;
       ItemDto? parentItem = null;
-      if (itemType != WeItemType.ProjectFolderModel && parentItemId != null) { 
+      if (itemType != WeItemType.OrganizationModel && parentItemId != null) { 
         parentItem = await _context.GetItemDtoById(parentItemId.Value, cancellationToken);
         hasParent = parentItem != null;
       }
 
       bool propUpdated = false;
       switch (itemType) {
-        case WeItemType.ProjectFolderModel:
+        case WeItemType.OrganizationModel:
           if (itemPropertyName == Cx.ItRootFolder) {
             string newPath = newValue.UrlSafe();
             if (newPath.ValidatePath()) {
@@ -50,6 +50,8 @@ namespace Weavers.Core.Handlers.Items {
             }
           }
           break;
+        case WeItemType.ProjectFolderModel:
+        case WeItemType.OrgDocFolderModel:
         case WeItemType.RelativeFolderModel:
           if (itemPropertyName == Cx.ItRelativeFolder && hasParent) {
             var newPath = parentItem == null ? "MissingPath" : parentItem.ResolveParentFolderPath("MissingPath");

@@ -22,17 +22,19 @@ namespace Weavers.Core.Extensions {
           Name = i.Name,
           Content = i.ItemTypeId.IsContentType() ? i.Description : null,
           NodesUp = nodesUp,
-          Nodes = !nodesUp ? null : i.Relations.Select(r => new ItemSummaryDto {
-            Id = r.RelatedItemId ?? 0,
-            ParentId = r.ItemId,
-            Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
-            TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
-            TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
+          Nodes = !nodesUp ? null : i.Relations
+            .Where(r => r.RelatedItem != null && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
+            .Select(r => new ItemSummaryDto {
+              Id = r.RelatedItemId ?? 0,
+              ParentId = r.ItemId,
+              Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
+              TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
+              TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
           }).ToList(),
           Props = !includeProps ? null : i.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,
             Name = p.Name,
-            Value = p.Value ?? "",            
+            Value =  (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",            
             DataType = p.ValueType == null 
               ? null : ((WeDataType)p.ValueType.Id).ToString(),
             EditorType = p.Editor == null ? null : p.Editor.Name,
@@ -60,6 +62,11 @@ namespace Weavers.Core.Extensions {
       return result;
     }
 
+    private static readonly int[] SystemTypeIds = [
+        (int)WeItemType.HarnessAppSessionModel,
+        (int)WeItemType.HarnessMcpSessionModel,
+        (int)WeItemType.LibPackageRefModel,
+    ];
 
     public static async Task<ItemSummaryDto> LoadSummaryRecursively(this FabricDbContext context, 
       ItemSummaryDto itemSummary, bool includeProps = true,
@@ -71,6 +78,7 @@ namespace Weavers.Core.Extensions {
         .AsNoTracking()
         .Where(i => i.Id == itemSummary.Id)
         .SelectMany(i => i.Relations)
+        .Where(r => r.RelatedItem != null && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
         .Select(r => new ItemSummaryDto
         {
           Id = r.RelatedItemId ?? 0,
@@ -83,7 +91,7 @@ namespace Weavers.Core.Extensions {
             ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,
             Name = p.Name,
-            Value = p.Value ?? "",
+            Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
             DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
             EditorType = p.Editor == null ? null : p.Editor.Name,
             ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name
@@ -134,7 +142,7 @@ namespace Weavers.Core.Extensions {
         Props = item.Properties.Select(p => new PropSummaryDto {
           Id = p.Id,
           Name = p.Name,
-          Value = p.Value ?? "",
+          Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
           DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
           EditorType = p.Editor == null ? null : p.Editor.Name,
           ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name

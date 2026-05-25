@@ -76,7 +76,7 @@ namespace Weavers.Core.Handlers.Items {
       if (itemDto == null) { throw new Exception("Reload after save failed."); }
 
       ItemDto? parentItem = null;
-      if (itemDto.ItemTypeId == (int)WeItemType.ProjectFolderModel) {
+      if (itemDto.ItemTypeId == (int)WeItemType.OrganizationModel) {
         string defaultPath = _appSettingService.DefaultProjectsPath;
         string newPath = Path.Combine(defaultPath, itemDto.Name);
         await UpdateFolderPathIfNeededAsync(itemDto, newPath);
@@ -226,11 +226,11 @@ namespace Weavers.Core.Handlers.Items {
       } else {
         fullPath = basePath;
       }
-
-      folderProp.Value = fullPath;
-      var updated = await _mediator.UpdateItemProp(item, folderProp);
-      await _mediator.Send(new UpdateItemPropertyPathRecursiveCommand(item.Id, fullPath));
-
+      if (folderProp.Value != fullPath) {
+        folderProp.Value = fullPath;
+        var updated = await _mediator.UpdateItemProp(item, folderProp);
+        await _mediator.Send(new UpdateItemPropertyPathRecursiveCommand(item.Id, fullPath));
+      }
     }
 
     private async Task UpdateNamespacePathIfNeededAsync(ItemDto item, string basePath) {

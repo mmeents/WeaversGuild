@@ -1,7 +1,10 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Weavers.Core.Constants;
+using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Service;
 using Weavers.Core.Tools;
@@ -18,8 +21,16 @@ namespace Weavers.Core {
         cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(McpLoggingBehavior<,>));
       });
 
+      services.AddDataProtection()
+        .SetApplicationName(Cx.AppName)
+        .PersistKeysToFileSystem(new DirectoryInfo(WeaverExt.KeysAppPath)) // or config-driven path
+        .SetDefaultKeyLifetime(TimeSpan.FromDays(Cx.KeyLifetimeDays));
+
+      services.AddScoped<ICryptoService, CryptoService>();
+
       services.AddSingleton<INotificationHandler<ItemUpdatedNotification>, ItemUpdatedNotificationHandler>();
       services.AddSingleton<IGraphItemUpdateService, GraphItemUpdateService>();
+      services.AddSingleton<IAppSessionService, AppSessionService>();
 
       services.AddScoped<IAppSettingService, AppSettingService>();
       services.AddScoped<IAppDataService, AppDataService>();
@@ -27,19 +38,20 @@ namespace Weavers.Core {
       services.AddScoped<IAppGraphClassService, AppGraphClassService>();
       services.AddScoped<IAppItemTemplateService, AppItemTemplateService>();
       services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
+      services.AddScoped<ILmStudioService, LmStudioService>();
 
-      services.AddScoped<IBaseToolsHandler, BaseToolsHandler>();
-      services.AddScoped<ISummaryToolsHandler, SummaryToolsHandler>();
-      services.AddScoped<IAppGraphFileToolsHandler, AppGraphFileToolsHandler>();
-      services.AddScoped<IAppGraphLibraryToolsHandler, AppGraphLibraryToolsHandler>();
-      services.AddScoped<IAppGraphClassToolsHandler, AppGraphClassToolsHandler>();
-      services.AddScoped<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();
+      services.AddSingleton<IBaseToolsHandler, BaseToolsHandler>();
+      services.AddSingleton<ISummaryToolsHandler, SummaryToolsHandler>();
+      services.AddSingleton<IAppGraphFileToolsHandler, AppGraphFileToolsHandler>();
+      services.AddSingleton<IAppGraphLibraryToolsHandler, AppGraphLibraryToolsHandler>();
+      services.AddSingleton<IAppGraphClassToolsHandler, AppGraphClassToolsHandler>();
+      services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();
 
       return services;
     }
 
     public static IServiceCollection AddWeaversMCPCore(this IServiceCollection services, IConfiguration configuration) {
-      AddWeaversCore<FabricDbContext>(services, configuration);
+      AddWeaversCore<FabricDbContext>(services, configuration);      
       services.AddHostedService<WeaversMcpHostedService>();
       return services;
     }

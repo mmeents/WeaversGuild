@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
@@ -30,17 +31,31 @@ namespace Weavers.Core.Service {
       return scope.ServiceProvider.GetRequiredService<IMediator>(); 
     }
 
+    private FabricDbContext GetDbContext() {
+      var scope = _scopeFactory.CreateScope();
+      return scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+    }
+
     public async Task<ItemDto?> AddProjectRoot(string? projectName, string projectPath) {      
       var mediator = GetMediator();
       var nextRank = await mediator.Send(new GetNextItemRankQuery((int?)null))+1;
+
+      var _dbContext = GetDbContext();
+      var OrganizationId = _dbContext.Items.FirstOrDefault(i => i.ItemTypeId == (int)WeItemType.OrganizationModel)?.Id ?? 0;
+      var OrgItem = await _dbContext.GetItemDtoById(OrganizationId);
+      var rootFolder = projectPath;
+      if (OrgItem != null) { 
+        rootFolder = OrgItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder)?.Value ?? projectPath;
+      }
+
       var name = projectName == null ? $"Project {nextRank}" : projectName;      
-      var newItem = await mediator.Send(new CreateItemCommand(name, (int)WeItemType.ProjectFolderModel, "", "{}"));
+      var newItem = await mediator.Send(new CreateRelatedItemCommand(OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.ProjectFolderModel, name, "", "{}"));
       if (newItem == null) return null;
 
-      var rootFolderProperty = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder);
-      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
-        var defaultFolder = string.IsNullOrEmpty(projectPath) ? WeaverExt.AppProjectsPath : projectPath;
-        rootFolderProperty.Value = Path.Combine(defaultFolder, newItem.Name.UrlSafe());
+
+      var rootFolderProperty = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder);
+      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {        
+        rootFolderProperty.Value = Path.Combine(rootFolder, newItem.Name.UrlSafe());
         await rootFolderProperty.SaveProp(newItem, mediator);        
       }
       return newItem;

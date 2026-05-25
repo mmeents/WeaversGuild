@@ -1,6 +1,5 @@
-﻿
-using System;
-using Weavers.Core.Entities;
+﻿using System;
+
 
 namespace Weavers.Core.Enums {
   public enum WeItemType {    
@@ -95,6 +94,57 @@ namespace Weavers.Core.Enums {
       RatingYes = 111,
       RatingNo = 112,
 
+  // WeaversGuilds commands for future workflow designs
+    LoomMcpCommands = 120,      
+      CmdHelp = 122,   // in Summary Tools.            
+      CmdListProjects = 124,
+      CmdSearch = 126,
+      CmdGetSummaryById =128,
+      CmdGetTypeDetails = 130,
+      CmdUpdateItemName = 132,
+      CmdUpdateItemContent = 134,
+      CmdUpdateItemProperty = 136,
+
+    // Build tool commands. 
+      CmdAddProjectRoot = 150,  // in AppGraphFileTools
+      CmdAddSubFolder = 152,
+      CmdAddSolution = 154,
+      CmdAddSolutionImport = 156,
+      CmdAddMdFile = 158,
+      CmdAddHtmlFile = 160,
+      CmdAddConfigFile = 162,
+
+      CmdAddLibrary = 164,  // in AppGraphLibraryTools
+      CmdAddNamespace = 166,
+
+      CmdAddClass = 168,  // in AppGraphClassTools
+      CmdAddClassImport = 170,
+      CmdAddClassProperty = 172,
+      CmdAddClassMethod = 174,
+      CmdAddClassMethodParam = 176,
+
+      CmdAddEntityClass = 178,  // in AppGraphEntityTools
+      CmdAddEntityClassImport = 180,
+      CmdAddEntityProperty = 182,
+
+// below are the main tree view nodes for the app. 
+    OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
+    
+      HarnessAppModel = 1010,   // A processor core model for the organization. A model of the pc the loom app is running on. 
+        HarnessAppSessionModel = 1012, // each run makes a session for tacking. 
+        PresenceLmStudioGatewayModel = 1014,   // LM Studio instance details. enough to query the models.
+          PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
+
+      HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
+        HarnessMcpSessionModel = 1022,  
+
+      OrgDocFolderModel = 1030,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
+        OrgDocModel = 1035,       // doc for Skill details.
+        
+      DigitalOperatorPoolModel  = 1040,
+        DigitalOperatorModel = 1045, //(Id, name, Presence, Rating)  // digital worker. 
+      
+      
 
     ProjectFolderModel = 1100,
       ProjectDocs = 1101,

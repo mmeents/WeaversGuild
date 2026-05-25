@@ -37,8 +37,8 @@ namespace Weavers.Core.Extensions {
         var msgContent = (methodItem.Description ?? "").TrimEnd('\r', '\n');
         string mParms = msgParams.ToString().TrimEnd(',', '\r', '\n').TrimStart(' ');        
         return new BuildResult() {
-          InterfaceSignature =  $"    {returnType} {methodName}({mParms});",
-          MethodSignature = $"    {accessModifier}{returnType} {methodName}({mParms})",
+          InterfaceSignature =  $"  {returnType} {methodName}({mParms});",
+          MethodSignature = $"  {accessModifier}{returnType} {methodName}({mParms})",
           MethodBody = msgContent
         };
       }

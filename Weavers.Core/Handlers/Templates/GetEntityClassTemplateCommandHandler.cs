@@ -57,9 +57,9 @@ namespace Weavers.Core.Handlers.Templates {
                 sbUses.AppendLine($"using {importNamespace};");
                 usesHashSet.Add(importNamespace);
               }
-              sbLocals.AppendLine($"    private readonly {intfTypeClause}{importObjName} _{varName};");
-              sbConstParams.AppendLine($"      {intfTypeClause}{importObjName} {varName},");
-              sbConstructor.AppendLine($"      _{varName} = {varName};");
+              sbLocals.AppendLine($"   private readonly {intfTypeClause}{importObjName} _{varName};");
+              sbConstParams.AppendLine($"   {intfTypeClause}{importObjName} {varName},");
+              sbConstructor.AppendLine($"   _{varName} = {varName};");
             }
           }
         }
@@ -95,7 +95,7 @@ namespace Weavers.Core.Handlers.Templates {
             propTypeName = dataTypeId != 0 ? ((WeItemType)dataTypeId).AsCsCode() : "object";
           }
 
-          sbProperties.AppendLine($"    public {propTypeName}{nullableClause} {propName} {entSetterClause}");
+          sbProperties.AppendLine($"  public {propTypeName}{nullableClause} {propName} {entSetterClause}");
           if (isNav) {
             var navItemId = propItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)?.RelatedItemId??0;
             if (navItemId > 0) {
@@ -112,23 +112,28 @@ namespace Weavers.Core.Handlers.Templates {
               if (classTypeId > 0) {
                 var classTypeItem = await _context.GetItemDtoById(classTypeId, ct);
                 if (classTypeItem != null) {
+                  var baseClassNamespace = classTypeItem.ResolveItemsNamespace(classTypeItem.Name);
+                  if (!usesHashSet.Contains(baseClassNamespace)) {
+                    sbUses.AppendLine($"using {baseClassNamespace};");
+                    usesHashSet.Add(baseClassNamespace);
+                  }
                   string classTypeName = classTypeItem.Name;
                   string navName = classTypeItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName)?.Value ?? classTypeName + "Set";
                   string navNullableClause = isNavNullable ? "?" : "";
                   string navNulClause2 = isNavNullable ? " = null;" : " = null!;";
                   if (!navPrinted) {
-                    sbNavs.AppendLine("    // Nav properties");
+                    sbNavs.AppendLine("  // Nav properties");
                     navPrinted = true;
                   }
                   // print the too part:
                   if ((navType == WeItemType.NavHasOneToOne || navType == WeItemType.NavHasOneToMany)) {
-                    sbNavs.AppendLine($"    public {classTypeName}{navNullableClause} {navClassVarName}{navSetterClause}{navNulClause2}");
+                    sbNavs.AppendLine($"  public {classTypeName}{navNullableClause} {navClassVarName}{navSetterClause}{navNulClause2}");
                   } else if (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) {
-                    sbNavs.AppendLine($"    public ICollection<{classTypeName}> {navClassVarName}{navSetterClause} = [];");
+                    sbNavs.AppendLine($"  public ICollection<{classTypeName}> {navClassVarName}{navSetterClause} = [];");
                   }
                 } else {
-                  sbNavs.AppendLine("    // WeaverError: ");
-                  sbNavs.AppendLine($"    // Could not resolve navigation class type for property {propName}");
+                  sbNavs.AppendLine("  // WeaverError: ");
+                  sbNavs.AppendLine($"  // Could not resolve navigation class type for property {propName}");
                 }
               }              
             }
@@ -144,7 +149,7 @@ namespace Weavers.Core.Handlers.Templates {
         var navItem = await _context.GetItemDtoById(navId, ct);
         if (navItem != null) {
           if (!printedComment) {
-            sbNavs.AppendLine("    // Inbound nav properties");
+            sbNavs.AppendLine("  // Inbound nav properties");
             printedComment = true;
           }
           
@@ -160,6 +165,12 @@ namespace Weavers.Core.Handlers.Templates {
             if (propClass != null) {
               propDbTableName = propClass.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName)?.Value;
               propClassStr = propClass.Name;
+
+              var propClassNamespace = propClass.ResolveItemsNamespace(propClass.Name);
+              if (!usesHashSet.Contains(propClassNamespace)) {
+                sbUses.AppendLine($"using {propClassNamespace};");
+                usesHashSet.Add(propClassNamespace);
+              }
             }
           } 
 
@@ -169,29 +180,30 @@ namespace Weavers.Core.Handlers.Templates {
           var typeClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? $"ICollection<{propClassStr}>" : $"{propClassStr}{boolClause}";
           var nameClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? $"{propDbTableName}" : $"{propClassStr}";
           var defaultClause = (navType == WeItemType.NavHasManyToMany || navType == WeItemType.NavHasManyToOne) ? "{ get; set; } = [];" : "{ get; set; } = "+$"null{boolClause2};";                             
-          sbNavs.AppendLine($"    public {typeClause} {nameClause} {defaultClause}");
+          sbNavs.AppendLine($"  public {typeClause} {nameClause} {defaultClause}");
         }
       }
 
       cSb.AppendLine("using Microsoft.EntityFrameworkCore;");
       cSb.AppendLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
+      cSb.AppendLine(sbUses.ToString()+Environment.NewLine);
 
       cSb.AppendLine($"namespace {namespaceName} {{");
       cSb.AppendLine("");  
 
-      cSb.AppendLine($"  public class {className} {{");
+      cSb.AppendLine($" public class {className} {{");
       if (hasConstructorParams) {
         cSb.AppendLine(sbLocals.ToString());
-        cSb.AppendLine($"    public {className}(");
+        cSb.AppendLine($"  public {className}(");
         cSb.AppendLine(sbConstParams.ToString().TrimEnd(',', '\r', '\n'));
-        cSb.AppendLine($"    ) {{");
+        cSb.AppendLine($"  ) {{");
         cSb.Append(sbConstructor.ToString());
-        cSb.AppendLine($"    }}");
+        cSb.AppendLine($"  }}");
       }
 
       cSb.AppendLine(sbProperties.ToString());      
       cSb.AppendLine(sbNavs.ToString());
-      cSb.AppendLine($"  }}");
+      cSb.AppendLine($" }}");
 
       // check if there's an entity configuration related to this class and if so, print the config template as well:
       var configItemId = item.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.EntityConfigurationModel)?.RelatedItemId ?? 0;

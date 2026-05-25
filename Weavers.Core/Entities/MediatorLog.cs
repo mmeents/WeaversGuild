@@ -3,8 +3,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Weavers.Core.Entities {
-  public class McpLogEntry {
+  public class MediatorLog {
     public int Id { get; set; } = 0;
+    public int SessionId { get; set; } = 0;
     public DateTime CalledAt { get; set; } = DateTime.MinValue;
     public string OpName { get; set; } = string.Empty;
     public string InputJson { get; set; } = string.Empty;
@@ -15,13 +16,12 @@ namespace Weavers.Core.Entities {
 
   }
 
-  public class McpLogEntryConfiguration : IEntityTypeConfiguration<McpLogEntry> {
-    public void Configure(EntityTypeBuilder<McpLogEntry> builder) {
-      builder.ToTable("McpLogEntries");
-
+  public class MediatorLogConfiguration : IEntityTypeConfiguration<MediatorLog> {
+    public void Configure(EntityTypeBuilder<MediatorLog> builder) {
+      builder.ToTable("MediatorLogs");
       builder.HasKey(x => x.Id);
-
       builder.Property(x => x.Id).ValueGeneratedOnAdd();
+      builder.Property(x => x.SessionId).HasColumnType("int").IsRequired();
       builder.Property(x => x.CalledAt).HasColumnType("datetime2").IsRequired();
       builder.Property(x => x.OpName).HasColumnType("nvarchar(200)").IsRequired();
       builder.Property(x => x.InputJson).HasColumnType("nvarchar(max)").IsRequired();
@@ -29,7 +29,6 @@ namespace Weavers.Core.Entities {
       builder.Property(x => x.DurationMs).HasColumnType("int").IsRequired();
       builder.Property(x => x.Success).HasColumnType("bit").IsRequired();
       builder.Property(x => x.ErrorMsg).HasColumnType("nvarchar(max)");
-
     }
   }
 

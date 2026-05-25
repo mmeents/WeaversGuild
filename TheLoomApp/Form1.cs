@@ -12,6 +12,7 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 using MediatR;
+using Weavers.Core.Handlers.Sessions;
 
 
 namespace TheLoomApp {
@@ -28,6 +29,7 @@ namespace TheLoomApp {
     private Dictionary<int, ItemTypeDto> _itemTypeCache = new Dictionary<int, ItemTypeDto>();
     private PropertiesTab _itemPropertiesTab;
     private IAppSettingService _settings;
+    private AppSessionResponse? _sessionDetails = null;
 
     #region Initialization and Setup
     public Form1(IServiceScopeFactory serviceScopeFactory) {
@@ -133,6 +135,7 @@ namespace TheLoomApp {
 
     #region Tree View Loading and Events
     private async void Form1_Shown(object sender, EventArgs e) {
+      _sessionDetails = await _appDataService.GetAppSession();
       await LoadRootProjects();
       await LoadItemTypesCache();
       Form1_Resize(sender, e);
@@ -166,8 +169,8 @@ namespace TheLoomApp {
         tvKb.BeginUpdate();
         try {
           tvKb.Nodes.Clear();
-          var items = await _appDataService.GetRootProjectsAsync();
-          foreach (var project in items) {
+          var project = await _appDataService.GetItemById(_sessionDetails!.OrganizationId);
+          if (project != null) {
             ItemNode projectNode = project.ToItemNode();
             _itemCache[project.Id] = projectNode;
             if (project.Relations.Count() > 0) {
@@ -239,6 +242,11 @@ namespace TheLoomApp {
           if (!_showPkgInLib && bItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
             return null;  // skip adding to tree.
           }
+          if (!_showSessions && (bItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel 
+                              || bItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
+            return null;  // skip adding to tree.
+          }
+          
           parent.Nodes.Add(newNode);   // add the node to the tree
 
           if (bItem.Relations.Count() > 0) {
@@ -256,6 +264,10 @@ namespace TheLoomApp {
           _itemCache[aItem.Id] = projectsChildNode;
 
           if (!_showPkgInLib && aItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
+            return null;  // skip adding to tree.
+          }
+          if (!_showSessions && (aItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel 
+                              || aItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
             return null;  // skip adding to tree.
           }
           parent.Nodes.Add(projectsChildNode);  // add the node to the tree
@@ -285,6 +297,10 @@ namespace TheLoomApp {
               ItemNode itemsChildNode = rel.ToItemNode(itemChild);
               _itemCache[itemChild.Id] = itemsChildNode;
               if (!_showPkgInLib && itemChild.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
+                continue;
+              }
+              if (!_showSessions && (itemChild.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
+                                  || itemChild.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
                 continue;
               }
               node.Nodes.Add(itemsChildNode);
@@ -365,11 +381,8 @@ namespace TheLoomApp {
       }
     }
 
-    private bool _showPkgInLib = false;
-    private void cbShowPkgInLib_CheckedChanged(object sender, EventArgs e) {
-      _showPkgInLib = cbShowPkgInLib.Checked;
 
-    }
+
     #endregion
 
     // ----------------------- Tree View Selection and Property Editing -------------------------//
@@ -437,7 +450,7 @@ namespace TheLoomApp {
         btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel || (WeItemType)item.ItemTypeId == WeItemType.SolutionModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
-        if (item.ItemTypeId == (int)WeItemType.FileHtmlModel ) {
+        if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
           wvDescription.CoreWebView2.NavigateToString(item.Description);
         } else {
           wvDescription.CoreWebView2.NavigateToString("Pick a html type.");
@@ -448,8 +461,14 @@ namespace TheLoomApp {
         edItemType.DataBindings.Add("SelectedValue", _selectedNode.Item, "ItemTypeId", true, DataSourceUpdateMode.OnPropertyChanged);
         edItemName.DataBindings.Clear();
         edItemName.DataBindings.Add("Text", _selectedNode.Item, "Name", true, DataSourceUpdateMode.OnPropertyChanged);
-        edItemDesc.DataBindings.Clear();
-        edItemDesc.DataBindings.Add("Text", _selectedNode.Item, "Description", true, DataSourceUpdateMode.OnPropertyChanged);
+        if (item.ItemTypeId.IsMethodCodeType()) {
+          edItemDesc.DataBindings.Clear();
+          edItemDesc.DataBindings.Add("Text", _selectedNode.Item, "", true, DataSourceUpdateMode.OnPropertyChanged);
+        } else {
+          edItemDesc.DataBindings.Clear();
+          edItemDesc.DataBindings.Add("Text", _selectedNode.Item, "Description", true, DataSourceUpdateMode.OnPropertyChanged);
+        }
+
         edItemData.DataBindings.Clear();
         edItemData.DataBindings.Add("Text", _selectedNode.Item, "Data", true, DataSourceUpdateMode.OnPropertyChanged);
         btnGenerateDesc.Visible = _generatableTypes.Contains((WeItemType)item.ItemTypeId);
@@ -523,16 +542,31 @@ namespace TheLoomApp {
           _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
 
 
-          if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ProjectFolderModel
-            || _selectedNode.Item.ItemTypeId == (int)WeItemType.RelativeFolderModel
-            || _selectedNode.Item.ItemTypeId == (int)WeItemType.FileMdModel
-            || _selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel
-          ) {
-            var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
+          if (_selectedNode.Item.ItemTypeId.IsOnPostPathUpdate()) {
+            var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
+              || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
             if (folderProp != null) {
               string basePath = folderProp.Value ?? "";
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessAppModel) {
+            var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();            
+            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio);
+            var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+            tvKb_BeforeExpand(ee, ee);
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
+            var item = _selectedNode.Item;
+            var resyncProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
+            if (resyncProp != null) {
+              bool shouldResync = resyncProp.Value.AsBoolean();
+              if (shouldResync) { 
+                var updatedGateway = await _appDataService.SyncLmStudioModels(item.Id);
+                if (updatedGateway != null) {
+                  _selectedNode.Item = updatedGateway;
+                }
+              }
+            }
+            
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
             var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
             await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
@@ -578,7 +612,8 @@ namespace TheLoomApp {
               }
             }
 
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel || _selectedNode.Item.ItemTypeId == (int)WeItemType.EntityNavigationModel) {
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel
+              || _selectedNode.Item.ItemTypeId == (int)WeItemType.EntityNavigationModel) {
             ItemNode? parent = _selectedNode.Parent as ItemNode;
             if (parent != null) {
               var prevParent = _selectedNode;
@@ -627,10 +662,11 @@ namespace TheLoomApp {
       var folderProp = item.Properties.FirstOrDefault(p => p.Name == propKey);
       if (folderProp == null) return;
 
+      bool isOrg = false;
       var fullPath = "";
       var fileName = "";  // namespaces are folders within a file and get add to the path the file is in.
       var fileBasePath = basePath;
-      if (item.ItemTypeId == (int)WeItemType.NamespaceModel || item.ItemTypeId == (int)WeItemType.RelativeFolderModel) {
+      if (item.ItemTypeId.IsAParentFolder()) {
         fullPath = Path.Combine(basePath, item.Name.UrlSafe());
       } else if (propKey == Cx.ItFilePath) {
         if (item.ItemTypeId.IsFileNameType()) {
@@ -639,13 +675,15 @@ namespace TheLoomApp {
         fileName = item.GetFileName();
         fullPath = Path.Combine(fileBasePath, fileName);
       } else {
+        isOrg = true;
         fullPath = basePath;
       }
-
-      folderProp.Value = fullPath;
-      var updated = await _appDataService.AddUpdateItemPropertyAsync(folderProp);
-      if (updated != null) item.AddOrUpdateProperty(updated);
-      await _appDataService.UpdateItemPropertyPathRecursive(item.Id, basePath, fullPath);
+      if (folderProp.Value != fullPath || isOrg) {
+        folderProp.Value = fullPath;
+        var updated = await _appDataService.AddUpdateItemPropertyAsync(folderProp);
+        if (updated != null) item.AddOrUpdateProperty(updated);
+        await _appDataService.UpdateItemPropertyPathRecursive(item.Id, basePath, fullPath);
+      }
 
     }
 
@@ -722,7 +760,7 @@ namespace TheLoomApp {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
-        miAddProjectRoot.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolutionImport.Visible = itemType == WeItemType.SolutionModel;
@@ -754,9 +792,9 @@ namespace TheLoomApp {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ProjectFolderModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
-          await tvKb.AddProjectRoot(_appGraphService, newItemName, edAppDefaultFolder.Text);          
+          await tvKb.AddProjectRoot(_appGraphService, newItemName, edAppDefaultFolder.Text);
         }
-        
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add project root - error:" + ex.Message);
         MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
@@ -770,7 +808,7 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           await tvKb.AddSubFolder(_appGraphService, newItemName);
         }
-        
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add subfolder - error:" + ex.Message);
         MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
@@ -784,7 +822,7 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           await tvKb.AddSolution(_appGraphService, newItemName);
         }
-        
+
       } catch (Exception ex) {
         DoLogMessage("Failed to add solution - error: " + ex.Message);
         MessageBox.Show($"Error adding solution: {ex.Message}", "Add Solution failed");
@@ -805,7 +843,7 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var fileType = dlg.NewFileType;
-          if (fileType != null) { 
+          if (fileType != null) {
             switch (fileType) {
               case WeItemType.FileMdModel:
                 await tvKb.AddMdFile(_appGraphService, newItemName);
@@ -819,8 +857,8 @@ namespace TheLoomApp {
               default:
                 break;
             }
-          }          
-        }        
+          }
+        }
 
       } catch (Exception ex) {
         DoLogMessage("Failed to add file - error:" + ex.Message);
@@ -835,7 +873,7 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           using var scope = _serviceScopeFactory.CreateScope();
-          var mediator =  scope.ServiceProvider.GetRequiredService<IMediator>();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
           await tvKb.AddLibrary(mediator, _appClassService, newItemName);
         }
 
@@ -874,7 +912,7 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           await tvKb.AddClassModel(_appClassService, newItemName);
         }
-        
+
 
       } catch (Exception ex) {
         DoLogMessage("Failed to add class model - error:" + ex.Message);
@@ -927,7 +965,7 @@ namespace TheLoomApp {
           int? paramTypeId = dlg.NewDataType.HasValue ? (int?)dlg.NewDataType.Value : null;
           int? paramClassId = dlg.LookupItemId;
           await tvKb.AddClassMethodParameterModel(_appClassService, newItemName, paramTypeId, paramClassId);
-        }        
+        }
       } catch (Exception ex) {
         DoLogMessage("Failed to add class method parameter - error:" + ex.Message);
         MessageBox.Show($"Error adding class method parameter: {ex.Message}", "Add Class Method Parameter Failed");
@@ -1044,6 +1082,20 @@ namespace TheLoomApp {
         }
       }
     }
+
+
+    private bool _showPkgInLib = false;
+    private void cbShowPkgInLib_CheckedChanged(object sender, EventArgs e) {
+      _showPkgInLib = cbShowPkgInLib.Checked;
+
+    }
+
+    private bool _showSessions = false;
+    private void cbShowSessions_CheckedChanged(object sender, EventArgs e) {
+      _showSessions = cbShowSessions.Checked;
+    }
+
+
     #endregion
 
     #region On Generate Context Menu
@@ -1192,8 +1244,9 @@ namespace TheLoomApp {
           MessageBox.Show("You entered: " + newItemName, "Item Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
       }
-        
+
     }
+
 
   }
 

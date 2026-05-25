@@ -58,8 +58,8 @@ namespace Weavers.Core.Handlers.Templates {
 
         if (isPrimaryKey && !pkPrinted) {
           pkPropName = propName;
-          sbProperties.AppendLine($"      builder.HasKey(x => x.{propName});\r\n");
-          sbProperties.AppendLine($"      builder.Property(x => x.{propName}).ValueGeneratedOnAdd();");
+          sbProperties.AppendLine($"   builder.HasKey(x => x.{propName});\r\n");
+          sbProperties.AppendLine($"   builder.Property(x => x.{propName}).ValueGeneratedOnAdd();");
           pkPrinted = true;
           continue;
         }
@@ -110,7 +110,7 @@ namespace Weavers.Core.Handlers.Templates {
           propTypeName = ((WeItemType)dataTypeId).GetConfigSqlType(maxSize);
         }
 
-        sbProperties.AppendLine($"      builder.Property(x => x.{propName}){propTypeName}{isReqClause};");
+        sbProperties.AppendLine($"   builder.Property(x => x.{propName}){propTypeName}{isReqClause};");
 
       }
 
@@ -131,7 +131,7 @@ namespace Weavers.Core.Handlers.Templates {
         string nullableClause = isNullable ? "?" : "";
 
         if (!printedComment) {
-          sbNavs.AppendLine("    // Inbound nav properties");
+          sbNavs.AppendLine("   // Inbound nav properties");
           printedComment = true;
         }
 
@@ -178,7 +178,7 @@ namespace Weavers.Core.Handlers.Templates {
           _ => $"// Unknown navigation: {navItem.Name}"
         };
 
-        sbNavs.AppendLine($"      {navConfig}");
+        sbNavs.AppendLine($"   {navConfig}");
       }
 
       if (request.includeNamespace) { 
@@ -189,20 +189,20 @@ namespace Weavers.Core.Handlers.Templates {
       }
 
       cSb.AppendLine("");
-      cSb.AppendLine($"  public class {className}Configuration : IEntityTypeConfiguration<{className}> {{");
-      cSb.AppendLine($"    public void Configure(EntityTypeBuilder<{className}> builder) {{");   
+      cSb.AppendLine($" public class {className}Configuration : IEntityTypeConfiguration<{className}> {{");
+      cSb.AppendLine($"  public void Configure(EntityTypeBuilder<{className}> builder) {{");   
       if(schemaName == "dbo") {
-        cSb.AppendLine($"      builder.ToTable(\"{dbTableName}\");");
+        cSb.AppendLine($"   builder.ToTable(\"{dbTableName}\");");
       } else {
-        cSb.AppendLine($"      builder.ToTable(\"{dbTableName}\", \"{schemaName}\");");
+        cSb.AppendLine($"   builder.ToTable(\"{dbTableName}\", \"{schemaName}\");");
       }
       cSb.AppendLine("");
       cSb.AppendLine(sbProperties.ToString());
       cSb.AppendLine("");
       cSb.AppendLine(sbNavs.ToString());
 
-      cSb.AppendLine($"    }}");
       cSb.AppendLine($"  }}");
+      cSb.AppendLine($" }}");
 
       if (request.includeNamespace) {
         cSb.AppendLine($"}}");

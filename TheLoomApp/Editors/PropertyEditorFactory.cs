@@ -14,11 +14,14 @@ namespace TheLoomApp.Editors {
     /// <summary>
     /// Creates an editor based on the column type with automatic type inference
     /// </summary>
-    public static IAmAFieldEditor? CreateEditor(ItemPropertyDto field, IItemTypeLookupComboProvider itemTypeLookupComboProvider) {
+    public static IAmAFieldEditor? CreateEditor(ItemPropertyDto field, IItemTypeLookupComboProvider itemTypeLookupComboProvider, ICryptoService cryptoService) {
       
       WeEditorType editorType = (field==null || field.EditorTypeId == null) ? WeEditorType.String : (WeEditorType)field.EditorTypeId;
-      ColumnUIConfig? config = new ColumnUIConfig();      
-      config.WithLookupProvider(itemTypeLookupComboProvider).UseEditor(editorType);
+      if (editorType == WeEditorType.Hidden || editorType == WeEditorType.None) { 
+        return null;
+      }
+      ColumnUIConfig? config = new ColumnUIConfig();            
+      config.WithCryptoProvider(cryptoService).WithLookupProvider(itemTypeLookupComboProvider).UseEditor(editorType);
       return CreateEditor(editorType, config, field);
     }
 
@@ -30,6 +33,7 @@ namespace TheLoomApp.Editors {
         WeEditorType.Boolean => new BooleanPropertyEditor(),
         WeEditorType.Integer => new NumericPropertyEditor(),
         WeEditorType.String => new TextPropertyEditor(),
+        WeEditorType.Password => new PasswordPropertyEditor(),
         WeEditorType.LookupTypeEditor => new ComboBoxPropertyEditor(),      
         WeEditorType.FileName => new FilePickerPropertyEditor(),
         WeEditorType.Memo => new MemoPropertyEditor(),

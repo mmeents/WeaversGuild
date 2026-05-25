@@ -58,6 +58,19 @@ namespace Weavers.Core.Extensions {
 
     public static int ImageIndex(this WeItemType itemType) {
       return itemType switch {
+        WeItemType.OrganizationModel => 13,
+        WeItemType.HarnessAppModel => 18,
+        WeItemType.HarnessAppSessionModel => 15,
+        WeItemType.PresenceLmStudioGatewayModel => 19,
+        WeItemType.PresModelLmStudioModel => 19,
+        WeItemType.HarnessMcpModel => 18,
+        WeItemType.HarnessMcpSessionModel => 15,
+
+        WeItemType.OrgDocFolderModel => 1,
+        WeItemType.OrgDocModel => 17,
+        WeItemType.DigitalOperatorPoolModel => 13,
+        WeItemType.DigitalOperatorModel => 19,
+
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
         WeItemType.FileMdModel => 2,
@@ -100,9 +113,14 @@ namespace Weavers.Core.Extensions {
 
     public static HashSet<WeItemType> GetParentFileFolderDependTypes() {
       HashSet<WeItemType> fileNodeTypes = new HashSet<WeItemType>(){
- //     WeItemType.ProjectFolderModel,  removed because root is different than folder of leaf, no parent dependency.
+ //       WeItemType.OrganizationModel,  removed because root is different than folder of leaf, no parent dependency.
+        WeItemType.OrgDocFolderModel, 
+        WeItemType.OrgDocModel,
+        WeItemType.ProjectFolderModel, 
         WeItemType.RelativeFolderModel,        
         WeItemType.FileMdModel,
+        WeItemType.FileHtmlModel,
+        WeItemType.FileConfigModel,
         WeItemType.SolutionModel,
         WeItemType.LibraryModel,
         WeItemType.DependencyInjectionModel,
@@ -157,7 +175,8 @@ namespace Weavers.Core.Extensions {
           WeItemType.EntityDeleteBehaviors,
           WeItemType.AccessibilityLookups,
           WeItemType.RatingStatus,
-          WeItemType.Ratings
+          WeItemType.Ratings,
+          WeItemType.LoomMcpCommands,
       };
       return lookupTypes;
     }
@@ -174,7 +193,8 @@ namespace Weavers.Core.Extensions {
     // Does the ItFilePath property has a file when item parent type is needed
     // as a folder, so trim filenames if in the set.
     public static bool IsFileNameType(this int itemTypeId) {
-      return itemTypeId switch {        
+      return itemTypeId switch {    
+        (int)WeItemType.OrgDocModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.SolutionModel => true,
         (int)WeItemType.LibraryModel => true,
@@ -190,9 +210,21 @@ namespace Weavers.Core.Extensions {
     }
 
     public static bool IsFolderType(this int itemTypeId) {
-      return itemTypeId switch {        
+      return itemTypeId switch {
+        (int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgDocFolderModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,        
+        _ => false
+      };
+    }
+
+    public static bool IsAParentFolder(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,
+        (int)WeItemType.NamespaceModel => true,
         _ => false
       };
     }
@@ -207,6 +239,7 @@ namespace Weavers.Core.Extensions {
 
     public static bool IsContentType(this int itemTypeId) {
       return itemTypeId switch {
+        (int)WeItemType.OrgDocModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
@@ -240,14 +273,34 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsOnPostPathUpdate(this int itemTypeId) {      
+      return itemTypeId switch {        
+        (int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,
+        (int)WeItemType.FileMdModel => true,
+        (int)WeItemType.FileHtmlModel => true,
+        (int)WeItemType.FileConfigModel => true,
+        (int)WeItemType.LibraryModel => true,        
+        _ => false
+      };
+    }
+
 
     // For the types Path as a property, this gets the property name
     // that should be used to lookup it up.
     public static string GetFolderPropertyName(this int itemTypeId) {
       return itemTypeId switch {
-        (int)WeItemType.ProjectFolderModel => Cx.ItRootFolder,
+        (int)WeItemType.OrganizationModel => Cx.ItRootFolder,
+        (int)WeItemType.OrgDocFolderModel => Cx.ItRelativeFolder,
+        (int)WeItemType.OrgDocModel => Cx.ItFilePath,
+        (int)WeItemType.ProjectFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.RelativeFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.FileMdModel => Cx.ItFilePath,
+        (int)WeItemType.FileHtmlModel => Cx.ItFilePath,
+        (int)WeItemType.FileConfigModel => Cx.ItFilePath,
         (int)WeItemType.SolutionModel => Cx.ItFilePath,
         (int)WeItemType.LibraryModel => Cx.ItFilePath,
         (int)WeItemType.DependencyInjectionModel => Cx.ItFilePath,

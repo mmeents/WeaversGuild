@@ -52,7 +52,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
         }
         return new List<ItemLookup>();
       } else { 
-        if (rt >= WeItemType.ProjectFolderModel) {
+        if (rt >= WeItemType.OrganizationModel) {
 
           if (rt == WeItemType.ClassModel) {
             var items = await _context.Items

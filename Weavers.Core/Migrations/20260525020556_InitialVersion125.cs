@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbVersion121 : Migration
+    public partial class InitialVersion125 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,11 +64,12 @@ namespace Weavers.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "McpLogEntries",
+                name: "MediatorLogs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SessionId = table.Column<int>(type: "int", nullable: false),
                     CalledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     OpName = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     InputJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -79,7 +80,7 @@ namespace Weavers.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_McpLogEntries", x => x.Id);
+                    table.PrimaryKey("PK_MediatorLogs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -419,7 +420,8 @@ namespace Weavers.Core.Migrations
                     { 90, "Accessibility Lookups", 10, "", true, "AccessibilityLookups", null, 1 },
                     { 100, "Review State", 10, "", true, "RatingStatus", null, 1 },
                     { 110, "Ratings", 10, "", true, "Ratings", null, 1 },
-                    { 1100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", null, 1100 },
+                    { 120, "Loom Mcp Commands", 10, "", true, "LoomMcpCommands", null, 1 },
+                    { 1000, "Organization", -1, "", true, "OrganizationModel", null, 1000 },
                     { 1107, "DocRating", -1, "", true, "DocRating", 1107, 0 },
                     { 1311, "DbContext Documentation", 4, "", true, "DbContextDocs", 1311, 1 }
                 });
@@ -429,10 +431,11 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 1, "", 13, true, 1100, "RootFolder", 1, null, 54 },
-                    { 2, "", 4, true, 1100, "RepoUrl", 2, null, 54 },
-                    { 4, "112", 10, true, 1107, "Votes", 1, 110, 57 },
-                    { 53, "104", 10, true, 1311, "Results", 1, 100, 57 }
+                    { 1, "", 12, true, 1000, "OrgCharter", 3, null, 54 },
+                    { 2, "", 13, true, 1000, "RootFolder", 2, null, 54 },
+                    { 3, "3", 3, true, 1000, "RetentionDays", 1, null, 57 },
+                    { 27, "112", 10, true, 1107, "Votes", 1, 110, 57 },
+                    { 76, "104", 10, true, 1311, "Results", 1, 100, 57 }
                 });
 
             migrationBuilder.InsertData(
@@ -505,6 +508,62 @@ namespace Weavers.Core.Migrations
                     { 104, "Tie", 4, "", true, "Tie", 100, 4 },
                     { 111, "Yes", 4, "", true, "RatingYes", 100, 1 },
                     { 112, "No", 4, "", true, "RatingNo", 100, 2 },
+                    { 122, "Help Command", 4, "", true, "CmdHelp", 120, 1 },
+                    { 124, "List Projects Command", 4, "", true, "CmdListProjects", 120, 2 },
+                    { 126, "Search Command", 4, "", true, "CmdSearch", 120, 3 },
+                    { 128, "Get Summary By Id Command", 4, "", true, "CmdGetSummaryById", 120, 4 },
+                    { 130, "Get Type Details Command", 4, "", true, "CmdGetTypeDetails", 120, 5 },
+                    { 132, "Update Item Name Command", 4, "", true, "CmdUpdateItemName", 120, 6 },
+                    { 134, "Update Item Content Command", 4, "", true, "CmdUpdateItemContent", 120, 7 },
+                    { 136, "Update Item Property Command", 4, "", true, "CmdUpdateItemProperty", 120, 8 },
+                    { 150, "Add Project Root Command", 4, "", true, "CmdAddProjectRoot", 120, 9 },
+                    { 152, "Add Sub Folder Command", 4, "", true, "CmdAddSubFolder", 120, 10 },
+                    { 154, "Add Solution Command", 4, "", true, "CmdAddSolution", 120, 11 },
+                    { 156, "Add Solution Import Command", 4, "", true, "CmdAddSolutionImport", 120, 12 },
+                    { 158, "Add Md File Command", 4, "", true, "CmdAddMdFile", 120, 13 },
+                    { 160, "Add Html File Command", 4, "", true, "CmdAddHtmlFile", 120, 14 },
+                    { 162, "Add Config File Command", 4, "", true, "CmdAddConfigFile", 120, 15 },
+                    { 164, "Add Library Command", 4, "", true, "CmdAddLibrary", 120, 16 },
+                    { 166, "Add Namespace Command", 4, "", true, "CmdAddNamespace", 120, 17 },
+                    { 168, "Add Class Command", 4, "", true, "CmdAddClass", 120, 18 },
+                    { 170, "Add Class Import Command", 4, "", true, "CmdAddClassImport", 120, 19 },
+                    { 172, "Add Class Property Command", 4, "", true, "CmdAddClassProperty", 120, 20 },
+                    { 174, "Add Class Method Command", 4, "", true, "CmdAddClassMethod", 120, 21 },
+                    { 176, "Add Class Method Param Command", 4, "", true, "CmdAddClassMethodParam", 120, 22 },
+                    { 178, "Add Entity Class Command", 4, "", true, "CmdAddEntityClass", 120, 23 },
+                    { 180, "Add Entity Class Import Command", 4, "", true, "CmdAddEntityClassImport", 120, 24 },
+                    { 182, "Add Entity Property Command", 4, "", true, "CmdAddEntityProperty", 120, 25 },
+                    { 1010, "Harness App", -1, "", true, "HarnessAppModel", 1000, 1010 },
+                    { 1020, "Harness Mcp", -1, "", true, "HarnessMcpModel", 1000, 1020 },
+                    { 1030, "Org Doc Folder", 4, "", true, "OrgDocFolderModel", 1000, 1030 },
+                    { 1040, "Digital Operator Pool", -1, "", true, "DigitalOperatorPoolModel", 1000, 1040 },
+                    { 1100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", 1000, 1100 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemPropertyDefaults",
+                columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
+                values: new object[,]
+                {
+                    { 4, "", 4, true, 1010, "MachineName", 5, null, 54 },
+                    { 5, "", 4, true, 1010, "UserName", 4, null, 54 },
+                    { 6, "0", 2, true, 1010, "HasLmStudio", 3, null, 55 },
+                    { 12, "", 4, true, 1020, "MachineName", 2, null, 54 },
+                    { 15, "", 14, true, 1030, "RelativeFolder", 1, null, 54 },
+                    { 24, "", 13, true, 1100, "RelativeFolder", 2, null, 54 },
+                    { 25, "", 4, true, 1100, "RepoUrl", 1, null, 54 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ItemTypes",
+                columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
+                values: new object[,]
+                {
+                    { 1012, "Harness App Session", -1, "", true, "HarnessAppSessionModel", 1010, 1012 },
+                    { 1014, "Lm Studio Gateway", -1, "", true, "PresenceLmStudioGatewayModel", 1010, 1014 },
+                    { 1022, "Harness Mcp Session", -1, "", true, "HarnessMcpSessionModel", 1020, 1022 },
+                    { 1035, "Org Doc", 4, "", true, "OrgDocModel", 1030, 1035 },
+                    { 1045, "Digital Operator", 4, "", true, "DigitalOperatorModel", 1040, 1045 },
                     { 1101, "Project Documentation", 4, "", true, "ProjectDocs", 1100, 1101 },
                     { 1110, "Relative Folder", 4, "pi pi-folder", true, "RelativeFolderModel", 1100, 1110 }
                 });
@@ -514,8 +573,21 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 3, "104", 10, true, 1101, "Results", 1, 100, 57 },
-                    { 5, "", 14, true, 1110, "RelativeFolder", 1, null, 54 }
+                    { 7, "", 3, true, 1012, "ProcessId", 1, null, 57 },
+                    { 8, "0", 2, true, 1014, "DoReSync", 4, null, 55 },
+                    { 9, "", 4, true, 1014, "UrlBase", 3, null, 54 },
+                    { 10, "", 9, true, 1014, "ApiToken", 2, null, 54 },
+                    { 13, "", 3, true, 1022, "ProcessId", 1, null, 57 },
+                    { 14, "", 4, true, 1022, "ProviderType", 2, null, 54 },
+                    { 16, "", 5, true, 1035, "FilePath", 1, null, 54 },
+                    { 17, "", 4, true, 1045, "AgentName", 10, null, 54 },
+                    { 18, "", 4, true, 1045, "AgentRole", 9, null, 54 },
+                    { 20, "", 12, true, 1045, "SystemPrompt", 7, null, 54 },
+                    { 21, "0", 3, true, 1045, "JobCounter", 6, null, 57 },
+                    { 22, "0", 3, true, 1045, "JobSuccess", 5, null, 57 },
+                    { 23, "0", 3, true, 1045, "JobFailure", 4, null, 57 },
+                    { 26, "104", 10, true, 1101, "Results", 1, 100, 57 },
+                    { 28, "", 14, true, 1110, "RelativeFolder", 1, null, 54 }
                 });
 
             migrationBuilder.InsertData(
@@ -523,6 +595,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
+                    { 1015, "Specific Lm Studio Model", -1, "", true, "PresModelLmStudioModel", 1014, 1015 },
                     { 1111, "Relative Folder Documentation", 4, "", true, "RelativeFolderDocs", 1110, 1111 },
                     { 1120, "Md File", 4, "pi pi-file", true, "FileMdModel", 1110, 1120 },
                     { 1130, "Html File", 4, "", true, "FileHtmlModel", 1110, 1130 },
@@ -537,28 +610,30 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 6, "104", 10, true, 1111, "Results", 1, 100, 57 },
-                    { 7, "", 5, true, 1120, "FilePath", 1, null, 54 },
-                    { 8, ".md", 4, true, 1120, "FileExtension", 2, null, 54 },
-                    { 10, "", 5, true, 1130, "FilePath", 1, null, 54 },
-                    { 11, ".html", 4, true, 1130, "FileExtension", 2, null, 54 },
-                    { 13, "", 5, true, 1140, "FilePath", 1, null, 54 },
-                    { 14, ".json", 4, true, 1140, "FileExtension", 2, null, 54 },
-                    { 16, "", 5, true, 1150, "FilePath", 1, null, 54 },
-                    { 17, ".png", 4, true, 1150, "FileExtension", 2, null, 54 },
-                    { 19, "", 5, true, 1160, "FilePath", 1, null, 54 },
-                    { 20, ".sln", 1, true, 1160, "FileExtension", 2, null, 54 },
-                    { 21, "", 4, true, 1160, "SlnGuid", 3, null, 54 },
-                    { 25, "", 4, true, 1200, "FilePath", 1, null, 54 },
-                    { 26, "", 4, true, 1200, "NamespaceRoot", 2, null, 54 },
-                    { 27, "net9.0", 4, true, 1200, "TargetFramework", 3, null, 54 },
-                    { 28, "1", 2, true, 1200, "IsNullable", 4, null, 55 },
-                    { 29, "1", 2, true, 1200, "ImplicitUsing", 5, null, 55 },
-                    { 30, "1.0.0", 4, true, 1200, "Version", 6, null, 54 },
-                    { 31, "1.0.0.0", 4, true, 1200, "AssemblyVersion", 7, null, 54 },
-                    { 32, "1.0.0.0", 4, true, 1200, "FileVersion", 8, null, 54 },
-                    { 33, "0", 2, true, 1200, "IsTestLibrary", 9, null, 55 },
-                    { 34, ".csproj", 1, true, 1200, "FileExtension", 10, null, 54 }
+                    { 11, "", 4, true, 1015, "ModelName", 1, null, 54 },
+                    { 19, "", 10, true, 1045, "Presence", 8, 1015, 57 },
+                    { 29, "104", 10, true, 1111, "Results", 1, 100, 57 },
+                    { 30, "", 5, true, 1120, "FilePath", 2, null, 54 },
+                    { 31, ".md", 4, true, 1120, "FileExtension", 1, null, 54 },
+                    { 33, "", 5, true, 1130, "FilePath", 2, null, 54 },
+                    { 34, ".html", 4, true, 1130, "FileExtension", 1, null, 54 },
+                    { 36, "", 5, true, 1140, "FilePath", 2, null, 54 },
+                    { 37, ".json", 4, true, 1140, "FileExtension", 1, null, 54 },
+                    { 39, "", 5, true, 1150, "FilePath", 2, null, 54 },
+                    { 40, ".png", 4, true, 1150, "FileExtension", 1, null, 54 },
+                    { 42, "", 5, true, 1160, "FilePath", 3, null, 54 },
+                    { 43, ".sln", 1, true, 1160, "FileExtension", 2, null, 54 },
+                    { 44, "", 4, true, 1160, "SlnGuid", 1, null, 54 },
+                    { 48, "", 4, true, 1200, "FilePath", 11, null, 54 },
+                    { 49, "", 4, true, 1200, "NamespaceRoot", 10, null, 54 },
+                    { 50, "net9.0", 4, true, 1200, "TargetFramework", 9, null, 54 },
+                    { 51, "1", 2, true, 1200, "IsNullable", 8, null, 55 },
+                    { 52, "1", 2, true, 1200, "ImplicitUsing", 7, null, 55 },
+                    { 53, "1.0.0", 4, true, 1200, "Version", 6, null, 54 },
+                    { 54, "1.0.0.0", 4, true, 1200, "AssemblyVersion", 5, null, 54 },
+                    { 55, "1.0.0.0", 4, true, 1200, "FileVersion", 4, null, 54 },
+                    { 56, "0", 2, true, 1200, "IsTestLibrary", 3, null, 55 },
+                    { 57, ".csproj", 1, true, 1200, "FileExtension", 2, null, 54 }
                 });
 
             migrationBuilder.InsertData(
@@ -584,26 +659,26 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 9, "104", 10, true, 1121, "Results", 1, 100, 57 },
-                    { 12, "104", 10, true, 1131, "Results", 1, 100, 57 },
-                    { 15, "104", 10, true, 1141, "Results", 1, 100, 57 },
-                    { 18, "104", 10, true, 1151, "Results", 1, 100, 57 },
-                    { 22, "104", 10, true, 1161, "Results", 1, 100, 57 },
-                    { 23, "", 10, true, 1162, "RegisterObject", 2, 1200, 57 },
-                    { 24, "", 4, true, 1162, "ProjectGuid", 3, null, 54 },
-                    { 35, "104", 10, true, 1201, "Results", 1, 100, 57 },
-                    { 36, "", 4, true, 1210, "PackageInclude", 2, null, 54 },
-                    { 37, "", 4, true, 1210, "PackageVersion", 3, null, 54 },
-                    { 38, "", 4, true, 1210, "PrivateAssets", 4, null, 54 },
-                    { 39, "", 4, true, 1210, "IncludeAssets", 5, null, 54 },
-                    { 40, "", 10, true, 1220, "LibraryInclude", 1, 1200, 57 },
-                    { 41, "", 4, true, 1300, "FilePath", 1, null, 54 },
-                    { 42, ".cs", 1, true, 1300, "FileExtension", 2, null, 54 },
-                    { 43, "", 4, true, 1300, "Namespace", 3, null, 54 },
-                    { 44, "", 2, true, 1300, "HasDbContext", 4, null, 55 },
-                    { 45, "", 2, true, 1300, "HasMediator", 6, null, 55 },
-                    { 55, "", 14, true, 1400, "FilePath", 1, null, 54 },
-                    { 56, "", 4, true, 1400, "Namespace", 2, null, 54 }
+                    { 32, "104", 10, true, 1121, "Results", 1, 100, 57 },
+                    { 35, "104", 10, true, 1131, "Results", 1, 100, 57 },
+                    { 38, "104", 10, true, 1141, "Results", 1, 100, 57 },
+                    { 41, "104", 10, true, 1151, "Results", 1, 100, 57 },
+                    { 45, "104", 10, true, 1161, "Results", 1, 100, 57 },
+                    { 46, "", 10, true, 1162, "RegisterObject", 3, 1200, 57 },
+                    { 47, "", 4, true, 1162, "ProjectGuid", 2, null, 54 },
+                    { 58, "104", 10, true, 1201, "Results", 1, 100, 57 },
+                    { 59, "", 4, true, 1210, "PackageInclude", 6, null, 54 },
+                    { 60, "", 4, true, 1210, "PackageVersion", 5, null, 54 },
+                    { 61, "", 4, true, 1210, "PrivateAssets", 4, null, 54 },
+                    { 62, "", 4, true, 1210, "IncludeAssets", 3, null, 54 },
+                    { 63, "", 10, true, 1220, "LibraryInclude", 1, 1200, 57 },
+                    { 64, "", 4, true, 1300, "FilePath", 7, null, 54 },
+                    { 65, ".cs", 1, true, 1300, "FileExtension", 6, null, 54 },
+                    { 66, "", 4, true, 1300, "Namespace", 5, null, 54 },
+                    { 67, "", 2, true, 1300, "HasDbContext", 4, null, 55 },
+                    { 68, "", 2, true, 1300, "HasMediator", 3, null, 55 },
+                    { 78, "", 14, true, 1400, "FilePath", 3, null, 54 },
+                    { 79, "", 4, true, 1400, "Namespace", 2, null, 54 }
                 });
 
             migrationBuilder.InsertData(
@@ -628,43 +703,43 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 46, "104", 10, true, 1301, "Results", 1, 100, 57 },
-                    { 47, "42", 10, true, 1302, "LifetimeScope", 1, 40, 57 },
-                    { 48, "", 10, true, 1302, "RegisterObject", 2, 1500, 57 },
-                    { 49, "", 2, true, 1302, "RegisterInterface", 3, null, 55 },
-                    { 50, "", 4, true, 1310, "FilePath", 1, null, 54 },
-                    { 51, ".cs", 4, true, 1310, "FileExtension", 2, null, 54 },
-                    { 52, "", 4, true, 1310, "Namespace", 3, null, 54 },
-                    { 57, "104", 10, true, 1401, "Results", 1, 100, 57 },
-                    { 58, "91", 10, true, 1450, "AccessModifier", 11, 90, 57 },
-                    { 59, ".cs", 4, true, 1450, "FileExtension", 12, null, 54 },
-                    { 60, "", 4, true, 1450, "FilePath", 13, null, 54 },
-                    { 61, "", 4, true, 1450, "Namespace", 14, null, 54 },
-                    { 62, "", 10, true, 1450, "BaseType", 15, 50, 57 },
-                    { 63, "", 10, true, 1450, "Interface", 16, 1500, 57 },
-                    { 65, "91", 10, true, 1460, "AccessModifier", 11, 90, 57 },
-                    { 66, ".cs", 4, true, 1460, "FileExtension", 12, null, 54 },
-                    { 67, "", 4, true, 1460, "FilePath", 13, null, 54 },
-                    { 68, "", 4, true, 1460, "Namespace", 14, null, 54 },
-                    { 69, "", 10, true, 1460, "BaseType", 15, 50, 57 },
-                    { 70, "", 2, true, 1460, "GenerateInterface", 16, null, 55 },
-                    { 72, "0", 2, true, 1500, "TestClass", 11, null, 55 },
-                    { 73, "91", 10, true, 1500, "AccessModifier", 11, 90, 57 },
-                    { 74, ".cs", 1, true, 1500, "FileExtension", 12, null, 54 },
-                    { 75, "", 4, true, 1500, "FilePath", 13, null, 54 },
-                    { 76, "", 4, true, 1500, "Namespace", 14, null, 54 },
-                    { 77, "", 10, true, 1500, "BaseType", 15, 1500, 57 },
-                    { 78, "", 2, true, 1500, "GenerateInterface", 16, null, 55 },
-                    { 79, "", 2, true, 1500, "RegisterDI", 17, null, 55 },
-                    { 80, "0", 2, true, 1500, "IsStatic", 18, null, 55 },
-                    { 105, ".cs", 1, true, 1600, "FileExtension", 12, null, 54 },
-                    { 106, "", 4, true, 1600, "FilePath", 13, null, 54 },
-                    { 107, "", 4, true, 1600, "Namespace", 14, null, 54 },
-                    { 108, "dbo", 4, true, 1600, "DbSchema", 15, null, 54 },
-                    { 109, "", 4, true, 1600, "DbTableName", 16, null, 54 },
-                    { 131, ".cs", 1, true, 1700, "FileExtension", 12, null, 54 },
-                    { 132, "", 4, true, 1700, "FilePath", 13, null, 54 },
-                    { 133, "", 4, true, 1700, "Namespace", 14, null, 54 }
+                    { 69, "104", 10, true, 1301, "Results", 1, 100, 57 },
+                    { 70, "42", 10, true, 1302, "LifetimeScope", 3, 40, 57 },
+                    { 71, "", 10, true, 1302, "RegisterObject", 2, 1500, 57 },
+                    { 72, "", 2, true, 1302, "RegisterInterface", 1, null, 55 },
+                    { 73, "", 4, true, 1310, "FilePath", 3, null, 54 },
+                    { 74, ".cs", 4, true, 1310, "FileExtension", 2, null, 54 },
+                    { 75, "", 4, true, 1310, "Namespace", 1, null, 54 },
+                    { 80, "104", 10, true, 1401, "Results", 1, 100, 57 },
+                    { 81, "91", 10, true, 1450, "AccessModifier", 17, 90, 57 },
+                    { 82, ".cs", 4, true, 1450, "FileExtension", 16, null, 54 },
+                    { 83, "", 4, true, 1450, "FilePath", 15, null, 54 },
+                    { 84, "", 4, true, 1450, "Namespace", 14, null, 54 },
+                    { 85, "", 10, true, 1450, "BaseType", 13, 50, 57 },
+                    { 86, "", 10, true, 1450, "Interface", 12, 1500, 57 },
+                    { 88, "91", 10, true, 1460, "AccessModifier", 17, 90, 57 },
+                    { 89, ".cs", 4, true, 1460, "FileExtension", 16, null, 54 },
+                    { 90, "", 4, true, 1460, "FilePath", 15, null, 54 },
+                    { 91, "", 4, true, 1460, "Namespace", 14, null, 54 },
+                    { 92, "", 10, true, 1460, "BaseType", 13, 50, 57 },
+                    { 93, "", 2, true, 1460, "GenerateInterface", 12, null, 55 },
+                    { 95, "0", 2, true, 1500, "TestClass", 19, null, 55 },
+                    { 96, "91", 10, true, 1500, "AccessModifier", 18, 90, 57 },
+                    { 97, ".cs", 1, true, 1500, "FileExtension", 17, null, 54 },
+                    { 98, "", 4, true, 1500, "FilePath", 16, null, 54 },
+                    { 99, "", 4, true, 1500, "Namespace", 15, null, 54 },
+                    { 100, "", 10, true, 1500, "BaseType", 14, 1500, 57 },
+                    { 101, "", 2, true, 1500, "GenerateInterface", 13, null, 55 },
+                    { 102, "", 2, true, 1500, "RegisterDI", 12, null, 55 },
+                    { 103, "0", 2, true, 1500, "IsStatic", 11, null, 55 },
+                    { 128, ".cs", 1, true, 1600, "FileExtension", 17, null, 54 },
+                    { 129, "", 4, true, 1600, "FilePath", 16, null, 54 },
+                    { 130, "", 4, true, 1600, "Namespace", 15, null, 54 },
+                    { 131, "dbo", 4, true, 1600, "DbSchema", 14, null, 54 },
+                    { 132, "", 4, true, 1600, "DbTableName", 13, null, 54 },
+                    { 154, ".cs", 1, true, 1700, "FileExtension", 16, null, 54 },
+                    { 155, "", 4, true, 1700, "FilePath", 15, null, 54 },
+                    { 156, "", 4, true, 1700, "Namespace", 14, null, 54 }
                 });
 
             migrationBuilder.InsertData(
@@ -697,44 +772,44 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 54, "", 10, true, 1312, "RegisterObject", 2, 1600, 57 },
-                    { 64, "104", 10, true, 1451, "Results", 1, 100, 57 },
-                    { 71, "104", 10, true, 1461, "Results", 1, 100, 57 },
-                    { 81, "104", 10, true, 1501, "Results", 1, 100, 57 },
-                    { 82, "", 10, true, 1502, "ImportObject", 2, 1500, 57 },
-                    { 83, "", 2, true, 1502, "UseInterface", 3, null, 55 },
-                    { 84, "57", 10, true, 1510, "PropertyType", 1, 50, 57 },
-                    { 85, "", 10, true, 1510, "PropertyClass", 2, 1500, 57 },
-                    { 86, "1", 2, true, 1510, "IsNullable", 3, null, 55 },
-                    { 87, "1", 2, true, 1510, "HasSetter", 4, null, 55 },
-                    { 89, "32", 10, true, 1520, "TestMethod", 10, 31, 57 },
-                    { 90, "91", 10, true, 1520, "AccessModifier", 11, 90, 57 },
-                    { 91, "57", 10, true, 1520, "ReturnType", 12, 50, 57 },
-                    { 92, "", 10, true, 1520, "ReturnClass", 13, 1500, 57 },
-                    { 93, "0", 2, true, 1520, "ReturnNullable", 14, null, 55 },
-                    { 94, "0", 2, true, 1520, "IsAsync", 15, null, 55 },
-                    { 95, "0", 2, true, 1520, "IsVirtual", 16, null, 55 },
-                    { 96, "0", 2, true, 1520, "IsStatic", 17, null, 55 },
-                    { 97, "0", 2, true, 1520, "IsAbstract", 18, null, 55 },
-                    { 98, "0", 2, true, 1520, "IsSealed", 19, null, 55 },
-                    { 110, "104", 10, true, 1601, "Results", 1, 100, 57 },
-                    { 111, "", 10, true, 1602, "ImportObject", 2, 1500, 57 },
-                    { 112, "", 2, true, 1602, "UseInterface", 3, null, 55 },
-                    { 113, "57", 10, true, 1610, "PropertyType", 1, 50, 57 },
-                    { 114, "0", 2, true, 1610, "IsNullable", 3, null, 55 },
-                    { 115, "1", 2, true, 1610, "HasSetter", 4, null, 55 },
-                    { 116, "0", 2, true, 1610, "HasNavigation", 5, null, 55 },
-                    { 117, "0", 2, true, 1610, "IsPrimaryKey", 6, null, 55 },
-                    { 118, "-1", 3, true, 1610, "MaxSize", 7, null, 57 },
-                    { 125, "", 10, true, 1630, "PropertyClass", 2, 1600, 57 },
-                    { 126, "", 10, true, 1630, "ForeignKey", 3, 1610, 57 },
-                    { 127, "8", 10, true, 1630, "HasNavigation", 4, 5, 57 },
-                    { 128, "1", 2, true, 1630, "IsNullable", 5, null, 55 },
-                    { 129, "", 4, true, 1630, "InverseNav", 6, null, 54 },
-                    { 134, "57", 10, true, 1710, "PropertyType", 1, 50, 57 },
-                    { 135, "", 10, true, 1710, "PropertyClass", 2, 1500, 57 },
-                    { 136, "57", 10, true, 1720, "PropertyType", 1, 50, 57 },
-                    { 137, "", 10, true, 1720, "PropertyClass", 2, 1500, 57 }
+                    { 77, "", 10, true, 1312, "RegisterObject", 2, 1600, 57 },
+                    { 87, "104", 10, true, 1451, "Results", 1, 100, 57 },
+                    { 94, "104", 10, true, 1461, "Results", 1, 100, 57 },
+                    { 104, "104", 10, true, 1501, "Results", 1, 100, 57 },
+                    { 105, "", 10, true, 1502, "ImportObject", 4, 1500, 57 },
+                    { 106, "", 2, true, 1502, "UseInterface", 3, null, 55 },
+                    { 107, "57", 10, true, 1510, "PropertyType", 5, 50, 57 },
+                    { 108, "", 10, true, 1510, "PropertyClass", 4, 1500, 57 },
+                    { 109, "1", 2, true, 1510, "IsNullable", 3, null, 55 },
+                    { 110, "1", 2, true, 1510, "HasSetter", 2, null, 55 },
+                    { 112, "32", 10, true, 1520, "TestMethod", 19, 31, 57 },
+                    { 113, "91", 10, true, 1520, "AccessModifier", 18, 90, 57 },
+                    { 114, "57", 10, true, 1520, "ReturnType", 17, 50, 57 },
+                    { 115, "", 10, true, 1520, "ReturnClass", 16, 1500, 57 },
+                    { 116, "0", 2, true, 1520, "ReturnNullable", 15, null, 55 },
+                    { 117, "0", 2, true, 1520, "IsAsync", 14, null, 55 },
+                    { 118, "0", 2, true, 1520, "IsVirtual", 13, null, 55 },
+                    { 119, "0", 2, true, 1520, "IsStatic", 12, null, 55 },
+                    { 120, "0", 2, true, 1520, "IsAbstract", 11, null, 55 },
+                    { 121, "0", 2, true, 1520, "IsSealed", 10, null, 55 },
+                    { 133, "104", 10, true, 1601, "Results", 1, 100, 57 },
+                    { 134, "", 10, true, 1602, "ImportObject", 4, 1500, 57 },
+                    { 135, "", 2, true, 1602, "UseInterface", 3, null, 55 },
+                    { 136, "57", 10, true, 1610, "PropertyType", 8, 50, 57 },
+                    { 137, "0", 2, true, 1610, "IsNullable", 7, null, 55 },
+                    { 138, "1", 2, true, 1610, "HasSetter", 6, null, 55 },
+                    { 139, "0", 2, true, 1610, "HasNavigation", 5, null, 55 },
+                    { 140, "0", 2, true, 1610, "IsPrimaryKey", 4, null, 55 },
+                    { 141, "-1", 3, true, 1610, "MaxSize", 3, null, 57 },
+                    { 148, "", 10, true, 1630, "PropertyClass", 7, 1600, 57 },
+                    { 149, "", 10, true, 1630, "ForeignKey", 6, 1610, 57 },
+                    { 150, "8", 10, true, 1630, "HasNavigation", 5, 5, 57 },
+                    { 151, "1", 2, true, 1630, "IsNullable", 4, null, 55 },
+                    { 152, "", 4, true, 1630, "InverseNav", 3, null, 54 },
+                    { 157, "57", 10, true, 1710, "PropertyType", 3, 50, 57 },
+                    { 158, "", 10, true, 1710, "PropertyClass", 2, 1500, 57 },
+                    { 159, "57", 10, true, 1720, "PropertyType", 3, 50, 57 },
+                    { 160, "", 10, true, 1720, "PropertyClass", 2, 1500, 57 }
                 });
 
             migrationBuilder.InsertData(
@@ -761,35 +836,35 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 88, "104", 10, true, 1511, "Results", 1, 100, 57 },
-                    { 99, "104", 10, true, 1521, "Results", 1, 100, 57 },
-                    { 100, "57", 10, true, 1530, "ParamType", 1, 50, 57 },
-                    { 101, "", 10, true, 1530, "ParamClass", 2, 1500, 57 },
-                    { 102, "1", 2, true, 1530, "IsNullable", 3, null, 55 },
-                    { 103, "0", 2, true, 1530, "UseThis", 4, null, 55 },
-                    { 119, "104", 10, true, 1611, "Results", 1, 100, 57 },
-                    { 120, "", 10, true, 1620, "PropertyClass", 2, 1600, 57 },
-                    { 121, "7", 10, true, 1620, "HasNavigation", 3, 5, 57 },
-                    { 122, "84", 10, true, 1620, "DeleteBehavior", 4, 80, 57 },
-                    { 123, "1", 2, true, 1620, "IsNullable", 5, null, 55 },
-                    { 130, "104", 10, true, 1631, "Results", 1, 100, 57 },
-                    { 138, "104", 10, true, 1801, "Results", 1, 100, 57 },
-                    { 139, "", 10, true, 1802, "ImportObject", 2, 1500, 57 },
-                    { 140, "", 2, true, 1802, "UseInterface", 3, null, 55 },
-                    { 141, "57", 10, true, 1811, "PropertyType", 1, 50, 57 },
-                    { 142, "", 10, true, 1811, "PropertyClass", 2, 1500, 57 },
-                    { 143, "1", 2, true, 1811, "IsNullable", 3, null, 55 },
-                    { 144, "1", 2, true, 1811, "HasSetter", 4, null, 55 },
-                    { 145, "32", 10, true, 1830, "TestMethod", 10, 31, 57 },
-                    { 146, "91", 10, true, 1830, "AccessModifier", 11, 90, 57 },
-                    { 147, "57", 10, true, 1830, "ReturnType", 12, 50, 57 },
-                    { 148, "", 10, true, 1830, "ReturnClass", 13, 1500, 57 },
-                    { 149, "0", 2, true, 1830, "ReturnNullable", 14, null, 55 },
-                    { 150, "0", 2, true, 1830, "IsAsync", 15, null, 55 },
-                    { 151, "0", 2, true, 1830, "IsVirtual", 16, null, 55 },
-                    { 152, "0", 2, true, 1830, "IsStatic", 17, null, 55 },
-                    { 153, "0", 2, true, 1830, "IsAbstract", 18, null, 55 },
-                    { 154, "0", 2, true, 1830, "IsSealed", 19, null, 55 }
+                    { 111, "104", 10, true, 1511, "Results", 1, 100, 57 },
+                    { 122, "104", 10, true, 1521, "Results", 1, 100, 57 },
+                    { 123, "57", 10, true, 1530, "ParamType", 5, 50, 57 },
+                    { 124, "", 10, true, 1530, "ParamClass", 4, 1500, 57 },
+                    { 125, "1", 2, true, 1530, "IsNullable", 3, null, 55 },
+                    { 126, "0", 2, true, 1530, "UseThis", 2, null, 55 },
+                    { 142, "104", 10, true, 1611, "Results", 1, 100, 57 },
+                    { 143, "", 10, true, 1620, "PropertyClass", 6, 1600, 57 },
+                    { 144, "7", 10, true, 1620, "HasNavigation", 5, 5, 57 },
+                    { 145, "84", 10, true, 1620, "DeleteBehavior", 4, 80, 57 },
+                    { 146, "1", 2, true, 1620, "IsNullable", 3, null, 55 },
+                    { 153, "104", 10, true, 1631, "Results", 1, 100, 57 },
+                    { 161, "104", 10, true, 1801, "Results", 1, 100, 57 },
+                    { 162, "", 10, true, 1802, "ImportObject", 4, 1500, 57 },
+                    { 163, "", 2, true, 1802, "UseInterface", 3, null, 55 },
+                    { 164, "57", 10, true, 1811, "PropertyType", 5, 50, 57 },
+                    { 165, "", 10, true, 1811, "PropertyClass", 4, 1500, 57 },
+                    { 166, "1", 2, true, 1811, "IsNullable", 3, null, 55 },
+                    { 167, "1", 2, true, 1811, "HasSetter", 2, null, 55 },
+                    { 168, "32", 10, true, 1830, "TestMethod", 19, 31, 57 },
+                    { 169, "91", 10, true, 1830, "AccessModifier", 18, 90, 57 },
+                    { 170, "57", 10, true, 1830, "ReturnType", 17, 50, 57 },
+                    { 171, "", 10, true, 1830, "ReturnClass", 16, 1500, 57 },
+                    { 172, "0", 2, true, 1830, "ReturnNullable", 15, null, 55 },
+                    { 173, "0", 2, true, 1830, "IsAsync", 14, null, 55 },
+                    { 174, "0", 2, true, 1830, "IsVirtual", 13, null, 55 },
+                    { 175, "0", 2, true, 1830, "IsStatic", 12, null, 55 },
+                    { 176, "0", 2, true, 1830, "IsAbstract", 11, null, 55 },
+                    { 177, "0", 2, true, 1830, "IsSealed", 10, null, 55 }
                 });
 
             migrationBuilder.InsertData(
@@ -808,13 +883,13 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 104, "104", 10, true, 1531, "Results", 1, 100, 57 },
-                    { 124, "104", 10, true, 1621, "Results", 1, 100, 57 },
-                    { 155, "104", 10, true, 1831, "Results", 1, 100, 57 },
-                    { 156, "57", 10, true, 1840, "ParamType", 1, 50, 57 },
-                    { 157, "", 10, true, 1840, "ParamClass", 2, 1500, 57 },
-                    { 158, "1", 2, true, 1840, "IsNullable", 3, null, 55 },
-                    { 159, "0", 2, true, 1840, "UseThis", 4, null, 55 }
+                    { 127, "104", 10, true, 1531, "Results", 1, 100, 57 },
+                    { 147, "104", 10, true, 1621, "Results", 1, 100, 57 },
+                    { 178, "104", 10, true, 1831, "Results", 1, 100, 57 },
+                    { 179, "57", 10, true, 1840, "ParamType", 5, 50, 57 },
+                    { 180, "", 10, true, 1840, "ParamClass", 4, 1500, 57 },
+                    { 181, "1", 2, true, 1840, "IsNullable", 3, null, 55 },
+                    { 182, "0", 2, true, 1840, "UseThis", 2, null, 55 }
                 });
 
             migrationBuilder.InsertData(
@@ -825,7 +900,7 @@ namespace Weavers.Core.Migrations
             migrationBuilder.InsertData(
                 table: "ItemPropertyDefaults",
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
-                values: new object[] { 160, "104", 10, true, 1841, "Results", 1, 100, 57 });
+                values: new object[] { 183, "104", 10, true, 1841, "Results", 1, 100, 57 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppSettings_Key",
@@ -980,7 +1055,7 @@ namespace Weavers.Core.Migrations
                 name: "ItemProperties");
 
             migrationBuilder.DropTable(
-                name: "McpLogEntries");
+                name: "MediatorLogs");
 
             migrationBuilder.DropTable(
                 name: "Relations");

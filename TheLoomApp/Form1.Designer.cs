@@ -71,6 +71,7 @@
       tpData = new TabPage();
       edItemData = new TextBox();
       tpHtml = new TabPage();
+      wvDescription = new Microsoft.Web.WebView2.WinForms.WebView2();
       btnArchive = new Button();
       lbRelationId = new Label();
       lbItemId = new Label();
@@ -85,7 +86,7 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
-      wvDescription = new Microsoft.Web.WebView2.WinForms.WebView2();
+      cbShowSessions = new CheckBox();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -106,8 +107,8 @@
       ((System.ComponentModel.ISupportInitialize)edItemDesc).BeginInit();
       tpData.SuspendLayout();
       tpHtml.SuspendLayout();
-      tsErrorPopup.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)wvDescription).BeginInit();
+      tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
       // splitContainer1
@@ -332,6 +333,8 @@
       ilTreeImages.Images.SetKeyName(15, "importBrick.png");
       ilTreeImages.Images.SetKeyName(16, "globe.png");
       ilTreeImages.Images.SetKeyName(17, "scroll.png");
+      ilTreeImages.Images.SetKeyName(18, "scene.png");
+      ilTreeImages.Images.SetKeyName(19, "character.png");
       // 
       // splitContainer3
       // 
@@ -369,6 +372,7 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(cbShowSessions);
       tpSettings.Controls.Add(button1);
       tpSettings.Controls.Add(cbShowPkgInLib);
       tpSettings.Controls.Add(btnShowErrors);
@@ -557,7 +561,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.AutoScrollMinSize = new Size(154, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -616,6 +620,18 @@
       tpHtml.TabIndex = 2;
       tpHtml.Text = "Html";
       tpHtml.UseVisualStyleBackColor = true;
+      // 
+      // wvDescription
+      // 
+      wvDescription.AllowExternalDrop = true;
+      wvDescription.CreationProperties = null;
+      wvDescription.DefaultBackgroundColor = Color.White;
+      wvDescription.Dock = DockStyle.Fill;
+      wvDescription.Location = new Point(3, 3);
+      wvDescription.Name = "wvDescription";
+      wvDescription.Size = new Size(595, 202);
+      wvDescription.TabIndex = 0;
+      wvDescription.ZoomFactor = 1D;
       // 
       // btnArchive
       // 
@@ -761,17 +777,16 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
-      // wvDescription
+      // cbShowSessions
       // 
-      wvDescription.AllowExternalDrop = true;
-      wvDescription.CreationProperties = null;
-      wvDescription.DefaultBackgroundColor = Color.White;
-      wvDescription.Dock = DockStyle.Fill;
-      wvDescription.Location = new Point(3, 3);
-      wvDescription.Name = "wvDescription";
-      wvDescription.Size = new Size(595, 202);
-      wvDescription.TabIndex = 0;
-      wvDescription.ZoomFactor = 1D;
+      cbShowSessions.AutoSize = true;
+      cbShowSessions.Location = new Point(22, 83);
+      cbShowSessions.Name = "cbShowSessions";
+      cbShowSessions.Size = new Size(102, 19);
+      cbShowSessions.TabIndex = 8;
+      cbShowSessions.Text = "Show Sessions";
+      cbShowSessions.UseVisualStyleBackColor = true;
+      cbShowSessions.CheckedChanged += cbShowSessions_CheckedChanged;
       // 
       // Form1
       // 
@@ -808,9 +823,9 @@
       tpData.ResumeLayout(false);
       tpData.PerformLayout();
       tpHtml.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)wvDescription).EndInit();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)wvDescription).EndInit();
       ResumeLayout(false);
     }
 
@@ -877,5 +892,6 @@
     private Button button1;
     private TabPage tpHtml;
     private Microsoft.Web.WebView2.WinForms.WebView2 wvDescription;
+    private CheckBox cbShowSessions;
   }
 }

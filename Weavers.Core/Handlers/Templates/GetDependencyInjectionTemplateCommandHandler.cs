@@ -40,17 +40,17 @@ namespace Weavers.Core.Handlers.Templates {
       }
       namespaces.Add("Microsoft.Extensions.DependencyInjection");
 
-      sb.AppendLine($"namespace {namespaceName} {{" + Environment.NewLine);
+      sb.AppendLine($"namespace {namespaceName} {{");
 
-      sb.AppendLine("  public static class DependencyInjection {");
+      sb.AppendLine(" public static class DependencyInjection {");
       if (hasDbContext) {
-        sb.AppendLine($"    public static IServiceCollection Add{libName}<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext {{");
-        sb.AppendLine("      services.AddDbContext<TContext>(options => options.UseSqlServer(configuration.GetConnectionString(\"DefaultConnection\")));");
+        sb.AppendLine($"  public static IServiceCollection Add{libName}<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext {{");
+        sb.AppendLine("    services.AddDbContext<TContext>(options => options.UseSqlServer(configuration.GetConnectionString(\"DefaultConnection\")));");
       } else {
-        sb.AppendLine($"    public static IServiceCollection Add{libName}(this IServiceCollection services) {{");
+        sb.AppendLine($"  public static IServiceCollection Add{libName}(this IServiceCollection services) {{");
       }
       if (hasMediatR) {
-        sb.AppendLine("      services.AddMediatR(cfg => {\r\n          cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);\r\n      });");
+        sb.AppendLine("   services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly); });");
       }
       var importList = item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DiImportModel);
       foreach (var Rel in importList) {
@@ -89,13 +89,13 @@ namespace Weavers.Core.Handlers.Templates {
               if (int.TryParse(lifetimeProp.Value,out var itemTypeId)) { 
                 switch (itemTypeId) { 
                   case (int)WeItemType.CSLifetimeSingleton :
-                    sb.AppendLine($"      services.AddSingleton<{className}>();");
+                    sb.AppendLine($"   services.AddSingleton<{className}>();");
                     break;
                   case (int)WeItemType.CSLifetimeScoped :
-                    sb.AppendLine($"      services.AddScoped<{className}>();"); 
+                    sb.AppendLine($"   services.AddScoped<{className}>();"); 
                     break;
                   case (int)WeItemType.CSLifetimeTransient :
-                    sb.AppendLine($"      services.AddTransient<{className}>();");
+                    sb.AppendLine($"   services.AddTransient<{className}>();");
                     break;
                   default:
                     break;
@@ -106,9 +106,9 @@ namespace Weavers.Core.Handlers.Templates {
         }
       }
 
-      sb.AppendLine("      return services;");
-      sb.AppendLine("    }");
+      sb.AppendLine("   return services;");
       sb.AppendLine("  }");
+      sb.AppendLine(" }");
       sb.AppendLine("}");
       string namespaceImports = string.Join(Environment.NewLine, namespaces.Select(n => $"using {n};"));
       return namespaceImports + Environment.NewLine + sb.ToString();

@@ -60,7 +60,13 @@ namespace Weavers.Core.Extensions {
       int itemValue = (int)item;
       return itemValue.ToString();
     } 
-
+    public static async Task SetProperty(this IMediator mediator, ItemDto item, string propertyName, string propertyValue) {
+      var prop = item.Properties.FirstOrDefault(p => p.Name == propertyName);
+      if (prop != null) {
+        prop.Value = propertyValue;
+        await prop.SaveProp(item, mediator).ConfigureAwait(false);
+      }
+    }
 
   }
 }

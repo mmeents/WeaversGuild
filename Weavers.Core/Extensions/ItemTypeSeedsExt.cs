@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Weavers.Core.Enums;
+﻿using Weavers.Core.Enums;
 
 namespace Weavers.Core.Extensions {
   public static class ItemTypeSeedsExt {
@@ -52,7 +47,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpClassType => WeItemType.CSharpTypes,
         WeItemType.CSharpRecordType => WeItemType.CSharpTypes,
         WeItemType.CSharpStructType => WeItemType.CSharpTypes,
-
         WeItemType.CSharpStringType => WeItemType.CSharpTypes,
         WeItemType.CSharpBoolType => WeItemType.CSharpTypes,
         WeItemType.CSharpCharType => WeItemType.CSharpTypes,
@@ -60,18 +54,15 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpIntType => WeItemType.CSharpTypes,
         WeItemType.CSharpLongType => WeItemType.CSharpTypes,
         WeItemType.CSharpShortType => WeItemType.CSharpTypes,
-
         WeItemType.CSharpDecimalType => WeItemType.CSharpTypes,
         WeItemType.CSharpDoubleType => WeItemType.CSharpTypes,
         WeItemType.CSharpFloatType => WeItemType.CSharpTypes,
 
         WeItemType.CSharpByteType => WeItemType.CSharpTypes,
-
         WeItemType.CSharpDateTimeType => WeItemType.CSharpTypes,        
         WeItemType.CSharpDateType => WeItemType.CSharpTypes,
         WeItemType.CSharpTimeType => WeItemType.CSharpTypes,
         WeItemType.CSharpDateTimeOffsetType => WeItemType.CSharpTypes,
-
         WeItemType.CSharpByteArrayType => WeItemType.CSharpTypes,
         WeItemType.CSharpGuidType => WeItemType.CSharpTypes,
 
@@ -101,7 +92,51 @@ namespace Weavers.Core.Extensions {
         WeItemType.RatingYes => WeItemType.RatingStatus,
         WeItemType.RatingNo => WeItemType.RatingStatus,
 
-        WeItemType.ProjectFolderModel => (WeItemType?)null,
+        WeItemType.LoomMcpCommands => (WeItemType?)null,
+        WeItemType.CmdHelp => WeItemType.LoomMcpCommands,  // in SummaryTools
+        WeItemType.CmdListProjects => WeItemType.LoomMcpCommands,
+        WeItemType.CmdSearch => WeItemType.LoomMcpCommands,
+        WeItemType.CmdGetSummaryById => WeItemType.LoomMcpCommands,
+        WeItemType.CmdGetTypeDetails => WeItemType.LoomMcpCommands,
+        WeItemType.CmdUpdateItemName => WeItemType.LoomMcpCommands,
+        WeItemType.CmdUpdateItemContent => WeItemType.LoomMcpCommands,
+        WeItemType.CmdUpdateItemProperty => WeItemType.LoomMcpCommands,        
+        WeItemType.CmdAddProjectRoot => WeItemType.LoomMcpCommands,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddSolution => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddSolutionImport => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddMdFile => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddHtmlFile => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddConfigFile => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddLibrary => WeItemType.LoomMcpCommands,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddClass => WeItemType.LoomMcpCommands,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddClassProperty => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddClassMethod => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddClassMethodParam => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddEntityClass => WeItemType.LoomMcpCommands,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddEntityProperty => WeItemType.LoomMcpCommands,
+
+
+        WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
+
+        WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
+        WeItemType.HarnessAppSessionModel => WeItemType.HarnessAppModel, // each run makes a session for tacking. 
+        WeItemType.PresenceLmStudioGatewayModel => WeItemType.HarnessAppModel,   // LM Studio instance details for 1 model. this or next, to be used as base for the DigitalOperatorModel.
+        WeItemType.PresModelLmStudioModel => WeItemType.PresenceLmStudioGatewayModel,     // Claude instance details for 1 model.
+
+        WeItemType.HarnessMcpModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
+        WeItemType.HarnessMcpSessionModel => WeItemType.HarnessMcpModel,
+
+        WeItemType.OrgDocFolderModel => WeItemType.OrganizationModel,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
+        WeItemType.OrgDocModel => WeItemType.OrgDocFolderModel,       // doc for Skill details.
+
+        WeItemType.DigitalOperatorPoolModel => WeItemType.OrganizationModel,
+        WeItemType.DigitalOperatorModel => WeItemType.DigitalOperatorPoolModel,
+
+        WeItemType.ProjectFolderModel => WeItemType.OrganizationModel,
         WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
         WeItemType.RelativeFolderModel => WeItemType.ProjectFolderModel,
         WeItemType.RelativeFolderDocs => WeItemType.RelativeFolderModel,
@@ -273,6 +308,50 @@ namespace Weavers.Core.Extensions {
         WeItemType.RatingYes => (int)WeEditorType.String,
         WeItemType.RatingNo => (int)WeEditorType.String,
 
+        WeItemType.LoomMcpCommands => (int)WeEditorType.LookupTypeEditor,
+        WeItemType.CmdHelp => (int)WeEditorType.String,  // in SummaryTools
+        WeItemType.CmdListProjects => (int)WeEditorType.String,
+        WeItemType.CmdSearch => (int)WeEditorType.String,
+        WeItemType.CmdGetSummaryById => (int)WeEditorType.String,
+        WeItemType.CmdGetTypeDetails => (int)WeEditorType.String,
+        WeItemType.CmdUpdateItemName => (int)WeEditorType.String,
+        WeItemType.CmdUpdateItemContent => (int)WeEditorType.String,
+        WeItemType.CmdUpdateItemProperty => (int)WeEditorType.String,
+        WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => (int)WeEditorType.String,
+        WeItemType.CmdAddSolution => (int)WeEditorType.String,
+        WeItemType.CmdAddSolutionImport => (int)WeEditorType.String,
+        WeItemType.CmdAddMdFile => (int)WeEditorType.String,
+        WeItemType.CmdAddHtmlFile => (int)WeEditorType.String,
+        WeItemType.CmdAddConfigFile => (int)WeEditorType.String,
+        WeItemType.CmdAddLibrary => (int)WeEditorType.String,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => (int)WeEditorType.String,
+        WeItemType.CmdAddClass => (int)WeEditorType.String,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => (int)WeEditorType.String,
+        WeItemType.CmdAddClassProperty => (int)WeEditorType.String,
+        WeItemType.CmdAddClassMethod => (int)WeEditorType.String,
+        WeItemType.CmdAddClassMethodParam => (int)WeEditorType.String,
+        WeItemType.CmdAddEntityClass => (int)WeEditorType.String,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => (int)WeEditorType.String,
+        WeItemType.CmdAddEntityProperty => (int)WeEditorType.String,
+
+
+        WeItemType.OrganizationModel => (int)WeEditorType.None, // A virtual decentralized organization app context. created at startup if it does not exist. 
+        WeItemType.HarnessAppModel => (int)WeEditorType.None,   
+        WeItemType.HarnessAppSessionModel => (int)WeEditorType.None,
+        WeItemType.PresenceLmStudioGatewayModel => (int)WeEditorType.None,
+        WeItemType.PresModelLmStudioModel => (int)WeEditorType.None,
+        WeItemType.HarnessMcpModel => (int)WeEditorType.None,   
+        WeItemType.HarnessMcpSessionModel => (int)WeEditorType.None,
+
+        WeItemType.OrgDocFolderModel => (int)WeEditorType.String, 
+        WeItemType.OrgDocModel => (int)WeEditorType.String,       
+
+        WeItemType.DigitalOperatorPoolModel => (int)WeEditorType.None,
+        WeItemType.DigitalOperatorModel => (int)WeEditorType.String,
+
+
+
         WeItemType.ProjectFolderModel => (int)WeEditorType.String,
         WeItemType.ProjectDocs => (int)WeEditorType.String,
         WeItemType.RelativeFolderModel => (int)WeEditorType.String,
@@ -442,6 +521,49 @@ namespace Weavers.Core.Extensions {
         WeItemType.RatingYes => 1,
         WeItemType.RatingNo => 2,
 
+        WeItemType.LoomMcpCommands => 1,
+        WeItemType.CmdHelp => 1,  // in SummaryTools
+        WeItemType.CmdListProjects => 2,
+        WeItemType.CmdSearch => 3,
+        WeItemType.CmdGetSummaryById => 4,
+        WeItemType.CmdGetTypeDetails => 5,
+        WeItemType.CmdUpdateItemName => 6,
+        WeItemType.CmdUpdateItemContent => 7,
+        WeItemType.CmdUpdateItemProperty => 8,
+        WeItemType.CmdAddProjectRoot => 9,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 10,
+        WeItemType.CmdAddSolution => 11,
+        WeItemType.CmdAddSolutionImport => 12,
+        WeItemType.CmdAddMdFile => 13,
+        WeItemType.CmdAddHtmlFile => 14,
+        WeItemType.CmdAddConfigFile => 15,
+        WeItemType.CmdAddLibrary => 16,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 17,
+        WeItemType.CmdAddClass => 18,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 19,
+        WeItemType.CmdAddClassProperty => 20,
+        WeItemType.CmdAddClassMethod => 21,
+        WeItemType.CmdAddClassMethodParam => 22,
+        WeItemType.CmdAddEntityClass => 23,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 24,
+        WeItemType.CmdAddEntityProperty => 25,
+
+
+
+        WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
+        WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
+        WeItemType.HarnessAppSessionModel => (int)WeItemType.HarnessAppSessionModel,
+        WeItemType.PresenceLmStudioGatewayModel => (int)WeItemType.PresenceLmStudioGatewayModel,
+        WeItemType.PresModelLmStudioModel => (int)WeItemType.PresModelLmStudioModel,
+        WeItemType.HarnessMcpModel => (int)WeItemType.HarnessMcpModel,
+        WeItemType.HarnessMcpSessionModel => (int)WeItemType.HarnessMcpSessionModel,
+
+        WeItemType.OrgDocFolderModel => (int)WeItemType.OrgDocFolderModel,
+        WeItemType.OrgDocModel => (int)WeItemType.OrgDocModel,
+
+        WeItemType.DigitalOperatorPoolModel => (int)WeItemType.DigitalOperatorPoolModel,
+        WeItemType.DigitalOperatorModel => (int)WeItemType.DigitalOperatorModel,
+
         WeItemType.ProjectFolderModel => (int)WeItemType.ProjectFolderModel,
         WeItemType.ProjectDocs => (int)WeItemType.ProjectDocs,
         WeItemType.RelativeFolderModel => (int)WeItemType.RelativeFolderModel,
@@ -609,6 +731,50 @@ namespace Weavers.Core.Extensions {
         WeItemType.Ratings => "Ratings",
         WeItemType.RatingYes => "Yes",
         WeItemType.RatingNo => "No",
+
+        WeItemType.LoomMcpCommands => "Loom Mcp Commands",
+        WeItemType.CmdHelp => "Help Command",  // in SummaryTools
+        WeItemType.CmdListProjects => "List Projects Command",
+        WeItemType.CmdSearch => "Search Command",
+        WeItemType.CmdGetSummaryById => "Get Summary By Id Command",
+        WeItemType.CmdGetTypeDetails => "Get Type Details Command",
+        WeItemType.CmdUpdateItemName => "Update Item Name Command",
+        WeItemType.CmdUpdateItemContent => "Update Item Content Command",
+        WeItemType.CmdUpdateItemProperty => "Update Item Property Command",
+        WeItemType.CmdAddProjectRoot => "Add Project Root Command",  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
+        WeItemType.CmdAddSolution => "Add Solution Command",
+        WeItemType.CmdAddSolutionImport => "Add Solution Import Command",
+        WeItemType.CmdAddMdFile => "Add Md File Command",
+        WeItemType.CmdAddHtmlFile => "Add Html File Command",
+        WeItemType.CmdAddConfigFile => "Add Config File Command",
+        WeItemType.CmdAddLibrary => "Add Library Command",  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => "Add Namespace Command",
+        WeItemType.CmdAddClass => "Add Class Command",  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => "Add Class Import Command",
+        WeItemType.CmdAddClassProperty => "Add Class Property Command",
+        WeItemType.CmdAddClassMethod => "Add Class Method Command",
+        WeItemType.CmdAddClassMethodParam => "Add Class Method Param Command",
+        WeItemType.CmdAddEntityClass => "Add Entity Class Command",  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => "Add Entity Class Import Command",
+        WeItemType.CmdAddEntityProperty => "Add Entity Property Command",
+
+
+
+        WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
+        WeItemType.HarnessAppModel => "Harness App",
+        WeItemType.HarnessAppSessionModel => "Harness App Session",
+        WeItemType.PresenceLmStudioGatewayModel => "Lm Studio Gateway",
+        WeItemType.PresModelLmStudioModel => "Specific Lm Studio Model",
+        WeItemType.HarnessMcpModel => "Harness Mcp",
+        WeItemType.HarnessMcpSessionModel => "Harness Mcp Session",
+
+        WeItemType.OrgDocFolderModel => "Org Doc Folder",
+        WeItemType.OrgDocModel => "Org Doc",
+
+        WeItemType.DigitalOperatorPoolModel => "Digital Operator Pool",
+        WeItemType.DigitalOperatorModel => "Digital Operator",
+
 
         WeItemType.ProjectFolderModel => "Project Folder",
         WeItemType.ProjectDocs => "Project Documentation",

@@ -13,7 +13,6 @@ namespace WeaversMCP {
     public static async Task Main(string[] args) {
 
       ConfigureSerilog();
-
       try {
         var host = CreateHostBuilder(args).Build();
         await host.RunAsync();

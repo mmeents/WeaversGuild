@@ -3,13 +3,16 @@ using System.Diagnostics;
 using System.Text.Json;
 using Weavers.Core.Extensions;
 using Weavers.Core.Entities;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Pipeline {
 
   public class McpLoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull {
     private readonly FabricDbContext _context;
-    public McpLoggingBehavior(FabricDbContext context) {
+    private readonly IAppSessionService _session;
+    public McpLoggingBehavior(FabricDbContext context, IAppSessionService session) {
       _context = context;
+      _session = session;
     }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct) {
@@ -23,12 +26,13 @@ namespace Weavers.Core.Handlers.Pipeline {
         sw.Stop();
 
         // write to log 
-        var logEntry = new McpLogEntry {
+        var logEntry = new MediatorLog {
           CalledAt = DateTime.UtcNow,
           OpName = opName,
           InputJson = inputJson,
           OutputJson = outputJson,
           DurationMs = (int)sw.ElapsedMilliseconds,
+          SessionId = _session.SessionId,
           Success = true
         };
         await _context.WriteMcpLogEntry(logEntry);

@@ -8,12 +8,14 @@ using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.DepItems;
 using System.Runtime.CompilerServices;
 using Weavers.Core.Handlers.Builds;
+using Weavers.Core.Handlers.Sessions;
+using Weavers.Core.Handlers.Presence;
 
 
 namespace Weavers.Core.Service {
 
   public interface IAppDataService {
-
+    Task<AppSessionResponse?> GetAppSession();
     Task<List<ItemDto>> GetRootProjectsAsync();
     Task<ItemDto?> GetItemById(int itemId);
     Task<ItemDto?> CreateItemAsync(ItemDto itemDto);
@@ -35,6 +37,10 @@ namespace Weavers.Core.Service {
     Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite);
     Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite);
 
+    Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio);
+
+    Task<ItemDto?> SyncLmStudioModels(int gatewayModelId);
+
   }
   public class AppDataService : IAppDataService {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -44,6 +50,19 @@ namespace Weavers.Core.Service {
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
       return scope.ServiceProvider.GetRequiredService<IMediator>();
+    }
+
+    public int OrganizationItemId { get; set; } = 0;
+    public int HarnessItemId { get; set; } = 0;
+    public int SessionItemId { get; set; } = 0;
+    public async Task<AppSessionResponse?> GetAppSession() {
+      var mediator = GetMediator();
+      var command = new GetAppSessionCommand();
+      var result = await mediator.Send(command);
+      OrganizationItemId = result?.OrganizationId ?? 0;
+      HarnessItemId = result?.HarnessId ?? 0;
+      SessionItemId = result?.SessionId ?? 0;
+      return result;
     }
 
     public async Task<List<ItemDto>> GetRootProjectsAsync() {
@@ -61,7 +80,7 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> CreateItemAsync(ItemDto itemDto) {
-      var mediator = GetMediator();      
+      var mediator = GetMediator();
       var command = new CreateItemCommand(itemDto.Name, itemDto.ItemTypeId, itemDto.Description, itemDto.Data);
       var result = await mediator.Send(command);
       return result;
@@ -86,7 +105,7 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<RelationDto?> UpdateRelationAsync(RelationDto relation) { 
+    public async Task<RelationDto?> UpdateRelationAsync(RelationDto relation) {
       if (relation == null) {
         throw new ArgumentNullException(nameof(relation));
       }
@@ -97,8 +116,8 @@ namespace Weavers.Core.Service {
       var mediator = GetMediator();
       var command = new UpdateRelationCommand(relation.Id, relation.ItemId, relation.RelationTypeId, relation.RelatedItemId ?? 0, relation.Rank);
       var result = await mediator.Send(command);
-      return result;  
-    } 
+      return result;
+    }
 
     public async Task<List<RelationTypeDto>> GetRelationTypesAsync() {
       var mediator = GetMediator();
@@ -139,17 +158,17 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<int> GetNextItemRank(int? itemId = null) { 
-        var mediator = GetMediator();
-        var query = new GetNextItemRankQuery(itemId);
-        var result = await mediator.Send(query);
-        return result;
+    public async Task<int> GetNextItemRank(int? itemId = null) {
+      var mediator = GetMediator();
+      var query = new GetNextItemRankQuery(itemId);
+      var result = await mediator.Send(query);
+      return result;
     }
 
-    public async Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath) { 
+    public async Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath) {
       var mediator = GetMediator();
       var command = new UpdateItemPropertyPathRecursiveCommand(itemId, newPath);
-      await mediator.Send(command);   
+      await mediator.Send(command);
     }
 
     public async Task UpdateItemPropertyNamespaceRecursive(int itemId, string oldNamespace, string newNamespace) {
@@ -182,20 +201,33 @@ namespace Weavers.Core.Service {
       await mediator.Send(command);
     }
 
-    public async Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite){ 
+    public async Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite) {
       var mediator = GetMediator();
-      var command = new WriteLibraryCommand(libraryItemId, forceWrite); 
+      var command = new WriteLibraryCommand(libraryItemId, forceWrite);
       var result = await mediator.Send(command);
       return result;
     }
 
-    public async Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite) { 
+    public async Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite) {
       var mediator = GetMediator();
       var command = new WriteSolutionCommand(solutionItemId, forceWrite);
       var result = await mediator.Send(command);
       return result;
     }
 
+    public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio) {
+      var mediator = GetMediator();
+      var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio);
+      var result = await mediator.Send(command);
+      return result;
+    }
 
-}
+    public async Task<ItemDto?> SyncLmStudioModels(int gatewayModelId) {
+      var mediator = GetMediator();
+      var command = new SyncLmStudioModelsCommand(gatewayModelId);
+      var result = await mediator.Send(command);
+      return result;
+
+    }
+  }
 }

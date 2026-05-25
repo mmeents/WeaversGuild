@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Weavers.Core.Entities;
 using Weavers.Core.Interfaces;
 using Weavers.Core.Enums;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Models {
   public class ColumnUIConfig {
@@ -72,6 +73,11 @@ namespace Weavers.Core.Models {
     public static ColumnUIConfig WithLookupProvider(this ColumnUIConfig config, IComboBoxDataProvider provider) {
       config.UseEditor(WeEditorType.LookupTypeEditor);
       config.SetProperty("DataProvider", provider);
+      return config;
+    }
+
+    public static ColumnUIConfig WithCryptoProvider(this ColumnUIConfig config, ICryptoService service) {      
+      config.SetProperty("CryptoService", service);
       return config;
     }
   }

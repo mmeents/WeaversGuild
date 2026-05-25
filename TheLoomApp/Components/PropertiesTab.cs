@@ -13,6 +13,7 @@ namespace TheLoomApp.Components {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IAppDataService _appDataService;
     private readonly IItemTypeLookupComboProvider _itemTypeLookupComboProvider;
+    private readonly ICryptoService _cryptoService;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string PageName {
@@ -24,6 +25,7 @@ namespace TheLoomApp.Components {
       var scope = _scopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
       _itemTypeLookupComboProvider = scope.ServiceProvider.GetRequiredService<IItemTypeLookupComboProvider>();
+      _cryptoService = scope.ServiceProvider.GetRequiredService<ICryptoService>();
       BasePanel = new Panel {
         Dock = DockStyle.Fill,
         AutoScroll = true,
@@ -156,7 +158,7 @@ namespace TheLoomApp.Components {
 
       
       foreach (var field in ItemProps) {
-        var propertyEditor = PropertyEditorFactory.CreateEditor(field, _itemTypeLookupComboProvider);
+        var propertyEditor = PropertyEditorFactory.CreateEditor(field, _itemTypeLookupComboProvider, _cryptoService);
         if (propertyEditor != null) {
           propertyEditor.Field = field;
           ((UserControl)propertyEditor).Dock = DockStyle.Top;

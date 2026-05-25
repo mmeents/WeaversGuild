@@ -29,7 +29,7 @@ namespace Weavers.Core.Handlers.Templates {
         return "";
       }
 
-      var cSb = new StringBuilder();
+      
       var sbUses = new StringBuilder();
       var sbLocals = new StringBuilder();
       var sbConstParams = new StringBuilder();
@@ -43,6 +43,7 @@ namespace Weavers.Core.Handlers.Templates {
       usesHashSet.Add(namespaceName);
       var className = item.Name;
       var accessibilityClause = GenerateClassAccessibility(item);
+      var classIsStatic = item.Properties.FirstOrDefault(p => p.Name == Cx.ItIsStatic)?.Value.AsBoolean() ?? false;
       var baseType  = "";     
 
       var propGenerateInterface = item.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
@@ -57,6 +58,11 @@ namespace Weavers.Core.Handlers.Templates {
         if (int.TryParse( propBaseType.Value, out int baseItemId)){ 
           var baseClass = await _context.GetItemDtoById(baseItemId);
           if (baseClass != null) {
+            var baseClassNamespace = baseClass.ResolveItemsNamespace(baseClass.Name);
+            if (!usesHashSet.Contains(baseClassNamespace)) {            
+              sbUses.AppendLine($"using {baseClassNamespace};");
+              usesHashSet.Add(baseClassNamespace);
+            }
             var propBcGenIntf = baseClass.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
             if (propBcGenIntf != null && propBcGenIntf.Value != null) {
               useIntf = propBcGenIntf.Value.AsBoolean();
@@ -76,7 +82,7 @@ namespace Weavers.Core.Handlers.Templates {
       var interfaceContent = "";
       if (generateInterface) {                 
         var interfaceName = "I" + item.Name;
-        sbInterface.AppendLine($"  {accessibilityClause}interface {interfaceName}{baseType} {{");
+        sbInterface.AppendLine($" {accessibilityClause}interface {interfaceName}{baseType} {{");
         baseType = " : I"+item.Name;        
       }
       
@@ -103,9 +109,11 @@ namespace Weavers.Core.Handlers.Templates {
                 sbUses.AppendLine($"using {importNamespace};");              
                 usesHashSet.Add(importNamespace);
               }
-              sbLocals.AppendLine($"    private readonly {intfTypeClause}{importObjName} _{varName};");
-              sbConstParams.AppendLine($"      {intfTypeClause}{importObjName} {varName},");
-              sbConstructor.AppendLine($"      _{varName} = {varName};");
+              if (!classIsStatic) {
+                sbLocals.AppendLine($"  private readonly {intfTypeClause}{importObjName} _{varName};");
+                sbConstParams.AppendLine($"    {intfTypeClause}{importObjName} {varName},");
+                sbConstructor.AppendLine($"   _{varName} = {varName};");
+              }
             }
           }
         }
@@ -133,8 +141,13 @@ namespace Weavers.Core.Handlers.Templates {
           if (dataTypeId == (int)WeItemType.CSharpClassType) { 
             classTypeId = classTypeProp != null && classTypeProp.Value != null ? int.Parse(classTypeProp.Value) : 0;
             if (classTypeId != 0) { 
-              var classTypeItem = await _context.GetItemDtoById(classTypeId, ct);
-              if (classTypeItem != null) { 
+              var classTypeItem = await _context.GetItemDtoById(classTypeId, ct);              
+              if (classTypeItem != null) {
+                var baseClassNamespace = classTypeItem.ResolveItemsNamespace(classTypeItem.Name);
+                if (!usesHashSet.Contains(baseClassNamespace)) {
+                  sbUses.AppendLine($"using {baseClassNamespace};");
+                  usesHashSet.Add(baseClassNamespace);
+                }
                 var propUseInterface = propItem.Properties.FirstOrDefault(p => p.Name == Cx.ItImportUseInterface)?.Value.AsBoolean() ?? false;
                 propTypeName = propUseInterface ? "I":"" + classTypeItem.Name.AsUpperCaseFirstLetter();
               } else { 
@@ -146,9 +159,9 @@ namespace Weavers.Core.Handlers.Templates {
           } else { 
             propTypeName = dataTypeId != 0 ? ((WeItemType)dataTypeId).AsCsCode() : "object";
           }                        
-          sbProperties.AppendLine($"    public {propTypeName}{nullableClause} {propName} {setterClause}");
+          sbProperties.AppendLine($"  public {propTypeName}{nullableClause} {propName} {setterClause}");
           if (generateInterface) { 
-            sbInterface.AppendLine($"    {propTypeName}{nullableClause} {propName} {setterClause}");
+            sbInterface.AppendLine($"  {propTypeName}{nullableClause} {propName} {setterClause}");
           }
         }
       }
@@ -168,32 +181,111 @@ namespace Weavers.Core.Handlers.Templates {
               var useThis = methodParamItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUseThis)?.Value.AsBoolean() ?? false;
               string thisClause = useThis ? "this " : "";
               var paramName = methodParamItem.Name;
-              var paramType = await GenerateParameterType(methodParamItem);
-              msgParams.AppendLine($"      {thisClause}{paramType} {paramName},");
+              #region Determine parameter type              
+              string paramType = "void";
+              var dataTypeProp = methodParamItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterDataType);
+              var nullable = methodParamItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable)?.Value.AsBoolean() ?? false;
+              if (dataTypeProp != null && dataTypeProp.Value != null) {
+                if (int.TryParse(dataTypeProp.Value, out int dataTypeId)) {
+                  var returnDataType = ((WeItemType)dataTypeId);
+                  var nullableDtClause = nullable ? "?" : "";
+                  if (returnDataType == WeItemType.CSharpClassType) {
+                    var returnClassProp = methodParamItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);
+                    if (returnClassProp != null && returnClassProp.Value != null) {
+                      if (int.TryParse(returnClassProp.Value, out int returnClassId)) {
+                        var returnClassItem = await _context.GetItemDtoById(returnClassId);
+                        if (returnClassItem != null) {
+
+                          var baseClassNamespace = returnClassItem.ResolveItemsNamespace(returnClassItem.Name);
+                          if (!usesHashSet.Contains(baseClassNamespace)) {
+                            sbUses.AppendLine($"using {baseClassNamespace};");
+                            usesHashSet.Add(baseClassNamespace);
+                          }
+
+                          var propUseInterface = methodParamItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
+                          paramType = (propUseInterface ? "I" : "") + returnClassItem.Name.AsUpperCaseFirstLetter() + nullableDtClause;
+                        } else {
+                          paramType = "object" + nullableDtClause;
+                        }
+                      } else {
+                        paramType = "object" + nullableDtClause;
+                      }
+                    } else {
+                      paramType = returnDataType.AsCsCode() + nullableDtClause;
+                    }
+                  } else {
+                    paramType = returnDataType.AsCsCode() + nullableDtClause;
+                  }
+                }
+              }
+              #endregion
+              msgParams.AppendLine($"   {thisClause}{paramType} {paramName},");
             }
           }
 
           var methodName = methodItem.Name.AsUpperCaseFirstLetter();
           var accessModifier = GenerateMethodAccessibility( methodItem);
-          var returnType = await GenerateReturnType(methodItem);
-          
+
+          #region Determine return type
+          string returnType = "void";
+          var returnTypeProp = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnDataType);
+          var retNullable = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnNullable)?.Value.AsBoolean() ?? false;
+          string nullableClause = retNullable ? "?" : "";
+          if (returnTypeProp != null && returnTypeProp.Value != null) {
+            bool isAsync = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsAsync)?.Value.AsBoolean() ?? false;
+            if (int.TryParse(returnTypeProp.Value, out int dataTypeId)) {
+              var returnDataType = ((WeItemType)dataTypeId);
+              if (returnDataType == WeItemType.CSharpClassType) {
+                var returnClassProp = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnClassType);
+                if (returnClassProp != null && returnClassProp.Value != null) {
+                  if (int.TryParse(returnClassProp.Value, out int returnClassId)) {
+                    var returnClassItem = await _context.GetItemDtoById(returnClassId);
+                    if (returnClassItem != null) {
+                      var returnClassNamespace = returnClassItem.ResolveItemsNamespace(returnClassItem.Name);
+                      if (!usesHashSet.Contains(returnClassNamespace)) {
+                        sbUses.AppendLine($"using {returnClassNamespace};");
+                        usesHashSet.Add(returnClassNamespace);
+                      }
+                      var propUseInterface = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
+                      returnType = (propUseInterface ? "I" : "") + returnClassItem.Name.AsUpperCaseFirstLetter() + nullableClause;
+                    } else {
+                      returnType = "object" + nullableClause;
+                    }
+                  } else {
+                    returnType = "object" + nullableClause;
+                  }
+                } else {
+                  returnType = returnDataType.AsCsCode() + nullableClause;
+                }
+              } else {
+                returnType = returnDataType.AsCsCode() + nullableClause;
+              }
+            }
+            if (isAsync) {
+              returnType = returnType == "void" ? "void" : $"Task<{returnType}>";
+            }
+          }
+
+          #endregion
+
           var msgContent = (methodItem.Description ?? "").TrimEnd('\r', '\n');
           string mParms = msgParams.ToString().TrimEnd(',', '\r', '\n').TrimStart(' ');
-          sbMethod.AppendLine($"    {accessModifier}{returnType} {methodName}({mParms}) {{");         
+          sbMethod.AppendLine($"  {accessModifier}{returnType} {methodName}({mParms}) {{");         
           sbMethod.AppendLine($"{msgContent}");
-          sbMethod.AppendLine($"    }}");
+          sbMethod.AppendLine($"  }}");
 
           if (generateInterface) {
-            sbInterface.AppendLine($"    {returnType} {methodName}({mParms});");
+            sbInterface.AppendLine($"  {returnType} {methodName}({mParms});");
           }
         }
       }
 
       if (generateInterface) {
-        sbInterface.AppendLine($"  }}");
+        sbInterface.AppendLine($" }}");
         interfaceContent = sbInterface.ToString();
       }
-
+      var cSb = new StringBuilder();
+      cSb.AppendLine(sbUses.ToString());
       cSb.AppendLine($"namespace {namespaceName} {{");      
       cSb.AppendLine("");
       if (generateInterface) {
@@ -201,25 +293,24 @@ namespace Weavers.Core.Handlers.Templates {
         cSb.AppendLine("");
       }
 
-      cSb.AppendLine($"  {accessibilityClause}class {className}{baseType} {{");
+      cSb.AppendLine($" {accessibilityClause}class {className}{baseType} {{");
       if (hasConstructorParams) {
         cSb.AppendLine(sbLocals.ToString());
-        cSb.AppendLine($"    public {className}(");
+        cSb.AppendLine($"  public {className}(");
         cSb.AppendLine(sbConstParams.ToString().TrimEnd(',', '\r', '\n'));
-        cSb.AppendLine($"    ) {{");
+        cSb.AppendLine($"  ){{");
         cSb.Append(sbConstructor.ToString());
-        cSb.AppendLine($"    }}");
+        cSb.AppendLine($"  }}"); // constructor
       }
 
       cSb.AppendLine(sbProperties.ToString());
 
       cSb.AppendLine(sbMethod.ToString());
 
-      cSb.AppendLine($"  }}");
-      cSb.AppendLine($"}}");
+      cSb.AppendLine($" }}"); // class
+      cSb.AppendLine($"}}"); // namespace
 
-      return sbUses.ToString() +Environment.NewLine
-        + cSb.ToString();
+      return cSb.ToString();
     }
 
     private string GenerateClassAccessibility(ItemDto classItem) {
@@ -255,79 +346,6 @@ namespace Weavers.Core.Handlers.Templates {
       string AccessibilityClause = $"{accessibility} {(isStatic ? "static " : "")}{(isAsync ? "async " : "")}{(isVirtual ? "virtual " : "")}{(isAbstract ? "abstract " : isSealed ? "sealed " : "")}";
       return AccessibilityClause;     
     }
-
-    private async Task<string> GenerateReturnType(ItemDto methodItem) {
-      string returnType = "void";
-      var returnTypeProp = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnDataType);
-      var retNullable = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnNullable)?.Value.AsBoolean() ?? false;
-      string nullableClause = retNullable ? "?" : "";
-      if (returnTypeProp != null && returnTypeProp.Value != null) {
-        bool isAsync = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsAsync)?.Value.AsBoolean() ?? false;
-        if (int.TryParse(returnTypeProp.Value, out int dataTypeId)) { 
-          var returnDataType = ((WeItemType)dataTypeId);
-          if (returnDataType == WeItemType.CSharpClassType) { 
-            var returnClassProp = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReturnClassType);
-            if (returnClassProp != null && returnClassProp.Value != null) { 
-              if (int.TryParse(returnClassProp.Value, out int returnClassId)) { 
-                var returnClassItem = await _context.GetItemDtoById(returnClassId);
-                if (returnClassItem != null) { 
-                  var propUseInterface = methodItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
-                  returnType = (propUseInterface ? "I":"") + returnClassItem.Name.AsUpperCaseFirstLetter() + nullableClause;                  
-                } else { 
-                  returnType = "object" + nullableClause;                  
-                }
-              } else { 
-                returnType = "object" + nullableClause;                
-              }
-            } else { 
-              returnType = returnDataType.AsCsCode() + nullableClause;         
-            }
-          } else { 
-            returnType = returnDataType.AsCsCode() + nullableClause;         
-          }
-        }
-        if (isAsync) {
-          returnType = returnType == "void" ? "void" : $"Task<{returnType}>"; 
-        }
-      }
-
-      return returnType;
-    }
-
-    private async Task<string> GenerateParameterType(ItemDto methodParameterItem) {
-      string returnType = "void";
-      var dataTypeProp = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterDataType);
-      var nullable = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItIsNullable)?.Value.AsBoolean() ?? false;
-      if (dataTypeProp != null && dataTypeProp.Value != null) {
-        if (int.TryParse(dataTypeProp.Value, out int dataTypeId)) {
-          var returnDataType = ((WeItemType)dataTypeId);
-          var nullableClause = nullable ? "?" : "";
-          if (returnDataType == WeItemType.CSharpClassType) {
-            var returnClassProp = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItParameterClassType);         
-            if (returnClassProp != null && returnClassProp.Value != null) {
-              if (int.TryParse(returnClassProp.Value, out int returnClassId)) {
-                var returnClassItem = await _context.GetItemDtoById(returnClassId);
-                if (returnClassItem != null) {
-                  var propUseInterface = methodParameterItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface)?.Value.AsBoolean() ?? false;
-                  returnType = (propUseInterface ? "I" : "") + returnClassItem.Name.AsUpperCaseFirstLetter()+nullableClause;
-                } else {
-                  returnType = "object"+nullableClause;
-                }
-              } else {
-                returnType = "object"+nullableClause;
-              }
-            } else {
-              returnType = returnDataType.AsCsCode() + nullableClause;
-            }
-          } else { 
-            returnType = returnDataType.AsCsCode() + nullableClause;
-          }
-        }
-      }
-      return returnType;
-    }
-
-
-
+    
   }
 }

@@ -67,8 +67,16 @@ namespace Weavers.Core.Extensions {
       }
     }
 
+    public static string KeysAppPath {
+      get {
+        string keysPath = Path.Combine(CommonAppPath, "keys").ResolvePath();
+        if (!Directory.Exists(keysPath)) {
+          Directory.CreateDirectory(keysPath);
+        }
+        return keysPath;
+      }
+    }
 
-  
 
   }
 }

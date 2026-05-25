@@ -79,7 +79,7 @@ namespace Weavers.Core.Extensions {
             Id = p.Id,
             ItemId = p.ItemId,
             Name = p.Name,
-            Value = p.Value,
+            Value = p.Value, 
             ValueDataTypeId = p.ValueDataTypeId,
             ReferenceItemTypeId = p.ReferenceItemTypeId,
             EditorTypeId = p.EditorTypeId,

@@ -26,8 +26,8 @@ namespace Weavers.Core.Handlers.ItemTypes {
         var res1 = new GetTypeDetailsResponse() {
           WeItemTypeId = 0,
           Name = $"Categories",
-          Description = $"Type details response is broken into 2 categories. those with id's less than {(int)WeItemType.ProjectFolderModel}" +
-            " the project folder model are references to the WeItemType enum. Choosing items greater returns the list of items of that type. " +
+          Description = $"Type details response is broken into 2 categories. those with id's less than {(int)WeItemType.OrganizationModel}" +
+            " the organization model are references to the WeItemType enum. Choosing items greater returns the list of items of that type. " +
             " related types below are Primary categories"
         };
         var lookups = WeItemTypeExtensions.GetLookupTypes();
@@ -70,7 +70,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
           }
           return res2;
 
-        } else if (typeId < (int)WeItemType.ProjectFolderModel) {
+        } else if (typeId < (int)WeItemType.OrganizationModel) {
 
           var res2 = new GetTypeDetailsResponse() {
             WeItemTypeId = (int)weItemType,
@@ -79,7 +79,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
           };
           return res2;
 
-        } else if (weItemType >= WeItemType.ProjectFolderModel) { 
+        } else if (weItemType >= WeItemType.OrganizationModel) { 
           var res2 = new GetTypeDetailsResponse() {
             WeItemTypeId = (int)weItemType,
             Name = $"{weItemType.ToString()}",
