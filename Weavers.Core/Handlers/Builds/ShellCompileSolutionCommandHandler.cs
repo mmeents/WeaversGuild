@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Builds {
   public record ShellCompileSolutionCommand(int SolutionItemId, BuildContext buildContext) : IRequest<BuildContext>;

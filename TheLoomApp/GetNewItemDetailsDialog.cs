@@ -50,7 +50,7 @@ namespace TheLoomApp {
       cbItemLookup.Visible = false;
       edDbTableName.Visible = false;
       lbDbTableName.Visible = false;
-
+      
       if (_targetTypeToCreate == WeItemType.FileMdModel) {
         cbNewFileType.Top = edName.Top + edName.Height + 10;
         cbNewFileType.Left = edName.Left;

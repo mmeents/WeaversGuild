@@ -53,6 +53,9 @@ namespace Weavers.Core.Constants {
     public const string CmdUpdateItemContent = "updateItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
 
+    public const string CmdAddDigitalOperator = "addDigitalOperator";
+    public const string CmdAddOrgFolder = "addOrgFolder";
+    public const string CmdAddOrgFile = "addOrgFile";
     public const string CmdAddProjectRoot = "addProjectRoot";
     public const string CmdAddSubFolder = "addSubFolder";
     public const string CmdAddSolution = "addSolution";

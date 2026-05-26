@@ -31,6 +31,7 @@
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
       toolStripSeparator1 = new ToolStripSeparator();
+      miAddDigitalOperator = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
@@ -54,6 +55,7 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      cbShowSessions = new CheckBox();
       button1 = new Button();
       cbShowPkgInLib = new CheckBox();
       btnShowErrors = new Button();
@@ -86,7 +88,8 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
-      cbShowSessions = new CheckBox();
+      miAddOrgFolder = new ToolStripMenuItem();
+      miAddOrgFile = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -164,9 +167,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 418);
+      cmsTreeMenus.Size = new Size(209, 484);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -180,6 +183,13 @@
       // 
       toolStripSeparator1.Name = "toolStripSeparator1";
       toolStripSeparator1.Size = new Size(205, 6);
+      // 
+      // miAddDigitalOperator
+      // 
+      miAddDigitalOperator.Name = "miAddDigitalOperator";
+      miAddDigitalOperator.Size = new Size(208, 22);
+      miAddDigitalOperator.Text = "Add Digital Operator";
+      miAddDigitalOperator.Click += miAddDigitalOperator_Click;
       // 
       // miAddProjectRoot
       // 
@@ -389,6 +399,17 @@
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
+      // 
+      // cbShowSessions
+      // 
+      cbShowSessions.AutoSize = true;
+      cbShowSessions.Location = new Point(22, 83);
+      cbShowSessions.Name = "cbShowSessions";
+      cbShowSessions.Size = new Size(102, 19);
+      cbShowSessions.TabIndex = 8;
+      cbShowSessions.Text = "Show Sessions";
+      cbShowSessions.UseVisualStyleBackColor = true;
+      cbShowSessions.CheckedChanged += cbShowSessions_CheckedChanged;
       // 
       // button1
       // 
@@ -777,16 +798,19 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
-      // cbShowSessions
+      // miAddOrgFolder
       // 
-      cbShowSessions.AutoSize = true;
-      cbShowSessions.Location = new Point(22, 83);
-      cbShowSessions.Name = "cbShowSessions";
-      cbShowSessions.Size = new Size(102, 19);
-      cbShowSessions.TabIndex = 8;
-      cbShowSessions.Text = "Show Sessions";
-      cbShowSessions.UseVisualStyleBackColor = true;
-      cbShowSessions.CheckedChanged += cbShowSessions_CheckedChanged;
+      miAddOrgFolder.Name = "miAddOrgFolder";
+      miAddOrgFolder.Size = new Size(208, 22);
+      miAddOrgFolder.Text = "Add Org Folder";
+      miAddOrgFolder.Click += miAddOrgFolder_Click;
+      // 
+      // miAddOrgFile
+      // 
+      miAddOrgFile.Name = "miAddOrgFile";
+      miAddOrgFile.Size = new Size(208, 22);
+      miAddOrgFile.Text = "Add Org File";
+      miAddOrgFile.Click += miAddOrgFile_Click;
       // 
       // Form1
       // 
@@ -893,5 +917,8 @@
     private TabPage tpHtml;
     private Microsoft.Web.WebView2.WinForms.WebView2 wvDescription;
     private CheckBox cbShowSessions;
+    private ToolStripMenuItem miAddDigitalOperator;
+    private ToolStripMenuItem miAddOrgFolder;
+    private ToolStripMenuItem miAddOrgFile;
   }
 }

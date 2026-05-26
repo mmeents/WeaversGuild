@@ -13,13 +13,25 @@ namespace Weavers.Core.Tools {
   public class AppGraphFileTools {
     private static IAppGraphFileToolsHandler GetTools() => DiBridgeService.GetService<IAppGraphFileToolsHandler>();
 
-    [McpTool(Cx.CmdAddProjectRoot, "Adds a new project root to the graph. is considered a folder.")]
-    public static Task<string> AddProjectRoot( string projectRootName) 
-      => GetTools().AddProjectRoot(projectRootName);
+    [McpTool(Cx.CmdAddDigitalOperator, "Adds a digital operator to the specified DigitalOperatorPoolModel parentItem.")]
+    public static Task<string> AddDigitalOperator(int parentItemId, string operatorName)
+      => GetTools().AddDigitalOperator(parentItemId, operatorName);
+
+    [McpTool(Cx.CmdAddOrgFolder, "Adds a new Org folder to the specified parent Org folder.")]
+    public static Task<string> AddOrgFolder(int parentItemId, string subFolderName)
+      => GetTools().AddOrgFolder(parentItemId, subFolderName);
+
+    [McpTool(Cx.CmdAddOrgFile, "Adds a new .md file item in the specified Org folder item, infra adds ext to name.")]
+    public static Task<string> AddOrgFile(int folderItemId, string fileName, string fileContent)
+      => GetTools().AddOrgFile(folderItemId, fileName, fileContent);
+
+    [McpTool(Cx.CmdAddProjectRoot, "Adds a new project root to the graph.")]
+    public static Task<string> AddProjectRoot( string projectName) 
+      => GetTools().AddProjectRoot(projectName);
     
-    [McpTool(Cx.CmdAddSubFolder, "Adds a new subfolder to the specified parent folder. is considered a folder.")]
-    public static Task<string> AddSubFolder(int itemId, string subFolderName) 
-      => GetTools().AddSubFolder(itemId, subFolderName);
+    [McpTool(Cx.CmdAddSubFolder, "Adds a new subfolder to the specified parent folder or project root.")]
+    public static Task<string> AddSubFolder(int folderItemId, string subFolderName) 
+      => GetTools().AddSubFolder(folderItemId, subFolderName);
 
     [McpTool(Cx.CmdAddSolution, "Adds a new solution item under the specified folder.")]
     public static Task<string> AddSolution(int folderItemId, string solutionName)

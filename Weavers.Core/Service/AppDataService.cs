@@ -36,6 +36,7 @@ namespace Weavers.Core.Service {
     Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem);
     Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite);
     Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite);
+    Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite);
 
     Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio);
 
@@ -44,8 +45,10 @@ namespace Weavers.Core.Service {
   }
   public class AppDataService : IAppDataService {
     private readonly IServiceScopeFactory _scopeFactory;
-    public AppDataService(IServiceScopeFactory scopeFactory) {
+    private readonly IAppSessionService _session;
+    public AppDataService(IServiceScopeFactory scopeFactory, IAppSessionService session) {
       _scopeFactory = scopeFactory;
+      _session = session;
     }
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
@@ -62,6 +65,7 @@ namespace Weavers.Core.Service {
       OrganizationItemId = result?.OrganizationId ?? 0;
       HarnessItemId = result?.HarnessId ?? 0;
       SessionItemId = result?.SessionId ?? 0;
+      _session.Initialize(Environment.UserName, OrganizationItemId, HarnessItemId, SessionItemId);
       return result;
     }
 
@@ -211,6 +215,13 @@ namespace Weavers.Core.Service {
     public async Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite) {
       var mediator = GetMediator();
       var command = new WriteSolutionCommand(solutionItemId, forceWrite);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
+    public async Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite) {
+      var mediator = GetMediator();
+      var command = new WriteOrganizationCommand(organizationItemId);
       var result = await mediator.Send(command);
       return result;
     }

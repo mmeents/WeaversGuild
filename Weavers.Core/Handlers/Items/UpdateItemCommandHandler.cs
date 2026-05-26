@@ -184,6 +184,7 @@ namespace Weavers.Core.Handlers.Items {
         }
       }
 
+      itemDto = await _context.GetItemDtoById(item.Id, cancellationToken);
       return itemDto;
 
     }

@@ -1,4 +1,6 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Web.WebView2.Core;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +11,9 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
-using MediatR;
-using Weavers.Core.Handlers.Sessions;
 
 
 namespace TheLoomApp {
@@ -242,11 +243,11 @@ namespace TheLoomApp {
           if (!_showPkgInLib && bItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
             return null;  // skip adding to tree.
           }
-          if (!_showSessions && (bItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel 
+          if (!_showSessions && (bItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
                               || bItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
             return null;  // skip adding to tree.
           }
-          
+
           parent.Nodes.Add(newNode);   // add the node to the tree
 
           if (bItem.Relations.Count() > 0) {
@@ -266,7 +267,7 @@ namespace TheLoomApp {
           if (!_showPkgInLib && aItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
             return null;  // skip adding to tree.
           }
-          if (!_showSessions && (aItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel 
+          if (!_showSessions && (aItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
                               || aItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
             return null;  // skip adding to tree.
           }
@@ -447,13 +448,17 @@ namespace TheLoomApp {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
-        btnWriteFile.Visible = (WeItemType)item.ItemTypeId == WeItemType.LibraryModel || (WeItemType)item.ItemTypeId == WeItemType.SolutionModel;
+        btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel 
+          || item.ItemTypeId == (int)WeItemType.SolutionModel 
+          || item.ItemTypeId ==(int)WeItemType.OrganizationModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
         if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
           wvDescription.CoreWebView2.NavigateToString(item.Description);
+        } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgDocModel) {
+          wvDescription.NavigateToMdString(item.Description);
         } else {
-          wvDescription.CoreWebView2.NavigateToString("Pick a html type.");
+          wvDescription.CoreWebView2.NavigateToString("[about:blank]");
         }
 
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
@@ -550,7 +555,7 @@ namespace TheLoomApp {
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessAppModel) {
-            var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();            
+            var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
             await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             tvKb_BeforeExpand(ee, ee);
@@ -559,14 +564,16 @@ namespace TheLoomApp {
             var resyncProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
             if (resyncProp != null) {
               bool shouldResync = resyncProp.Value.AsBoolean();
-              if (shouldResync) { 
+              if (shouldResync) {
                 var updatedGateway = await _appDataService.SyncLmStudioModels(item.Id);
                 if (updatedGateway != null) {
                   _selectedNode.Item = updatedGateway;
                 }
+                var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+                tvKb_BeforeExpand(ee, ee);
               }
             }
-            
+
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
             var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
             await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
@@ -734,6 +741,9 @@ namespace TheLoomApp {
     #region Context Menu Events
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
+        miAddDigitalOperator.Visible = false;
+        miAddOrgFolder.Visible = false;
+        miAddOrgFile.Visible = false;
         miAddProjectRoot.Visible = true;
         miAddSubProject.Visible = false;
         miAddSolution.Visible = false;
@@ -760,6 +770,9 @@ namespace TheLoomApp {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
+        miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
+        miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
+        miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel;
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -784,6 +797,52 @@ namespace TheLoomApp {
 
     private async void miReloadTree_Click(object sender, EventArgs e) {
       await LoadRootProjects();
+    }
+
+
+    private async void miAddDigitalOperator_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DigitalOperatorModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDigitalOperator(_appGraphService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add project root - error:" + ex.Message);
+        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
+
+    private async void miAddOrgFolder_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgFolder(_appGraphService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add org folder - error:" + ex.Message);
+        MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
+      }
+    }
+
+    private async void miAddOrgFile_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;          
+          await tvKb.AddOrgFile(_appGraphService, newItemName);          
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add file - error:" + ex.Message);
+        MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
+      }
     }
 
     private async void miAddProjectRoot_Click(object sender, EventArgs e) {
@@ -1231,7 +1290,18 @@ namespace TheLoomApp {
         DoLogMessage($"Shell Output: {result.ShellOutput}");
         DoLogMessage($"Success: {result.Success}");
       }
-
+      if (_selectedNode.Item.ItemTypeId == (int)WeItemType.OrganizationModel) {
+        var result = await _appDataService.WriteOrganization(_selectedNode.Item.Id, true);
+        foreach (var errorLine in result.Errors) {
+          DoLogMessage("Error: " + errorLine);
+        }
+        foreach (var warnLine in result.Warnings) {
+          DoLogMessage("Warning: " + warnLine);
+        }
+        DoLogMessage($"Written: {result.FilesWritten}");
+        DoLogMessage($"Skipped: {result.FilesSkipped}");
+        DoLogMessage($"Removed: {result.FilesRemoved}");
+      }
     }
 
     private void button1_Click(object sender, EventArgs e) {
@@ -1246,7 +1316,6 @@ namespace TheLoomApp {
       }
 
     }
-
 
   }
 
