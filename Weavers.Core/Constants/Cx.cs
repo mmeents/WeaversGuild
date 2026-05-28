@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace Weavers.Core.Constants {
   public static class Cx {
     public static string AppName => "WeaversGuild";  // org like name describes project off the app data folder.
+    public static string AppOrgExport => "TheOrgExport.md"; 
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, and data together in a structured agentic manner.";
     // will just go with what they said below lol... 
     public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, documentation, and data to enhance software development. Our mission is to empower developers with innovative solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";

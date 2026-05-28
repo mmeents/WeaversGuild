@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using Weavers.Core.Handlers.Builds;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Presence;
+using Weavers.Core.Handlers.Import;
 
 
 namespace Weavers.Core.Service {
@@ -41,6 +42,7 @@ namespace Weavers.Core.Service {
     Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio);
 
     Task<ItemDto?> SyncLmStudioModels(int gatewayModelId);
+    Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting);
 
   }
   public class AppDataService : IAppDataService {
@@ -221,7 +223,7 @@ namespace Weavers.Core.Service {
 
     public async Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite) {
       var mediator = GetMediator();
-      var command = new WriteOrganizationCommand(organizationItemId);
+      var command = new WriteOrganizationCommand();
       var result = await mediator.Send(command);
       return result;
     }
@@ -239,6 +241,13 @@ namespace Weavers.Core.Service {
       var result = await mediator.Send(command);
       return result;
 
+    }
+
+    public async Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting) {
+      var mediator = GetMediator();
+      var command = new ImportOrgDocCommand(OrgDocFullPath, OrgDocRelPath, OverwriteExisting);
+      var result = await mediator.Send(command);
+      return result;
     }
   }
 }

@@ -56,7 +56,7 @@
       edName.Location = new Point(141, 85);
       edName.Margin = new Padding(3, 4, 3, 4);
       edName.Name = "edName";
-      edName.Size = new Size(466, 26);
+      edName.Size = new Size(469, 26);
       edName.TabIndex = 1;
       // 
       // lbNewItemName
@@ -73,7 +73,7 @@
       // 
       btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       btnCancel.DialogResult = DialogResult.Cancel;
-      btnCancel.Location = new Point(354, 236);
+      btnCancel.Location = new Point(354, 221);
       btnCancel.Margin = new Padding(3, 4, 3, 4);
       btnCancel.Name = "btnCancel";
       btnCancel.Size = new Size(86, 29);
@@ -85,7 +85,7 @@
       // 
       btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       btnOk.DialogResult = DialogResult.OK;
-      btnOk.Location = new Point(235, 236);
+      btnOk.Location = new Point(235, 221);
       btnOk.Margin = new Padding(3, 4, 3, 4);
       btnOk.Name = "btnOk";
       btnOk.Size = new Size(86, 29);
@@ -157,7 +157,7 @@
       edDbTableName.BorderStyle = BorderStyle.FixedSingle;
       edDbTableName.Location = new Point(141, 188);
       edDbTableName.Name = "edDbTableName";
-      edDbTableName.Size = new Size(466, 26);
+      edDbTableName.Size = new Size(469, 26);
       edDbTableName.TabIndex = 11;
       // 
       // lbDbTableName
@@ -173,7 +173,7 @@
       // 
       AutoScaleDimensions = new SizeF(8F, 19F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(637, 282);
+      ClientSize = new Size(640, 267);
       Controls.Add(lbDbTableName);
       Controls.Add(edDbTableName);
       Controls.Add(cbIsAsync);

@@ -195,6 +195,19 @@ namespace Weavers.Core.Extensions {
       return true;
     }
 
+    public static async Task<bool> AddBuildItem(this FabricDbContext context, int buildId, int itemId, string filePath, CancellationToken cancellationToken = default) {
+      var buildFile = new BuildFile {
+        BuildId = buildId,
+        ItemId = itemId,
+        FilePath = filePath,
+        WasWritten = true,
+        WasDeleted = false
+      };
+      context.BuildFiles.Add(buildFile);
+      await context.SaveChangesAsync(cancellationToken);
+      return true;
+    }
+
 
     public static string ResolveDeleteBehavior(this ItemDto navItem) {
       if (navItem == null) { return ""; }

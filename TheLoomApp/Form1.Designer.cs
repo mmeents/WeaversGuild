@@ -32,6 +32,8 @@
       miReloadTree = new ToolStripMenuItem();
       toolStripSeparator1 = new ToolStripSeparator();
       miAddDigitalOperator = new ToolStripMenuItem();
+      miAddOrgFolder = new ToolStripMenuItem();
+      miAddOrgFile = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
@@ -55,6 +57,7 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      btnImportOrgDocs = new Button();
       cbShowSessions = new CheckBox();
       button1 = new Button();
       cbShowPkgInLib = new CheckBox();
@@ -88,8 +91,6 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
-      miAddOrgFolder = new ToolStripMenuItem();
-      miAddOrgFile = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -190,6 +191,20 @@
       miAddDigitalOperator.Size = new Size(208, 22);
       miAddDigitalOperator.Text = "Add Digital Operator";
       miAddDigitalOperator.Click += miAddDigitalOperator_Click;
+      // 
+      // miAddOrgFolder
+      // 
+      miAddOrgFolder.Name = "miAddOrgFolder";
+      miAddOrgFolder.Size = new Size(208, 22);
+      miAddOrgFolder.Text = "Add Org Folder";
+      miAddOrgFolder.Click += miAddOrgFolder_Click;
+      // 
+      // miAddOrgFile
+      // 
+      miAddOrgFile.Name = "miAddOrgFile";
+      miAddOrgFile.Size = new Size(208, 22);
+      miAddOrgFile.Text = "Add Org File";
+      miAddOrgFile.Click += miAddOrgFile_Click;
       // 
       // miAddProjectRoot
       // 
@@ -382,6 +397,7 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(btnImportOrgDocs);
       tpSettings.Controls.Add(cbShowSessions);
       tpSettings.Controls.Add(button1);
       tpSettings.Controls.Add(cbShowPkgInLib);
@@ -400,6 +416,16 @@
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
       // 
+      // btnImportOrgDocs
+      // 
+      btnImportOrgDocs.Location = new Point(22, 117);
+      btnImportOrgDocs.Name = "btnImportOrgDocs";
+      btnImportOrgDocs.Size = new Size(112, 23);
+      btnImportOrgDocs.TabIndex = 9;
+      btnImportOrgDocs.Text = "Import OrgDocs";
+      btnImportOrgDocs.UseVisualStyleBackColor = true;
+      btnImportOrgDocs.Click += btnImportOrgDocs_Click;
+      // 
       // cbShowSessions
       // 
       cbShowSessions.AutoSize = true;
@@ -413,12 +439,13 @@
       // 
       // button1
       // 
-      button1.Location = new Point(245, 138);
+      button1.Location = new Point(473, 84);
       button1.Name = "button1";
       button1.Size = new Size(125, 23);
       button1.TabIndex = 7;
       button1.Text = "Test Create dialog";
       button1.UseVisualStyleBackColor = true;
+      button1.Visible = false;
       button1.Click += button1_Click;
       // 
       // cbShowPkgInLib
@@ -434,7 +461,8 @@
       // 
       // btnShowErrors
       // 
-      btnShowErrors.Location = new Point(31, 138);
+      btnShowErrors.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnShowErrors.Location = new Point(518, 55);
       btnShowErrors.Name = "btnShowErrors";
       btnShowErrors.Size = new Size(80, 23);
       btnShowErrors.TabIndex = 5;
@@ -798,20 +826,6 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
-      // miAddOrgFolder
-      // 
-      miAddOrgFolder.Name = "miAddOrgFolder";
-      miAddOrgFolder.Size = new Size(208, 22);
-      miAddOrgFolder.Text = "Add Org Folder";
-      miAddOrgFolder.Click += miAddOrgFolder_Click;
-      // 
-      // miAddOrgFile
-      // 
-      miAddOrgFile.Name = "miAddOrgFile";
-      miAddOrgFile.Size = new Size(208, 22);
-      miAddOrgFile.Text = "Add Org File";
-      miAddOrgFile.Click += miAddOrgFile_Click;
-      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -920,5 +934,6 @@
     private ToolStripMenuItem miAddDigitalOperator;
     private ToolStripMenuItem miAddOrgFolder;
     private ToolStripMenuItem miAddOrgFile;
+    private Button btnImportOrgDocs;
   }
 }

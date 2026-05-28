@@ -11,6 +11,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Import;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
@@ -448,9 +449,9 @@ namespace TheLoomApp {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
-        btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel 
-          || item.ItemTypeId == (int)WeItemType.SolutionModel 
-          || item.ItemTypeId ==(int)WeItemType.OrganizationModel;
+        btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel
+          || item.ItemTypeId == (int)WeItemType.SolutionModel
+          || item.ItemTypeId == (int)WeItemType.OrganizationModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
         if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
@@ -736,6 +737,7 @@ namespace TheLoomApp {
         }
       }
     }
+
     #endregion
 
     #region Context Menu Events
@@ -835,8 +837,8 @@ namespace TheLoomApp {
 
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;          
-          await tvKb.AddOrgFile(_appGraphService, newItemName);          
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgFile(_appGraphService, newItemName);
         }
 
       } catch (Exception ex) {
@@ -1154,6 +1156,32 @@ namespace TheLoomApp {
       _showSessions = cbShowSessions.Checked;
     }
 
+
+    private async void btnImportOrgDocs_Click(object sender, EventArgs e) {
+      using (var fbd = new ImportOrgDocsDialog()) {
+        var orgItemId = _sessionDetails?.OrganizationId ?? 0 ;
+        if (orgItemId == 0) { return; } // no session?
+        if (_itemCache.TryGetValue(orgItemId, out var orgItem)) {
+          if (orgItem != null && orgItem.Item != null) {
+            var rootFolder = orgItem.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder)?.Value ?? "";
+            fbd.OrgRootFileName = Path.Combine(rootFolder, Cx.AppOrgExport); ;
+          }
+        }
+
+        if (fbd.ShowDialog() == DialogResult.OK) {
+          var resultList = fbd.FinalRelToFullPathDict;
+          foreach (var key in resultList.Keys) { 
+            string relPath = key;
+            string fullPath = resultList[key];
+            var result = await _appDataService.ImportOrgDoc(fullPath, relPath, false);
+            if (!result.IsSuccess) {
+              DoLogMessage($"Failed to import {relPath} - error: {result.Message}");
+            }
+          }
+            
+        }
+      }
+    }
 
     #endregion
 
