@@ -109,7 +109,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemName => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemContent => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemProperty => WeItemType.LoomMcpCommands,
-
+        
+        WeItemType.CmdAddOrgDesk => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddDeskTodo => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddDigitalOperatior => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgFolder => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgFile => WeItemType.LoomMcpCommands,
@@ -139,20 +141,10 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.DeskRoles => null,    // role roadmap
         WeItemType.RoleNone => WeItemType.DeskRoles,
-        WeItemType.RoleResearch => WeItemType.DeskRoles,
-        WeItemType.RoleReviewResearch => WeItemType.DeskRoles,
-        WeItemType.RoleDesign => WeItemType.DeskRoles,
-        WeItemType.RoleReviewDesign => WeItemType.DeskRoles,
-        WeItemType.RolePlan => WeItemType.DeskRoles,
-        WeItemType.RoleReviewPlan => WeItemType.DeskRoles,
-        WeItemType.RoleBuildingOut => WeItemType.DeskRoles,
-        WeItemType.RoleReviewBuildOut => WeItemType.DeskRoles,
-        WeItemType.RoleTesting => WeItemType.DeskRoles,
-        WeItemType.RoleReviewTests => WeItemType.DeskRoles,
-        WeItemType.RoleDocument => WeItemType.DeskRoles,
-        WeItemType.RoleReviewDocument => WeItemType.DeskRoles,
-        WeItemType.RolePackaging => WeItemType.DeskRoles,
-        WeItemType.RoleReviewPackaging => WeItemType.DeskRoles,
+        WeItemType.RoleOrgDocWriter => WeItemType.DeskRoles,
+        WeItemType.RoleReviewOrgDocWriter => WeItemType.DeskRoles,
+        WeItemType.RoleOrgResearcher => WeItemType.DeskRoles,
+        WeItemType.RoleReviewOrgResearcher => WeItemType.DeskRoles,        
 
         WeItemType.TodoStatuses => null,
         WeItemType.TodoNotStarted => WeItemType.TodoStatuses,
@@ -603,44 +595,37 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdReviewPass => 11,
         WeItemType.CmdReviewFail => 12,
 
-        WeItemType.CmdAddDigitalOperatior => 13, // in AppGraphOrgTools
-        WeItemType.CmdAddOrgFolder => 14,
-        WeItemType.CmdAddOrgFile => 15,
+        WeItemType.CmdAddOrgDesk => 13,  // in AppGraphDeskTools
+        WeItemType.CmdAddDeskTodo => 14,
+        WeItemType.CmdAddDigitalOperatior => 15,
+        WeItemType.CmdAddOrgFolder => 16,
+        WeItemType.CmdAddOrgFile => 17,
 
-        WeItemType.CmdAddProjectRoot => 16,  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => 17,
-        WeItemType.CmdAddSolution => 18,
-        WeItemType.CmdAddSolutionImport => 19,
-        WeItemType.CmdAddMdFile => 20,
-        WeItemType.CmdAddHtmlFile => 21,
-        WeItemType.CmdAddConfigFile => 22,
-        WeItemType.CmdAddLibrary => 23,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 24,
-        WeItemType.CmdAddClass => 25,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 26,
-        WeItemType.CmdAddClassProperty => 27,
-        WeItemType.CmdAddClassMethod => 28,
-        WeItemType.CmdAddClassMethodParam => 29,
-        WeItemType.CmdAddEntityClass => 30,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 31,
-        WeItemType.CmdAddEntityProperty => 32,
+        WeItemType.CmdAddProjectRoot => 18,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 19,
+        WeItemType.CmdAddSolution => 20,
+        WeItemType.CmdAddSolutionImport => 21,
+        WeItemType.CmdAddMdFile => 22,
+        WeItemType.CmdAddHtmlFile => 23,
+        WeItemType.CmdAddConfigFile => 24,
+        WeItemType.CmdAddLibrary => 25,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 26,
+        WeItemType.CmdAddClass => 27,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 28,
+        WeItemType.CmdAddClassProperty => 29,
+        WeItemType.CmdAddClassMethod => 30,
+        WeItemType.CmdAddClassMethodParam => 31,
+        WeItemType.CmdAddEntityClass => 32,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 33,
+        WeItemType.CmdAddEntityProperty => 34,
 
         WeItemType.DeskRoles => 1,    // role roadmap
         WeItemType.RoleNone => 1,
-        WeItemType.RoleResearch => 2,
-        WeItemType.RoleReviewResearch => 3,
-        WeItemType.RoleDesign => 4,
-        WeItemType.RoleReviewDesign => 5,
-        WeItemType.RolePlan => 6,
-        WeItemType.RoleReviewPlan => 7,
-        WeItemType.RoleBuildingOut => 8,
-        WeItemType.RoleReviewBuildOut => 9,
-        WeItemType.RoleTesting => 10,
-        WeItemType.RoleReviewTests => 11,
-        WeItemType.RoleDocument => 12,
-        WeItemType.RoleReviewDocument => 13,
-        WeItemType.RolePackaging => 14,
-        WeItemType.RoleReviewPackaging => 15,
+        WeItemType.RoleOrgDocWriter => 2,
+        WeItemType.RoleReviewOrgDocWriter => 3,
+        WeItemType.RoleOrgResearcher => 4,
+        WeItemType.RoleReviewOrgResearcher => 5,
+        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
         WeItemType.TodoInProgress => 2,
@@ -864,6 +849,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdReviewPass => "Review Pass Command",
         WeItemType.CmdReviewFail => "Review Fail Command",
 
+        WeItemType.CmdAddOrgDesk => "Add Org Desk Command",
+        WeItemType.CmdAddDeskTodo => "Add Desk Todo Command",
         WeItemType.CmdAddDigitalOperatior => "Add Digital Operator Command",
         WeItemType.CmdAddOrgFolder => "Add Org Folder Command",
         WeItemType.CmdAddOrgFile => "Add Org File Command",
@@ -889,21 +876,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.DeskRoles => "Desk Roles",    // role roadmap
         WeItemType.RoleNone => "None",
-        WeItemType.RoleResearch => "Research",
-        WeItemType.RoleReviewResearch => "Review Research",
-        WeItemType.RoleDesign => "Design",
-        WeItemType.RoleReviewDesign => "Review Design",
-        WeItemType.RolePlan => "Plan",
-        WeItemType.RoleReviewPlan => "Review Plan",
-        WeItemType.RoleBuildingOut => "Building Out",
-        WeItemType.RoleReviewBuildOut => "Review Build Out",
-        WeItemType.RoleTesting => "Testing",
-        WeItemType.RoleReviewTests => "Review Tests",
-        WeItemType.RoleDocument => "Document",
-        WeItemType.RoleReviewDocument => "Review Document",
-        WeItemType.RolePackaging => "Packaging",
-        WeItemType.RoleReviewPackaging => "Review Packaging",
+        WeItemType.RoleOrgDocWriter => "Org Doc Writer",
+        WeItemType.RoleReviewOrgDocWriter => "Review Org Doc Writer",
+        WeItemType.RoleOrgResearcher => "Org Researcher",
+        WeItemType.RoleReviewOrgResearcher => "Review Org Researcher",
 
+        
         WeItemType.TodoStatuses => "Todo Statuses",
         WeItemType.TodoNotStarted => "Not Started",
         WeItemType.TodoInProgress => "In Progress",

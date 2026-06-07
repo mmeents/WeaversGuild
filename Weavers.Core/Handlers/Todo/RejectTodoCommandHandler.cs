@@ -15,7 +15,8 @@ namespace Weavers.Core.Handlers.Todo {
 
   public class RejectTodoCmdResult {
     public bool Success { get; set; }
-    public string Message { get; set; } = "";    
+    public string Message { get; set; } = "";
+    public ItemDto? UpdatedTodo { get; set; }
   }
 
   public class RejectTodoCommandHandler : IRequestHandler<RejectTodoCommand, RejectTodoCmdResult> {
@@ -34,9 +35,7 @@ namespace Weavers.Core.Handlers.Todo {
       if (todoItem == null) return result.CreateFailure("Todo item not found.");
 
       var todoStatusProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
-      if (todoStatusProp == null ||
-        (todoStatusProp.Value != ((int)WeItemType.TodoNotStarted).ToString()
-          && todoStatusProp.Value != ((int)WeItemType.TodoInProgress).ToString())) {
+      if (todoStatusProp == null || todoStatusProp.Value != ((int)WeItemType.TodoInProgress).ToString()) {
         return result.CreateFailure("Todo item is not in progress.");
       }
 
@@ -159,8 +158,8 @@ namespace Weavers.Core.Handlers.Todo {
   public static class RejectTodoCmdResultExts {
     public static RejectTodoCmdResult CreateSuccess(this RejectTodoCmdResult result, ItemDto updatedTodo) {
       result.Success = true;
-      result.Message = "Todo item completed successfully.";
-
+      result.Message = "Todo item rejected successfully.";
+      result.UpdatedTodo = updatedTodo;
       return result;
     }
 

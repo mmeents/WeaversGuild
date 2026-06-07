@@ -10,7 +10,9 @@ WeaversGuild - A agentic oriented collection of tools and services to weave code
 - [DeskModel](Documents\Desks\DeskModel.md)
 - [MutationTasks](Documents\Tasks\MutationTasks.md)
 - [TodoAttemptModel](Documents\Desks\TodoAttemptModel.md)
+- [SystemPrompt](Documents\Desks\SystemPrompt.md)
+- [NeedsEntriesFor](Documents\CommandHelps\NeedsEntriesFor.md)
 ## Export Details
 Schema: 1.0
 Location: C:\Floor\WeaversGuild\TheOrgExport.md
-Exported at: 6/5/2026 2:12:37 AM Utc, 6/4/2026 10:12:37 PM Local
+Exported at: 6/7/2026 9:26:00 PM Utc, 6/7/2026 5:26:00 PM Local

@@ -110,6 +110,7 @@ namespace Weavers.Core.Enums {
       CmdSearch = 126,
       CmdGetSummaryById =128,
       CmdGetTypeDetails = 130,
+
       CmdUpdateItemName = 132,
       CmdUpdateItemContent = 134,
       CmdUpdateItemProperty = 136,
@@ -119,6 +120,9 @@ namespace Weavers.Core.Enums {
       CmdReviewPass = 140,
       CmdReviewFail = 141,
 
+      CmdAddOrgDesk = 142,  // in AppGraphDeskTools
+      CmdAddDeskTodo = 143,
+
       CmdAddDigitalOperatior =144,
       CmdAddOrgFolder = 146,
       CmdAddOrgFile = 148,
@@ -127,6 +131,7 @@ namespace Weavers.Core.Enums {
       CmdAddSubFolder = 152,
       CmdAddSolution = 154,
       CmdAddSolutionImport = 156,
+
       CmdAddMdFile = 158,
       CmdAddHtmlFile = 160,
       CmdAddConfigFile = 162,
@@ -145,21 +150,11 @@ namespace Weavers.Core.Enums {
       CmdAddEntityProperty = 182,
 
     DeskRoles = 199,    // role roadmap
-      RoleNone = 200, 
-      RoleResearch = 201,    
-      RoleReviewResearch = 202,
-      RoleDesign = 203,
-      RoleReviewDesign = 204,
-      RolePlan = 205,
-      RoleReviewPlan = 206,
-      RoleBuildingOut = 207,
-      RoleReviewBuildOut = 208,
-      RoleTesting = 209,
-      RoleReviewTests = 210,
-      RoleDocument = 211,
-      RoleReviewDocument = 212,
-      RolePackaging = 213, 
-      RoleReviewPackaging = 214,
+      RoleNone = 200,
+      RoleOrgDocWriter = 201,
+      RoleReviewOrgDocWriter = 202,
+      RoleOrgResearcher = 203,    
+      RoleReviewOrgResearcher = 204,
 
     TodoStatuses = 220,
       TodoNotStarted = 221,

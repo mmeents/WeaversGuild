@@ -2,6 +2,10 @@
 
 WeaversGuild as the organization.  Weavers the LM Studio Agents, Claude Consultants.  The Apps are TheLoomApp and TheLoomMcp and the knowledge base is the FabricDbContext.   
 
+## Company Charter
+
+WeaversGuild is dedicated to creating tools that seamlessly integrate code, documentation, and data to enhance software development. Our mission is to empower developers with innovative solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.
+
 ## Getting Started
 - Sql Server developer Edition
 - Visual Studio Community Edition
@@ -24,7 +28,18 @@ WeaversGuild as the organization.  Weavers the LM Studio Agents, Claude Consulta
 
 
 ## Update History
-- db Version 132 - not up yet
+
+- db Version 133
+  - chops out DeskRoles as the ones chosen are too broad.  focues the existing for use with initial testing.
+    - RoleOrgDocWriter
+    - RoleReviewOrgDocWriter
+    - RoleOrgResearcher
+    - RoleReviewOrgResearcher
+  - Adds 2 more mcp commands for org setup.
+    - CmdAddOrgDesk 
+    - CmdAddDeskTodo
+
+- db Version 132 
   - Adds CurrentTodo to desk. 
   - 4 MCP Commands CmdCompleteTodo, CmdRejectTodo,( CmdReviewPass, CmdReviewFail still need to do impls)
   - Adds internal CmdFailTodo and wired into the Run and CmdCompleteTodo and CmdRejectTodo.

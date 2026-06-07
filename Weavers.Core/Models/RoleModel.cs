@@ -31,28 +31,37 @@ namespace Weavers.Core.Models {
         Operator = operatorName,
         Role = RolesExts.DeskRoleToString(deskRole)
       };
+
       switch (deskRole) {
-        case WeItemType.RoleResearch:        
+        case WeItemType.RoleOrgDocWriter:
+          role.WithCommand(WeItemType.CmdHelp)
+             .WithCommand(WeItemType.CmdGetSummaryById)
+             .WithCommand(WeItemType.CmdAddOrgFile)
+             .WithCommand(WeItemType.CmdUpdateItemContent)
+             .WithCommand(WeItemType.CmdCompleteTodo)
+             .WithCommand(WeItemType.CmdRejectTodo);
+          break;
+        case WeItemType.RoleReviewOrgDocWriter:
           role.WithCommand(WeItemType.CmdHelp)
             .WithCommand(WeItemType.CmdGetSummaryById)
-            .WithCommand(WeItemType.CmdAddOrgFile);
+            .WithCommand(WeItemType.CmdReviewPass)
+            .WithCommand(WeItemType.CmdReviewFail);
           break;
-        case WeItemType.RoleReviewResearch:
+        case WeItemType.RoleOrgResearcher:
           role.WithCommand(WeItemType.CmdHelp)
-            .WithCommand(WeItemType.CmdGetSummaryById);
-            //.WithCommand(WeItemType.CmdAddReviewRating);
+            .WithCommand(WeItemType.CmdGetSummaryById)
+            .WithCommand(WeItemType.CmdAddOrgFile)
+            .WithCommand(WeItemType.CmdUpdateItemContent)
+            .WithCommand(WeItemType.CmdCompleteTodo)
+            .WithCommand(WeItemType.CmdRejectTodo);
           break;
-        case WeItemType.RoleDesign:
-        case WeItemType.RoleReviewDesign:
-          role.WithCommand(WeItemType.CmdUpdateItemName)
-              .WithCommand(WeItemType.CmdUpdateItemContent)
-              .WithCommand(WeItemType.CmdUpdateItemProperty);
-          break;
-        case WeItemType.RolePlan:
-        case WeItemType.RoleReviewPlan:
-          role.WithCommand(WeItemType.CmdAddProjectRoot)
-              .WithCommand(WeItemType.CmdAddSubFolder);
-          break;
+        case WeItemType.RoleReviewOrgResearcher:
+          role.WithCommand(WeItemType.CmdHelp)
+            .WithCommand(WeItemType.CmdGetSummaryById)
+            .WithCommand(WeItemType.CmdReviewPass)
+            .WithCommand(WeItemType.CmdReviewFail);
+          break;    
+          
       }
 
       return role;  
@@ -65,20 +74,10 @@ namespace Weavers.Core.Models {
 
     public static string DeskRoleToString(WeItemType deskRole) {
       return deskRole switch {        
-        WeItemType.RoleResearch => "Research",
-        WeItemType.RoleReviewResearch => "Review Research",
-        WeItemType.RoleDesign => "Design",
-        WeItemType.RoleReviewDesign => "Review Design",
-        WeItemType.RolePlan => "Plan",
-        WeItemType.RoleReviewPlan => "Review Plan",
-        WeItemType.RoleBuildingOut => "Building Out",
-        WeItemType.RoleReviewBuildOut => "Review Build Out",
-        WeItemType.RoleTesting => "Testing",
-        WeItemType.RoleReviewTests => "Review Tests",
-        WeItemType.RoleDocument => "Document",
-        WeItemType.RoleReviewDocument => "Review Document",
-        WeItemType.RolePackaging => "Packaging",
-        WeItemType.RoleReviewPackaging => "Review Packaging",
+        WeItemType.RoleOrgDocWriter => "Org Doc Writer",
+        WeItemType.RoleReviewOrgDocWriter => "Review Org Doc Writer",
+        WeItemType.RoleOrgResearcher => "Org Researcher",
+        WeItemType.RoleReviewOrgResearcher => "Review Org Researcher",      
         _ => ""
       };
     }
@@ -89,27 +88,42 @@ namespace Weavers.Core.Models {
         WeItemType.CmdListProjects => Cx.CmdListProjects,
         WeItemType.CmdSearch => Cx.CmdSearch,
         WeItemType.CmdGetSummaryById => Cx.CmdGetSummaryById,
+
         WeItemType.CmdGetTypeDetails => Cx.CmdGetTypeDetails,
+
         WeItemType.CmdUpdateItemName => Cx.CmdUpdateItemName,
         WeItemType.CmdUpdateItemContent => Cx.CmdUpdateItemContent,
         WeItemType.CmdUpdateItemProperty => Cx.CmdUpdateItemProperty,
+
+        WeItemType.CmdCompleteTodo => Cx.CmdCompleteTodo,
+        WeItemType.CmdRejectTodo => Cx.CmdRejectTodo,
+        WeItemType.CmdReviewPass => Cx.CmdReviewPass,
+        WeItemType.CmdReviewFail => Cx.CmdReviewFail,
+
+        WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
+        WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
         WeItemType.CmdAddDigitalOperatior => Cx.CmdAddDigitalOperator,
         WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
         WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
+
         WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot, 
         WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,
         WeItemType.CmdAddSolution => Cx.CmdAddSolution,
         WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
+
         WeItemType.CmdAddMdFile => Cx.CmdAddMdFile,
         WeItemType.CmdAddHtmlFile => Cx.CmdAddHtmlFile,
         WeItemType.CmdAddConfigFile => Cx.CmdAddConfigFile,
+
         WeItemType.CmdAddLibrary => Cx.CmdAddLibrary, 
         WeItemType.CmdAddNamespace => Cx.CmdAddNamespace,
+
         WeItemType.CmdAddClass => Cx.CmdAddClass,  
         WeItemType.CmdAddClassImport => Cx.CmdAddClassImport,
         WeItemType.CmdAddClassProperty => Cx.CmdAddClassProperty,
         WeItemType.CmdAddClassMethod => Cx.CmdAddClassMethod,
         WeItemType.CmdAddClassMethodParam => Cx.CmdAddClassMethodParam,
+
         WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,  
         WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
         WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,

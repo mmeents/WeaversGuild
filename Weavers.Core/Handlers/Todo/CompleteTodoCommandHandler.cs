@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -35,16 +30,17 @@ namespace Weavers.Core.Handlers.Todo {
       var todoItem = await _context.GetItemDtoById(request.TodoId, cancellationToken);
       if (todoItem == null) return result.CreateFailure("Todo item not found.");
 
+      // verify status is in progress.
       var todoStatusProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
       if (todoStatusProp == null || 
         (todoStatusProp.Value != ((int)WeItemType.TodoNotStarted).ToString() 
           && todoStatusProp.Value != ((int)WeItemType.TodoInProgress).ToString())) { 
         return result.CreateFailure("Todo item is not in progress.");
       }
-
+      
       var parentId = todoItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.DeskModel)?.ItemId;
       if (parentId == null) return result.CreateFailure("Parent item not found for the todo item.");
-
+            
       var parentDesk = await _context.GetItemDtoById(parentId.Value, cancellationToken);
       if (parentDesk == null) return result.CreateFailure("Parent desk not found for the todo item.");
       if (parentDesk.ItemTypeId != (int)WeItemType.DeskModel) return result.CreateFailure("Parent item is not a desk.");

@@ -12,8 +12,8 @@ using Weavers.Core;
 namespace Weavers.Core.Migrations
 {
     [DbContext(typeof(FabricDbContext))]
-    [Migration("20260607032208_InitialDbVer132")]
-    partial class InitialDbVer132
+    [Migration("20260607213832_InitialDbVersion133")]
+    partial class InitialDbVersion133
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4604,6 +4604,30 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 142,
+                            Description = "Add Org Desk Command",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdAddOrgDesk",
+                            ParentTypeId = 120,
+                            Rank = 13
+                        },
+                        new
+                        {
+                            Id = 143,
+                            Description = "Add Desk Todo Command",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdAddDeskTodo",
+                            ParentTypeId = 120,
+                            Rank = 14
+                        },
+                        new
+                        {
                             Id = 144,
                             Description = "Add Digital Operator Command",
                             EditorTypeId = -1,
@@ -4612,7 +4636,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddDigitalOperatior",
                             ParentTypeId = 120,
-                            Rank = 13
+                            Rank = 15
                         },
                         new
                         {
@@ -4624,7 +4648,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddOrgFolder",
                             ParentTypeId = 120,
-                            Rank = 14
+                            Rank = 16
                         },
                         new
                         {
@@ -4636,7 +4660,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddOrgFile",
                             ParentTypeId = 120,
-                            Rank = 15
+                            Rank = 17
                         },
                         new
                         {
@@ -4648,7 +4672,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddProjectRoot",
                             ParentTypeId = 120,
-                            Rank = 16
+                            Rank = 18
                         },
                         new
                         {
@@ -4660,7 +4684,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSubFolder",
                             ParentTypeId = 120,
-                            Rank = 17
+                            Rank = 19
                         },
                         new
                         {
@@ -4672,7 +4696,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSolution",
                             ParentTypeId = 120,
-                            Rank = 18
+                            Rank = 20
                         },
                         new
                         {
@@ -4684,7 +4708,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSolutionImport",
                             ParentTypeId = 120,
-                            Rank = 19
+                            Rank = 21
                         },
                         new
                         {
@@ -4696,7 +4720,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddMdFile",
                             ParentTypeId = 120,
-                            Rank = 20
+                            Rank = 22
                         },
                         new
                         {
@@ -4708,7 +4732,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddHtmlFile",
                             ParentTypeId = 120,
-                            Rank = 21
+                            Rank = 23
                         },
                         new
                         {
@@ -4720,7 +4744,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddConfigFile",
                             ParentTypeId = 120,
-                            Rank = 22
+                            Rank = 24
                         },
                         new
                         {
@@ -4732,7 +4756,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddLibrary",
                             ParentTypeId = 120,
-                            Rank = 23
+                            Rank = 25
                         },
                         new
                         {
@@ -4744,7 +4768,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddNamespace",
                             ParentTypeId = 120,
-                            Rank = 24
+                            Rank = 26
                         },
                         new
                         {
@@ -4756,7 +4780,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClass",
                             ParentTypeId = 120,
-                            Rank = 25
+                            Rank = 27
                         },
                         new
                         {
@@ -4768,7 +4792,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassImport",
                             ParentTypeId = 120,
-                            Rank = 26
+                            Rank = 28
                         },
                         new
                         {
@@ -4780,7 +4804,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassProperty",
                             ParentTypeId = 120,
-                            Rank = 27
+                            Rank = 29
                         },
                         new
                         {
@@ -4792,7 +4816,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassMethod",
                             ParentTypeId = 120,
-                            Rank = 28
+                            Rank = 30
                         },
                         new
                         {
@@ -4804,7 +4828,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassMethodParam",
                             ParentTypeId = 120,
-                            Rank = 29
+                            Rank = 31
                         },
                         new
                         {
@@ -4816,7 +4840,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityClass",
                             ParentTypeId = 120,
-                            Rank = 30
+                            Rank = 32
                         },
                         new
                         {
@@ -4828,7 +4852,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityClassImport",
                             ParentTypeId = 120,
-                            Rank = 31
+                            Rank = 33
                         },
                         new
                         {
@@ -4840,7 +4864,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityProperty",
                             ParentTypeId = 120,
-                            Rank = 32
+                            Rank = 34
                         },
                         new
                         {
@@ -4868,170 +4892,50 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 201,
-                            Description = "Research",
+                            Description = "Org Doc Writer",
                             EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "RoleResearch",
+                            Name = "RoleOrgDocWriter",
                             ParentTypeId = 199,
                             Rank = 2
                         },
                         new
                         {
                             Id = 202,
-                            Description = "Review Research",
+                            Description = "Review Org Doc Writer",
                             EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "RoleReviewResearch",
+                            Name = "RoleReviewOrgDocWriter",
                             ParentTypeId = 199,
                             Rank = 3
                         },
                         new
                         {
                             Id = 203,
-                            Description = "Design",
+                            Description = "Org Researcher",
                             EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "RoleDesign",
+                            Name = "RoleOrgResearcher",
                             ParentTypeId = 199,
                             Rank = 4
                         },
                         new
                         {
                             Id = 204,
-                            Description = "Review Design",
+                            Description = "Review Org Researcher",
                             EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "RoleReviewDesign",
+                            Name = "RoleReviewOrgResearcher",
                             ParentTypeId = 199,
                             Rank = 5
-                        },
-                        new
-                        {
-                            Id = 205,
-                            Description = "Plan",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RolePlan",
-                            ParentTypeId = 199,
-                            Rank = 6
-                        },
-                        new
-                        {
-                            Id = 206,
-                            Description = "Review Plan",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleReviewPlan",
-                            ParentTypeId = 199,
-                            Rank = 7
-                        },
-                        new
-                        {
-                            Id = 207,
-                            Description = "Building Out",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleBuildingOut",
-                            ParentTypeId = 199,
-                            Rank = 8
-                        },
-                        new
-                        {
-                            Id = 208,
-                            Description = "Review Build Out",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleReviewBuildOut",
-                            ParentTypeId = 199,
-                            Rank = 9
-                        },
-                        new
-                        {
-                            Id = 209,
-                            Description = "Testing",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleTesting",
-                            ParentTypeId = 199,
-                            Rank = 10
-                        },
-                        new
-                        {
-                            Id = 210,
-                            Description = "Review Tests",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleReviewTests",
-                            ParentTypeId = 199,
-                            Rank = 11
-                        },
-                        new
-                        {
-                            Id = 211,
-                            Description = "Document",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleDocument",
-                            ParentTypeId = 199,
-                            Rank = 12
-                        },
-                        new
-                        {
-                            Id = 212,
-                            Description = "Review Document",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleReviewDocument",
-                            ParentTypeId = 199,
-                            Rank = 13
-                        },
-                        new
-                        {
-                            Id = 213,
-                            Description = "Packaging",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RolePackaging",
-                            ParentTypeId = 199,
-                            Rank = 14
-                        },
-                        new
-                        {
-                            Id = 214,
-                            Description = "Review Packaging",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "RoleReviewPackaging",
-                            ParentTypeId = 199,
-                            Rank = 15
                         },
                         new
                         {

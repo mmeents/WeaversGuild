@@ -32,7 +32,6 @@ namespace Weavers.Core.Constants {
     public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
     public const string DaemonsMcpToolName = "mcp/daemonsmcp";
     public const string WeaversMcpToolName = "mcp/weaversmcp";
-    public const string LMStudioDefaultModel = "nvidia/nemotron-3-nano-4b";
 
     public static List<string> availableToolsList = new List<string> { 
       //DaemonsMcpToolName, // optional, remove if configured. 
@@ -63,7 +62,6 @@ namespace Weavers.Core.Constants {
 
     public const string CmdAddOrgDesk = "addOrgDesk";
     public const string CmdAddDeskTodo = "addDeskTodo";
-
     public const string CmdAddDigitalOperator = "addDigitalOperator";
     public const string CmdAddOrgFolder = "addOrgFolder";
     public const string CmdAddOrgFile = "addOrgFile";

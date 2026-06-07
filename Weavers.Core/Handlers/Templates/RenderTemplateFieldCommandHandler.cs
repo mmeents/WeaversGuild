@@ -37,7 +37,7 @@ namespace Weavers.Core.Handlers.Templates {
           var roleIdStr = roleProp != null ? roleProp.Value : WeItemType.RoleNone.AsIntString();
           if (int.TryParse(roleIdStr, out int roleId) 
             && roleId > (int)WeItemType.RoleNone 
-            && roleId <= (int)WeItemType.RoleReviewPackaging)
+            && roleId < (int)WeItemType.TodoStatuses)
           {
             WeItemType roleItemType = (WeItemType)roleId;
             var model = roleItemType.AsRoleModel(deskName, operatorName);

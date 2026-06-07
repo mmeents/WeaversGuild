@@ -199,7 +199,7 @@ namespace Weavers.Core.Handlers.Import {
           }
 
           var deskRoleEnumInt = model.DeskRoleEnumInt;
-          if (deskRoleEnumInt >= (int)WeItemType.DeskRoles && deskRoleEnumInt <= (int)WeItemType.RoleReviewPackaging) {
+          if (deskRoleEnumInt >= (int)WeItemType.DeskRoles && deskRoleEnumInt < (int)WeItemType.RunStatus) {
             var deskRoleProp = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskRole);
             if (deskRoleProp != null) {
               if (deskRoleProp.Value != model.DeskRoleEnumInt.ToString()) {

@@ -93,7 +93,7 @@ namespace Weavers.Core.Extensions {
         targetDesk.Id, (int)WeRelationTypes.Contains, (int)WeItemType.TodoModel, name, "", "{}"));
       if (newTodo == null) return null;
 
-      await _mediator.SetProp(newTodo, Cx.ItStatus, ((int)WeItemType.TodoNotStarted).ToString());
+      await _mediator.SetProperty(newTodo, Cx.ItStatus, ((int)WeItemType.TodoNotStarted).ToString());
 
       // RefItem = the original WORK TARGET carried forward (not the previous todo).
       // Fallback to the previous todo only if the original had no ref at all.
@@ -107,7 +107,7 @@ namespace Weavers.Core.Extensions {
           newRef.ReferenceItemTypeId = (int)WeItemType.TodoModel;
           newRef.Value = fromTodo.Id.ToString();
         }
-        await _mediator.SetProp(newTodo, Cx.ItReferenceItem, newRef.Value);
+        await _mediator.SetProperty(newTodo, Cx.ItReferenceItem, newRef.Value);
       }
 
       // Prompt sourced from the TODO's own prompt (always exists), NOT the attempt —
@@ -121,7 +121,7 @@ namespace Weavers.Core.Extensions {
         await newPrompt.SaveProp(newTodo, _mediator);
       }
 
-      await _mediator.SetProp(newTodo, Cx.ItFromTodo, fromTodo.Id.ToString());
+      await _mediator.SetProperty(newTodo, Cx.ItFromTodo, fromTodo.Id.ToString());
       await _mediator.LinkContinueTodo(_context,fromTodo, newTodo.Id, ct);
       return newTodo;
     }
@@ -137,18 +137,12 @@ namespace Weavers.Core.Extensions {
         var contProp = attempt.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
         if (contProp != null) { 
           contProp.Value = newTodoId.ToString(); 
-          await _mediator.SetProp(attempt, Cx.ItContinueTodo, contProp.Value); 
+          await _mediator.SetProperty(attempt, Cx.ItContinueTodo, contProp.Value); 
         }
         break; // at most one in-progress attempt expected
       }
     }
 
-    private static async Task SetProp(this IMediator _mediator, ItemDto item, string name, string value) {
-      var prop = item.Properties.FirstOrDefault(p => p.Name == name);
-      if (prop == null) return;
-      prop.Value = value;
-      await prop.SaveProp(item, _mediator);
-    }
 
     public static async Task TryEmergencyTerminate(this IMediator _mediator, FabricDbContext _context,
       ItemDto todo, string reason, Exception ex, CancellationToken ct) {
