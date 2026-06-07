@@ -4,6 +4,7 @@ using Weavers.Core.Entities;
 using Weavers.Core.Extensions;
 using Weavers.Core.Models;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Service;
 
 
 namespace Weavers.Core.Handlers.Items {
@@ -18,10 +19,12 @@ namespace Weavers.Core.Handlers.Items {
 
   public class CreateRelatedItemCommandHandler(
     FabricDbContext context,
-    ILogger<CreateRelatedItemCommandHandler> logger
+    ILogger<CreateRelatedItemCommandHandler> logger,
+    ISessionItemCacheService sessionCache
   ) : IRequestHandler<CreateRelatedItemCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;
     private readonly ILogger<CreateRelatedItemCommandHandler> _logger = logger;
+    private readonly ISessionItemCacheService _sessionCache = sessionCache;
     public async Task<ItemDto?> Handle(CreateRelatedItemCommand request, CancellationToken cancellationToken) {
 
       if (request.ParentItemId <= 0) return null;
@@ -69,8 +72,9 @@ namespace Weavers.Core.Handlers.Items {
         throw;
       }
 
-      try {
-        return await _context.GetItemDtoById(newRelatedItem.Id, cancellationToken);
+      try {        
+        var result = await _sessionCache.GetItemAsync(newRelatedItem.Id, cancellationToken);        
+        return result;
       } catch (Exception ex) {
         _logger.LogError(ex, "Failed to retrieve newly created related item with id {ItemId}", newRelatedItem.Id);
         throw new Exception($"Failed to retrieve newly created related item with id {newRelatedItem.Id}");

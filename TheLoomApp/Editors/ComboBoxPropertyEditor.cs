@@ -10,21 +10,36 @@ using TheLoomApp.Components;
 namespace TheLoomApp.Editors {
 
   [PropertyEditor(WeEditorType.LookupTypeEditor, WeDataType.Int)]
-  public partial class ComboBoxPropertyEditor : UserControl, IAmAFieldEditor, IEditStateAware {
-    public ComboBoxPropertyEditor() {
-      InitializeComponent();
-    }
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ColumnUIConfig? ColumnConfig { get; set; } = null;
-    private bool _isEditing;
+  public partial class ComboBoxPropertyEditor : UserControl, IAmAFieldEditor, IEditStateAware {    
+    private IComboBoxDataProvider? _dataProvider;    
+    private ItemPropertyDto? _fieldModel;
     private string? _originalValue;
-
-    private IComboBoxDataProvider? _dataProvider;
     private bool _isLoading = false;
 
     public event EventHandler? ValueChanged;
 
-    private ItemPropertyDto? _fieldModel;
+    public ComboBoxPropertyEditor() {
+      InitializeComponent();
+    }
+
+
+    private ColumnUIConfig? _columnConfig;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public ColumnUIConfig? ColumnConfig {
+      get { return _columnConfig; }
+      set {
+        _columnConfig = value;
+        if (_columnConfig != null) {
+          if (_columnConfig.Properties.TryGetValue("DataProvider", out var provider) == true) {
+            if (provider is IComboBoxDataProvider dataProvider) {
+              DataProvider = dataProvider;
+            }
+          }
+        }
+      }
+    }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ItemPropertyDto? Field {
       get => _fieldModel;
@@ -42,95 +57,80 @@ namespace TheLoomApp.Editors {
       get => _dataProvider;
       set {
         _dataProvider = value;
-        if (_dataProvider != null) {
-          _ = LoadItemsAsync(); // Fire and forget
+      }
+    }
+
+    public void ResetToField() {
+      if (Field == null) { return; }
+            
+      var nameSet = false;
+      if (ColumnConfig != null) {
+        if (ColumnConfig.LabelText != null) { 
+          PropertyName = ColumnConfig.LabelText; 
+          nameSet = true; 
         }
+        Enabled = !ColumnConfig.ReadOnly;
       }
+      if (!nameSet) PropertyName = Field.Name ?? "";
+
+      _originalValue = Field.Value;
+      Modified = false;
+
+      _ = LoadAsync(); // single ordered pass owns selection restoration
     }
 
-    // ComboBox specific properties
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
-    public List<object> Items { get; set; } = new();
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public string DisplayMember { get; set; } = "";
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public string ValueMember { get; set; } = "";
-
-    public void SetItems(params object[] items) {
-      Items.Clear();
-      Items.AddRange(items);
-      RefreshComboBoxItems();
-    }
-
-    public void SetItems(IEnumerable<object> items) {
-      Items.Clear();
-      Items.AddRange(items);
-      RefreshComboBoxItems();
-    }
-
-    private void RefreshComboBoxItems() {
-      comboBox1.Items.Clear();
-      foreach (var item in Items) {
-        comboBox1.Items.Add(item);
-      }
-    }
-
-    private async Task LoadItemsAsync() {
+    private async Task LoadAsync() {
       if (_dataProvider == null || _isLoading) return;
 
       try {
-        _isLoading = true;
-        comboBox1.Items.Clear();
-        comboBox1.Items.Add("Loading...");
-        comboBox1.Enabled = false;
+        _isLoading = true; 
+        SetComboBusy(true);
+        
+        int? typeId = Field?.ReferenceItemTypeId;
+        var items = (typeId is null or 0)
+            ? Enumerable.Empty<ItemLookup>()
+            : await _dataProvider.GetValuesAsync(typeId);
 
-        var items = await _dataProvider.GetItemsAsync(Field);
-
-        if (items != null) {        
-          if (InvokeRequired) {
-            Invoke(new Action(() => UpdateComboBoxItems((IEnumerable<ItemLookup>)items)));
-          } else {
-            UpdateComboBoxItems((IEnumerable<ItemLookup>)items);
-          }
-        }
+        RunOnUi(() => FillCombo(items, _originalValue));
       } catch (Exception ex) {
-        // Handle error - could log this or show in UI
-        if (InvokeRequired) {
-          Invoke(new Action(() => {
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add($"Error: {ex.Message}");
-          }));
-        } else {
-          comboBox1.Items.Clear();
-          comboBox1.Items.Add($"Error: {ex.Message}");
-        }
+        RunOnUi(() => ShowComboError(ex.Message));
       } finally {
         _isLoading = false;
-        if (InvokeRequired) {
-          Invoke(new Action(() => comboBox1.Enabled = this.Enabled));
-        } else {
-          comboBox1.Enabled = this.Enabled;
+        RunOnUi(() => comboBox1.Enabled = this.Enabled);
+      }
+    }
+
+    private void FillCombo(IEnumerable<ItemLookup> items, string? restoreId) {
+      comboBox1.Items.Clear();
+      comboBox1.Items.Add(new ItemLookup("", "(None)")); // index 0
+
+      int restoreIndex = 0; // default (None)
+      foreach (var item in items) {
+        int idx = comboBox1.Items.Add(item);
+        if (!string.IsNullOrEmpty(restoreId) &&
+            Equals(item.Value?.ToString(), restoreId)) {
+          restoreIndex = idx;
         }
       }
+      comboBox1.SelectedIndex = restoreIndex; 
     }
 
-    private void UpdateComboBoxItems(IEnumerable<ItemLookup> items) {
+    private void SetComboBusy(bool busy) {
+      RunOnUi(() => {
+        if (busy) { comboBox1.Items.Clear(); comboBox1.Items.Add("Loading..."); comboBox1.Enabled = false; }
+      });
+    }
+
+    private void ShowComboError(string message) {
       comboBox1.Items.Clear();
-
-      // Add empty option for nullable fields
-      comboBox1.Items.Add(new ItemLookup("", "(None)"));
-
-      foreach (var item in items) {
-        comboBox1.Items.Add(item);
-      }
-
-      // Restore previous selection if possible
-      if (!string.IsNullOrEmpty(_originalValue)) {
-        PropertyValue = _originalValue;
-      } else { 
-        comboBox1.SelectedIndex = 0; // Select (None) by default
-      }
+      comboBox1.Items.Add($"Error: {message}");
     }
+
+    private void RunOnUi(Action action) {
+      if (InvokeRequired) Invoke(action);
+      else action();
+    }
+    
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public int LabelRight {
       get => lbName.Left + lbName.Width;
@@ -141,11 +141,13 @@ namespace TheLoomApp.Editors {
         comboBox1.Width = this.Width - value - 6;
       }
     }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string PropertyName {
       get => lbName.Text;
       set => lbName.Text = value;
     }
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string PropertyValue {
       get => comboBox1.SelectedItem?.ToString() ?? "";
@@ -159,18 +161,6 @@ namespace TheLoomApp.Editors {
             }
           } else if (Equals(item.ToString(), value)) {
             comboBox1.SelectedItem = item;
-            return;
-          }
-        }
-
-        // If no exact match found and we have a data provider, ask it for display text
-        if (_dataProvider != null && !string.IsNullOrEmpty(value)) {
-          var displayText = _dataProvider.GetDisplayText(value);
-          if (!string.IsNullOrEmpty(displayText)) {
-            // Add temporary item if it doesn't exist
-            var tempItem = new ItemLookup(value, displayText);
-            comboBox1.Items.Add(tempItem);
-            comboBox1.SelectedItem = tempItem;
             return;
           }
         }
@@ -207,63 +197,9 @@ namespace TheLoomApp.Editors {
       }
     }
 
-    public void ResetToField() {
-      if (Field != null) {
-        var nameSet = false;
-        if (ColumnConfig != null) {
-          if (ColumnConfig.LabelText != null) {
-            PropertyName = ColumnConfig.LabelText;
-            nameSet = true;
-          }
-          if (ColumnConfig.ReadOnly) {
-            Enabled = false;            
-          } else {
-            Enabled = true;
-          }
-        }
-        if (!nameSet) {
-          PropertyName = Field?.Name ?? "";
-        }
-        
-        _originalValue = Field?.Value;
-
-        // Check if we need to set up a data provider from schema
-        SetupDataProviderFromSchema();
-
-        // Set the value (this will happen after async load completes if using data provider)
-        PropertyValue = _originalValue ?? "";
-        if (comboBox1.SelectedText != "") comboBox1.SelectedText = "";
-        Modified = false;
-      }
-    }
-    private void SetupDataProviderFromSchema() {  
-      if (Field == null || Field.ReferenceItemTypeId == null) return;      
-      if (ColumnConfig == null) return;
-      if (ColumnConfig.Properties.TryGetValue("DataProvider", out var provider) == true) {
-        if (provider is IComboBoxDataProvider dataProvider) {
-          DataProvider = dataProvider;
-        }
-      }
-    }
-
-    public void SetEditingState(bool editing) {
-      _isEditing = editing;
+    public void SetEditingState(bool editing) {      
       comboBox1.BackColor = editing ? PropertiesTabColors.EditingBackground : PropertiesTabColors.StandardEditorWhite;      
     }
 
-    // Method to refresh items manually
-    public async Task RefreshItemsAsync() {
-      if (_dataProvider != null) {
-        await LoadItemsAsync();
-      }
-    }
-
-    // Method to validate current value
-    public bool IsCurrentValueValid() {
-      if (_dataProvider == null) return true;
-
-      var currentValue = PropertyValue;
-      return string.IsNullOrEmpty(currentValue) || _dataProvider.IsValidValue(currentValue);
-    }
   }
 }

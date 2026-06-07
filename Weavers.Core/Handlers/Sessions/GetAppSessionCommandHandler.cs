@@ -31,11 +31,13 @@ namespace Weavers.Core.Handlers.Sessions {
     private readonly FabricDbContext _dbContext;
     private readonly IMediator _mediator;
     private readonly IAppSettingService _settingService;
+    private readonly ISessionItemCacheService _sessionCache;
 
-    public GetAppSessionCommandHandler(FabricDbContext fabricDbContext, IMediator mediator, IAppSettingService settingService) {
+    public GetAppSessionCommandHandler(FabricDbContext fabricDbContext, IMediator mediator, IAppSettingService settingService, ISessionItemCacheService sessionCache) {
       _dbContext = fabricDbContext;
       _mediator = mediator;
       _settingService = settingService;
+      _sessionCache = sessionCache;
     }
 
     public async Task<AppSessionResponse?> Handle(GetAppSessionCommand request, CancellationToken cancellationToken) {
@@ -48,7 +50,7 @@ namespace Weavers.Core.Handlers.Sessions {
       var machineName = Environment.MachineName.ToLower().AsUpperCaseFirstLetter();
       var userName = Environment.UserName;
       var processId = Environment.ProcessId;
-           
+      string orgRootFolder = _settingService.DefaultProjectsPath;
 
       var orgRoot = await _dbContext.Items.FirstOrDefaultAsync(i => i.ItemTypeId == (int)WeItemType.OrganizationModel);
       result.OrganizationId = orgRoot?.Id ?? 0;
@@ -59,51 +61,89 @@ namespace Weavers.Core.Handlers.Sessions {
         if (orgItem == null || result.OrganizationId == 0) {
           throw new Exception("Failed to create organization root");
         }
-        string orgRootFolder = _settingService.DefaultProjectsPath;
-        await _mediator.SetProperty(orgItem, Cx.ItRootFolder, orgRootFolder).ConfigureAwait(false);        
-        await _mediator.SetProperty(orgItem, Cx.ItOrgCharter, Cx.OrgCharter).ConfigureAwait(false);
-        
-        ItemDto? DocsItem = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.OrgDocFolderModel, $"Documents", "", "{}")).ConfigureAwait(false);
-        if (DocsItem != null) {          
-          var folderPath = Path.Combine(orgRootFolder, "docs");            
-          await _mediator.SetProperty(DocsItem, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);          
-        }
-        ItemDto? DigitalOperatorPool = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.DigitalOperatorPoolModel, $"Digital Operators", "", "{}")).ConfigureAwait(false);
 
+        await _mediator.SetProperty(orgItem, Cx.ItRootFolder, orgRootFolder).ConfigureAwait(false);
+        await _mediator.SetProperty(orgItem, Cx.ItCharter, Cx.OrgCharter).ConfigureAwait(false);
+      } else { 
+        orgItem = await _dbContext.GetItemDtoById(result.OrganizationId, cancellationToken);
       }
 
-      if (orgItem != null) {
-        var retentionProp = orgItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRetentionDays)?.Value;
-        if (int.TryParse(retentionProp, out int days) && days > 0) {
-          var cutoff = DateTime.UtcNow.AddDays(-days);
-          var stale = await _dbContext.Items
-              .Where(i => (i.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                        || i.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)
-                       && i.Established < cutoff)
-              .ToListAsync(cancellationToken);
-          _dbContext.Items.RemoveRange(stale);
-          await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-      }
+      if (orgItem == null) { throw new Exception("Failed to get Organization from database."); }
 
+      // inforce retention policy, delete stale sessions if any. retention days is configurable at org level, if not set, default to 30 days.
+      var retentionProp = orgItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRetentionDays)?.Value;
+      if (int.TryParse(retentionProp, out int days) && days > 0) {
+        var cutoff = DateTime.UtcNow.AddDays(-days);
+        var stale = await _dbContext.Items
+            .Where(i => (i.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
+                      || i.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)
+                      && i.Established < cutoff)
+            .ToListAsync(cancellationToken);
+        _dbContext.Items.RemoveRange(stale);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+      }
+      
+      // session base object exist?
       var harnessName = $"{Cx.AppHarnessAppName}On{machineName}";
-      var harnessType = await _dbContext.Items.FirstOrDefaultAsync(i => i.ItemTypeId == (int)WeItemType.HarnessAppModel && i.Name == harnessName);
-      result.HarnessId = harnessType?.Id ?? 0;
-      ItemDto? harnessItem = null;
-      if (result.HarnessId == 0) {
-        harnessItem = await _mediator.Send(
+      var aHarnessTypeId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.HarnessAppModel && r.RelatedItemName == harnessName)?.RelatedItemId ?? 0;
+      if (aHarnessTypeId == 0) {
+        var harnessItem = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppModel, harnessName, $"{Cx.AppHarnessAppName}", "{}")).ConfigureAwait(false);
         result.HarnessId = harnessItem?.Id ?? 0;
         if (harnessItem == null || result.HarnessId == 0) {
           throw new Exception("Failed to create harness item");
         }
-        await _mediator.SetProperty(harnessItem, Cx.ItMachineName, machineName).ConfigureAwait(false);        
-        await _mediator.SetProperty(harnessItem, Cx.ItUserName, userName).ConfigureAwait(false);        
+        await _mediator.SetProperty(harnessItem, Cx.ItMachineName, machineName).ConfigureAwait(false);
+        await _mediator.SetProperty(harnessItem, Cx.ItUserName, userName).ConfigureAwait(false);
+      } else {
+        result.HarnessId = aHarnessTypeId;
       }
+
+      // digital Operators
+      var DigitalOperatorPoolRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DigitalOperatorPoolModel);
+      if (DigitalOperatorPoolRelation == null) {
+        ItemDto? DoPoolDto = await _mediator.Send(
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
+            (int)WeItemType.DigitalOperatorPoolModel, $"Digital Operators", "", "{}")).ConfigureAwait(false);
+        if (DoPoolDto != null) {
+          var folderPath = Path.Combine(orgRootFolder, Cx.OrgDigiOpPoolFolder);
+          await _mediator.SetProperty(DoPoolDto, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+        }
+      }
+
+      // org chart
+      var OrgChartRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgChartModel);
+      if (OrgChartRelation == null) {
+        ItemDto? OrgChart = await _mediator.Send(
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
+            (int)WeItemType.OrgChartModel, $"Org Chart", "", "{}")).ConfigureAwait(false);
+        if (OrgChart != null) {
+          var folderPath = Path.Combine(orgRootFolder, Cx.OrgChartFolder);
+          await _mediator.SetProperty(OrgChart, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+          ItemDto? defaultLogDesk = await _mediator.Send(
+            new CreateRelatedItemCommand(OrgChart.Id, (int)WeRelationTypes.Contains,
+              (int)WeItemType.DeskLogModel, $"TheLoomAppSyncDesk", "", "{}")).ConfigureAwait(false);
+          if (defaultLogDesk != null) {
+            var folderPath2 = Path.Combine(folderPath, "TheLoomAppSyncDesk");
+            await _mediator.SetProperty(OrgChart, Cx.ItRelativeFolder, folderPath2).ConfigureAwait(false);
+          }
+        }
+      }
+
+      // docs folder
+      var DocsRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDocFolderModel);
+      if (DocsRelation == null) {
+        ItemDto? DocsItem = await _mediator.Send(
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
+            (int)WeItemType.OrgDocFolderModel, Cx.OrgDocsFolder, "", "{}")).ConfigureAwait(false);
+
+        if (DocsItem != null) {
+          var folderPath = Path.Combine(orgRootFolder, Cx.OrgDocsFolder);
+          await _mediator.SetProperty(DocsItem, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+        }
+      }
+
+      // finally, org looks good, create session level 3 under harness.
 
       ItemDto? sessionItem = await _mediator.Send(
         new CreateRelatedItemCommand(result.HarnessId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppSessionModel, $"{harnessName} at {DateTime.UtcNow}", "", "{}")).ConfigureAwait(false);

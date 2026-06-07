@@ -4,6 +4,7 @@ namespace Weavers.Core.Models {
   public class RelationDto {
     public int Id { get; set; }
     public int ItemId { get; set; }
+    public int ItemTypeId { get; set; }
     public string ItemName { get; set; } = string.Empty;
     public int? RelatedItemId { get; set; } = null;
     public int? RelatedItemTypeId { get; set; } = null;
@@ -21,6 +22,7 @@ namespace Weavers.Core.Models {
       return new RelationDto {
         Id = relation.Id,
         ItemId = relation.ItemId,
+        ItemTypeId = relation.Item?.ItemTypeId ?? 0,
         ItemName = relation.Item?.Name ?? string.Empty,
         RelatedItemId = relation.RelatedItemId,
         RelatedItemTypeId = relation.RelatedItem?.ItemTypeId,

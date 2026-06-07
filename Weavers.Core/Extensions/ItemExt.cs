@@ -52,6 +52,7 @@ namespace Weavers.Core.Extensions {
           Relations = i.Relations.Select(r => new RelationDto {
             Id = r.Id,
             ItemId = r.ItemId,
+            ItemTypeId = r.Item.ItemTypeId,
             ItemName = r.Item.Name,
             RelatedItemId = r.RelatedItemId,
             RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
@@ -65,6 +66,7 @@ namespace Weavers.Core.Extensions {
           IncomingRelations = i.IncomingRelations.Select(r => new RelationDto {
             Id = r.Id,
             ItemId = r.ItemId,
+            ItemTypeId = r.Item.ItemTypeId,
             ItemName = r.Item.Name ?? string.Empty,
             RelatedItemId = r.RelatedItemId,
             RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,

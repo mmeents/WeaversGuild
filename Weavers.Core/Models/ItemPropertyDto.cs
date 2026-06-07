@@ -50,6 +50,27 @@ namespace Weavers.Core.Models {
         ReferenceItemType = itemProperty.ReferenceItemType?.ToDto()
       };
     }
+
+    public static ItemPropertyDto ToClone(this ItemPropertyDto itemProperty) {
+      return new ItemPropertyDto {
+        Id = itemProperty.Id,
+        ItemPropertyDefaultId = itemProperty.ItemPropertyDefaultId,
+        ItemId = itemProperty.ItemId,
+        Name = itemProperty.Name,
+        Value = itemProperty.Value,
+        ValueDataTypeId = itemProperty.ValueDataTypeId,
+        ReferenceItemTypeId = itemProperty.ReferenceItemTypeId,
+        EditorTypeId = itemProperty.EditorTypeId,
+        IsRequired = itemProperty.IsRequired,
+        IsReadOnly = itemProperty.IsReadOnly,
+        IsVisible = itemProperty.IsVisible,
+        Item = (itemProperty.Item != null) ? itemProperty.Item : null,
+        ValueType = itemProperty.ValueType,
+        Editor = itemProperty.Editor,
+        ReferenceItemType = itemProperty.ReferenceItemType
+      };
+    }
+
   }
 
 

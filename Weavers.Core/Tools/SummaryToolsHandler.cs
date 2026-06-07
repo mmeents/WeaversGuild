@@ -60,11 +60,11 @@ namespace Weavers.Core.Tools {
         foreach (var item in ItemDtoList) {
           result.Add(await context.ToSummary(item));
         }
-        var opResult = McpOpResult.CreateSuccess("ListProjects", result);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdListProjects, result);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error listing projects");
-        var opResult = McpOpResult.CreateFailure("ListProjects", "Failed to list projects", ex);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdListProjects, "Failed to list projects", ex);
         return JsonSerializer.Serialize(opResult);
       }
     }

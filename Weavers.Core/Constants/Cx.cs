@@ -24,13 +24,20 @@ namespace Weavers.Core.Constants {
     public const string CredentialProtectorName = "WeaversGuild.YouGotThis";
     public const int KeyLifetimeDays = 90;
 
+    public const double DefaultTemperature = 0.76;
     public const int DefaultLmStudioContextLength = 8000;
     public const int intPropertyLabelLeft = 116;
 
     public const string LMStudioUrl = "http://10.0.0.118:8669";
     public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
-    public const string LMStudioMcpToolName = "mcp/weavers-mcp";
+    public const string DaemonsMcpToolName = "mcp/daemonsmcp";
+    public const string WeaversMcpToolName = "mcp/weaversmcp";
     public const string LMStudioDefaultModel = "nvidia/nemotron-3-nano-4b";
+
+    public static List<string> availableToolsList = new List<string> { 
+      //DaemonsMcpToolName, // optional, remove if configured. 
+      WeaversMcpToolName 
+    };
 
     public const string ClaudeDefaultModel = "sonnet";
 
@@ -54,6 +61,9 @@ namespace Weavers.Core.Constants {
     public const string CmdUpdateItemContent = "updateItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
 
+    public const string CmdAddOrgDesk = "addOrgDesk";
+    public const string CmdAddDeskTodo = "addDeskTodo";
+
     public const string CmdAddDigitalOperator = "addDigitalOperator";
     public const string CmdAddOrgFolder = "addOrgFolder";
     public const string CmdAddOrgFile = "addOrgFile";
@@ -61,6 +71,11 @@ namespace Weavers.Core.Constants {
     public const string CmdAddSubFolder = "addSubFolder";
     public const string CmdAddSolution = "addSolution";
     public const string CmdAddSolutionImport = "addSolutionImport";    
+
+    public const string CmdCompleteTodo = "completeTodo";
+    public const string CmdRejectTodo = "rejectTodo";
+    public const string CmdReviewPass = "reviewPass";
+    public const string CmdReviewFail = "reviewFail";
 
     public const string CmdAddMdFile = "addMdFile";
     public const string CmdAddHtmlFile = "addHtmlFile";
@@ -90,32 +105,43 @@ namespace Weavers.Core.Constants {
     // AppSettings keys
     public const string ApsDefaultFolder = "AppDefaultFolder";
 
+    // Org folder names
+    public const string OrgChartFolder = "OrgChart";
+    public const string OrgDigiOpPoolFolder = "DigitalOperators";
+    public const string OrgDocsFolder = "Documents";
+
     // itemProperty names constants 
-    public const string ItAccessModifier = "AccessModifier";
-    public const string ItAgentName = "AgentName";
-    public const string ItAgentRole = "AgentRole";
+    public const string ItAccessModifier = "AccessModifier";   
     public const string ItApiToken = "ApiToken";
-    public const string ItBaseType = "BaseType";    
+    public const string ItBaseType = "BaseType";
+    public const string ItCharter = "Charter";
     public const string ItClassType = "ClassType";
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
+    public const string ItConfirmedReady = "Ready";
+    public const string ItContinueTodo = "NextTodo";
+    public const string ItCloseReason = "CloseReason";
+    public const string ItCurrentTodo = "CurrentTodo";
     public const string ItDataType = "DataType";
     public const string ItDeleteBehavior = "DeleteBehavior";
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
     public const string ItDbTableName = "DbTableName";
+    public const string ItEnabled = "Enabled";
     public const string ItFilePath = "FilePath";
-    public const string ItFileExt = "FileExtension";
+    public const string ItFileExt = "FileExt";
+    public const string ItFloorStatus = "FloorStatus";
     public const string ItForeignKey = "ForeignKey";
-    public const string ItGenerateInterface = "GenerateInterface";
+    public const string ItFromTodo = "FromTodo";
+    public const string ItGenerateInterface = "GenInterface";
     public const string ItHarnessId = "HarnessId";
     public const string ItHasDbContext = "HasDbContext";
     public const string ItHasLmStudioPresence = "HasLmStudio";
     //public const string ItHasClaudePresence = "HasClaude";
     public const string ItHasMediator = "HasMediator";
-    public const string ItHasNavigation = "HasNavigation";
+    public const string ItHasNavigation = "HasNav";
     public const string ItHasSetter = "HasSetter";
-    public const string ItImportObject = "ImportObject";
-    public const string ItImportUseInterface = "UseInterface";
+    public const string ItImportObject = "ImportObj";
+    public const string ItImportUseInterface = "UseIntf";
     public const string ItInverseNavigation = "InverseNav";
     public const string ItInterface = "Interface";
     public const string ItIPAddress = "IPAddress";
@@ -123,7 +149,7 @@ namespace Weavers.Core.Constants {
     public const string ItIsAsync = "IsAsync";
     public const string ItIsCollection = "IsCollection";
     public const string ItReSync = "DoReSync";
-    public const string ItIsTestLibrary = "IsTestLibrary";
+    public const string ItIsTestLibrary = "IsTestLib";
     public const string ItIsNullable = "IsNullable";
     public const string ItIsPrimaryKey = "IsPrimaryKey";
     public const string ItIsLibraryReference = "LibReference";
@@ -131,43 +157,56 @@ namespace Weavers.Core.Constants {
     public const string ItIsSealed = "IsSealed";
     public const string ItIsStatic = "IsStatic";
     public const string ItIsVirtual = "IsVirtual";
-    public const string ItJobCounter = "JobCounter";
-    public const string ItJobSuccess = "JobSuccess";
-    public const string ItJobFailure = "JobFailure";
+    //public const string ItJobCounter = "JobCounter";
+    //public const string ItJobSuccess = "JobSuccess";
+    //public const string ItJobFailure = "JobFailure";
     public const string ItLifetimeScope = "LifetimeScope";
-    public const string ItLibraryInclude = "LibraryInclude";
-    public const string ItLmStudioConfig = "LmStudioConfig";
-    public const string ItMaxSize = "MaxSize";    
+    public const string ItLibraryInclude = "LibInclude";
+    public const string ItLmStudioConfig = "LmStudioCfg";
+    public const string ItMaxSize = "MaxSize";  
+    public const string ItMaxAttempts = "MaxAttempts";
     public const string ItMachineName = "MachineName";
     public const string ItModelName = "ModelName";
     public const string ItNamespace = "Namespace";
-    public const string ItNamespaceRoot = "NamespaceRoot";      
-    public const string ItOrgCharter = "OrgCharter";
+    public const string ItNamespaceRoot = "NamespaceRoot";
+    public const string ItOnSuccessSendTo = "OnSuccessTo";
+    public const string ItOnFailSendTo = "OnFailTo";
+    public const string ItOnPushbackSendTo = "OnPushbackTo";
+    public const string ItOperator = "Operator";
+       
     public const string ItParameterDataType = "ParamType";
     public const string ItParameterClassType = "ParamClass";
     public const string ItPresence = "Presence";
     public const string ItProcessId = "ProcessId";
     public const string ItPortAddress = "Port";
-    public const string ItPropertyDataType = "PropertyType";
-    public const string ItPropertyClassType = "PropertyClass";    
+    public const string ItPropertyDataType = "PropType";
+    public const string ItPropertyClassType = "PropClass";    
     public const string ItProjectGuid = "ProjectGuid";
     public const string ItProviderType = "ProviderType";
     public const string ItRecordContent = "RecordContent";
     public const string ItStructContent = "StructContent";
     public const string ItRating = "Rating";
+    public const string ItReferenceItem = "RefItem";
     public const string ItReturnDataType = "ReturnType";
     public const string ItReturnClassType = "ReturnClass";
     public const string ItReturnNullable = "ReturnNullable";
     public const string ItRegisterDi = "RegisterDI";   
-    public const string ItRegisterObject = "RegisterObject";
-    public const string ItRegisterInterface = "RegisterInterface";
+    public const string ItRegisterObject = "RegisterObj";
+    public const string ItRegisterInterface = "RegisterIntf";
     public const string ItRelativeFolder = "RelativeFolder";
     public const string ItResultingState = "Results";
-    public const string ItRetentionDays = "RetentionDays";
+    public const string ItResponse = "Response";
+    public const string ItRetentionDays = "KeepDays";
+    public const string ItDeskRole = "DeskRole";
     public const string ItRootFolder = "RootFolder";
     public const string ItRepoUrl = "RepoUrl";
     public const string ItSolutionGuid = "SlnGuid";
-    public const string ItSystemPrompt = "SystemPrompt";
+    public const string ItStatus = "Status";
+    public const string ItSystemPrompt = "SysPrompt";
+    public const string ItSystemPromptTemplate = "SysPrompt";
+    public const string ItUserPrompt = "UserPrompt";
+    public const string ItUserPromptTemplate = "UserPrompt";
+    public const string ItTodoItem = "TodoItem";
     public const string ItTestClassAttribute = "TestClass";
     public const string ItTestMethodAttribute = "TestMethod";
     public const string ItUrlBase = "UrlBase";

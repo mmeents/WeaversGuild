@@ -41,12 +41,14 @@ namespace Weavers.Core.Handlers.Items {
     FabricDbContext context, 
     IMediator mediator,
     ILogger<UpdateItemCommandHandler> logger,
-    IAppSettingService appSettingService
+    IAppSettingService appSettingService,
+    ISessionItemCacheService sessionCache
   ) : IRequestHandler<UpdateItemCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<UpdateItemCommandHandler> _logger = logger;
     private readonly IAppSettingService _appSettingService = appSettingService;
+    private readonly ISessionItemCacheService _sessionCache = sessionCache;
     private readonly HashSet<WeItemType> _parentFolderTypes = WeItemTypeExtensions.GetParentFileFolderDependTypes();
     private readonly HashSet<WeItemType> _parentNamespaceTypes = WeItemTypeExtensions.GetParentNamespaceDependTypes();
     public async Task<ItemDto?> Handle(UpdateItemCommand request, CancellationToken cancellationToken) {
@@ -184,7 +186,8 @@ namespace Weavers.Core.Handlers.Items {
         }
       }
 
-      itemDto = await _context.GetItemDtoById(item.Id, cancellationToken);
+      _sessionCache.RemoveCacheItem(item.Id);
+      itemDto = await _sessionCache.GetItemAsync(item.Id, cancellationToken);      
       return itemDto;
 
     }
@@ -201,6 +204,7 @@ namespace Weavers.Core.Handlers.Items {
           entityConfig.Established = DateTime.UtcNow;
           _context.Items.Update(entityConfig);
           await _context.SaveChangesAsync(cancellationToken);
+          _sessionCache.RemoveCacheItem(entityConfig.Id);
         }
       } else return false;
       return true;

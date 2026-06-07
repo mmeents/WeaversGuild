@@ -24,6 +24,7 @@ namespace Weavers.Core.Handlers.Builds {
       var buildContext = new BuildContext {
         ForceWrite = true
       };
+
       var organization = await _context.GetOrganizationItemDto(cancellationToken);
       if (organization == null) {
         return buildContext.Fail("Organization not found");
@@ -59,7 +60,7 @@ namespace Weavers.Core.Handlers.Builds {
         }
       }  // cleanup old builds except the last one. 
 
-      var started = DateTime.UtcNow;
+      var started = DateTime.UtcNow;  // add build record for this set of files.
       var build = new Build {
         LibraryItemId = organizationId,
         StartedAt = started,
@@ -88,7 +89,9 @@ namespace Weavers.Core.Handlers.Builds {
       } catch (Exception ex) {
         return buildContext.Fail($"Error accessing Organization file path: {ex.Message}");
       }
-           
+
+      await WriteDigitalOperators(organization, buildContext, cancellationToken);
+      await WriteOrgChart(organization, buildContext, cancellationToken);
       await WriteFolder(organization, buildContext, cancellationToken);
       await WriteOrganization(organization, buildContext, cancellationToken);
 
@@ -146,6 +149,119 @@ namespace Weavers.Core.Handlers.Builds {
 
 
       return result;
+    }
+
+    public async Task<BuildContext> WriteDigitalOperators(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) { 
+
+      var poolItemId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DigitalOperatorPoolModel)?.RelatedItemId;
+      if (poolItemId == null) {
+        return bldContext.Fail($"No Operator Pool found for organization with id {organizationItem.Id}");
+      }
+      
+      var poolItem = await _context.GetItemDtoById(poolItemId.Value, cancellationToken);
+      if (poolItem == null) { 
+        return bldContext.Fail($"Operator Pool with id {poolItemId.Value} not found.");
+      }
+        
+      var poolFolderPath = poolItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value ?? "";
+      if (string.IsNullOrEmpty(poolFolderPath)) {
+        return bldContext.Fail($"Operator Pool with id {poolItemId.Value} does not have a relative folder property.");
+      }
+
+      try {
+        if (!Directory.Exists(poolFolderPath)) {
+          Directory.CreateDirectory(poolFolderPath);
+          if (!Directory.Exists(poolFolderPath)) {
+            return bldContext.Fail($"Failed to create directory for Operator Pool file at path: {poolFolderPath}");
+          }
+        }
+      } catch (Exception ex) {
+        return bldContext.Fail($"Error accessing Operator Pool file path: {ex.Message}");
+      }
+
+      var relOperatorIds = poolItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DigitalOperatorModel)
+        .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      foreach (var itemId in relOperatorIds) {
+        var operatorItem = await _context.GetItemDtoById(itemId, cancellationToken);
+        if (operatorItem != null) {
+          bldContext.LibItems[operatorItem.Id] = operatorItem;
+          try {
+            string fileContent = operatorItem.ToExportOperatorModel().ToJson();
+            string filePath = operatorItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value ?? "";
+            if (filePath != "" && File.Exists(filePath)) {
+              File.Delete(filePath);
+            }
+            await File.WriteAllTextAsync(filePath, fileContent, cancellationToken);
+            await _context.MarkItemUpdated(operatorItem.Id, cancellationToken);
+            await _context.AddBuildItem(bldContext.BuildId, operatorItem.Id, filePath, cancellationToken);
+            bldContext.FilesWritten++;
+          } catch (Exception ex) {
+            bldContext.Errors.Add($"Error writing document '{operatorItem.Name}' to file: {ex.Message}");
+          }
+
+        } else {
+          bldContext.Errors.Add($"Related digital operator with id {itemId} not found.");
+        }
+      }            
+
+      return bldContext;
+    }
+
+
+
+    public async Task<BuildContext> WriteOrgChart(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {
+      var OrgChartItemId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgChartModel)?.RelatedItemId;
+      if (OrgChartItemId == null) {
+        return bldContext.Fail($"No Operator Pool found for organization with id {organizationItem.Id}");
+      }
+
+      var OrgChartItem = await _context.GetItemDtoById(OrgChartItemId.Value, cancellationToken);
+      if (OrgChartItem == null) {
+        return bldContext.Fail($"Operator Pool with id {OrgChartItemId.Value} not found.");
+      }
+
+      var ChartFolderPath = OrgChartItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value ?? "";
+      if (string.IsNullOrEmpty(ChartFolderPath)) {
+        return bldContext.Fail($"Operator Pool with id {OrgChartItemId.Value} does not have a relative folder property.");
+      }
+
+      try {
+        if (!Directory.Exists(ChartFolderPath)) {
+          Directory.CreateDirectory(ChartFolderPath);
+          if (!Directory.Exists(ChartFolderPath)) {
+            return bldContext.Fail($"Failed to create directory for Operator Pool file at path: {ChartFolderPath}");
+          }
+        }
+      } catch (Exception ex) {
+        return bldContext.Fail($"Error accessing Operator Pool file path: {ex.Message}");
+      }
+
+      var DeskIds = OrgChartItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
+        .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      foreach (var itemId in DeskIds) {
+        var deskItem = await _context.GetItemDtoById(itemId, cancellationToken);
+        if (deskItem != null) {
+          bldContext.LibItems[deskItem.Id] = deskItem;
+          try {
+            string fileContent = _context.ToExportDeskModel(deskItem).ToJson();
+            string filePath = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value ?? "";
+            if (filePath != "" && File.Exists(filePath)) {
+              File.Delete(filePath);
+            }
+            await File.WriteAllTextAsync(filePath, fileContent, cancellationToken);
+            await _context.MarkItemUpdated(deskItem.Id, cancellationToken);
+            await _context.AddBuildItem(bldContext.BuildId, deskItem.Id, filePath, cancellationToken);
+            bldContext.FilesWritten++;
+          } catch (Exception ex) {
+            bldContext.Errors.Add($"Error writing document '{deskItem.Name}' to file: {ex.Message}");
+          }
+
+        } else {
+          bldContext.Errors.Add($"Related digital operator with id {itemId} not found.");
+        }
+      }
+
+      return bldContext;
     }
 
     private async Task<BuildContext> WriteOrganization(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {

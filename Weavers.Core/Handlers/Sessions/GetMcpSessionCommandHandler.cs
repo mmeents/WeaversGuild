@@ -44,28 +44,21 @@ namespace Weavers.Core.Handlers.Sessions {
         }
         string orgRootFolder = _settingService.DefaultProjectsPath;
         await _mediator.SetProperty(orgItem, Cx.ItRootFolder, orgRootFolder).ConfigureAwait(false);
-        await _mediator.SetProperty(orgItem, Cx.ItOrgCharter, Cx.OrgCharter).ConfigureAwait(false);
-
-        ItemDto? DocsItem = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.OrgDocFolderModel, $"Documents", "", "{}")).ConfigureAwait(false);
-        if (DocsItem != null) {
-          var folderPath = Path.Combine(orgRootFolder, "docs");
-          await _mediator.SetProperty(DocsItem, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+        await _mediator.SetProperty(orgItem, Cx.ItCharter, Cx.OrgCharter).ConfigureAwait(false);
+      } else {
+        orgItem = await _dbContext.GetItemDtoById(result.OrganizationId, cancellationToken);
+        if (orgItem == null || result.OrganizationId == 0) {
+          throw new Exception("Failed to create organization root");
         }
-        ItemDto? DigitalOperatorPool = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.DigitalOperatorPoolModel, $"Digital Operators", "", "{}")).ConfigureAwait(false);
-
       }
 
       var harnessName = $"{Cx.AppHarnessMcpName}On{machineName}";
-      var harnessType = await _dbContext.Items.FirstOrDefaultAsync(i => i.ItemTypeId == (int)WeItemType.HarnessMcpModel && i.Name == harnessName);
-      result.HarnessId = harnessType?.Id ?? 0;
+      var theHarnessItemId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.HarnessMcpModel && r.RelatedItemName == harnessName)?.RelatedItemId ?? 0;
+  
       ItemDto? harnessItem = null;
-      if (result.HarnessId == 0) {
+      if (theHarnessItemId == 0) {
         harnessItem = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains, 
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
             (int)WeItemType.HarnessMcpModel, harnessName, $"{Cx.AppHarnessMcpName}", "{}")).ConfigureAwait(false);
         result.HarnessId = harnessItem?.Id ?? 0;
         if (harnessItem == null || result.HarnessId == 0) {
@@ -73,6 +66,8 @@ namespace Weavers.Core.Handlers.Sessions {
         }
         await _mediator.SetProperty(harnessItem, Cx.ItMachineName, machineName).ConfigureAwait(false);
         await _mediator.SetProperty(harnessItem, Cx.ItUserName, userName).ConfigureAwait(false);
+      } else { 
+        result.HarnessId = theHarnessItemId;
       }
 
       ItemDto? sessionItem = await _mediator.Send(

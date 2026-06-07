@@ -79,24 +79,68 @@ namespace Weavers.Core.Handlers.ItemTypes {
           };
           return res2;
 
-        } else if (weItemType >= WeItemType.OrganizationModel) { 
-          var res2 = new GetTypeDetailsResponse() {
-            WeItemTypeId = (int)weItemType,
-            Name = $"{weItemType.ToString()}",
-            Description = $"{weItemType.Description()}"
-          };
+        } else if (weItemType >= WeItemType.OrganizationModel) {
 
-          var items = await context.Items.Where(i => i.ItemTypeId == typeId)
-            .Select(i => new ItemLookup(i.Id, i.Name, weItemType.ToString()))
-            .ToListAsync(cancellationToken);
-          foreach(var item in items) {
-            res2.RelatedTypes.Add(new WeItemTypeDetails() {
-              ItemTypeId = item.Value is int id ? id : 0,
-              Name = item.DisplayText,
-              Description = item.Description ?? ""
-            });
+          if (weItemType == WeItemType.OrgChartModel || weItemType == WeItemType.DeskModel) {
+            var res3 = new GetTypeDetailsResponse() {
+              WeItemTypeId = (int)weItemType,
+              Name = $"{weItemType.ToString()}",
+              Description = $"{weItemType.Description()}"
+            };
+
+            var items = await context.Items.Where(i => i.ItemTypeId == (int)WeItemType.DeskModel || i.ItemTypeId == (int)WeItemType.DeskLogModel)
+              .Select(i => new ItemLookup(i.Id, i.Name, weItemType.ToString()))
+              .ToListAsync(cancellationToken);
+            foreach (var item in items) {
+              res3.RelatedTypes.Add(new WeItemTypeDetails() {
+                ItemTypeId = item.Value is int id ? id : 0,
+                Name = item.DisplayText,
+                Description = item.Description ?? ""
+              });
+            }
+            return res3;
+
+          } else if (weItemType == WeItemType.ClassModel) {
+            
+            var res4 = new GetTypeDetailsResponse() {
+              WeItemTypeId = (int)weItemType,
+              Name = $"{weItemType.ToString()}",
+              Description = $"{weItemType.Description()}"
+            };
+
+            var items = await context.Items.Where(i => i.ItemTypeId == (int)WeItemType.ClassModel || i.ItemTypeId == (int)WeItemType.EntityClassModel)
+              .Select(i => new ItemLookup(i.Id, i.Name, weItemType.ToString()))
+              .ToListAsync(cancellationToken);
+            foreach (var item in items) {
+              res4.RelatedTypes.Add(new WeItemTypeDetails() {
+                ItemTypeId = item.Value is int id ? id : 0,
+                Name = item.DisplayText,
+                Description = item.Description ?? ""
+              });
+            }
+            return res4;
+
+          } else {
+
+            var res5 = new GetTypeDetailsResponse() {
+              WeItemTypeId = (int)weItemType,
+              Name = $"{weItemType.ToString()}",
+              Description = $"{weItemType.Description()}"
+            };
+
+            var items = await context.Items.Where(i => i.ItemTypeId == typeId)
+              .Select(i => new ItemLookup(i.Id, i.Name, weItemType.ToString()))
+              .ToListAsync(cancellationToken);
+            foreach (var item in items) {
+              res5.RelatedTypes.Add(new WeItemTypeDetails() {
+                ItemTypeId = item.Value is int id ? id : 0,
+                Name = item.DisplayText,
+                Description = item.Description ?? ""
+              });
+            }
+            return res5;
+            
           }
-          return res2;
         }
       }
 

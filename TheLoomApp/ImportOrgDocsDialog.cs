@@ -17,6 +17,7 @@ namespace TheLoomApp {
     }
 
 
+
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? OrgRootFileName { get => textBox1.Text; set { 
         textBox1.Text = value;
@@ -27,6 +28,20 @@ namespace TheLoomApp {
     public string? OrgRootPath {
       get {
         return Path.GetDirectoryName(textBox1.Text);
+      }
+    }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string? DigitalOperatorsPath {
+      get {
+        return Path.Combine(OrgRootPath!, "DigitalOperators");
+      }
+    }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string? OrgChartPath {
+      get {
+        return Path.Combine(OrgRootPath!, "OrgChart");
       }
     }
 
@@ -52,23 +67,56 @@ namespace TheLoomApp {
     private ConcurrentDictionary<string, string> _relToFullPathDict = new ConcurrentDictionary<string, string>();
     private ConcurrentDictionary<string, string> _relToFullPathDictFinal = new ConcurrentDictionary<string, string>();
     private void button4_Click(object sender, EventArgs e) {
-      var validPath = OrgRootPath != null ? OrgRootPath : string.Empty;
+      var orgPath = OrgRootPath != null ? OrgRootPath : string.Empty;
       var orgName = OrgRootFileName;
-      if (string.IsNullOrEmpty(validPath) || string.IsNullOrEmpty(orgName)) { return; }
-      var subFolders = Directory.GetFiles(validPath, "*.md", SearchOption.AllDirectories);
+      if (string.IsNullOrEmpty(orgPath) ) { return; }
       lbItemToImport.Items.Clear();
       _relToFullPathDict.Clear();
-      
-      foreach (var subFolder in subFolders) {
+
+      var subFolders = Directory.GetFiles(orgPath, "*.md", SearchOption.AllDirectories);       
+      foreach (var mdFile in subFolders) {
         var basePathLength = OrgRootPath?.Length ?? 0;
-        if (basePathLength > 0 && subFolder != OrgRootFileName) {
-          var relPath = subFolder.Substring(basePathLength);
+        if (basePathLength > 0 && mdFile != OrgRootFileName) {
+          var relPath = mdFile.Substring(basePathLength);
           if (!lbItemToImport.Items.Contains(relPath)) {
             lbItemToImport.Items.Add(relPath);
-            _relToFullPathDict[relPath] = subFolder;
+            _relToFullPathDict[relPath] = mdFile;
           }
         }
       }
+
+      var digitalOperatorsPath = DigitalOperatorsPath;
+      if (!string.IsNullOrEmpty(digitalOperatorsPath)) {
+        var subFolders2 = Directory.GetFiles(digitalOperatorsPath, "*.json", SearchOption.AllDirectories);
+        foreach (var jsonFile in subFolders2) {
+          var basePathLength = OrgRootPath?.Length ?? 0;
+          if (basePathLength > 0) {
+            var relPath = jsonFile.Substring(basePathLength);
+            if (!lbItemToImport.Items.Contains(relPath)) {
+              lbItemToImport.Items.Add(relPath);
+              _relToFullPathDict[relPath] = jsonFile;
+            }
+          }
+        }
+      }
+
+      var orgChartPath = OrgChartPath;
+      if (!string.IsNullOrEmpty(orgChartPath)) {
+        var subFolders3 = Directory.GetFiles(orgChartPath, "*.json", SearchOption.AllDirectories);
+        foreach (var jsonFile in subFolders3) {
+          var basePathLength = OrgRootPath?.Length ?? 0;
+          if (basePathLength > 0) {
+            var relPath = jsonFile.Substring(basePathLength);
+            if (!lbItemToImport.Items.Contains(relPath)) {
+              lbItemToImport.Items.Add(relPath);
+              _relToFullPathDict[relPath] = jsonFile;
+            }
+          }
+        }
+      }
+
+
+
     }
 
     private void button5_Click(object sender, EventArgs e) {

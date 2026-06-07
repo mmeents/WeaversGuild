@@ -11,10 +11,6 @@ using Weavers.Core.Service;
 
 namespace Weavers.Core.Tools {
   public interface IAppGraphFileToolsHandler {
-    Task<string> AddDigitalOperator(int parentItemId, string operatorName);
-    Task<string> AddOrgFolder(int parentItemId, string subFolderName);
-    Task<string> AddOrgFile(int folderItemId, string fileName, string fileContent);
-
     Task<string> AddProjectRoot(string projectRootName);
     Task<string> AddSubFolder(int itemId, string subFolderName);
     Task<string> AddSolution(int folderItemId, string solutionName);
@@ -22,7 +18,6 @@ namespace Weavers.Core.Tools {
     Task<string> AddMdFile(int folderItemId, string fileName, string fileContent);
     Task<string> AddHtmlFile(int folderItemId, string fileName, string fileContent);
     Task<string> AddConfigFile(int folderItemId, string fileName, string fileContent);
-
 
   }
 
@@ -34,58 +29,7 @@ namespace Weavers.Core.Tools {
       _logger = logger;
     }
 
-    public async Task<string> AddDigitalOperator(int parentItemId, string operatorName) {
-      try {
-
-        using var scope = _serviceScopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
-        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-        var item = await context.GetItemDtoById(parentItemId);
-        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddDigitalOperator, parentItemId);
-        if (item.ItemTypeId != (int)WeItemType.DigitalOperatorPoolModel) return _logger.DefaultInvalidParentMessage(Cx.CmdAddDigitalOperator, parentItemId);
-        var addedItem = await service.AddDigitalOperator(item, operatorName);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddDigitalOperator, parentItemId);
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDigitalOperator, await context.ToSummary(addedItem));
-        return opResult.ToString();
-
-      } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddDigitalOperator, parentItemId, $"Failed to add digital operator {operatorName} to parent item with ID {parentItemId}");
-      }
-    }
-    public async Task<string> AddOrgFolder(int parentItemId, string subFolderName) {
-      try {
-
-        using var scope = _serviceScopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
-        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-        var item = await context.GetItemDtoById(parentItemId);
-        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddOrgFolder, parentItemId);
-        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddOrgFolder, parentItemId);
-        var addedItem = await service.AddOrgFolder(item, subFolderName);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddOrgFolder, parentItemId);
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddOrgFolder, await context.ToSummary(addedItem));
-        return opResult.ToString();
-
-      } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddOrgFolder, parentItemId, $"Failed to add folder {subFolderName} to parent item with ID {parentItemId}");
-      }
-    }
-    public async Task<string> AddOrgFile(int folderItemId, string fileName, string fileContent) {
-      try {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
-        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-        var item = await context.GetItemDtoById(folderItemId);
-        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddOrgFile, folderItemId);
-        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddOrgFile, folderItemId);
-        var addedItem = await service.AddOrgFile(item, fileName, fileContent);
-        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddOrgFile, folderItemId);
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddOrgFile, await context.ToSummary(addedItem));
-        return opResult.ToString();
-      } catch (Exception ex) {
-        return ex.ToOpResult(_logger, Cx.CmdAddOrgFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
-      }
-    }
+ 
 
     public async Task<string> AddProjectRoot(string projectRootName) { 
         try {

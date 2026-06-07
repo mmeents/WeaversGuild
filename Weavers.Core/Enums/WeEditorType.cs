@@ -23,6 +23,8 @@ namespace Weavers.Core.Enums {
     Folder = 13,
     RelativeFolder = 14,
     Url = 15,
+    Reference = 16,
+    Template = 17,
 
   }
 

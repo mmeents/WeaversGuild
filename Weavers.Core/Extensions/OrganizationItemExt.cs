@@ -12,7 +12,7 @@ using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Weavers.Core.Extensions {
   public static class OrganizationItemExt {
-    public static async Task<LibraryItemDto> GetOrganizationItemDto(this FabricDbContext fabricDbContext, CancellationToken cancellationToken) {
+    public static async Task<LibraryItemDto?> GetOrganizationItemDto(this FabricDbContext fabricDbContext, CancellationToken cancellationToken) {
 
       var organization = await fabricDbContext.Items
         .AsNoTracking()

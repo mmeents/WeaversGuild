@@ -26,29 +26,30 @@ namespace Weavers.Core.Handlers.DepItems {
   public class AddEntityInboundNavCommandHandler : IRequestHandler<AddRemoveEntityInboundNavCommand, bool> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
-    private readonly ConcurrentDictionary<int, ItemDto> _cache = new ConcurrentDictionary<int, ItemDto>();
+    private readonly ISessionItemCacheService _sessionCache;
 
-    public AddEntityInboundNavCommandHandler(FabricDbContext context, IMediator mediator) {
+    public AddEntityInboundNavCommandHandler(FabricDbContext context, IMediator mediator, ISessionItemCacheService sessionCache) {
       _context = context;
       _mediator = mediator;
+      _sessionCache = sessionCache;
     }
 
     public async Task<bool> Handle(AddRemoveEntityInboundNavCommand request, CancellationToken cancellationToken) {
 
-      var targetEntityItem = await _context.GetItemDtoById(request.TargetEntityItemId, cancellationToken);  // entity class
+      var targetEntityItem = await _sessionCache.GetItemAsync(request.TargetEntityItemId, cancellationToken);  // entity class
       if (targetEntityItem == null || targetEntityItem.Relations == null) return false;
 
       var parentItemId = targetEntityItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemId; // look up parent.     
       if (parentItemId == null) return false;
 
-      var fromEntityItem = await _context.GetItemDtoById(request.FromEntityItemId, cancellationToken);  // from entity class.      
+      var fromEntityItem = await _sessionCache.GetItemAsync(request.FromEntityItemId, cancellationToken);  // from entity class.      
       if (fromEntityItem == null) return false;
 
       var entityNameProp = fromEntityItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDbTableName);
       var entityTableDisplayName = entityNameProp != null ? entityNameProp.Value : fromEntityItem.Name ?? "UnknownEntity";  
       if (entityTableDisplayName == null) return false;
 
-      var propertyItem = await _context.GetItemDtoById(request.AddPropertyItemId, cancellationToken);   // property added  
+      var propertyItem = await _sessionCache.GetItemAsync(request.AddPropertyItemId, cancellationToken);   // property added  
       if (propertyItem == null) return false; 
 
       var originalNavItem = await GetEntityNavForProperty(propertyItem, cancellationToken);     // properties navigation item.  This is thd deriving nav already exists.
@@ -174,7 +175,7 @@ namespace Weavers.Core.Handlers.DepItems {
       var targetId = propItem.Id.ToString();
       foreach (var importRel in entityItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityInboundNavigationModel)) {
         if (importRel.RelatedItemId != null) {
-          var importItem = await GetCachedItemById(importRel.RelatedItemId.Value, cancellationToken);
+          var importItem = await _sessionCache.GetItemAsync(importRel.RelatedItemId.Value, cancellationToken);
           if (importItem != null) {
             var importProp =  importItem.Properties.FirstOrDefault(p => p.Name == Cx.ItForeignKey && p.Value == targetId);
             if (importProp != null) { 
@@ -186,23 +187,10 @@ namespace Weavers.Core.Handlers.DepItems {
       return null;
     }
 
-    private async Task<ItemDto?> GetCachedItemById(int ItemId, CancellationToken cancellationToken) {
-      if (_cache.Keys.Contains(ItemId)) {
-        var item = _cache[ItemId];
-        return item;
-      } else {
-        var item = await _context.GetItemDtoById(ItemId, cancellationToken);
-        if (item != null) {
-          _cache[item.Id] = item;
-        }
-        return item;
-      }
-    }
-
     private async Task<ItemDto?> GetEntityNavForProperty(ItemDto propItem, CancellationToken cancellationToken) {
       foreach (var importRel in propItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)) {
         if (importRel.RelatedItemId != null) {
-          var importItem = await GetCachedItemById(importRel.RelatedItemId.Value, cancellationToken);
+          var importItem = await _sessionCache.GetItemAsync(importRel.RelatedItemId.Value, cancellationToken);
           if (importItem != null) {
             return importItem;
           }

@@ -42,6 +42,8 @@ namespace Weavers.Core.Extensions {
     public static string GetFileName(this ItemDto item) {
       if (item.ItemTypeId.IsFileNameType()) {
         var result = item.ItemTypeId switch {
+          (int)WeItemType.DigitalOperatorModel => item.Name.UrlSafe() + ".json",
+          (int)WeItemType.DeskModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.OrgDocModel => item.Name.UrlSafe() + ".md",
           (int)WeItemType.FileMdModel => item.Name.UrlSafe() + ".md",
           (int)WeItemType.FileHtmlModel => item.Name.UrlSafe() + ".html",

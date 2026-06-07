@@ -1,0 +1,1 @@
+{"MaxAttempts":3,"DeskId":27,"DeskName":"ReviewAppIdea","OperatorId":25,"Operator":"Marvin","DeskRoleEnumInt":202,"SysPromptTemplate":"this is the {{model.desk}} desk.  \r\n\r\nTools available to you are:\r\n{{for cmd in model.role_commands}}  {{cmd.command}}\r\n{{end}}   ","PushDeskName":"AddNewAppIdea","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"TheLoomAppSyncDesk"}

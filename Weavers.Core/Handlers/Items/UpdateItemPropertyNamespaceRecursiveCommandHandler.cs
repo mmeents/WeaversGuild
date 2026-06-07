@@ -9,13 +9,18 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
 
   public record UpdateItemPropertyNamespaceRecursiveCommand(int ItemId, string OldNamespace, string NewNamespace) : IRequest;
 
-  public class UpdateItemPropertyNamespaceRecursiveCommandHandler(FabricDbContext context) :IRequestHandler<UpdateItemPropertyNamespaceRecursiveCommand> {
+  public class UpdateItemPropertyNamespaceRecursiveCommandHandler(
+    FabricDbContext context,
+    ISessionItemCacheService sessionItemCacheService
+   ) :IRequestHandler<UpdateItemPropertyNamespaceRecursiveCommand> {
     private readonly FabricDbContext _context = context;  
+    private readonly ISessionItemCacheService _sessionCache = sessionItemCacheService;
     private readonly HashSet<int> _packageRefs = new HashSet<int>();
     public async Task Handle(UpdateItemPropertyNamespaceRecursiveCommand request, CancellationToken cancellationToken) {
       await WalkAndUpdate(request.ItemId, request.OldNamespace, request.NewNamespace, cancellationToken);
@@ -79,6 +84,7 @@ namespace Weavers.Core.Handlers.Items {
         itemProp.Value = namespaceName;
         _context.ItemProperties.Update(itemProp);
         await _context.SaveChangesAsync();
+        _sessionCache.RemoveCacheItem(prop.ItemId);
       }
     }
 

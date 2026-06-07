@@ -7,16 +7,16 @@ namespace Weavers.Core.Extensions {
 
     public static Dictionary<WeItemType, List<ItemPropertyDefault>> DefaultProps = new() {
 
-      #region Org Defaults 
-      
+      #region Org Defaults       
       {
         WeItemType.OrganizationModel, new List<ItemPropertyDefault>(){
-          new() {Rank = 3, Key = Cx.ItOrgCharter, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 3, Key = Cx.ItCharter, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 2, Key = Cx.ItRootFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
           new() {Rank = 1, Key = Cx.ItRetentionDays, DefaultValue = "3", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }
 
         }
       },
+      #region Harness defaults.
       {
         WeItemType.HarnessAppModel, new List<ItemPropertyDefault>(){          
           new() {Rank = 5, Key = Cx.ItMachineName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
@@ -29,8 +29,7 @@ namespace Weavers.Core.Extensions {
         }
       },
       {
-        WeItemType.PresenceLmStudioGatewayModel,   // LM Studio details.
-        new List<ItemPropertyDefault>(){
+        WeItemType.PresenceLmStudioGatewayModel, new List<ItemPropertyDefault>(){
           new() {Rank = 4, Key = Cx.ItReSync, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() {Rank = 3, Key = Cx.ItUrlBase, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },          
           new() {Rank = 2, Key = Cx.ItApiToken, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Password },          
@@ -51,6 +50,70 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 2, Key = Cx.ItProviderType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }
         }
       },
+      #endregion
+      { WeItemType.DigitalOperatorPoolModel, new List<ItemPropertyDefault>(){
+          new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
+        } 
+      },
+      {
+        WeItemType.DigitalOperatorModel,  // roll named taskable digital worker. could be a LM or a agent with tools.
+        new List<ItemPropertyDefault>(){          
+          new() {Rank = 8, Key = Cx.ItPresence, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PresModelLmStudioModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },          
+          new() {Rank = 7, Key = Cx.ItSystemPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },          
+          new() {Rank = 1, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName }
+        }
+      },
+      #region Org Chart start
+      {
+        WeItemType.OrgChartModel,  new List<ItemPropertyDefault>(){          
+          new() {Rank = 9, Key = Cx.ItFloorStatus, DefaultValue = WeItemType.FloorDisabled.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.FloorStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
+        }
+      },
+       {
+        WeItemType.DeskLogModel,  new List<ItemPropertyDefault>(){ 
+          new() {Rank = 11, Key = Cx.ItEnabled, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
+        }
+      },
+      {
+        WeItemType.DeskModel,  new List<ItemPropertyDefault>(){                 
+          new() {Rank = 12, Key = Cx.ItDeskRole, DefaultValue = "0",  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskRoles, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+
+          new() {Rank = 11, Key = Cx.ItEnabled, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 10, Key = Cx.ItOperator, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DigitalOperatorModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+
+          new() {Rank = 9, Key = Cx.ItSystemPromptTemplate, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Template },          
+
+          new() {Rank = 7, Key = Cx.ItOnSuccessSendTo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 6, Key = Cx.ItOnFailSendTo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 5, Key = Cx.ItOnPushbackSendTo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 4, Key = Cx.ItMaxAttempts, DefaultValue = "3", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 2, Key = Cx.ItCurrentTodo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 1, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
+        }
+      },
+      {
+        WeItemType.TodoModel,  new List<ItemPropertyDefault>(){
+          new() {Rank = 12, Key = Cx.ItConfirmedReady, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 11, Key = Cx.ItStatus, DefaultValue = ((int)WeItemType.TodoNotStarted).ToString(),  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoStatuses, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 10, Key = Cx.ItReferenceItem, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Reference },
+          new() {Rank = 9, Key = Cx.ItUserPromptTemplate, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Template },
+          new() {Rank = 8, Key = Cx.ItFromTodo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 8, Key = Cx.ItCloseReason, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+        }
+      },
+      {
+        WeItemType.TodoAttemptModel,  new List<ItemPropertyDefault>(){
+          new() {Rank = 10, Key = Cx.ItStatus, DefaultValue = WeItemType.RunInProgress.AsIntString(),  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.RunStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 9, Key = Cx.ItContinueTodo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 8, Key = Cx.ItSystemPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 7, Key = Cx.ItUserPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 6, Key = Cx.ItResponse, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 5, Key = Cx.ItOperator, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DigitalOperatorModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        }
+      },
+      #endregion
       {
         WeItemType.OrgDocFolderModel,  new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
@@ -61,19 +124,7 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName }
         }
       },
-      {
-        WeItemType.DigitalOperatorModel,  // roll named taskable digital worker. could be a LM or a agent with tools.
-        new List<ItemPropertyDefault>(){
-          new() {Rank = 10, Key = Cx.ItAgentName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() {Rank = 9, Key = Cx.ItAgentRole, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() {Rank = 8, Key = Cx.ItPresence, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PresModelLmStudioModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },          
-          new() {Rank = 7, Key = Cx.ItSystemPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
-          new() {Rank = 6, Key = Cx.ItJobCounter, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
-          new() {Rank = 5, Key = Cx.ItJobSuccess, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
-          new() {Rank = 4, Key = Cx.ItJobFailure, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
-
-        }
-      },      
+        
       #endregion
       #region File Defaults
       {

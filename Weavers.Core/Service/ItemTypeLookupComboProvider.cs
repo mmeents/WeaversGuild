@@ -1,14 +1,20 @@
 ﻿using MediatR;
-using Weavers.Core.Interfaces;
-using Weavers.Core.Models;
-using Weavers.Core.Handlers.Items;
-using Weavers.Core.Handlers.ItemTypes;
+using Microsoft.Extensions.DependencyInjection;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.ItemTypes;
+using Weavers.Core.Handlers.Templates;
+using Weavers.Core.Interfaces;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Service {
-  public class ItemTypeLookupComboProvider(IMediator mediator) : IItemTypeLookupComboProvider {
-    private IMediator _mediator = mediator;
+  public class ItemTypeLookupComboProvider : IItemTypeLookupComboProvider {
+    private readonly IServiceScopeFactory _scopeFactory;
+    public ItemTypeLookupComboProvider(IServiceScopeFactory scopeFactory) {
+      _scopeFactory = scopeFactory;
+    }
+
     public string GetDisplayText(object? value) {
       if (value == null) { return ""; }
       if (value is string strValue) {
@@ -21,7 +27,9 @@ namespace Weavers.Core.Service {
           } catch (Exception) { }  // didnt' work, probably a reference to an item. 
 
           try {
-             var iType = Task.Run( async () => await _mediator.Send(new GetItemByIdQuery(itemTypeId)).ConfigureAwait(false)).GetAwaiter().GetResult();
+            using var scope = _scopeFactory.CreateScope();
+            var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+            var iType = Task.Run( async () => await mediator.Send(new GetItemByIdQuery(itemTypeId)).ConfigureAwait(false)).GetAwaiter().GetResult();
              if (iType != null) { 
               return iType.Description;
              }
@@ -33,27 +41,48 @@ namespace Weavers.Core.Service {
       return $"unknown key {value}";
     }
 
-    public async Task<IEnumerable<ItemLookup>> GetItemsAsync(ItemPropertyDto? field = null) {
-      if (field == null) {
-        throw new ArgumentNullException(nameof(field), "Field parameter cannot be null");
-      }
-      var itemTypeId = field.ReferenceItemTypeId;
-      if (itemTypeId == null) {
-        return Enumerable.Empty<ItemLookup>();
-      } else { 
-        return await _mediator.Send(new GetItemsByItemTypeQuery(itemTypeId.Value));
-      }     
+    private List<ItemLookup>? _typesCache;
+
+    public async Task<IEnumerable<ItemLookup>> GetTypesAsync() {
+      if (_typesCache != null) return _typesCache;
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      return _typesCache =
+        await mediator.Send(new GetItemsByItemTypeQuery((int)WeItemType.ActiveItemTypes));
+    }
+
+    public async Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId) {
+      if (itemTypeId is null or 0) return Enumerable.Empty<ItemLookup>();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      return await mediator.Send(new GetItemsByItemTypeQuery(itemTypeId.Value));
     }
 
     public async Task<ItemDto?> GetItemByIdAsync(int id) {
-      var result = await _mediator.Send(new GetItemByIdQuery(id));
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var result = await mediator.Send(new GetItemByIdQuery(id));
       return result;
     }
 
     public bool IsValidValue(object? value) {
       throw new NotImplementedException();
     }
+
+    public async Task<string> RenderTemplate(ItemPropertyDto Field, CancellationToken cancellationToken) {
+      if (Field == null ||  Field.Value == null) return "";      
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var result = await mediator.Send(new RenderFieldTemplate(Field), cancellationToken);
+        return result;        
+      } catch (Exception) { 
+        return $"error rendering template for key {Field.Value}";
+      }        
+    } 
   }
 
-  public interface IItemTypeLookupComboProvider : IComboBoxDataProvider;
+  public interface IItemTypeLookupComboProvider : IComboBoxDataProvider {
+
+  }
 }

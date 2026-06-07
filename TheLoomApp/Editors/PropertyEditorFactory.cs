@@ -40,6 +40,8 @@ namespace TheLoomApp.Editors {
         WeEditorType.Folder => new FolderPickerPropertyEditor(),
         WeEditorType.RelativeFolder => new RelativeFolderPropertyEditor(),
         WeEditorType.Url => new UrlPropertyEditor(),
+        WeEditorType.Reference => new ReferencePropertyEditor(),
+        WeEditorType.Template => new TemplatePropertyEditor(),
         _ => new TextPropertyEditor()
       };
       if (config != null) {
@@ -52,24 +54,6 @@ namespace TheLoomApp.Editors {
       return editor;
     }    
 
-    /// <summary>
-    /// Gets the recommended height for an editor type
-    /// </summary>
-    public static int GetRecommendedHeight(WeEditorType editorType) {
-      return editorType switch {
-        WeEditorType.Memo => 100,     
-        _ => 30
-      };
-    }
-
-    /// <summary>
-    /// Registers a custom editor factory function for extensibility
-    /// </summary>
-    private static readonly Dictionary<WeEditorType, Func<IAmAFieldEditor>> _customFactories = new();
-
-    public static void RegisterCustomEditor(WeEditorType editorType, Func<IAmAFieldEditor> factory) {
-      _customFactories[editorType] = factory;
-    }
   }
 
   /// <summary>

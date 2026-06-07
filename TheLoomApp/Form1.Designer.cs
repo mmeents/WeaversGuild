@@ -32,6 +32,8 @@
       miReloadTree = new ToolStripMenuItem();
       toolStripSeparator1 = new ToolStripSeparator();
       miAddDigitalOperator = new ToolStripMenuItem();
+      miAddOrgDesk = new ToolStripMenuItem();
+      miAddDeskTodo = new ToolStripMenuItem();
       miAddOrgFolder = new ToolStripMenuItem();
       miAddOrgFile = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
@@ -68,6 +70,7 @@
       label2 = new Label();
       edAppDefaultFolder = new TextBox();
       tpItem = new TabPage();
+      btnAttemptTodo = new Button();
       btnWriteFile = new Button();
       btnGenerateDesc = new Button();
       tabControl2 = new TabControl();
@@ -168,9 +171,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 484);
+      cmsTreeMenus.Size = new Size(209, 528);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -191,6 +194,20 @@
       miAddDigitalOperator.Size = new Size(208, 22);
       miAddDigitalOperator.Text = "Add Digital Operator";
       miAddDigitalOperator.Click += miAddDigitalOperator_Click;
+      // 
+      // miAddOrgDesk
+      // 
+      miAddOrgDesk.Name = "miAddOrgDesk";
+      miAddOrgDesk.Size = new Size(208, 22);
+      miAddOrgDesk.Text = "Add Desk";
+      miAddOrgDesk.Click += miAddOrgDesk_Click;
+      // 
+      // miAddDeskTodo
+      // 
+      miAddDeskTodo.Name = "miAddDeskTodo";
+      miAddDeskTodo.Size = new Size(208, 22);
+      miAddDeskTodo.Text = "Add Desk Todo";
+      miAddDeskTodo.Click += miAddDeskTodo_Click;
       // 
       // miAddOrgFolder
       // 
@@ -360,6 +377,10 @@
       ilTreeImages.Images.SetKeyName(17, "scroll.png");
       ilTreeImages.Images.SetKeyName(18, "scene.png");
       ilTreeImages.Images.SetKeyName(19, "character.png");
+      ilTreeImages.Images.SetKeyName(20, "Galactic-Senate--Streamline-Font-Awesome.png");
+      ilTreeImages.Images.SetKeyName(21, "Ai-Settings-Cog-Spark--Streamline-Micro.png");
+      ilTreeImages.Images.SetKeyName(22, "Mail-Send--Streamline-Micro.png");
+      ilTreeImages.Images.SetKeyName(23, "Inbox-Open--Streamline-Micro.png");
       // 
       // splitContainer3
       // 
@@ -524,6 +545,7 @@
       // 
       // tpItem
       // 
+      tpItem.Controls.Add(btnAttemptTodo);
       tpItem.Controls.Add(btnWriteFile);
       tpItem.Controls.Add(btnGenerateDesc);
       tpItem.Controls.Add(tabControl2);
@@ -544,6 +566,16 @@
       tpItem.TabIndex = 1;
       tpItem.Text = "Details";
       tpItem.UseVisualStyleBackColor = true;
+      // 
+      // btnAttemptTodo
+      // 
+      btnAttemptTodo.Location = new Point(242, 35);
+      btnAttemptTodo.Name = "btnAttemptTodo";
+      btnAttemptTodo.Size = new Size(101, 23);
+      btnAttemptTodo.TabIndex = 48;
+      btnAttemptTodo.Text = "Attempt Todo";
+      btnAttemptTodo.UseVisualStyleBackColor = true;
+      btnAttemptTodo.Click += btnAttemptTodo_Click;
       // 
       // btnWriteFile
       // 
@@ -610,7 +642,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(154, 14);
+      edItemDesc.AutoScrollMinSize = new Size(179, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -935,5 +967,8 @@
     private ToolStripMenuItem miAddOrgFolder;
     private ToolStripMenuItem miAddOrgFile;
     private Button btnImportOrgDocs;
+    private ToolStripMenuItem miAddOrgDesk;
+    private ToolStripMenuItem miAddDeskTodo;
+    private Button btnAttemptTodo;
   }
 }

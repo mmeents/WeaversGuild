@@ -28,10 +28,12 @@ namespace Weavers.Core.Service {
       _logger.LogInformation("🚀 Weavers MCP Server starting");
       DiBridgeService.Initialize(_serviceProvider);
       MCPServer.Register<SummaryTools>();
+      MCPServer.Register<AppGraphOrgTools>();
       MCPServer.Register<AppGraphFileTools>();
       MCPServer.Register<AppGraphLibraryTools>();
       MCPServer.Register<AppGraphClassTools>();
       MCPServer.Register<AppGraphEntityTools>();
+      MCPServer.Register<TodoTools>();
 
       var mcpDriver = _configuration[Cx.Provider] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();

@@ -6,6 +6,7 @@ using Weavers.Core.Entities;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.DepItems;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
   public record DeleteItemCommand(int Id) : IRequest<bool>;
@@ -13,13 +14,16 @@ namespace Weavers.Core.Handlers.Items {
   public class DeleteItemCommandHandler : IRequestHandler<DeleteItemCommand, bool> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
-    public DeleteItemCommandHandler(FabricDbContext context, IMediator mediator) {
+    private readonly ISessionItemCacheService _sessionCache;
+    public DeleteItemCommandHandler(FabricDbContext context, IMediator mediator, ISessionItemCacheService sessionCache) {
       _context = context;
       _mediator = mediator;
+      _sessionCache = sessionCache;
     }
 
     public async Task<bool> Handle(DeleteItemCommand request, CancellationToken cancellationToken) {
 
+      _sessionCache.RemoveCacheItem(request.Id);
       var item = await _context.Items
         .Include(i => i.Relations)
         .Include(i => i.IncomingRelations)
@@ -91,6 +95,7 @@ namespace Weavers.Core.Handlers.Items {
     }
 
     private async Task CascadeIfOrphan(int itemId, CancellationToken cancellationToken) {
+      _sessionCache.RemoveCacheItem(itemId);
       var related = await _context.Items
           .Include(i => i.Relations)
           .Include(i => i.IncomingRelations)

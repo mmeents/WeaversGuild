@@ -4,6 +4,10 @@
 namespace Weavers.Core.Enums {
   public enum WeItemType {    
 
+    NotSet = 1, // dynamic lookup types need a default value.
+
+    ActiveItemTypes = 2, 
+
     NavigationTypes = 5,
       NavHasOneToOne = 6,
       NavHasOneToMany = 7,
@@ -94,7 +98,12 @@ namespace Weavers.Core.Enums {
       RatingYes = 111,
       RatingNo = 112,
 
-  // WeaversGuilds commands for future workflow designs
+    FloorStatus = 115,
+      FloorDisabled = 116,
+      FloorOperational = 117,
+      FloorStopping = 118,
+
+    // WeaversGuilds commands for future workflow designs
     LoomMcpCommands = 120,      
       CmdHelp = 122,   // in Summary Tools.            
       CmdListProjects = 124,
@@ -105,7 +114,15 @@ namespace Weavers.Core.Enums {
       CmdUpdateItemContent = 134,
       CmdUpdateItemProperty = 136,
 
-    // Build tool commands. 
+      CmdCompleteTodo = 138,
+      CmdRejectTodo = 139,
+      CmdReviewPass = 140,
+      CmdReviewFail = 141,
+
+      CmdAddDigitalOperatior =144,
+      CmdAddOrgFolder = 146,
+      CmdAddOrgFile = 148,
+
       CmdAddProjectRoot = 150,  // in AppGraphFileTools
       CmdAddSubFolder = 152,
       CmdAddSolution = 154,
@@ -127,7 +144,38 @@ namespace Weavers.Core.Enums {
       CmdAddEntityClassImport = 180,
       CmdAddEntityProperty = 182,
 
-// below are the main tree view nodes for the app. 
+    DeskRoles = 199,    // role roadmap
+      RoleNone = 200, 
+      RoleResearch = 201,    
+      RoleReviewResearch = 202,
+      RoleDesign = 203,
+      RoleReviewDesign = 204,
+      RolePlan = 205,
+      RoleReviewPlan = 206,
+      RoleBuildingOut = 207,
+      RoleReviewBuildOut = 208,
+      RoleTesting = 209,
+      RoleReviewTests = 210,
+      RoleDocument = 211,
+      RoleReviewDocument = 212,
+      RolePackaging = 213, 
+      RoleReviewPackaging = 214,
+
+    TodoStatuses = 220,
+      TodoNotStarted = 221,
+      TodoInProgress = 222,
+      TodoCompleteForward = 223,
+      TodoAbortedPushBack = 224,
+      TodoFailedForward = 225,
+
+    RunStatus = 230,
+      RunInProgress = 231,
+      RunCompleted = 232,
+      RunFailed = 233,
+      RanWithoutClose = 234,
+
+
+    // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
     
       HarnessAppModel = 1010,   // A processor core model for the organization. A model of the pc the loom app is running on. 
@@ -136,18 +184,23 @@ namespace Weavers.Core.Enums {
           PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
 
       HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
-        HarnessMcpSessionModel = 1022,  
-
-      OrgDocFolderModel = 1030,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
-        OrgDocModel = 1035,       // doc for Skill details.
+        HarnessMcpSessionModel = 1022,  // mcp session 
         
-      DigitalOperatorPoolModel  = 1040,
-        DigitalOperatorModel = 1045, //(Id, name, Presence, Rating)  // digital worker. 
-      
-      
+      DigitalOperatorPoolModel  = 1030, // folder or pool 
+        DigitalOperatorModel = 1035, //(Id, name, Presence, Rating)  // digital worker. 
 
-    ProjectFolderModel = 1100,
-      ProjectDocs = 1101,
+      OrgChartModel = 1040,     // automation central.
+        DeskLogModel = 1043,    // default type of desk as default for desk flow chaining
+        DeskModel = 1045,       // The regeular desk model
+          TodoModel = 1050,     // desk has a stack of todos to complete its work.
+            TodoAttemptModel = 1055,  // work attempts add as attempts.
+
+      OrgDocFolderModel = 1060,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
+        OrgDocModel = 1065,       // doc for Skill details.
+            
+
+      ProjectFolderModel = 1100,
+      ProjectDocs = 1101,       // doc types are 1-1 systme generated type of documentation where expectation that documentation department will fill in later.
         DocRating = 1107,      // thinking child for any Docs type. 
         // for example:
         // Doc (LibraryDoc, ClassDoc, MethodDoc etc.)
@@ -158,7 +211,7 @@ namespace Weavers.Core.Enums {
         //      ├── Reason
         //      └── RatedAt
 
-    RelativeFolderModel = 1110,
+      RelativeFolderModel = 1110,  // a regulear project folder
         RelativeFolderDocs = 1111,
 
       FileMdModel = 1120,

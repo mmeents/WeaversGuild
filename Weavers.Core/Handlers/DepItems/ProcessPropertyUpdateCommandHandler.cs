@@ -12,18 +12,21 @@ using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.DepItems {
 
   public record ProcessPropertyUpdateCommand(ItemDto EntityItem, ItemDto PropertyItem) : IRequest<bool>;
   public class ProcessPropertyUpdateCommandHandler : IRequestHandler<ProcessPropertyUpdateCommand, bool> {
     private readonly FabricDbContext _context;
-    private readonly IMediator _mediator;
+    private readonly IMediator _mediator;    
+    private readonly ISessionItemCacheService _sessionCache;
     private readonly ConcurrentDictionary<int, ItemDto> _cache = new ConcurrentDictionary<int, ItemDto>();
 
-    public ProcessPropertyUpdateCommandHandler(FabricDbContext context, IMediator mediator) {
+    public ProcessPropertyUpdateCommandHandler(FabricDbContext context, IMediator mediator, ISessionItemCacheService sessionCache) {
       _context = context;
       _mediator = mediator;
+      _sessionCache = sessionCache;
     }
 
     public async Task<bool> Handle(ProcessPropertyUpdateCommand request, CancellationToken cancellationToken) {
@@ -46,8 +49,8 @@ namespace Weavers.Core.Handlers.DepItems {
 
       if (request.EntityItem == null || request.PropertyItem == null) { return false; }
 
-      var propertyItem = await _context.GetItemDtoById(  request.PropertyItem.Id, cancellationToken);  // maybe fresh copies.
-      var entityItem = await _context.GetItemDtoById(  request.EntityItem.Id, cancellationToken);
+      var propertyItem = await _sessionCache.GetItemAsync(request.PropertyItem.Id, cancellationToken);  // maybe fresh copies.
+      var entityItem = await _sessionCache.GetItemAsync(request.EntityItem.Id, cancellationToken);
 
       if (propertyItem == null || entityItem == null) { return false; }
       if (propertyItem.ItemTypeId != (int)WeItemType.EntityPropertyModel) { return false; }
@@ -108,7 +111,7 @@ namespace Weavers.Core.Handlers.DepItems {
     private async Task<ItemDto?> GetEntityNavForProperty(ItemDto propItem, CancellationToken cancellationToken) {
       foreach (var importRel in propItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.EntityNavigationModel)) {
         if (importRel.RelatedItemId != null) {
-          var importItem = await _context.GetItemDtoById(importRel.RelatedItemId.Value, cancellationToken);
+          var importItem = await _sessionCache.GetItemAsync(importRel.RelatedItemId.Value, cancellationToken);
           if (importItem != null) {          
             return importItem;           
           }

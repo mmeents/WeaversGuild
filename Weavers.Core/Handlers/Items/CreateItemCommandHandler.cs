@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Extensions;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Service;   
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateItemCommand(
@@ -14,9 +15,10 @@ namespace Weavers.Core.Handlers.Items {
  ) : IRequest<ItemDto?>;
 
 
-  public class CreateItemCommandHandler(FabricDbContext context, ILogger<CreateItemCommandHandler> logger) : IRequestHandler<CreateItemCommand, ItemDto?> {
+  public class CreateItemCommandHandler(FabricDbContext context, ILogger<CreateItemCommandHandler> logger, ISessionItemCacheService sessionCache) : IRequestHandler<CreateItemCommand, ItemDto?> {
     private readonly FabricDbContext _context=context;
     private readonly ILogger<CreateItemCommandHandler> _logger=logger;
+    private readonly ISessionItemCacheService _sessionCache=sessionCache;
     public async Task<ItemDto?> Handle(CreateItemCommand request, CancellationToken cancellationToken) {
 
       var itemType = await _context.ItemTypes.FindAsync( request.ItemTypeId, cancellationToken);
@@ -51,7 +53,8 @@ namespace Weavers.Core.Handlers.Items {
 
       ItemDto? result = null;
       try { 
-        result = await _context.GetItemDtoById(item.Id, cancellationToken);
+        _sessionCache.RemoveCacheItem(item.Id); // force reload of the item in the cache. 
+        result = await _sessionCache.GetItemAsync(item.Id, cancellationToken);        
         return result;
       } catch (Exception ex) {
         _logger.LogError(ex, "Error retrieving created item with id {ItemId}", item.Id);

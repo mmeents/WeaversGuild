@@ -27,25 +27,30 @@ namespace Weavers.Core {
         .SetDefaultKeyLifetime(TimeSpan.FromDays(Cx.KeyLifetimeDays));
 
       services.AddScoped<ICryptoService, CryptoService>();
+      services.AddSingleton<ISessionItemCacheService, SessionItemCacheService>();
 
       services.AddSingleton<INotificationHandler<ItemUpdatedNotification>, ItemUpdatedNotificationHandler>();
       services.AddSingleton<IGraphItemUpdateService, GraphItemUpdateService>();
       services.AddSingleton<IAppSessionService, AppSessionService>();
+      services.AddSingleton<IGatewayRunRegistry, GatewayRunRegistry>();
 
       services.AddScoped<IAppSettingService, AppSettingService>();
       services.AddScoped<IAppDataService, AppDataService>();
+      services.AddScoped<IAppGraphOrgService, AppGraphOrgService>();
       services.AddScoped<IAppGraphFileService, AppGraphFileService>();
       services.AddScoped<IAppGraphClassService, AppGraphClassService>();
       services.AddScoped<IAppItemTemplateService, AppItemTemplateService>();
       services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
-      services.AddScoped<ILmStudioService, LmStudioService>();
+      services.AddScoped<ILmStudioService, LmStudioService>();      
 
       services.AddSingleton<IBaseToolsHandler, BaseToolsHandler>();
       services.AddSingleton<ISummaryToolsHandler, SummaryToolsHandler>();
+      services.AddSingleton<IAppGraphOrgToolsHandler, AppGraphOrgToolsHandler>();
       services.AddSingleton<IAppGraphFileToolsHandler, AppGraphFileToolsHandler>();
       services.AddSingleton<IAppGraphLibraryToolsHandler, AppGraphLibraryToolsHandler>();
       services.AddSingleton<IAppGraphClassToolsHandler, AppGraphClassToolsHandler>();
-      services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();
+      services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();      
+      services.AddSingleton<ITodoToolsHandler, TodoToolsHandler>();
 
       return services;
     }

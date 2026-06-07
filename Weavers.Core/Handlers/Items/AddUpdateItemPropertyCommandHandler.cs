@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
 
@@ -22,10 +23,12 @@ namespace Weavers.Core.Handlers.Items {
 
   public class AddUpdateItemPropertyCommandHandler : IRequestHandler<AddUpdateItemPropertyCommand, ItemPropertyDto> {
     private readonly FabricDbContext _context;    
+    private readonly ISessionItemCacheService _sessionCache;
 
     public AddUpdateItemPropertyCommandHandler(
-      FabricDbContext context ) {
+      FabricDbContext context, ISessionItemCacheService sessionCache) {
       _context = context;
+      _sessionCache = sessionCache;
     }
 
     public async Task<ItemPropertyDto> Handle(AddUpdateItemPropertyCommand request, CancellationToken cancellationToken) {
@@ -62,6 +65,7 @@ namespace Weavers.Core.Handlers.Items {
 
       property = await _context.ItemProperties.FindAsync(new object[] { id }, cancellationToken);      
       var response = property?.ToDto() ?? throw new Exception("Property not found after update");      
+      _sessionCache.RemoveCacheItem(property.ItemId);  
       return response;
     }
   }

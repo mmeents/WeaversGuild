@@ -8,14 +8,19 @@ using Weavers.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Extensions;
 using Weavers.Core.Enums;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.DepItems {
 
   public record GetLibraryRelativeCommand(int ClassItemId) : IRequest<ItemDto?>;
-  public class GetLibLibraryRelativeCommandHandler(FabricDbContext context) : IRequestHandler<GetLibraryRelativeCommand, ItemDto?> {
+  public class GetLibLibraryRelativeCommandHandler(
+    FabricDbContext context,
+    ISessionItemCacheService sessionCache
+  ) : IRequestHandler<GetLibraryRelativeCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;    
-    public async Task<ItemDto?> Handle(GetLibraryRelativeCommand request, CancellationToken cancellationToken) {     
-      var item = await _context.GetItemDtoById(request.ClassItemId);
+    private readonly ISessionItemCacheService _sessionCache = sessionCache;
+    public async Task<ItemDto?> Handle(GetLibraryRelativeCommand request, CancellationToken cancellationToken) {           
+      var item = await _sessionCache.GetItemAsync(request.ClassItemId, cancellationToken);
       var visited = new HashSet<int>();
       while (item != null) {
         if (!visited.Add(item.Id)) break;
@@ -26,7 +31,7 @@ namespace Weavers.Core.Handlers.DepItems {
         if (parentItemId == null) {
           break;
         }
-        item = await _context.GetItemDtoById(parentItemId.Value);
+        item = await _sessionCache.GetItemAsync(parentItemId.Value, cancellationToken);
       }
       return null;
     }

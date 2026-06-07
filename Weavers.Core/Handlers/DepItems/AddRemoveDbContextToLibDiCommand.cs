@@ -5,6 +5,7 @@ using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.DepItems {
 
@@ -12,14 +13,16 @@ namespace Weavers.Core.Handlers.DepItems {
   public class AddRemoveDbContextToLibDiCommandHandler : IRequestHandler<AddRemoveDbContextToLibDiCommand, bool> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
-    public AddRemoveDbContextToLibDiCommandHandler(FabricDbContext context, IMediator mediator) {
+    private readonly ISessionItemCacheService _sessionCache;
+    public AddRemoveDbContextToLibDiCommandHandler(FabricDbContext context, IMediator mediator, ISessionItemCacheService sessionCache) {
       _context = context;
       _mediator = mediator;
+      _sessionCache = sessionCache;
     }
 
     public async Task<bool> Handle(AddRemoveDbContextToLibDiCommand request, CancellationToken cancellationToken) {
 
-      var diItem = await _context.GetItemDtoById(request.DiItemId, cancellationToken);
+      var diItem = await _sessionCache.GetItemAsync(request.DiItemId, cancellationToken);
       if ( diItem == null || (diItem.ItemTypeId != (int)WeItemType.DependencyInjectionModel) ) return false;
 
       var libParentRel = diItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains);
@@ -28,7 +31,7 @@ namespace Weavers.Core.Handlers.DepItems {
       var DbContextRel = diItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DbContextModel);
       if ( DbContextRel == null && request.HasDbContext) {
 
-        var libItem = await _context.GetItemDtoById(libParentRel.ItemId, cancellationToken);
+        var libItem = await _sessionCache.GetItemAsync(libParentRel.ItemId, cancellationToken);
         if ( libItem == null ) return false;
         var libItemname = libItem?.Name.UrlSafe() ?? "NeedsLib";
         var dbContextName = $"{libItemname}DbContext";

@@ -11,7 +11,24 @@ using Weavers.Core.Service;
 namespace TheLoomApp.Extensions {
   public static class AppGraphExts {
 
-    public static async Task AddDigitalOperator(this TreeView _tv, IAppGraphFileService graphSrvs, string name) {
+    public static async Task AddDesk(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.OrgChartModel) { return; }
+      var newSubItem = await graphSrvs.AddOrgDesk(item, name);
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
+    public static async Task AddDeskTodo(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.DeskModel) { return; }
+      var newSubItem = await graphSrvs.AddDeskTodo(item, name);
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
+
+    public static async Task AddDigitalOperator(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.DigitalOperatorPoolModel) { return; }
@@ -20,7 +37,7 @@ namespace TheLoomApp.Extensions {
       _tv.AddNewItem(newSubItem);
     }
 
-    public static async Task AddOrgFolder(this TreeView _tv, IAppGraphFileService graphSrvs, string name) {
+    public static async Task AddOrgFolder(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || !item.IsValidFolderParent()) { return; }
@@ -29,7 +46,7 @@ namespace TheLoomApp.Extensions {
       _tv.AddNewItem(newSubItem);
     }
 
-    public static async Task AddOrgFile(this TreeView _tv, IAppGraphFileService graphSrvs, string name, string? content = null) {
+    public static async Task AddOrgFile(this TreeView _tv, IAppGraphOrgService graphSrvs, string name, string? content = null) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || !item.IsValidFolderParent()) { return; }
@@ -39,10 +56,12 @@ namespace TheLoomApp.Extensions {
     }
 
     public static async Task AddProjectRoot(this TreeView _tv, IAppGraphFileService graphSrvs, string name, string defaultFolder) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (item == null || item.ItemTypeId != (int)WeItemType.OrganizationModel) { return; }
       var newItem = await graphSrvs.AddProjectRoot(name, defaultFolder);
       if (newItem == null) return;
-      var idx = _tv.Nodes.Add(newItem.ToItemNode());
-      _tv.SelectedNode = _tv.Nodes[idx];
+      _tv.AddNewItem(newItem);
     }
 
     public static async Task AddSubFolder(this TreeView _tv, IAppGraphFileService graphSrvs, string name) {

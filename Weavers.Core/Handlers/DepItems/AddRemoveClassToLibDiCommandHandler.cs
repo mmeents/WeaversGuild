@@ -12,16 +12,19 @@ using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.DepItems {
   public record AddRemoveClassToLibDiCommand(int ClassItemId, bool Add, bool GenerateInterface) : IRequest<bool>;
   public class AddRemoveClassToLibDiCommandHandler : IRequestHandler<AddRemoveClassToLibDiCommand, bool> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
+    private readonly ISessionItemCacheService _sessionCache;
 
-    public AddRemoveClassToLibDiCommandHandler(FabricDbContext context, IMediator mediator) {
+    public AddRemoveClassToLibDiCommandHandler(FabricDbContext context, IMediator mediator, ISessionItemCacheService sessionCache) {
       _context = context;
       _mediator = mediator;
+      _sessionCache = sessionCache;
     }
 
 
@@ -35,11 +38,12 @@ namespace Weavers.Core.Handlers.DepItems {
       if (diItemid == null) {
         return false;
       }
-      var DiItem = await _context.GetItemDtoById(diItemid.Value);
+      var DiItem = await _sessionCache.GetItemAsync(diItemid.Value, cancellationToken);
+
       if (DiItem == null) {
         return false;
       }
-      var classItem = await _context.GetItemDtoById(request.ClassItemId);
+      var classItem = await _sessionCache.GetItemAsync(request.ClassItemId, cancellationToken);
       if (classItem == null) {
         return false;
       }
@@ -87,7 +91,7 @@ namespace Weavers.Core.Handlers.DepItems {
     private async Task<int?> GetLibDiImportIdForClass(ItemDto DepItem, int classItemId, CancellationToken cancellationToken) {
       foreach (var importRel in DepItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DiImportModel)) {
         if (importRel.RelatedItemId != null) {
-          var importItem = await _context.GetItemDtoById(importRel.RelatedItemId.Value, cancellationToken);
+          var importItem = await _sessionCache.GetItemAsync(importRel.RelatedItemId.Value, cancellationToken);
           if (importItem != null) {
             var prop = importItem?.Properties
               .FirstOrDefault(p => p.Name == Cx.ItRegisterObject && p.Value == classItemId.ToString());

@@ -1,3 +1,4 @@
+using Azure.Core;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
@@ -12,6 +13,7 @@ using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Import;
+using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
@@ -21,6 +23,7 @@ namespace TheLoomApp {
   public partial class Form1 : Form {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IAppDataService _appDataService;
+    private readonly IAppGraphOrgService _appGraphOrgService;
     private readonly IAppGraphFileService _appGraphService;
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
@@ -40,10 +43,12 @@ namespace TheLoomApp {
       _serviceScopeFactory = serviceScopeFactory;
       using var scope = _serviceScopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
+      _appGraphOrgService = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
       _appGraphService = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
+
       _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -452,6 +457,7 @@ namespace TheLoomApp {
         btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel
           || item.ItemTypeId == (int)WeItemType.SolutionModel
           || item.ItemTypeId == (int)WeItemType.OrganizationModel;
+        btnAttemptTodo.Visible = item.ItemTypeId == (int)WeItemType.TodoModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
         if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
@@ -743,6 +749,8 @@ namespace TheLoomApp {
     #region Context Menu Events
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
+        miAddOrgDesk.Visible = false;
+        miAddDeskTodo.Visible = false;
         miAddDigitalOperator.Visible = false;
         miAddOrgFolder.Visible = false;
         miAddOrgFile.Visible = false;
@@ -772,6 +780,8 @@ namespace TheLoomApp {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
+        miAddOrgDesk.Visible = itemType == WeItemType.OrgChartModel;
+        miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
         miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel;
@@ -798,8 +808,10 @@ namespace TheLoomApp {
     }
 
     private async void miReloadTree_Click(object sender, EventArgs e) {
+      _appDataService.ClearCache();
       await LoadRootProjects();
     }
+
 
 
     private async void miAddDigitalOperator_Click(object sender, EventArgs e) {
@@ -808,12 +820,42 @@ namespace TheLoomApp {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DigitalOperatorModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
-          await tvKb.AddDigitalOperator(_appGraphService, newItemName);
+          await tvKb.AddDigitalOperator(_appGraphOrgService, newItemName);
         }
 
       } catch (Exception ex) {
         DoLogMessage("Failed to add project root - error:" + ex.Message);
         MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
+
+    private async void miAddOrgDesk_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDesk(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk: {ex.Message}", "Add Desk Failed");
+      }
+    }
+
+    private async void miAddDeskTodo_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.TodoModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDeskTodo(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
       }
     }
 
@@ -823,7 +865,7 @@ namespace TheLoomApp {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocFolderModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
-          await tvKb.AddOrgFolder(_appGraphService, newItemName);
+          await tvKb.AddOrgFolder(_appGraphOrgService, newItemName);
         }
 
       } catch (Exception ex) {
@@ -838,7 +880,7 @@ namespace TheLoomApp {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
-          await tvKb.AddOrgFile(_appGraphService, newItemName);
+          await tvKb.AddOrgFile(_appGraphOrgService, newItemName);
         }
 
       } catch (Exception ex) {
@@ -1159,7 +1201,7 @@ namespace TheLoomApp {
 
     private async void btnImportOrgDocs_Click(object sender, EventArgs e) {
       using (var fbd = new ImportOrgDocsDialog()) {
-        var orgItemId = _sessionDetails?.OrganizationId ?? 0 ;
+        var orgItemId = _sessionDetails?.OrganizationId ?? 0;
         if (orgItemId == 0) { return; } // no session?
         if (_itemCache.TryGetValue(orgItemId, out var orgItem)) {
           if (orgItem != null && orgItem.Item != null) {
@@ -1167,19 +1209,59 @@ namespace TheLoomApp {
             fbd.OrgRootFileName = Path.Combine(rootFolder, Cx.AppOrgExport); ;
           }
         }
-
+        List<string> operatorList = new List<string>();
+        List<string> deskList = new List<string>();
         if (fbd.ShowDialog() == DialogResult.OK) {
           var resultList = fbd.FinalRelToFullPathDict;
-          foreach (var key in resultList.Keys) { 
+          foreach (var key in resultList.Keys) {
             string relPath = key;
             string fullPath = resultList[key];
-            var result = await _appDataService.ImportOrgDoc(fullPath, relPath, false);
+
+            string fileExt = Path.GetExtension(fullPath).ToLower();
+            bool isOrgDoc = fileExt == ".md";
+            bool isDigitalOperator = fileExt == ".json" && fullPath.Contains("DigitalOperators");
+            bool isDesk = fileExt == ".json" && fullPath.Contains("OrgChart");
+
+            if (isOrgDoc) {
+              var result = await _appDataService.ImportOrgDoc(fullPath, relPath, false);
+              if (!result.IsSuccess) {
+                DoLogMessage($"Failed to import {relPath} - error: {result.Message}");
+              }
+            } else if (isDigitalOperator) {
+              operatorList.Add(relPath);
+            } else if (isDesk) {
+              deskList.Add(relPath);
+            }            
+          }
+
+          foreach (var operatorRelPath in operatorList) {   
+            string fullPath = resultList[operatorRelPath];
+            var result = await _appDataService.ImportOrgDoc(fullPath, operatorRelPath, false);
             if (!result.IsSuccess) {
-              DoLogMessage($"Failed to import {relPath} - error: {result.Message}");
+              DoLogMessage($"Failed to import digital operator {operatorRelPath} - error: {result.Message}");
             }
           }
-            
+
+          foreach (var deskRelPath in deskList) {
+            string fullPath = resultList[deskRelPath];
+            var result = await _appDataService.ImportOrgDoc(fullPath, deskRelPath, false);
+            if (!result.IsSuccess) {
+              DoLogMessage($"Failed to import desk {deskRelPath} - error: {result.Message}");
+            }
+          }
+
+          foreach (var deskRelPath in deskList) {  // second time for properties that refer to other desks
+            string fullPath = resultList[deskRelPath];
+            var result = await _appDataService.ImportOrgDoc(fullPath, deskRelPath, false);
+            if (!result.IsSuccess) {
+              DoLogMessage($"Failed to import desk {deskRelPath} - error: {result.Message}");
+            }
+          }
+
+          await LoadRootProjects();
         }
+
+
       }
     }
 
@@ -1345,6 +1427,28 @@ namespace TheLoomApp {
 
     }
 
+    private async void btnAttemptTodo_Click(object sender, EventArgs e) {
+      var item = _selectedNode?.Item;
+      if (item != null && item.ItemTypeId == (int)WeItemType.TodoModel) {
+        // Your logic for attempting a Todo item goes here
+        var result = await _appDataService.RunTodoItem(item.Id, true);
+        var pad = new PreviewAttemptDialog();
+        pad.Operator = $"{result.Operator} (Id: {result.OperatorId})";        
+        pad.SystemPrompt = result.SystemPrompt;
+        pad.UserPrompt = result.UserPrompt;
+        pad.Harness = $"{result.HarnessName} (Id:{result.HarnessId})";
+        if (pad.ShowDialog() == DialogResult.OK) {
+          var attemptResult = await _appDataService.RunTodoItem(item.Id, false);
+          if (attemptResult.Status == RunTodoAttemptOutcome.SuccessWithResponse) {
+            MessageBox.Show($"Todo Attempt Successful! Response: {attemptResult.ResponseText}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          } else {
+            MessageBox.Show($"Todo Attempt Failed. Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}", "Attempt Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          }
+          
+        }
+
+      }
+    }
   }
 
 }

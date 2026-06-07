@@ -37,7 +37,8 @@ namespace Weavers.Core.Interfaces {
     /// <summary>
     /// Get the list of items for the combo box
     /// </summary>
-    Task<IEnumerable<ItemLookup>> GetItemsAsync(ItemPropertyDto? field = null);
+    Task<IEnumerable<ItemLookup>> GetTypesAsync();
+    Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId);
 
     Task<ItemDto?> GetItemByIdAsync(int id);
 
@@ -50,6 +51,9 @@ namespace Weavers.Core.Interfaces {
     /// Get display text for a value
     /// </summary>
     string GetDisplayText(object? value);
+
+
+    Task<string> RenderTemplate(ItemPropertyDto Field, CancellationToken cancellationToken);
   }
 
 }

@@ -44,13 +44,19 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> SyncLmStudioModels(int gatewayModelId);
     Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting);
 
+    bool ClearCache();
+
+    Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
+
   }
   public class AppDataService : IAppDataService {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IAppSessionService _session;
-    public AppDataService(IServiceScopeFactory scopeFactory, IAppSessionService session) {
+    private readonly ISessionItemCacheService _sessionCache;
+    public AppDataService(IServiceScopeFactory scopeFactory, IAppSessionService session, ISessionItemCacheService sessionCache) {
       _scopeFactory = scopeFactory;
       _session = session;
+      _sessionCache = sessionCache;
     }
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
@@ -102,7 +108,8 @@ namespace Weavers.Core.Service {
     public async Task<bool> DeleteItemAsync(int itemId) {
       var mediator = GetMediator();
       var command = new DeleteItemCommand(itemId);
-      return await mediator.Send(command);
+      var result = await mediator.Send(command);
+      return result;
     }
     public async Task<ItemDto?> UpdateItemAsync(ItemDto request) {
       var mediator = GetMediator();
@@ -249,5 +256,17 @@ namespace Weavers.Core.Service {
       var result = await mediator.Send(command);
       return result;
     }
+
+    public bool ClearCache() { 
+      return _sessionCache.ClearCache();
+    }
+
+    public async Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview) { 
+      var mediator = GetMediator();
+      var command = new RunTodoAttemptCommand(todoItemId, isPreview);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
   }
 }
