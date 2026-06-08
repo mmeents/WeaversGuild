@@ -61,7 +61,8 @@ namespace Weavers.Api {
 
 
       app.MapSummaryEndpoints()
-         .MapGraphFileEndpoints();
+         .MapGraphFileEndpoints()
+         .MapMarkTodoEndpoint();
 
 
       await app.RunAsync();

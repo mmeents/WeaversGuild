@@ -25,13 +25,13 @@ namespace Weavers.Core.Constants {
     public const int KeyLifetimeDays = 90;
 
     public const double DefaultTemperature = 0.76;
-    public const int DefaultLmStudioContextLength = 8000;
+    public const int DefaultLmStudioContextLength = 24000;
     public const int intPropertyLabelLeft = 116;
 
     public const string LMStudioUrl = "http://10.0.0.118:8669";
     public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
     public const string DaemonsMcpToolName = "mcp/daemonsmcp";
-    public const string WeaversMcpToolName = "mcp/weaversmcp";
+    public const string WeaversMcpToolName = "mcp/theloommcp";
 
     public static List<string> availableToolsList = new List<string> { 
       //DaemonsMcpToolName, // optional, remove if configured. 

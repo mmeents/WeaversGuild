@@ -12,8 +12,8 @@ namespace Weavers.Core.Tools {
   public class TodoTools {
     private static ITodoToolsHandler GetTools() => DiBridgeService.GetService<ITodoToolsHandler>();
 
-    [McpTool(Cx.CmdCompleteTodo, "Marks a todo item as completed with an optional note and produced item.")]
-    public static Task<string> CompleteTodo(int todoId, string todoNote, int? producedItemId) 
+    [McpTool(Cx.CmdCompleteTodo, "Marks a todo item as completed with an note and produced item. use zero for no produced item.")]
+    public static Task<string> CompleteTodo(int todoId, string todoNote, int producedItemId) 
       => GetTools().CompletedTodo(todoId, todoNote, producedItemId);
 
     [McpTool(Cx.CmdRejectTodo, "Rejects a todo item with a reason.")]

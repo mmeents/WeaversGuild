@@ -7,14 +7,6 @@ namespace Weavers.Api.Extensions {
 
       var group = app.MapGroup("/api/todo").WithTags("Todo Actions");
 
-      /*
-    Task<string> CompletedTodo(int todoId, string todoNote, int? producedItemId);
-    Task<string> RejectTodo(int todoId, string reason);
-    Task<string> ReviewPass(int todoId, string reviewNotes);
-    Task<string> ReviewFail(int todoId, string reviewNotes, string changeRequest);
-
-       */
-
       group.MapPost("/markCompleted", async (ITodoToolsHandler handler, 
         int todoId, string todoNote, int? producedItemId) => {
         try {

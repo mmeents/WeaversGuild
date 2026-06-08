@@ -6,7 +6,7 @@ using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record CompleteTodoCommand(int TodoId, string TodoNote, int? producedItemId) : IRequest<CompleteTodoCmdResult?>;
+  public record CompleteTodoCommand(int TodoId, string TodoNote, int? ProducedItemId) : IRequest<CompleteTodoCmdResult?>;
 
   public class CompleteTodoCmdResult {
     public bool Success { get; set; }
@@ -15,7 +15,7 @@ namespace Weavers.Core.Handlers.Todo {
   }
 
 
-  public class CompleteTodoCommandHandler {
+  public class CompleteTodoCommandHandler : IRequestHandler<CompleteTodoCommand, CompleteTodoCmdResult?> {
     private readonly IMediator _mediator;
     private readonly FabricDbContext _context;
     public CompleteTodoCommandHandler(IMediator mediator, FabricDbContext context) {
@@ -60,8 +60,8 @@ namespace Weavers.Core.Handlers.Todo {
       if (onSuccessDesk == null) return result.CreateFailure("OnSuccessSendTo desk not found.");
 
       int producedItemTypeId = 0;
-      if (request.producedItemId != null) {
-        var producedItem = await _context.GetItemDtoById(request.producedItemId.Value, cancellationToken);
+      if (request.ProducedItemId != null && request.ProducedItemId != 0) {
+        var producedItem = await _context.GetItemDtoById(request.ProducedItemId.Value, cancellationToken);
         if (producedItem == null) return result.CreateFailure("Produced item not found.");
         producedItemTypeId = producedItem.ItemTypeId;
       }
@@ -111,7 +111,8 @@ namespace Weavers.Core.Handlers.Todo {
         if (newTodoPromptProp != null) {
           var originalPrompt = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt)?.Value ?? "";
           newTodoPromptProp.Value = "Original request: " + originalPrompt + Environment.NewLine +
-            (request.producedItemId != null ? "Produced item Id: " + request.producedItemId + Environment.NewLine : "") +
+            ((request.ProducedItemId != null && request.ProducedItemId != 0) ? 
+            "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
             "Notes taken: " + request.TodoNote;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
         }
@@ -120,7 +121,8 @@ namespace Weavers.Core.Handlers.Todo {
         if (newTodoPromptProp != null) {
           var originalPrompt = await todoItem.UserPrompt(_mediator, CancellationToken.None);
           newTodoPromptProp.Value = "Original request: " + originalPrompt + Environment.NewLine +
-            (request.producedItemId != null ? "Produced item Id: " + request.producedItemId + Environment.NewLine : "") +
+            ((request.ProducedItemId != null && request.ProducedItemId != 0) ? 
+              "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
             "Notes taken: " + request.TodoNote;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
         }
@@ -135,9 +137,9 @@ namespace Weavers.Core.Handlers.Todo {
 
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
       if (newTodoRefItemIdProp != null) {
-        if (request.producedItemId != null) {
+        if (request.ProducedItemId != null && request.ProducedItemId != 0) {
           newTodoRefItemIdProp.ReferenceItemTypeId = producedItemTypeId;
-          newTodoRefItemIdProp.Value = request.producedItemId.ToString();
+          newTodoRefItemIdProp.Value = request.ProducedItemId.ToString();
         } else {
           var todoRefItemProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
           if (todoRefItemProp != null) {
