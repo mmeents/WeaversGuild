@@ -16,7 +16,6 @@ namespace Weavers.Core.Handlers.Todo {
   public class ReviewPassCmdResult {
     public bool Success { get; set; }
     public string Message { get; set; } = "";
-    public ItemDto? UpdatedTodo { get; set; }
   }
 
 
@@ -69,8 +68,13 @@ namespace Weavers.Core.Handlers.Todo {
       }
 
       // create new todo on the onSuccessDesk with the same note and link it to the completed todo item.
-      var nextRank = await _mediator.Send(new GetNextItemRankQuery(onSuccessDesk.Id)) + 1;
-      var name = todoItem.Name == null ? $"Todo {nextRank}" : todoItem.Name;
+      var name = "";
+      if (todoItem.Name != null) {
+        name = todoItem.Name + $" fromId:{todoItem.Id}";
+      } else {
+        var nextRank = await _mediator.Send(new GetNextItemRankQuery(onSuccessDesk.Id)) + 1;
+        name = $"Todo {nextRank} fromId:{todoItem.Id}";
+      }
       var newTodoItem = await _mediator.Send(
         new CreateRelatedItemCommand(onSuccessDesk.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.TodoModel, name, "", "{}"));
@@ -151,24 +155,28 @@ namespace Weavers.Core.Handlers.Todo {
         await todoStatusProp.SaveProp(todoItem, _mediator);
       }
 
+      var currentDeskTodoProp = parentDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo && p.Value == todoItem.Id.ToString());
+      if (currentDeskTodoProp != null) {
+        currentDeskTodoProp.Value = ""; // clear current todo on the parent desk.
+        await currentDeskTodoProp.SaveProp(parentDesk, _mediator);
+      }
+
       // Implement the logic for handling the ReviewPassCommand here
-      return result.CreateSuccess(todoItem);
+      return result.CreateSuccess();
     }
   }
 
 
   public static class ReviewPassCmdResultExts {
-    public static ReviewPassCmdResult CreateSuccess(this ReviewPassCmdResult result, ItemDto updatedTodo) {
+    public static ReviewPassCmdResult CreateSuccess(this ReviewPassCmdResult result) {
       result.Success = true;
       result.Message = "Todo item marked as reviewed successfully.";
-      result.UpdatedTodo = updatedTodo;
       return result;
     }
 
     public static ReviewPassCmdResult CreateFailure(this ReviewPassCmdResult result, string errorMessage) {
       result.Success = false;
       result.Message = errorMessage;
-      result.UpdatedTodo = null;
       return result;
     }
   }

@@ -26,9 +26,14 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
     - Allow per-request MCPs - can disable 
     - Allow calling servers from mcp.json to enable TheLoomMcp
 
+## Desks Todo Prompt Preview    
+![previewtodoattempt](https://mmeents.github.io/files/PreviewTodoAttempt.png)    
+
+
 
 ## Update History
-
+- Adds Foreach Todo dialog to add sets of todo's, found issue where desk was not being marked as completed when agent marks complete.
+  - Initial documentation desk is working, need to test and verify review desk. need to get a automaion play button going soon.
 - db Version 133
   - chops out DeskRoles as the ones chosen are too broad.  focues the existing for use with initial testing.
     - RoleOrgDocWriter

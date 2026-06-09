@@ -14,7 +14,7 @@ using Weavers.Core.Models;
 namespace Weavers.Core.Service {
   public interface IAppGraphOrgService {
     Task<ItemDto?> AddOrgDesk(ItemDto OrgChart, string? deskName);
-    Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName);
+    Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName, int? refId, string? promptTemplate);
 
     Task<ItemDto?> AddDigitalOperator(ItemDto parentItem, string? operatorName);
     Task<ItemDto?> AddOrgFolder(ItemDto parentItem, string? subFolderName);
@@ -49,13 +49,30 @@ namespace Weavers.Core.Service {
       return newItem;
     }
 
-    public async Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName) {
+    public async Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName, int? refId, string? promptTemplate) {
       var mediator = GetMediator();
       var nextRank = await mediator.Send(new GetNextItemRankQuery(OrgDesk.Id)) + 1;
       var name = todoName == null ? $"Todo {nextRank}" : todoName;
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(OrgDesk.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.TodoModel, name, "", "{}"));
+      if (newItem != null) { 
+        var promptTemplateProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
+        if (promptTemplateProp != null && !string.IsNullOrEmpty(promptTemplate)) {
+          promptTemplateProp.Value = promptTemplate;
+          await promptTemplateProp.SaveProp(newItem, mediator);
+        }
+        if (refId != null && refId != 0) {
+          var refItem = await mediator.Send(new GetItemByIdQuery(refId.Value));
+          var refIdProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
+          if (refIdProp != null && refItem != null) {
+            refIdProp.ReferenceItemTypeId = refItem.ItemTypeId;
+            refIdProp.Value = refId.ToString();
+            await refIdProp.SaveProp(newItem, mediator);
+          }
+        }
+      }
+
       return newItem;
     }
 

@@ -26,7 +26,7 @@
       cbValues = new ComboBox();
       lbName = new Label();
       cbType = new ComboBox();
-      label1 = new Label();
+      lbType = new Label();
       SuspendLayout();
       // 
       // cbValues
@@ -58,20 +58,20 @@
       cbType.TabIndex = 2;
       cbType.SelectedIndexChanged += cbType_SelectedIndexChanged;
       // 
-      // label1
+      // lbType
       // 
-      label1.AutoSize = true;
-      label1.Location = new Point(15, 12);
-      label1.Name = "label1";
-      label1.Size = new Size(32, 15);
-      label1.TabIndex = 3;
-      label1.Text = "Type";
+      lbType.AutoSize = true;
+      lbType.Location = new Point(15, 12);
+      lbType.Name = "lbType";
+      lbType.Size = new Size(32, 15);
+      lbType.TabIndex = 3;
+      lbType.Text = "Type";
       // 
       // ReferencePropertyEditor
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      Controls.Add(label1);
+      Controls.Add(lbType);
       Controls.Add(cbType);
       Controls.Add(lbName);
       Controls.Add(cbValues);
@@ -86,6 +86,6 @@
     private ComboBox cbValues;
     private Label lbName;
     private ComboBox cbType;
-    private Label label1;
+    private Label lbType;
   }
 }

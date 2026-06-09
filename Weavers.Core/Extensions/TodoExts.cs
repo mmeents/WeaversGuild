@@ -65,7 +65,7 @@ namespace Weavers.Core.Extensions {
 
     public static async Task ReleaseDeskIfParked(this IMediator _mediator, ItemDto? desk, ItemDto todo) {
       if (desk == null) return;
-      var currentProp = desk?.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo);
+      var currentProp = desk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo);
       if (currentProp != null && currentProp.Value == todo.Id.ToString()) {
         currentProp.Value = "";
         await currentProp.SaveProp(desk, _mediator);
@@ -87,8 +87,13 @@ namespace Weavers.Core.Extensions {
 
     public static async Task<ItemDto?> MintForwardTodo(this IMediator _mediator, FabricDbContext _context,
         ItemDto fromTodo, ItemDto targetDesk, string reason, string reasonLabel, CancellationToken ct) {
-      var nextRank = await _mediator.Send(new GetNextItemRankQuery(targetDesk.Id)) + 1;
-      var name = fromTodo.Name ?? $"Todo {nextRank}";
+      string name = "";
+      if (fromTodo.Name != null) {
+        name = fromTodo.Name + $" fromId:{fromTodo.Id}";
+      } else {
+        var nextRank = await _mediator.Send(new GetNextItemRankQuery(targetDesk.Id)) + 1;
+        name = $"Todo {nextRank} fromId:{fromTodo.Id}";
+      }      
       var newTodo = await _mediator.Send(new CreateRelatedItemCommand(
         targetDesk.Id, (int)WeRelationTypes.Contains, (int)WeItemType.TodoModel, name, "", "{}"));
       if (newTodo == null) return null;

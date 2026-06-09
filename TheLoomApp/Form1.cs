@@ -751,6 +751,7 @@ namespace TheLoomApp {
       if (_selectedNode == null || _selectedNode.Item == null) {
         miAddOrgDesk.Visible = false;
         miAddDeskTodo.Visible = false;
+        miAddForeachTodo.Visible = false;
         miAddDigitalOperator.Visible = false;
         miAddOrgFolder.Visible = false;
         miAddOrgFile.Visible = false;
@@ -782,6 +783,7 @@ namespace TheLoomApp {
         }
         miAddOrgDesk.Visible = itemType == WeItemType.OrgChartModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
+        miAddForeachTodo.Visible = itemType == WeItemType.DeskModel;
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
         miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel;
@@ -850,8 +852,43 @@ namespace TheLoomApp {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.TodoModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
-          await tvKb.AddDeskTodo(_appGraphOrgService, newItemName);
+          await tvKb.AddDeskTodo(_appGraphOrgService, newItemName, null, null);
         }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
+      }
+    }
+
+
+    private async void miAddForeachTodo_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new AddTodoForeachDialog(_serviceScopeFactory);
+        var selectedNode = tvKb.SelectedNode;
+        var selectedItem = (selectedNode as ItemNode)?.Item;
+        if (selectedItem == null || selectedItem.ItemTypeId != (int)WeItemType.DeskModel) {
+          MessageBox.Show("Selected item must be a desk to add a foreach todo.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        dlg.DeskId = selectedItem.Id;
+        dlg.DeskName = selectedItem.Name;
+        if (dlg.ShowDialog() == DialogResult.OK) {          
+          var foreachList = dlg.ForeachList.Split(Environment.NewLine, options: StringSplitOptions.RemoveEmptyEntries);
+          var refId = dlg.RefId;
+          var promptTemplate = "";
+          foreach (var foreachItem in foreachList) {
+            promptTemplate = dlg.PromptTemplate + Environment.NewLine + foreachItem;
+            await tvKb.AddDeskTodo(_appGraphOrgService, null, refId, promptTemplate);
+            // add desk sets selection to new todo.  we need to move selection back to desk.
+            if (_selectedNode != null) {
+              tvKb.SelectedNode = _selectedNode.Parent;
+            }
+          }
+        }
+        var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+        tvKb_BeforeExpand(ee, ee);
 
       } catch (Exception ex) {
         DoLogMessage("Failed to add desk todo - error:" + ex.Message);
@@ -1231,10 +1268,10 @@ namespace TheLoomApp {
               operatorList.Add(relPath);
             } else if (isDesk) {
               deskList.Add(relPath);
-            }            
+            }
           }
 
-          foreach (var operatorRelPath in operatorList) {   
+          foreach (var operatorRelPath in operatorList) {
             string fullPath = resultList[operatorRelPath];
             var result = await _appDataService.ImportOrgDoc(fullPath, operatorRelPath, false);
             if (!result.IsSuccess) {
@@ -1433,7 +1470,7 @@ namespace TheLoomApp {
         // Your logic for attempting a Todo item goes here
         var result = await _appDataService.RunTodoItem(item.Id, true);
         var pad = new PreviewAttemptDialog();
-        pad.Operator = $"{result.Operator} (Id: {result.OperatorId})";        
+        pad.Operator = $"{result.Operator} (Id: {result.OperatorId})";
         pad.SystemPrompt = result.SystemPrompt;
         pad.UserPrompt = result.UserPrompt;
         pad.Harness = $"{result.HarnessName} (Id:{result.HarnessId})";
@@ -1444,11 +1481,12 @@ namespace TheLoomApp {
           } else {
             MessageBox.Show($"Todo Attempt Failed. Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}", "Attempt Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
           }
-          
+
         }
 
       }
     }
+
   }
 
 }

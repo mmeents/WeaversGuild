@@ -19,11 +19,11 @@ namespace TheLoomApp.Extensions {
       if (newSubItem == null) { return; }
       _tv.AddNewItem(newSubItem);
     }
-    public static async Task AddDeskTodo(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
+    public static async Task AddDeskTodo(this TreeView _tv, IAppGraphOrgService graphSrvs, string? name, int? refId = null, string? promptTemplate = null) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.DeskModel) { return; }
-      var newSubItem = await graphSrvs.AddDeskTodo(item, name);
+      var newSubItem = await graphSrvs.AddDeskTodo(item, name, refId, promptTemplate);
       if (newSubItem == null) { return; }
       _tv.AddNewItem(newSubItem);
     }

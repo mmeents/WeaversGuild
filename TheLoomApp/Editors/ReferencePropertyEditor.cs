@@ -90,7 +90,7 @@ namespace TheLoomApp.Editors {
       _originalValue = Field?.Value;
       Modified = false;
 
-      _ = LoadAsync(); ;      
+      _ = LoadAsync();       
     }
     
     private async Task LoadAsync() {
@@ -205,6 +205,9 @@ namespace TheLoomApp.Editors {
       set {
         lbName.Left = value - lbName.Width;
         lbName.TextAlign = ContentAlignment.TopRight;
+        lbType.Left = value - lbType.Width;
+        lbType.TextAlign = ContentAlignment.TopRight;
+
         cbValues.Left = value + 3;
         cbValues.Width = this.Width - value - 6;
         cbType.Left = value + 3;

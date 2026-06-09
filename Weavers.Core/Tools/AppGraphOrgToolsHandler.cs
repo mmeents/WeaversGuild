@@ -15,7 +15,7 @@ namespace Weavers.Core.Tools {
   public interface IAppGraphOrgToolsHandler {
 
     Task<string> AddOrgDesk(int orgChartId, string deskName);
-    Task<string> AddDeskTodo(int orgDeskId, string todoName);
+    Task<string> AddDeskTodo(int orgDeskId, string todoName, int? refId, string? promptTemplate);
     Task<string> AddDigitalOperator(int parentItemId, string operatorName);
     Task<string> AddOrgFolder(int parentItemId, string subFolderName);
     Task<string> AddOrgFile(int folderItemId, string fileName, string fileContent);
@@ -46,7 +46,7 @@ namespace Weavers.Core.Tools {
       }
     }
 
-    public async Task<string> AddDeskTodo(int orgDeskId, string todoName) {
+    public async Task<string> AddDeskTodo(int orgDeskId, string todoName, int? refId, string? promptTemplate) {
       try {
         using var scope = _scopeFactory.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
@@ -54,7 +54,7 @@ namespace Weavers.Core.Tools {
         var item = await context.GetItemDtoById(orgDeskId);
         if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddDeskTodo, orgDeskId);
         if (item.ItemTypeId != (int)WeItemType.DeskModel) return _logger.DefaultInvalidParentMessage(Cx.CmdAddDeskTodo, orgDeskId);
-        var addedItem = await service.AddDeskTodo(item, todoName);
+        var addedItem = await service.AddDeskTodo(item, todoName, refId, promptTemplate);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddDeskTodo, orgDeskId);
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddDeskTodo, await context.ToSummary(addedItem));
         return opResult.ToString();

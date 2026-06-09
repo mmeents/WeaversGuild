@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -16,7 +11,6 @@ namespace Weavers.Core.Handlers.Todo {
   public class RejectTodoCmdResult {
     public bool Success { get; set; }
     public string Message { get; set; } = "";
-    public ItemDto? UpdatedTodo { get; set; }
   }
 
   public class RejectTodoCommandHandler : IRequestHandler<RejectTodoCommand, RejectTodoCmdResult> {
@@ -150,18 +144,18 @@ namespace Weavers.Core.Handlers.Todo {
         await todoStatusProp.SaveProp(todoItem, _mediator);
       }
 
+      var currentDeskTodoProp = parentDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo && p.Value == todoItem.Id.ToString());
+      if (currentDeskTodoProp != null) {
+        currentDeskTodoProp.Value = ""; // clear current todo on the parent desk.
+        await currentDeskTodoProp.SaveProp(parentDesk, _mediator);
+      }
+
       // Implement the logic for handling the RejectTodoCommand here
       return result;
     }
   }
 
   public static class RejectTodoCmdResultExts {
-    public static RejectTodoCmdResult CreateSuccess(this RejectTodoCmdResult result, ItemDto updatedTodo) {
-      result.Success = true;
-      result.Message = "Todo item rejected successfully.";
-      result.UpdatedTodo = updatedTodo;
-      return result;
-    }
 
     public static RejectTodoCmdResult CreateFailure(this RejectTodoCmdResult result, string errorMessage) {
       result.Success = false;

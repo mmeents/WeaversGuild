@@ -13,8 +13,8 @@ namespace Weavers.Core.Tools {
       => GetTools().AddOrgDesk(orgChartId, deskName);
 
     [McpTool(Cx.CmdAddDeskTodo, "Adds a new Todo to the specified Org desk.")]
-    public static Task<string> AddDeskTodo(int orgDeskId, string todoName)
-      => GetTools().AddDeskTodo(orgDeskId, todoName);
+    public static Task<string> AddDeskTodo(int orgDeskId, string todoName, int? refId, string? promptTemplate)
+      => GetTools().AddDeskTodo(orgDeskId, todoName, refId, promptTemplate);
 
 
     [McpTool(Cx.CmdAddDigitalOperator, "Adds a digital operator to the specified DigitalOperatorPoolModel parentItem.")]

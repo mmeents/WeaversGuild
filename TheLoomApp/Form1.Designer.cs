@@ -94,6 +94,7 @@
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
+      miAddForeachTodo = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -171,9 +172,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 528);
+      cmsTreeMenus.Size = new Size(209, 572);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -381,6 +382,7 @@
       ilTreeImages.Images.SetKeyName(21, "Ai-Settings-Cog-Spark--Streamline-Micro.png");
       ilTreeImages.Images.SetKeyName(22, "Mail-Send--Streamline-Micro.png");
       ilTreeImages.Images.SetKeyName(23, "Inbox-Open--Streamline-Micro.png");
+      ilTreeImages.Images.SetKeyName(24, "narration.png");
       // 
       // splitContainer3
       // 
@@ -642,7 +644,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.AutoScrollMinSize = new Size(154, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -858,6 +860,13 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
+      // miAddForeachTodo
+      // 
+      miAddForeachTodo.Name = "miAddForeachTodo";
+      miAddForeachTodo.Size = new Size(208, 22);
+      miAddForeachTodo.Text = "Add Foreach Todo";
+      miAddForeachTodo.Click += miAddForeachTodo_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -970,5 +979,6 @@
     private ToolStripMenuItem miAddOrgDesk;
     private ToolStripMenuItem miAddDeskTodo;
     private Button btnAttemptTodo;
+    private ToolStripMenuItem miAddForeachTodo;
   }
 }

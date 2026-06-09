@@ -2,6 +2,7 @@
 ## Overview
 WeaversGuild - A agentic oriented collection of tools and services to weave code, docs, and data together in a structured agentic manner.
 ## Export Manifest
+- [updateItemProperty](Documents\CommandHelps\updateItemProperty.md)
 - [NeedsEntriesFor](Documents\CommandHelps\NeedsEntriesFor.md)
 - [OrgChartModel](Documents\Desks\OrgChartModel.md)
 - [TodoItemModel](Documents\Desks\TodoItemModel.md)
@@ -12,10 +13,14 @@ WeaversGuild - A agentic oriented collection of tools and services to weave code
 - [DeskModel](Documents\Desks\DeskModel.md)
 - [MutationTasks](Documents\Tasks\MutationTasks.md)
 - [TodoAttemptModel](Documents\Desks\TodoAttemptModel.md)
-- [help.md](Documents\CommandHelps\help.md)
-- [listProjects.md](Documents\CommandHelps\listProjects.md)
-- [search.md](Documents\CommandHelps\search.md)
+- [help](Documents\CommandHelps\help.md)
+- [listProjects](Documents\CommandHelps\listProjects.md)
+- [search](Documents\CommandHelps\search.md)
+- [getSummaryById](Documents\CommandHelps\getSummaryById.md)
+- [getTypeDetails](Documents\CommandHelps\getTypeDetails.md)
+- [updateItemName](Documents\CommandHelps\updateItemName.md)
+- [updateItemContent](Documents\CommandHelps\updateItemContent.md)
 ## Export Details
 Schema: 1.0
 Location: C:\Floor\WeaversGuild\TheOrgExport.md
-Exported at: 6/8/2026 2:43:25 AM Utc, 6/7/2026 10:43:25 PM Local
+Exported at: 6/9/2026 4:12:32 AM Utc, 6/9/2026 12:12:32 AM Local
