@@ -23,4 +23,4 @@ WeaversGuild - A agentic oriented collection of tools and services to weave code
 ## Export Details
 Schema: 1.0
 Location: C:\Floor\WeaversGuild\TheOrgExport.md
-Exported at: 6/9/2026 4:12:32 AM Utc, 6/9/2026 12:12:32 AM Local
+Exported at: 6/9/2026 3:33:13 PM Utc, 6/9/2026 11:33:13 AM Local

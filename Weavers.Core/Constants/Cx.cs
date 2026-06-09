@@ -205,6 +205,7 @@ namespace Weavers.Core.Constants {
     public const string ItUserPrompt = "UserPrompt";
     public const string ItUserPromptTemplate = "UserPrompt";
     public const string ItTodoItem = "TodoItem";
+    public const string ItTodoDepth = "TodoDepth";
     public const string ItTestClassAttribute = "TestClass";
     public const string ItTestMethodAttribute = "TestMethod";
     public const string ItUrlBase = "UrlBase";

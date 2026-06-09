@@ -32,9 +32,14 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
-- Adds Foreach Todo dialog to add sets of todo's, found issue where desk was not being marked as completed when agent marks complete.
+- Db Version 134 
+  - Adds Foreach Todo dialog to add sets of todo's, found issue where desk was not being marked as completed when agent marks complete.
   - Initial documentation desk is working, need to test and verify review desk. need to get a automaion play button going soon.
-- db Version 133
+  - Adds Default ticket header to all desk to desk transfers.
+  - Adds TodoDepth property to todo to track todo chain depth.
+  - Tunes RunTodoAttemptCommandHandler to integrate well with 5 todo handlers. (CompleteTodo, RejectTodo, ReviewFail, ReviewPass, and FailTodo) 
+  
+- Db Version 133 June 7
   - chops out DeskRoles as the ones chosen are too broad.  focues the existing for use with initial testing.
     - RoleOrgDocWriter
     - RoleReviewOrgDocWriter
@@ -44,13 +49,14 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
     - CmdAddOrgDesk 
     - CmdAddDeskTodo
 
-- db Version 132 
+- Db Version 132 
   - Adds CurrentTodo to desk. 
   - 4 MCP Commands CmdCompleteTodo, CmdRejectTodo,( CmdReviewPass, CmdReviewFail still need to do impls)
   - Adds internal CmdFailTodo and wired into the Run and CmdCompleteTodo and CmdRejectTodo.
   - Adds WeItemType.RanWithoutClose to run statuses for the desk network
+  - Worked out the import of Operators and Desks along with OrgDocs when importing orgainzation.
 
-- db Version 131 
+- Db Version 131 
   - Adds props in todo for FromTodo, CloseReason.  
   - Export now includes Digital Operators and Desks. Went json for the desk and operators.  
     - Still need to update the import side to import them.  
@@ -58,7 +64,24 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 - db Version 130 - cleans up lenth of many long property names. 
   - Adds Dialog to Preview Todo. 
 
-- db Version 129 Mainly Desks Todos items new editors. 
+- db Version 129 
+  - Mainly Desks Todos items new editors. 
   - Adds Preview Editors for prompts, 
   - Adds Reference Editor that allows for picking the type then pick the items from the existing by previous type pick. 
   - Removes sysPrompt and userPrompt as is duplicate now with preview editors. 
+  
+- Db Version 121 May 19 
+  - Dialog and rework tools to pass all needed info in the add call so can configure first attempt. 
+  - Adds Organization to the left.
+
+- Db Version 117 May 13
+  - Hooked the Mediatr event chain to log to MediatorLogs table. Build writes everything to disk and calls dot net build. records result. 
+  
+- Db Version 115 around May 5th  
+  - Types set up for the creates for most c# library items completed.  
+ 
+- Db Version 1 around April 4th, 2026
+  - Started with Item Relation model from storytime and merged in the Models properties from DaemonsMCP database.
+  - worked out initial set of defaults for the types.  
+  - Worked out initial TheLoomApp, TheLoomMcp and Weavers.Api and Weavers.Core libraries and apps.  
+  

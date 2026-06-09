@@ -126,6 +126,17 @@ namespace Weavers.Core.Extensions {
         await newPrompt.SaveProp(newTodo, _mediator);
       }
 
+      var itTodoDepthProp = newTodo.Properties.FirstOrDefault(p => p.Name == Cx.ItTodoDepth);
+      if (itTodoDepthProp != null) {
+        var parentTodoDepth = fromTodo.Properties.FirstOrDefault(p => p.Name == Cx.ItTodoDepth)?.Value;
+        int newDepth = 1;
+        if (parentTodoDepth != null && int.TryParse(parentTodoDepth, out var parsedDepth)) {
+          newDepth = parsedDepth + 1;
+        }
+        itTodoDepthProp.Value = newDepth.ToString();
+        await itTodoDepthProp.SaveProp(newTodo, _mediator);
+      }
+
       await _mediator.SetProperty(newTodo, Cx.ItFromTodo, fromTodo.Id.ToString());
       await _mediator.LinkContinueTodo(_context,fromTodo, newTodo.Id, ct);
       return newTodo;

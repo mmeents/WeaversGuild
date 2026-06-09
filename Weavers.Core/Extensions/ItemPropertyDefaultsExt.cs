@@ -100,7 +100,8 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 10, Key = Cx.ItReferenceItem, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Reference },
           new() {Rank = 9, Key = Cx.ItUserPromptTemplate, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Template },
           new() {Rank = 8, Key = Cx.ItFromTodo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
-          new() {Rank = 8, Key = Cx.ItCloseReason, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 7, Key = Cx.ItCloseReason, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 6, Key = Cx.ItTodoDepth, DefaultValue= "1", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }, 
         }
       },
       {

@@ -109,7 +109,9 @@ namespace Weavers.Core.Handlers.Todo {
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
         if (newTodoPromptProp != null) {
           var originalPrompt = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt)?.Value ?? "";
-          newTodoPromptProp.Value = "Original request: " + originalPrompt + Environment.NewLine +            
+          newTodoPromptProp.Value =
+            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
+            "Original request: " + originalPrompt + Environment.NewLine +            
             "Review Notes: " + request.ReviewNotes;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
         }
@@ -117,7 +119,9 @@ namespace Weavers.Core.Handlers.Todo {
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
         if (newTodoPromptProp != null) {
           var originalPrompt = await todoItem.UserPrompt(_mediator, CancellationToken.None);
-          newTodoPromptProp.Value = "Original request: " + originalPrompt + Environment.NewLine +            
+          newTodoPromptProp.Value =
+            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
+            "Original request: " + originalPrompt + Environment.NewLine +            
             "Review Notes: " + request.ReviewNotes;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
         }
@@ -147,6 +151,17 @@ namespace Weavers.Core.Handlers.Todo {
       if (itFromTodoProp != null) {
         itFromTodoProp.Value = todoItem.Id.ToString();
         await itFromTodoProp.SaveProp(newTodoItem, _mediator);
+      }
+
+      var itTodoDepthProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItTodoDepth);
+      if (itTodoDepthProp != null) {
+        var parentTodoDepth = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItTodoDepth)?.Value;
+        int newDepth = 1;
+        if (parentTodoDepth != null && int.TryParse(parentTodoDepth, out var parsedDepth)) {
+          newDepth = parsedDepth + 1;
+        }
+        itTodoDepthProp.Value = newDepth.ToString();
+        await itTodoDepthProp.SaveProp(newTodoItem, _mediator);
       }
 
       // finally, update the original todo item status to completed.      
