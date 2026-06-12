@@ -217,6 +217,7 @@
       Font = new Font("Segoe UI", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
       Margin = new Padding(3, 4, 3, 4);
       Name = "PreviewAttemptDialog";
+      StartPosition = FormStartPosition.CenterParent;
       Text = "Preview Todo Attempt Prompt";
       ((System.ComponentModel.ISupportInitialize)edSystemPrompt).EndInit();
       ((System.ComponentModel.ISupportInitialize)edUserPrompt).EndInit();

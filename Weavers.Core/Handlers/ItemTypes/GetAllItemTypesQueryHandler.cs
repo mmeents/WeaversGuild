@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Entities;
-using Weavers.Core.Models;  
+using Weavers.Core.Models; 
+using Weavers.Core.Handlers.Pipeline;
 
 namespace Weavers.Core.Handlers.ItemTypes {
-  public record GetAllItemTypesQuery() : IRequest<List<ItemTypeDto>>;
+  public record GetAllItemTypesQuery() : IMcpRequest, IRequest<List<ItemTypeDto>>;
   internal class GetAllItemTypesQueryHandler : IRequestHandler<GetAllItemTypesQuery, List<ItemTypeDto>> {
     private readonly FabricDbContext _context;
     public GetAllItemTypesQueryHandler(FabricDbContext context) {

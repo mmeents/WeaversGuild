@@ -79,8 +79,9 @@ namespace Weavers.Core.Handlers.Sessions {
                       || i.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)
                       && i.Established < cutoff)
             .ToListAsync(cancellationToken);
-        _dbContext.Items.RemoveRange(stale);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        foreach (var item in stale) {
+          await _mediator.Send(new DeleteItemCommand(item.Id)).ConfigureAwait(false);
+        }        
       }
       
       // session base object exist?

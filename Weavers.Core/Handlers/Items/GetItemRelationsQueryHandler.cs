@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
@@ -10,7 +11,7 @@ namespace Weavers.Core.Handlers.Items {
     int? ItemId, 
     int? ToItemId, 
     int? RelationTypeId
-  ) : IRequest<IEnumerable<RelationDto>>;
+  ) : IMcpRequest, IRequest<IEnumerable<RelationDto>>;
 
   public class GetItemRelationsQueryHandler : IRequestHandler<GetRelationsQuery, IEnumerable<RelationDto>> {
     private readonly FabricDbContext _context;

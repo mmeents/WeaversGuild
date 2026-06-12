@@ -43,7 +43,7 @@ namespace Weavers.Core.Handlers.Items {
     ILogger<UpdateItemCommandHandler> logger,
     IAppSettingService appSettingService,
     ISessionItemCacheService sessionCache
-  ) : IRequestHandler<UpdateItemCommand, ItemDto?> {
+  ) : IMcpRequest, IRequestHandler<UpdateItemCommand, ItemDto?> {
     private readonly FabricDbContext _context = context;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<UpdateItemCommandHandler> _logger = logger;

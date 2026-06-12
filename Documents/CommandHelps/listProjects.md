@@ -1,7 +1,8 @@
 # listProjects Command Documentation
 
 ## Overview
-The `listProjects` command retrieves a list of all root level projects in the system.
+The `listProjects` command retrieves a list of all root level projects in the org. 
+Projects are independent of the OrgDocFolders and OrgDocFiles. Project folders support complex objects per project. where as Org details are cross project.
 
 ## Parameters
 This command takes no parameters.

@@ -2,6 +2,7 @@ using Azure.Core;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,12 +16,15 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Import;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
+using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 
 
 namespace TheLoomApp {
   public partial class Form1 : Form {
+    #region Initialization and Size Setup
+    delegate void LogMessageDelegate(string message);
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IAppDataService _appDataService;
     private readonly IAppGraphOrgService _appGraphOrgService;
@@ -28,15 +32,42 @@ namespace TheLoomApp {
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
     private readonly IGraphItemUpdateService _graphItemUpdateService;
-    private readonly IMediator _mediator;
+
     private ItemNode? _selectedNode = null;
+    private ItemDto? _CurrentItemBackup = null;
     private Dictionary<int, ItemNode> _itemCache = new Dictionary<int, ItemNode>();
     private Dictionary<int, ItemTypeDto> _itemTypeCache = new Dictionary<int, ItemTypeDto>();
+    private HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
     private PropertiesTab _itemPropertiesTab;
     private IAppSettingService _settings;
     private AppSessionResponse? _sessionDetails = null;
+    private bool _inResize = false;
+    private bool _ItemTabDirty = false;
+    private bool _RelationTabDirty = false;
+    private bool _inSetupTpItems = false;
+    private bool _isExpanding = false;
 
-    #region Initialization and Setup
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ItemTabDirty {
+      get { return _ItemTabDirty; }
+      set {
+        _ItemTabDirty = value;
+        if (!_inSetupTpItems) {
+          btnAbortItem.Visible = value;
+          btnUpdateItem.Visible = value;
+        }
+      }
+    }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool RelationTabDirty {
+      get { return _RelationTabDirty; }
+      set {
+        _RelationTabDirty = value;
+      }
+    }
+
+
     public Form1(IServiceScopeFactory serviceScopeFactory) {
       InitializeComponent();
 
@@ -49,7 +80,6 @@ namespace TheLoomApp {
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
 
-      _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
       };
@@ -57,7 +87,6 @@ namespace TheLoomApp {
       _settings = scope.ServiceProvider.GetRequiredService<IAppSettingService>();
       SetupForStartup();
     }
-
     public void SetupForStartup() {
       tabControl2.TabPages.Add(_itemPropertiesTab);
       _itemPropertiesTab.SetLabelRight(76);
@@ -77,7 +106,6 @@ namespace TheLoomApp {
 
     }
 
-    private bool _inResize = false;
     private void Form1_Resize(object sender, EventArgs e) {
       if (_inResize) return;
       _inResize = true;
@@ -97,7 +125,6 @@ namespace TheLoomApp {
       _inResize = false;
     }
 
-
     private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e) {
       Form1_Resize(sender, e);
     }
@@ -116,8 +143,6 @@ namespace TheLoomApp {
       btnShowErrors.Visible = false;
       Form1_Resize(sender, e);
     }
-
-    delegate void LogMessageDelegate(string message);
     private void DoLogMessage(string message) {
       if (this.InvokeRequired) {
         this.Invoke(new LogMessageDelegate(DoLogMessage), new object[] { message });
@@ -236,7 +261,6 @@ namespace TheLoomApp {
       }
     }
 
-
     private async Task<ItemNode?> AddNodeById(List<int> toLoad, ItemNode parent, int? itemId, RelationDto? relation = null) {
       if (itemId == null) return null;
 
@@ -287,7 +311,6 @@ namespace TheLoomApp {
       return null;
     }
 
-    private bool _isExpanding = false;
     private async void tvKb_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
       if (e.Node is not ItemNode node) return;
       if (_isExpanding) return;
@@ -388,12 +411,9 @@ namespace TheLoomApp {
       }
     }
 
+    #endregion    
 
-
-    #endregion
-
-    // ----------------------- Tree View Selection and Property Editing -------------------------//
-    #region Tree View Selection tracking
+    #region Tree View Selection  
 
     private void tvKb_AfterSelect(object sender, TreeViewEventArgs e) {
       if (e.Node is not ItemNode) {
@@ -410,6 +430,7 @@ namespace TheLoomApp {
       }
     }
 
+
     private void SetupPropertiesTabForItem(ItemDto item) {
       if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
         var propList = _selectedNode.Item.Properties.ToList();
@@ -422,41 +443,14 @@ namespace TheLoomApp {
       }
     }
 
-    private bool _ItemTabDirty = false;
-
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool ItemTabDirty {
-      get { return _ItemTabDirty; }
-      set {
-        _ItemTabDirty = value;
-        if (!_inSetupTpItems) {
-          btnAbortItem.Visible = value;
-          btnUpdateItem.Visible = value;
-        }
-      }
-    }
-
-    private bool _RelationTabDirty = false;
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool RelationTabDirty {
-      get { return _RelationTabDirty; }
-      set {
-        _RelationTabDirty = value;
-      }
-    }
-
-    private HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
-    private ItemDto? _CurrentItemBackup = null;
-    private RelationDto? _CurrentRelationBackup = null;
-    private bool _inSetupTpItems = false;
-    private bool _inSetupTpRelations = false;
     private void SetupTpItems() {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
         btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel
           || item.ItemTypeId == (int)WeItemType.SolutionModel
-          || item.ItemTypeId == (int)WeItemType.OrganizationModel;
+          || item.ItemTypeId == (int)WeItemType.OrganizationModel
+          || item.ItemTypeId.IsContentType();
         btnAttemptTodo.Visible = item.ItemTypeId == (int)WeItemType.TodoModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
@@ -490,60 +484,18 @@ namespace TheLoomApp {
     }
 
     private void SetupTpRelations() {
-      _inSetupTpRelations = true;
       if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Relation != null) {
         var rel = _selectedNode.Relation;
-        _CurrentRelationBackup = rel.Clone();
         lbRelationId.Text = "Parent Id:" + rel.ItemId.ToString() + " " +
           rel.RelationTypeName + " itemId:" + _selectedNode.Item.Id.ToString();
       } else {
         lbRelationId.Text = "Parent Id: N/A";
       }
-      _inSetupTpRelations = false;
-      RelationTabDirty = false;
     }
 
-    private void edRank_ValueChanged(object sender, EventArgs e) {
-      if (!_inSetupTpRelations) {
-        RelationTabDirty = true;
-      }
-    }
-    private void cbRelRelation_SelectedValueChanged(object sender, EventArgs e) {
-      if (!_inSetupTpRelations) {
-        RelationTabDirty = true;
-      }
-    }
+    #endregion
 
-    private void edItemName_TextChanged(object sender, EventArgs e) {
-      if (!_inSetupTpItems) {
-        ItemTabDirty = true;
-      }
-    }
-
-
-    private void edItemDesc2_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e) {
-      if (!_inSetupTpItems) {
-        ItemTabDirty = true;
-      }
-    }
-
-
-    private async void btnUpdateRelation_Click(object sender, EventArgs e) {
-      if (_selectedNode != null && _selectedNode.Relation != null) {
-        await _appDataService.UpdateRelationAsync(_selectedNode.Relation);
-        SetupTpRelations();
-      }
-    }
-
-    private void btnCancelRelation_Click(object sender, EventArgs e) {
-      if (_selectedNode != null && _selectedNode.Relation != null && _CurrentRelationBackup != null) {
-        _selectedNode.Relation.RelatedItemId = _CurrentRelationBackup.RelatedItemId;
-        _selectedNode.Relation.Rank = _CurrentRelationBackup.Rank;
-        _selectedNode.Relation.RelationTypeId = _CurrentRelationBackup.RelationTypeId;
-        SetupTpRelations();
-      }
-    }
-
+    #region Editing Items and Relations
 
     // ---------------post event ------------------------------------------------//
     private async void ProjectTab_OnPostEvent() {
@@ -648,7 +600,6 @@ namespace TheLoomApp {
       }
     }
 
-
     private async void btnUpdateItem_Click(object sender, EventArgs e) {
       try {
         await UpdateItemAsync();
@@ -657,9 +608,6 @@ namespace TheLoomApp {
         MessageBox.Show($"Error updating item: {ex.Message}", "Update Failed");
       }
     }
-
-    private readonly HashSet<WeItemType> _parentFolderTypes = WeItemTypeExtensions.GetParentFileFolderDependTypes();
-    private readonly HashSet<WeItemType> _parentNamespaceTypes = WeItemTypeExtensions.GetParentNamespaceDependTypes();
 
     private async Task UpdateItemAsync() {
       if (_selectedNode != null && _selectedNode.Item != null) {
@@ -701,24 +649,7 @@ namespace TheLoomApp {
 
     }
 
-    private async Task UpdateNamespacePathIfNeededAsync(ItemDto item, string basePath) {
-      var namespaceProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItNamespace || p.Name == Cx.ItNamespaceRoot);
-      if (namespaceProp == null) return;
-      var newNamespace = "";
-      var folderPropKey = item.ItemTypeId.GetFolderPropertyName();
-      if (folderPropKey == Cx.ItFilePath && (item.ItemTypeId != (int)WeItemType.NamespaceModel)) {
-        newNamespace = basePath.NameSafe(); // files use the parents namespace.
-      } else {  // vs a folder, we include items name.
-        newNamespace = basePath.NameSafe() + "." + item.Name.NameSafe();
-      }
-
-      if (namespaceProp.Value != newNamespace) {
-        namespaceProp.Value = newNamespace;
-        await _appDataService.UpdateItemPropertyNamespaceRecursive(item.Id, basePath, newNamespace);
-        await _appDataService.AddUpdateItemPropertyAsync(namespaceProp);
-      }
-    }
-
+    // abort a edit.
     private void btnAbortItem_Click(object sender, EventArgs e) {
       if (_selectedNode != null && _selectedNode.Item != null && _CurrentItemBackup != null) {
         _selectedNode.Item.Name = _CurrentItemBackup.Name;
@@ -729,6 +660,17 @@ namespace TheLoomApp {
       }
     }
 
+    private void edItemName_TextChanged(object sender, EventArgs e) {
+      if (!_inSetupTpItems) {
+        ItemTabDirty = true;
+      }
+    }
+
+    private void edItemDesc2_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e) {
+      if (!_inSetupTpItems) {
+        ItemTabDirty = true;
+      }
+    }
 
     private async void btnArchive_Click(object sender, EventArgs e) {
       if (_selectedNode != null && _selectedNode.Item != null) {
@@ -874,7 +816,7 @@ namespace TheLoomApp {
         }
         dlg.DeskId = selectedItem.Id;
         dlg.DeskName = selectedItem.Name;
-        if (dlg.ShowDialog() == DialogResult.OK) {          
+        if (dlg.ShowDialog() == DialogResult.OK) {
           var foreachList = dlg.ForeachList.Split(Environment.NewLine, options: StringSplitOptions.RemoveEmptyEntries);
           var refId = dlg.RefId;
           var promptTemplate = "";
@@ -1160,8 +1102,6 @@ namespace TheLoomApp {
 
     #endregion
 
-
-
     #region Settings Tab
 
     private bool _settingDefaultFolderDirty = true;
@@ -1302,9 +1242,22 @@ namespace TheLoomApp {
       }
     }
 
+
+    private void button1_Click(object sender, EventArgs e) { // temp button to test dialog.
+      var itemType = _selectedNode?.Item?.ItemTypeId ?? 0;
+      if (itemType != 0) {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, (WeItemType)itemType);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          MessageBox.Show("You entered: " + newItemName, "Item Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+      }
+    }
+
     #endregion
 
-    #region On Generate Context Menu
+    #region On Generate Context Menu and btn clicks
     private async void miGenerate_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
         MessageBox.Show("Please select an item to generate.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1400,12 +1353,9 @@ namespace TheLoomApp {
       }
     }
 
-    #endregion
-
-
     private async void btnWriteFile_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
-        MessageBox.Show("Please select a library item to write.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show("Please select a item to write.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
       if (_selectedNode.Item.ItemTypeId == (int)WeItemType.LibraryModel) {
@@ -1449,25 +1399,17 @@ namespace TheLoomApp {
         DoLogMessage($"Skipped: {result.FilesSkipped}");
         DoLogMessage($"Removed: {result.FilesRemoved}");
       }
-    }
-
-    private void button1_Click(object sender, EventArgs e) {
-      var itemType = _selectedNode?.Item?.ItemTypeId ?? 0;
-      if (itemType != 0) {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, (WeItemType)itemType);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          MessageBox.Show("You entered: " + newItemName, "Item Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+      if (_selectedNode.Item.ItemTypeId.IsContentType()) {
+        var result = await _appDataService.WriteDocument(_selectedNode.Item.Id);
+        DoLogMessage($"Success: {result.Success} {result.Message}");
       }
 
     }
 
+
     private async void btnAttemptTodo_Click(object sender, EventArgs e) {
       var item = _selectedNode?.Item;
       if (item != null && item.ItemTypeId == (int)WeItemType.TodoModel) {
-        // Your logic for attempting a Todo item goes here
         var result = await _appDataService.RunTodoItem(item.Id, true);
         var pad = new PreviewAttemptDialog();
         pad.Operator = $"{result.Operator} (Id: {result.OperatorId})";
@@ -1475,18 +1417,332 @@ namespace TheLoomApp {
         pad.UserPrompt = result.UserPrompt;
         pad.Harness = $"{result.HarnessName} (Id:{result.HarnessId})";
         if (pad.ShowDialog() == DialogResult.OK) {
+          DoLogMessage($"{DateTime.Now}: {result.Operator} Attempting TodoId {item.Id}");
           var attemptResult = await _appDataService.RunTodoItem(item.Id, false);
           if (attemptResult.Status == RunTodoAttemptOutcome.SuccessWithResponse) {
-            MessageBox.Show($"Todo Attempt Successful! Response: {attemptResult.ResponseText}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            DoLogMessage($"TodoId {item.Id} Attempt Successful, Response: {attemptResult.ResponseText}");
+            await LoadRootProjects();
           } else {
-            MessageBox.Show($"Todo Attempt Failed. Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}", "Attempt Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            DoLogMessage($"TodoId {item.Id} Attempt Failed, Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}");
+          }
+        }
+      }
+    }
+
+
+    #endregion
+    #region Ready tab
+
+
+    private ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
+
+    private void ReloadReadyTab() {
+      ReloadReadyTabAsync();
+    }
+
+    private async Task<bool> ReloadReadyTabAsync() {
+      int lbNotReadyIndex = lbNotReady.SelectedIndex;
+      if (lbNotReadyIndex == -1) {
+        lbNotReadyIndex = 0;
+      }
+      var notReady = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, false);
+      RunOnUi(() => {
+        lbNotReady.Items.Clear();
+        _notReadyDict.Clear();
+        foreach (var todo in notReady) {
+          var todoStr = "on " + todo.DeskName + " " + todo.Name;
+          var index = lbNotReady.Items.Add(todoStr);
+          _notReadyDict[index] = todo;
+        }
+
+        if (lbNotReady.Items.Count > 0) {
+          lbNotReady.SelectedIndex = Math.Min(lbNotReadyIndex, lbNotReady.Items.Count - 1);
+        }
+      });
+      return true;
+    }
+
+    private async void lbNotReady_SelectedIndexChanged(object sender, EventArgs e) {
+      edReadyTodoName.Text = "";
+      edReadyRefItem.Text = "";
+      edReadyPrompt.Text = "";
+      btnUpdateReady.Visible = false;
+      btnAbortReadUpdate.Visible = false;
+      cbSetReadyfromReview.Checked = false;
+
+      var selectedIndex = lbNotReady.SelectedIndex;
+      if (selectedIndex >= 0 && _notReadyDict.TryGetValue(selectedIndex, out var todo)) {
+        edReadyTodoName.Text = todo.Id.ToString() + ": " + todo.Name + " on " + todo.DeskName;
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          var refId = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem)?.Value ?? "0";
+          if (refId != null && refId != "0" && int.TryParse(refId, out var refIdInt)) {
+            var refItem = await _appDataService.GetItemById(refIdInt);
+            if (refItem != null) {
+              edReadyRefItem.Text = $"RefId: {refItem.Id}, {refItem.Name}";
+            }
           }
 
+          var preview = await _appDataService.RunTodoItem(item.Id, true);
+          if (preview != null) {
+            string previewText = $"System Prompt: {preview.SystemPrompt}{Environment.NewLine}User Prompt: {preview.UserPrompt}{Environment.NewLine}Harness: {preview.HarnessName} (Id:{preview.HarnessId})";
+            edReadyPrompt.Text = previewText;
+          }
         }
 
       }
     }
 
+    private void cbSetReadyfromReview_CheckedChanged(object sender, EventArgs e) {
+      btnUpdateReady.Visible = cbSetReadyfromReview.Checked;
+      btnAbortReadUpdate.Visible = cbSetReadyfromReview.Checked;
+    }
+
+    private void btnAbortReadUpdate_Click(object sender, EventArgs e) {
+      btnUpdateReady.Visible = false;
+      btnAbortReadUpdate.Visible = false;
+      cbSetReadyfromReview.Checked = false;
+    }
+
+    private async void btnUpdateReady_Click(object sender, EventArgs e) {
+      btnUpdateReady.Visible = false;
+      btnAbortReadUpdate.Visible = false;
+      cbSetReadyfromReview.Checked = false;
+
+      var selectedIndex = lbNotReady.SelectedIndex;
+      if (selectedIndex >= 0 && _notReadyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+          if (readyProp != null) {
+            readyProp.Value = "1";
+            await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+            await ReloadReadyTabAsync();
+          }
+        }
+
+      }
+
+    }
+
+    #endregion
+    #region Ready and Schedule Tab
+
+    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
+      if (tabControl1.SelectedTab == tpSchedule) {
+        ReloadSchedules();
+      } else if (tabControl1.SelectedTab == tpReview) {
+        ReloadReadyTab();
+      }
+    }
+
+    private ConcurrentDictionary<int, ReadyTodoRow> _readyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
+    private void ReloadSchedules() {
+
+      ReloadSchedulesAsync();
+
+    }
+
+    private async Task<bool> ReloadSchedulesAsync() {
+      int lbReadyIndex = lbReady.SelectedIndex;
+      if (lbReadyIndex == -1) {
+        lbReadyIndex = 0;
+      }
+      var schedules = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, true);
+      RunOnUi(() => {
+        lbReady.Items.Clear();
+        _readyDict.Clear();
+        foreach (var schedule in schedules) {
+          var todoStr = "on " + schedule.DeskName + " " + schedule.Name;
+          var index = lbReady.Items.Add(todoStr);
+          _readyDict[index] = schedule;
+        }
+        if (lbReady.Items.Count > 0) {
+          lbReady.SelectedIndex = Math.Min(lbReadyIndex, lbReady.Items.Count - 1);
+        }
+      });
+      return true;
+    }
+
+    private async void tRun_Tick(object sender, EventArgs e) {
+      tRun.Enabled = false;
+      bool isError = false;
+      bool result = false;
+      try {
+        result = await DoNextScheduledTodo();
+      } catch {
+        isError = true;
+      } finally {
+
+        if (isError || !result || _isStopping || !_engineRunning) {
+          _isStopping = true;
+          EngineRunning = false;
+        } else {
+          tRun.Enabled = true;
+        }
+
+      }
+    }
+
+    private bool _isRunning = false;
+    private ReadyTodoRow? _workingTodo = null;
+    private async Task<bool> DoNextScheduledTodo() {
+      if (_isRunning) {
+        return false;
+      }
+      _isRunning = true;
+      bool shouldContinue = false;
+      try {
+        if (_workingTodo == null) {
+          await ReloadSchedulesAsync();
+          if (_readyDict.Count == 0) {
+            return false;
+          }
+          if (_readyDict.TryGetValue(0, out var nextTodo)) {
+            _workingTodo = nextTodo;
+          }
+        }
+        if (_workingTodo != null) {
+          DoLogMessage($"Running scheduled todo {_workingTodo.Name} on {_workingTodo.DeskName} (Id: {_workingTodo.Id})");
+          var result = await _appDataService.RunTodoItem(_workingTodo.Id, false);
+          if (result.Status == RunTodoAttemptOutcome.SuccessWithResponse ||
+              result.Status == RunTodoAttemptOutcome.MaxAttemptsReached) {
+            if (result.Status == RunTodoAttemptOutcome.SuccessWithResponse) {
+              DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt Completed, Response: {result.ResponseText}");
+            } else {
+              DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Failed Forward Max Attempts Reached, Response: {result.ResponseText}");
+            }
+            await LoadRootProjects();      // UI reload treeview control.
+            await ReloadReadyTabAsync();
+            _workingTodo = null;
+            shouldContinue = true;
+          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose) {
+            DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt did not complete. retrying next. Response: {result.ResponseText}");
+            shouldContinue = true;
+          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured ||
+            result.Status == RunTodoAttemptOutcome.InvocationFailed) {
+            DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt Failed, Status: {result.Status}, Error: {result.ErrorMessage}");
+            _workingTodo = null;
+          }
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Error in scheduled todo execution: " + ex.Message);
+        return false;
+      } finally {
+        _isRunning = false;
+      }
+      return shouldContinue;
+    }
+
+    private void RunOnUi(Action action) {
+      if (InvokeRequired) Invoke(action);
+      else action();
+    }
+
+    private bool _engineRunning = false;
+    private bool _isStopping = false;
+
+    private void btnStartStop_Click(object sender, EventArgs e) {
+      if (btnStartStop.Text == "Start") {
+        EngineRunning = true;
+        tRun.Enabled = true;
+      } else {
+        tRun.Enabled = false;
+        EngineRunning = false;
+      }
+    }
+
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool EngineRunning {
+      get { return _engineRunning; }
+      set {
+        _engineRunning = value;
+        if (_engineRunning) {
+          lbWorkingStatus.Text = "Status: Pipeline Running";
+          btnStartStop.Text = "Stop";
+          _isStopping = false;
+        } else {
+          if (!_isStopping) {
+            lbWorkingStatus.Text = "Status: Pipeline Stopping";
+            btnStartStop.Text = "Waiting";
+            btnStartStop.Enabled = false;
+            _isStopping = true;
+          } else {
+            lbWorkingStatus.Text = "Status: Pipeline Stopped";
+            btnStartStop.Text = "Start";
+            btnStartStop.Enabled = true;
+            _isStopping = false;
+          }
+        }
+      }
+    }
+
+    private async void lbReady_SelectedIndexChanged(object sender, EventArgs e) {
+      edWorkingName.Text = "";
+      edWorkingRefItem.Text = "";
+      edWorkingPrompt.Text = "";
+      cbReadyWorking.Checked = true;
+      btnAbortWorking.Visible = false;
+      btnUpdateWorking.Visible = false;
+
+      var selectedIndex = lbReady.SelectedIndex;
+      if (selectedIndex >= 0 && _readyDict.TryGetValue(selectedIndex, out var todo)) {
+        edWorkingName.Text = todo.Id.ToString() + ": " + todo.Name + " on " + todo.DeskName;
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          var refId = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem)?.Value ?? "0";
+          if (refId != null && refId != "0" && int.TryParse(refId, out var refIdInt)) {
+            var refItem = await _appDataService.GetItemById(refIdInt);
+            if (refItem != null) {
+              edWorkingRefItem.Text = $"RefId: {refItem.Id}, {refItem.Name}";
+            }
+          }
+
+          var preview = await _appDataService.RunTodoItem(item.Id, true);
+          if (preview != null) {
+            string previewText = $"System Prompt: {preview.SystemPrompt}{Environment.NewLine}User Prompt: {preview.UserPrompt}{Environment.NewLine}Harness: {preview.HarnessName} (Id:{preview.HarnessId})";
+            edWorkingPrompt.Text = previewText;
+          }
+        }
+
+      }
+    }
+
+    private void cbReadyWorking_CheckedChanged(object sender, EventArgs e) {
+      btnAbortWorking.Visible = cbReadyWorking.Checked;
+      btnUpdateWorking.Visible = cbReadyWorking.Checked;
+    }
+    #endregion
+
+
+    private void btnAbortWorking_Click(object sender, EventArgs e) {
+      btnAbortWorking.Visible = false;
+      btnUpdateWorking.Visible = false;
+      cbReadyWorking.Checked = true;
+    }
+
+    private async void btnUpdateWorking_Click(object sender, EventArgs e) {
+      btnAbortWorking.Visible = false;
+      btnUpdateWorking.Visible = false;      
+      cbReadyWorking.Checked = true;
+
+      var selectedIndex = lbReady.SelectedIndex;
+      if (selectedIndex >= 0 && _readyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+          if (readyProp != null) {
+            readyProp.Value = "0";  // update is set it back to not ready. 
+            await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+            await ReloadSchedulesAsync();
+          }
+        }
+
+      }
+
+
+    }
   }
 
 }

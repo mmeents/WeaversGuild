@@ -1,7 +1,8 @@
 ﻿using MediatR;
-using Weavers.Core.Models;
-using Weavers.Core.Extensions;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Pipeline;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
   public record UpdateRelationCommand(
@@ -10,7 +11,7 @@ namespace Weavers.Core.Handlers.Items {
       int RelationTypeId,
       int RelatedItemId,
       int? Rank = null
-  ) : IRequest<RelationDto?>;
+  ) : IMcpRequest, IRequest<RelationDto?>;
 
   public class UpdateRelationCommandHandler(
     FabricDbContext context,

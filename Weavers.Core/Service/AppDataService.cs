@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
+using Weavers.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Handlers.RelationTypes;
 using Weavers.Core.Handlers.ItemTypes;
@@ -11,6 +12,7 @@ using Weavers.Core.Handlers.Builds;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Import;
+using Weavers.Core.Handlers.Todo;
 
 
 namespace Weavers.Core.Service {
@@ -38,6 +40,7 @@ namespace Weavers.Core.Service {
     Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite);
     Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite);
     Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite);
+    Task<WriteDocumentCmdResult> WriteDocument(int itemId);
 
     Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio);
 
@@ -47,6 +50,8 @@ namespace Weavers.Core.Service {
     bool ClearCache();
 
     Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
+
+    Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(WeItemType todoStatusFilter, bool readyFilter);
 
   }
   public class AppDataService : IAppDataService {
@@ -235,6 +240,13 @@ namespace Weavers.Core.Service {
       return result;
     }
 
+    public async Task<WriteDocumentCmdResult> WriteDocument(int itemId) {
+      var mediator = GetMediator();
+      var command = new WriteDocumentCommand(itemId);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
     public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio) {
       var mediator = GetMediator();
       var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio);
@@ -257,16 +269,22 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public bool ClearCache() { 
+    public bool ClearCache() {
       return _sessionCache.ClearCache();
     }
 
-    public async Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview) { 
+    public async Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview) {
       var mediator = GetMediator();
       var command = new RunTodoAttemptCommand(todoItemId, isPreview);
       var result = await mediator.Send(command);
       return result;
     }
 
+    public async Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(WeItemType todoStatusFilter, bool readyFilter) {
+      var mediator = GetMediator();
+      var command = new GetTodoByStatusReadyCommand(todoStatusFilter, readyFilter);
+      var result = await mediator.Send(command);
+      return result;
+    }
   }
 }

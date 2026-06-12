@@ -34,6 +34,7 @@
       miAddDigitalOperator = new ToolStripMenuItem();
       miAddOrgDesk = new ToolStripMenuItem();
       miAddDeskTodo = new ToolStripMenuItem();
+      miAddForeachTodo = new ToolStripMenuItem();
       miAddOrgFolder = new ToolStripMenuItem();
       miAddOrgFile = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
@@ -89,12 +90,31 @@
       lbItemName = new Label();
       edItemType = new ComboBox();
       edItemName = new TextBox();
+      tpReview = new TabPage();
+      btnAbortReadUpdate = new Button();
+      btnUpdateReady = new Button();
+      cbSetReadyfromReview = new CheckBox();
+      edReadyRefItem = new TextBox();
+      edReadyPrompt = new TextBox();
+      edReadyTodoName = new TextBox();
+      labelNotReady = new Label();
+      lbNotReady = new ListBox();
+      tpSchedule = new TabPage();
+      btnAbortWorking = new Button();
+      btnUpdateWorking = new Button();
+      cbReadyWorking = new CheckBox();
+      edWorkingRefItem = new TextBox();
+      edWorkingPrompt = new TextBox();
+      edWorkingName = new TextBox();
+      lbWorkingStatus = new Label();
+      btnStartStop = new Button();
+      lbReady = new ListBox();
       tbErrorOut = new TextBox();
       tsErrorPopup = new ToolStrip();
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
-      miAddForeachTodo = new ToolStripMenuItem();
+      tRun = new System.Windows.Forms.Timer(components);
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -116,6 +136,8 @@
       tpData.SuspendLayout();
       tpHtml.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)wvDescription).BeginInit();
+      tpReview.SuspendLayout();
+      tpSchedule.SuspendLayout();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -134,8 +156,8 @@
       // 
       splitContainer1.Panel2.Controls.Add(splitContainer3);
       splitContainer1.Panel2.Controls.Add(splitter1);
-      splitContainer1.Size = new Size(896, 632);
-      splitContainer1.SplitterDistance = 265;
+      splitContainer1.Size = new Size(845, 632);
+      splitContainer1.SplitterDistance = 249;
       splitContainer1.TabIndex = 0;
       // 
       // splitContainer2
@@ -149,7 +171,7 @@
       // splitContainer2.Panel2
       // 
       splitContainer2.Panel2.Controls.Add(tvKb);
-      splitContainer2.Size = new Size(265, 632);
+      splitContainer2.Size = new Size(249, 632);
       splitContainer2.SplitterDistance = 60;
       splitContainer2.SplitterWidth = 3;
       splitContainer2.TabIndex = 0;
@@ -164,7 +186,7 @@
       tvKb.Margin = new Padding(3, 2, 3, 2);
       tvKb.Name = "tvKb";
       tvKb.SelectedImageIndex = 0;
-      tvKb.Size = new Size(265, 569);
+      tvKb.Size = new Size(249, 569);
       tvKb.TabIndex = 0;
       tvKb.BeforeExpand += tvKb_BeforeExpand;
       tvKb.AfterSelect += tvKb_AfterSelect;
@@ -174,7 +196,7 @@
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 572);
+      cmsTreeMenus.Size = new Size(209, 550);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -209,6 +231,13 @@
       miAddDeskTodo.Size = new Size(208, 22);
       miAddDeskTodo.Text = "Add Desk Todo";
       miAddDeskTodo.Click += miAddDeskTodo_Click;
+      // 
+      // miAddForeachTodo
+      // 
+      miAddForeachTodo.Name = "miAddForeachTodo";
+      miAddForeachTodo.Size = new Size(208, 22);
+      miAddForeachTodo.Text = "Add Foreach Todo";
+      miAddForeachTodo.Click += miAddForeachTodo_Click;
       // 
       // miAddOrgFolder
       // 
@@ -400,7 +429,7 @@
       // 
       splitContainer3.Panel2.Controls.Add(tbErrorOut);
       splitContainer3.Panel2.Controls.Add(tsErrorPopup);
-      splitContainer3.Size = new Size(623, 632);
+      splitContainer3.Size = new Size(588, 632);
       splitContainer3.SplitterDistance = 513;
       splitContainer3.SplitterWidth = 3;
       splitContainer3.TabIndex = 1;
@@ -410,13 +439,16 @@
       // 
       tabControl1.Controls.Add(tpSettings);
       tabControl1.Controls.Add(tpItem);
+      tabControl1.Controls.Add(tpReview);
+      tabControl1.Controls.Add(tpSchedule);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Margin = new Padding(3, 2, 3, 2);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
-      tabControl1.Size = new Size(623, 513);
+      tabControl1.Size = new Size(588, 513);
       tabControl1.TabIndex = 0;
+      tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
       // 
       // tpSettings
       // 
@@ -434,7 +466,7 @@
       tpSettings.Margin = new Padding(3, 2, 3, 2);
       tpSettings.Name = "tpSettings";
       tpSettings.Padding = new Padding(3, 2, 3, 2);
-      tpSettings.Size = new Size(615, 485);
+      tpSettings.Size = new Size(580, 485);
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
@@ -485,7 +517,7 @@
       // btnShowErrors
       // 
       btnShowErrors.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnShowErrors.Location = new Point(518, 55);
+      btnShowErrors.Location = new Point(483, 55);
       btnShowErrors.Name = "btnShowErrors";
       btnShowErrors.Size = new Size(80, 23);
       btnShowErrors.TabIndex = 5;
@@ -496,7 +528,7 @@
       // btnCancelAppDefaultF
       // 
       btnCancelAppDefaultF.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnCancelAppDefaultF.Location = new Point(571, 19);
+      btnCancelAppDefaultF.Location = new Point(536, 19);
       btnCancelAppDefaultF.Name = "btnCancelAppDefaultF";
       btnCancelAppDefaultF.Size = new Size(36, 23);
       btnCancelAppDefaultF.TabIndex = 4;
@@ -507,7 +539,7 @@
       // btnSaveDefaultFolder
       // 
       btnSaveDefaultFolder.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnSaveDefaultFolder.Location = new Point(534, 19);
+      btnSaveDefaultFolder.Location = new Point(499, 19);
       btnSaveDefaultFolder.Name = "btnSaveDefaultFolder";
       btnSaveDefaultFolder.Size = new Size(36, 23);
       btnSaveDefaultFolder.TabIndex = 3;
@@ -518,7 +550,7 @@
       // btnAppDefaultFolderBrowse
       // 
       btnAppDefaultFolderBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnAppDefaultFolderBrowse.Location = new Point(498, 19);
+      btnAppDefaultFolderBrowse.Location = new Point(463, 19);
       btnAppDefaultFolderBrowse.Name = "btnAppDefaultFolderBrowse";
       btnAppDefaultFolderBrowse.Size = new Size(36, 23);
       btnAppDefaultFolderBrowse.TabIndex = 2;
@@ -541,7 +573,7 @@
       edAppDefaultFolder.Location = new Point(146, 19);
       edAppDefaultFolder.Margin = new Padding(3, 2, 3, 2);
       edAppDefaultFolder.Name = "edAppDefaultFolder";
-      edAppDefaultFolder.Size = new Size(348, 23);
+      edAppDefaultFolder.Size = new Size(313, 23);
       edAppDefaultFolder.TabIndex = 0;
       edAppDefaultFolder.TextChanged += edAppDefaultFolder_TextChanged;
       // 
@@ -564,14 +596,14 @@
       tpItem.Margin = new Padding(3, 2, 3, 2);
       tpItem.Name = "tpItem";
       tpItem.Padding = new Padding(3, 2, 3, 2);
-      tpItem.Size = new Size(615, 485);
+      tpItem.Size = new Size(580, 485);
       tpItem.TabIndex = 1;
       tpItem.Text = "Details";
       tpItem.UseVisualStyleBackColor = true;
       // 
       // btnAttemptTodo
       // 
-      btnAttemptTodo.Location = new Point(242, 35);
+      btnAttemptTodo.Location = new Point(225, 33);
       btnAttemptTodo.Name = "btnAttemptTodo";
       btnAttemptTodo.Size = new Size(101, 23);
       btnAttemptTodo.TabIndex = 48;
@@ -582,7 +614,7 @@
       // btnWriteFile
       // 
       btnWriteFile.Anchor = AnchorStyles.Top;
-      btnWriteFile.Location = new Point(349, 35);
+      btnWriteFile.Location = new Point(332, 35);
       btnWriteFile.Margin = new Padding(3, 2, 3, 2);
       btnWriteFile.Name = "btnWriteFile";
       btnWriteFile.Size = new Size(92, 21);
@@ -594,7 +626,7 @@
       // btnGenerateDesc
       // 
       btnGenerateDesc.Anchor = AnchorStyles.Top;
-      btnGenerateDesc.Location = new Point(447, 35);
+      btnGenerateDesc.Location = new Point(430, 35);
       btnGenerateDesc.Margin = new Padding(3, 2, 3, 2);
       btnGenerateDesc.Name = "btnGenerateDesc";
       btnGenerateDesc.Size = new Size(92, 21);
@@ -613,7 +645,7 @@
       tabControl2.Margin = new Padding(3, 2, 3, 2);
       tabControl2.Name = "tabControl2";
       tabControl2.SelectedIndex = 0;
-      tabControl2.Size = new Size(609, 236);
+      tabControl2.Size = new Size(574, 236);
       tabControl2.TabIndex = 45;
       // 
       // tpItemDesc
@@ -623,7 +655,7 @@
       tpItemDesc.Margin = new Padding(3, 2, 3, 2);
       tpItemDesc.Name = "tpItemDesc";
       tpItemDesc.Padding = new Padding(3, 2, 3, 2);
-      tpItemDesc.Size = new Size(601, 208);
+      tpItemDesc.Size = new Size(566, 208);
       tpItemDesc.TabIndex = 0;
       tpItemDesc.Text = "Description";
       tpItemDesc.UseVisualStyleBackColor = true;
@@ -652,6 +684,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -661,7 +694,7 @@
       edItemDesc.ReplaceForm = null;
       edItemDesc.SelectionColor = Color.FromArgb(60, 0, 0, 255);
       edItemDesc.ServiceColors = (FastColoredTextBoxNS.ServiceColors)resources.GetObject("edItemDesc.ServiceColors");
-      edItemDesc.Size = new Size(595, 204);
+      edItemDesc.Size = new Size(560, 204);
       edItemDesc.TabIndex = 0;
       edItemDesc.Text = "fastColoredTextBox1";
       edItemDesc.WordWrapAutoIndent = false;
@@ -676,7 +709,7 @@
       tpData.Margin = new Padding(3, 2, 3, 2);
       tpData.Name = "tpData";
       tpData.Padding = new Padding(3, 2, 3, 2);
-      tpData.Size = new Size(601, 208);
+      tpData.Size = new Size(566, 208);
       tpData.TabIndex = 1;
       tpData.Text = "Json Data";
       tpData.UseVisualStyleBackColor = true;
@@ -689,7 +722,7 @@
       edItemData.Multiline = true;
       edItemData.Name = "edItemData";
       edItemData.ScrollBars = ScrollBars.Both;
-      edItemData.Size = new Size(595, 204);
+      edItemData.Size = new Size(560, 204);
       edItemData.TabIndex = 27;
       edItemData.TextChanged += edItemName_TextChanged;
       // 
@@ -699,7 +732,7 @@
       tpHtml.Location = new Point(4, 24);
       tpHtml.Name = "tpHtml";
       tpHtml.Padding = new Padding(3);
-      tpHtml.Size = new Size(601, 208);
+      tpHtml.Size = new Size(566, 208);
       tpHtml.TabIndex = 2;
       tpHtml.Text = "Html";
       tpHtml.UseVisualStyleBackColor = true;
@@ -712,14 +745,14 @@
       wvDescription.Dock = DockStyle.Fill;
       wvDescription.Location = new Point(3, 3);
       wvDescription.Name = "wvDescription";
-      wvDescription.Size = new Size(595, 202);
+      wvDescription.Size = new Size(560, 202);
       wvDescription.TabIndex = 0;
       wvDescription.ZoomFactor = 1D;
       // 
       // btnArchive
       // 
       btnArchive.Anchor = AnchorStyles.Top;
-      btnArchive.Location = new Point(540, 35);
+      btnArchive.Location = new Point(523, 35);
       btnArchive.Margin = new Padding(3, 2, 3, 2);
       btnArchive.Name = "btnArchive";
       btnArchive.Size = new Size(66, 21);
@@ -751,7 +784,7 @@
       // btnAbortItem
       // 
       btnAbortItem.Anchor = AnchorStyles.Top;
-      btnAbortItem.Location = new Point(505, 93);
+      btnAbortItem.Location = new Point(488, 93);
       btnAbortItem.Margin = new Padding(3, 2, 3, 2);
       btnAbortItem.Name = "btnAbortItem";
       btnAbortItem.Size = new Size(66, 21);
@@ -763,7 +796,7 @@
       // btnUpdateItem
       // 
       btnUpdateItem.Anchor = AnchorStyles.Top;
-      btnUpdateItem.Location = new Point(435, 93);
+      btnUpdateItem.Location = new Point(418, 93);
       btnUpdateItem.Margin = new Padding(3, 2, 3, 2);
       btnUpdateItem.Name = "btnUpdateItem";
       btnUpdateItem.Size = new Size(66, 21);
@@ -799,7 +832,7 @@
       edItemType.Margin = new Padding(3, 2, 3, 2);
       edItemType.MinimumSize = new Size(176, 0);
       edItemType.Name = "edItemType";
-      edItemType.Size = new Size(366, 23);
+      edItemType.Size = new Size(331, 23);
       edItemType.TabIndex = 25;
       edItemType.ValueMember = "Id";
       edItemType.SelectedValueChanged += edItemName_TextChanged;
@@ -813,6 +846,215 @@
       edItemName.TabIndex = 24;
       edItemName.TextChanged += edItemName_TextChanged;
       // 
+      // tpReview
+      // 
+      tpReview.Controls.Add(btnAbortReadUpdate);
+      tpReview.Controls.Add(btnUpdateReady);
+      tpReview.Controls.Add(cbSetReadyfromReview);
+      tpReview.Controls.Add(edReadyRefItem);
+      tpReview.Controls.Add(edReadyPrompt);
+      tpReview.Controls.Add(edReadyTodoName);
+      tpReview.Controls.Add(labelNotReady);
+      tpReview.Controls.Add(lbNotReady);
+      tpReview.Location = new Point(4, 24);
+      tpReview.Name = "tpReview";
+      tpReview.Size = new Size(580, 485);
+      tpReview.TabIndex = 3;
+      tpReview.Text = "Ready Review";
+      tpReview.UseVisualStyleBackColor = true;
+      // 
+      // btnAbortReadUpdate
+      // 
+      btnAbortReadUpdate.Anchor = AnchorStyles.Bottom;
+      btnAbortReadUpdate.Location = new Point(189, 457);
+      btnAbortReadUpdate.Margin = new Padding(3, 2, 3, 2);
+      btnAbortReadUpdate.Name = "btnAbortReadUpdate";
+      btnAbortReadUpdate.Size = new Size(66, 21);
+      btnAbortReadUpdate.TabIndex = 35;
+      btnAbortReadUpdate.Text = "Abort";
+      btnAbortReadUpdate.UseVisualStyleBackColor = true;
+      btnAbortReadUpdate.Click += btnAbortReadUpdate_Click;
+      // 
+      // btnUpdateReady
+      // 
+      btnUpdateReady.Anchor = AnchorStyles.Bottom;
+      btnUpdateReady.Location = new Point(119, 457);
+      btnUpdateReady.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateReady.Name = "btnUpdateReady";
+      btnUpdateReady.Size = new Size(66, 21);
+      btnUpdateReady.TabIndex = 34;
+      btnUpdateReady.Text = "Update";
+      btnUpdateReady.UseVisualStyleBackColor = true;
+      btnUpdateReady.Click += btnUpdateReady_Click;
+      // 
+      // cbSetReadyfromReview
+      // 
+      cbSetReadyfromReview.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbSetReadyfromReview.AutoSize = true;
+      cbSetReadyfromReview.Location = new Point(21, 457);
+      cbSetReadyfromReview.Name = "cbSetReadyfromReview";
+      cbSetReadyfromReview.Size = new Size(77, 19);
+      cbSetReadyfromReview.TabIndex = 7;
+      cbSetReadyfromReview.Text = "Set Ready";
+      cbSetReadyfromReview.UseVisualStyleBackColor = true;
+      cbSetReadyfromReview.CheckedChanged += cbSetReadyfromReview_CheckedChanged;
+      // 
+      // edReadyRefItem
+      // 
+      edReadyRefItem.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      edReadyRefItem.Location = new Point(21, 229);
+      edReadyRefItem.Name = "edReadyRefItem";
+      edReadyRefItem.Size = new Size(521, 23);
+      edReadyRefItem.TabIndex = 6;
+      // 
+      // edReadyPrompt
+      // 
+      edReadyPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edReadyPrompt.Location = new Point(21, 261);
+      edReadyPrompt.Multiline = true;
+      edReadyPrompt.Name = "edReadyPrompt";
+      edReadyPrompt.ScrollBars = ScrollBars.Vertical;
+      edReadyPrompt.Size = new Size(521, 190);
+      edReadyPrompt.TabIndex = 5;
+      // 
+      // edReadyTodoName
+      // 
+      edReadyTodoName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      edReadyTodoName.Location = new Point(21, 200);
+      edReadyTodoName.Name = "edReadyTodoName";
+      edReadyTodoName.Size = new Size(521, 23);
+      edReadyTodoName.TabIndex = 4;
+      // 
+      // labelNotReady
+      // 
+      labelNotReady.AutoSize = true;
+      labelNotReady.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      labelNotReady.Location = new Point(9, 8);
+      labelNotReady.Name = "labelNotReady";
+      labelNotReady.Size = new Size(127, 21);
+      labelNotReady.TabIndex = 3;
+      labelNotReady.Text = "Not Ready Todos";
+      // 
+      // lbNotReady
+      // 
+      lbNotReady.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbNotReady.FormattingEnabled = true;
+      lbNotReady.Location = new Point(21, 39);
+      lbNotReady.Name = "lbNotReady";
+      lbNotReady.Size = new Size(521, 139);
+      lbNotReady.TabIndex = 1;
+      lbNotReady.SelectedIndexChanged += lbNotReady_SelectedIndexChanged;
+      // 
+      // tpSchedule
+      // 
+      tpSchedule.Controls.Add(btnAbortWorking);
+      tpSchedule.Controls.Add(btnUpdateWorking);
+      tpSchedule.Controls.Add(cbReadyWorking);
+      tpSchedule.Controls.Add(edWorkingRefItem);
+      tpSchedule.Controls.Add(edWorkingPrompt);
+      tpSchedule.Controls.Add(edWorkingName);
+      tpSchedule.Controls.Add(lbWorkingStatus);
+      tpSchedule.Controls.Add(btnStartStop);
+      tpSchedule.Controls.Add(lbReady);
+      tpSchedule.Location = new Point(4, 24);
+      tpSchedule.Name = "tpSchedule";
+      tpSchedule.Padding = new Padding(3);
+      tpSchedule.Size = new Size(580, 485);
+      tpSchedule.TabIndex = 2;
+      tpSchedule.Text = "Schedule";
+      tpSchedule.UseVisualStyleBackColor = true;
+      // 
+      // btnAbortWorking
+      // 
+      btnAbortWorking.Anchor = AnchorStyles.Bottom;
+      btnAbortWorking.Location = new Point(213, 457);
+      btnAbortWorking.Margin = new Padding(3, 2, 3, 2);
+      btnAbortWorking.Name = "btnAbortWorking";
+      btnAbortWorking.Size = new Size(66, 21);
+      btnAbortWorking.TabIndex = 38;
+      btnAbortWorking.Text = "Abort";
+      btnAbortWorking.UseVisualStyleBackColor = true;
+      btnAbortWorking.Click += btnAbortWorking_Click;
+      // 
+      // btnUpdateWorking
+      // 
+      btnUpdateWorking.Anchor = AnchorStyles.Bottom;
+      btnUpdateWorking.Location = new Point(143, 457);
+      btnUpdateWorking.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateWorking.Name = "btnUpdateWorking";
+      btnUpdateWorking.Size = new Size(66, 21);
+      btnUpdateWorking.TabIndex = 37;
+      btnUpdateWorking.Text = "Update";
+      btnUpdateWorking.UseVisualStyleBackColor = true;
+      btnUpdateWorking.Click += btnUpdateWorking_Click;
+      // 
+      // cbReadyWorking
+      // 
+      cbReadyWorking.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbReadyWorking.AutoSize = true;
+      cbReadyWorking.Location = new Point(45, 457);
+      cbReadyWorking.Name = "cbReadyWorking";
+      cbReadyWorking.Size = new Size(77, 19);
+      cbReadyWorking.TabIndex = 36;
+      cbReadyWorking.Text = "Set Ready";
+      cbReadyWorking.UseVisualStyleBackColor = true;
+      cbReadyWorking.CheckedChanged += cbReadyWorking_CheckedChanged;
+      // 
+      // edWorkingRefItem
+      // 
+      edWorkingRefItem.Location = new Point(42, 233);
+      edWorkingRefItem.Name = "edWorkingRefItem";
+      edWorkingRefItem.Size = new Size(328, 23);
+      edWorkingRefItem.TabIndex = 21;
+      // 
+      // edWorkingPrompt
+      // 
+      edWorkingPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edWorkingPrompt.Location = new Point(42, 262);
+      edWorkingPrompt.Multiline = true;
+      edWorkingPrompt.Name = "edWorkingPrompt";
+      edWorkingPrompt.ScrollBars = ScrollBars.Vertical;
+      edWorkingPrompt.Size = new Size(515, 190);
+      edWorkingPrompt.TabIndex = 20;
+      // 
+      // edWorkingName
+      // 
+      edWorkingName.Location = new Point(42, 204);
+      edWorkingName.Name = "edWorkingName";
+      edWorkingName.Size = new Size(328, 23);
+      edWorkingName.TabIndex = 19;
+      // 
+      // lbWorkingStatus
+      // 
+      lbWorkingStatus.AutoSize = true;
+      lbWorkingStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      lbWorkingStatus.Location = new Point(86, 23);
+      lbWorkingStatus.Name = "lbWorkingStatus";
+      lbWorkingStatus.Size = new Size(182, 21);
+      lbWorkingStatus.TabIndex = 18;
+      lbWorkingStatus.Text = "Loom Operational Status";
+      // 
+      // btnStartStop
+      // 
+      btnStartStop.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      btnStartStop.Location = new Point(17, 15);
+      btnStartStop.Name = "btnStartStop";
+      btnStartStop.Size = new Size(63, 37);
+      btnStartStop.TabIndex = 15;
+      btnStartStop.Text = "Start";
+      btnStartStop.UseVisualStyleBackColor = true;
+      btnStartStop.Click += btnStartStop_Click;
+      // 
+      // lbReady
+      // 
+      lbReady.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbReady.FormattingEnabled = true;
+      lbReady.Location = new Point(42, 64);
+      lbReady.Name = "lbReady";
+      lbReady.Size = new Size(515, 124);
+      lbReady.TabIndex = 13;
+      lbReady.SelectedIndexChanged += lbReady_SelectedIndexChanged;
+      // 
       // tbErrorOut
       // 
       tbErrorOut.Dock = DockStyle.Fill;
@@ -821,9 +1063,8 @@
       tbErrorOut.Multiline = true;
       tbErrorOut.Name = "tbErrorOut";
       tbErrorOut.ScrollBars = ScrollBars.Both;
-      tbErrorOut.Size = new Size(623, 91);
+      tbErrorOut.Size = new Size(588, 91);
       tbErrorOut.TabIndex = 1;
-      tbErrorOut.WordWrap = false;
       // 
       // tsErrorPopup
       // 
@@ -831,7 +1072,7 @@
       tsErrorPopup.Items.AddRange(new ToolStripItem[] { toolStripLabel1, tsBtnDismiss });
       tsErrorPopup.Location = new Point(0, 0);
       tsErrorPopup.Name = "tsErrorPopup";
-      tsErrorPopup.Size = new Size(623, 25);
+      tsErrorPopup.Size = new Size(588, 25);
       tsErrorPopup.TabIndex = 0;
       tsErrorPopup.Text = "Hide";
       // 
@@ -860,19 +1101,18 @@
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
-      // miAddForeachTodo
+      // tRun
       // 
-      miAddForeachTodo.Name = "miAddForeachTodo";
-      miAddForeachTodo.Size = new Size(208, 22);
-      miAddForeachTodo.Text = "Add Foreach Todo";
-      miAddForeachTodo.Click += miAddForeachTodo_Click;
+      tRun.Interval = 250;
+      tRun.Tick += tRun_Tick;
       // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(896, 632);
+      ClientSize = new Size(845, 632);
       Controls.Add(splitContainer1);
+      Icon = (Icon)resources.GetObject("$this.Icon");
       Margin = new Padding(3, 2, 3, 2);
       Name = "Form1";
       Text = "TheLoom on WeaversGuild";
@@ -903,6 +1143,10 @@
       tpData.PerformLayout();
       tpHtml.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)wvDescription).EndInit();
+      tpReview.ResumeLayout(false);
+      tpReview.PerformLayout();
+      tpSchedule.ResumeLayout(false);
+      tpSchedule.PerformLayout();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -980,5 +1224,25 @@
     private ToolStripMenuItem miAddDeskTodo;
     private Button btnAttemptTodo;
     private ToolStripMenuItem miAddForeachTodo;
+    private TabPage tpSchedule;
+    private TabPage tpReview;
+    private Label labelNotReady;
+    private ListBox lbNotReady;
+    private Button btnStartStop;
+    private ListBox lbReady;
+    private TextBox edReadyRefItem;
+    private TextBox edReadyPrompt;
+    private TextBox edReadyTodoName;
+    private Button btnAbortReadUpdate;
+    private Button btnUpdateReady;
+    private CheckBox cbSetReadyfromReview;
+    private System.Windows.Forms.Timer tRun;
+    private Label lbWorkingStatus;
+    private TextBox edWorkingRefItem;
+    private TextBox edWorkingPrompt;
+    private TextBox edWorkingName;
+    private Button btnAbortWorking;
+    private Button btnUpdateWorking;
+    private CheckBox cbReadyWorking;
   }
 }

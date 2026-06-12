@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 
@@ -19,9 +20,9 @@ namespace Weavers.Core.Handlers.Items {
     int? PropertyValueTypeId = null,
     int? PropertyEditorTypeId = null,
     int? ReferenceItemTypeId = null
-  ) : IRequest<ItemPropertyDto>;
+  ) : IMcpRequest, IRequest<ItemPropertyDto>;
 
-  public class AddUpdateItemPropertyCommandHandler : IRequestHandler<AddUpdateItemPropertyCommand, ItemPropertyDto> {
+  public class AddUpdateItemPropertyCommandHandler :  IRequestHandler<AddUpdateItemPropertyCommand, ItemPropertyDto> {
     private readonly FabricDbContext _context;    
     private readonly ISessionItemCacheService _sessionCache;
 

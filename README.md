@@ -32,7 +32,17 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
+- Db Verion 134 x2 (6/12/2026)
+  - Adds ScheduledItem entity, ScheduledItems table. 
+    - Handlers to get, add and update status of ScheduledItem 
+      - then reverted it all.
+  - Adds blue fire icon.
+  - Adds Ready Review and Schedule Tabs
+    - listbox to show todos that are ready and a tab to host a play button and a queue of the ones review marked ready. 
+    - Confirmd playable and automation en mass begins with documentation desk and build out of the CommandHelps org folder and documentation. (6/12/2026)
+    
 - Db Version 134 
+  - Adds Write button for Org Doc, mdFiles, html and json files. dialog open location.
   - Adds Foreach Todo dialog to add sets of todo's, found issue where desk was not being marked as completed when agent marks complete.
   - Initial documentation desk is working, need to test and verify review desk. need to get a automaion play button going soon.
   - Adds Default ticket header to all desk to desk transfers.

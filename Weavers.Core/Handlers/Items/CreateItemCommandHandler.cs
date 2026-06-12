@@ -1,10 +1,11 @@
-﻿using Weavers.Core.Entities;
-using Weavers.Core.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Weavers.Core.Extensions;
 using Microsoft.Extensions.Logging;
-using Weavers.Core.Service;   
+using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
+using Weavers.Core.Models;
+using Weavers.Core.Service;
+using Weavers.Core.Handlers.Pipeline;
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateItemCommand(
@@ -12,7 +13,7 @@ namespace Weavers.Core.Handlers.Items {
    int ItemTypeId,
    string Description,
    string Data
- ) : IRequest<ItemDto?>;
+ ) : IMcpRequest, IRequest<ItemDto?>;
 
 
   public class CreateItemCommandHandler(FabricDbContext context, ILogger<CreateItemCommandHandler> logger, ISessionItemCacheService sessionCache) : IRequestHandler<CreateItemCommand, ItemDto?> {

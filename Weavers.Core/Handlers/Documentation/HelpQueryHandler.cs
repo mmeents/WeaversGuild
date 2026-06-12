@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
-using static System.Collections.Specialized.BitVector32;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Weavers.Core.Handlers.Pipeline;
 
 namespace Weavers.Core.Handlers.Documentation {
 
-  public record HelpQuery(string? Command) : IRequest<string>;
+  public record HelpQuery(string? Command) : IMcpRequest, IRequest<string>;
 
   internal class HelpQueryHandler : IRequestHandler<HelpQuery, string> {
     public async Task<string> Handle(HelpQuery request, CancellationToken cancellationToken) {

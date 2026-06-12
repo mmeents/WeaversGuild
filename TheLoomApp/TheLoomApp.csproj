@@ -8,7 +8,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <ApplicationIcon>flame-_1B.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="flame-_1B.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Dax-FCTB" Version="2.16.26.120" />

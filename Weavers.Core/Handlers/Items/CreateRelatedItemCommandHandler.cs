@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Weavers.Core.Entities;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
-using Microsoft.Extensions.Logging;
 using Weavers.Core.Service;
-
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateRelatedItemCommand(
@@ -15,7 +15,7 @@ namespace Weavers.Core.Handlers.Items {
      string ItemName,
      string ItemDescription,
      string ItemData
-   ) : IRequest<ItemDto?>;
+   ) : IMcpRequest, IRequest<ItemDto?>;
 
   public class CreateRelatedItemCommandHandler(
     FabricDbContext context,

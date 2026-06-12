@@ -1,12 +1,13 @@
-﻿using Weavers.Core.Entities;
-using Weavers.Core.Models;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Weavers.Core.Extensions;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Pipeline;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetSubgraphQuery(int itemId, int depth) : IRequest<SubgraphDto>;
+  public record GetSubgraphQuery(int itemId, int depth) : IMcpRequest, IRequest<SubgraphDto>;
   public class GetSubgraphQueryHandler(
     FabricDbContext context,
     ILogger<GetSubgraphQueryHandler> logger

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;  
 using Weavers.Core.Entities;
+using Weavers.Core.Handlers.Todo;
 
 namespace Weavers.Core {
   public class FabricDbContext : DbContext {
@@ -25,6 +26,7 @@ namespace Weavers.Core {
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
       base.OnModelCreating(modelBuilder);
       modelBuilder.ApplyConfigurationsFromAssembly(typeof(FabricDbContext).Assembly);
+      modelBuilder.Entity<ReadyTodoRow>().HasNoKey().ToView(null);
     }
   }
 }

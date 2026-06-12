@@ -1,15 +1,16 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Constants;
-using Weavers.Core.Enums;
 using Weavers.Core.Entities;
+using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.DepItems;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
-  public record DeleteItemCommand(int Id) : IRequest<bool>;
+  public record DeleteItemCommand(int Id) : IMcpRequest, IRequest<bool>;
 
   public class DeleteItemCommandHandler : IRequestHandler<DeleteItemCommand, bool> {
     private readonly FabricDbContext _context;

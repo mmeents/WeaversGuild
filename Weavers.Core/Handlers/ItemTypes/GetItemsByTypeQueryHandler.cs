@@ -5,6 +5,7 @@ using Weavers.Core.Enums;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Extensions;
 using System.Security.Permissions;
+using Weavers.Core.Handlers.Pipeline;
 
 
 namespace Weavers.Core.Handlers.ItemTypes {
@@ -12,7 +13,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
 
   public record GetItemsByItemTypeQuery(
     int ItemTypeId
-) : IRequest<List<ItemLookup>>;
+  ) : IMcpRequest, IRequest<List<ItemLookup>>;
   
 
   public class GetItemsByTypeQueryHandler : IRequestHandler<GetItemsByItemTypeQuery, List<ItemLookup>> {

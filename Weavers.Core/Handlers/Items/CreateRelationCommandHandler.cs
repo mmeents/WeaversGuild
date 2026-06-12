@@ -1,15 +1,16 @@
 ﻿using MediatR;
-using Weavers.Core.Entities;
-using Weavers.Core.Models;
-using Weavers.Core.Extensions;
 using Microsoft.Extensions.Logging;
+using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Pipeline;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Items {
   public record CreateRelationCommand(
       int ItemId,
       int RelationTypeId,
       int RelatedItemId
-  ) : IRequest<RelationDto?>;
+  ) : IMcpRequest, IRequest<RelationDto?>;
 
   public class CreateRelationCommandHandler (
     FabricDbContext context,
