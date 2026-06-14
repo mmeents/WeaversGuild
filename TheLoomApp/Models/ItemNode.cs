@@ -34,7 +34,7 @@ namespace TheLoomApp.Models {
         Name = item.Id.ToString(),
         ImageIndex = type.ImageIndex(),
         SelectedImageIndex = type.ImageIndex(),
-        Text = item.Name,
+        Text = item.Id.ToString()+": "+item.Name,
         Item = item,
         IsLoaded = false
       };
@@ -48,7 +48,7 @@ namespace TheLoomApp.Models {
         Name = item.Id.ToString(),
         ImageIndex = type.ImageIndex(),
         SelectedImageIndex = type.ImageIndex(),
-        Text = item.Name,
+        Text = item.Id.ToString()+": "+item.Name,
         Item = item,
         Relation = relation,
         IsLoaded = false,

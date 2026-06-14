@@ -32,7 +32,10 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
-- Db Verion 134 x2 (6/12/2026)
+- Db Verion 134 x3 (6/13/2026)
+  - Adds Results Tab like Ready and Schedule 
+    - shows completed todo's with archive and delete operations. 
+    - adds delete operation to Review Ready tab. 
   - Adds ScheduledItem entity, ScheduledItems table. 
     - Handlers to get, add and update status of ScheduledItem 
       - then reverted it all.

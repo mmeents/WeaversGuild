@@ -19,7 +19,8 @@ namespace Weavers.Core.Service {
 
   public interface IAppDataService {
     Task<AppSessionResponse?> GetAppSession();
-    Task<List<ItemDto>> GetRootProjectsAsync();
+    Task<bool> EnforceDataRetentionOrgPolicy();
+    Task <List<ItemDto>> GetRootProjectsAsync();
     Task<ItemDto?> GetItemById(int itemId);
     Task<ItemDto?> CreateItemAsync(ItemDto itemDto);
     Task<ItemDto?> CreateRelatedItemAsync(int parentItemId, int relationTypeId, int ItemTypeId, string itemName, string itemDescription, string itemData);
@@ -68,17 +69,17 @@ namespace Weavers.Core.Service {
       return scope.ServiceProvider.GetRequiredService<IMediator>();
     }
 
-    public int OrganizationItemId { get; set; } = 0;
-    public int HarnessItemId { get; set; } = 0;
-    public int SessionItemId { get; set; } = 0;
     public async Task<AppSessionResponse?> GetAppSession() {
       var mediator = GetMediator();
       var command = new GetAppSessionCommand();
       var result = await mediator.Send(command);
-      OrganizationItemId = result?.OrganizationId ?? 0;
-      HarnessItemId = result?.HarnessId ?? 0;
-      SessionItemId = result?.SessionId ?? 0;
-      _session.Initialize(Environment.UserName, OrganizationItemId, HarnessItemId, SessionItemId);
+      return result;
+    }
+
+    public async Task<bool> EnforceDataRetentionOrgPolicy() {
+      var mediator = GetMediator();
+      var command = new EnforceDataRetentionOrgPolicyCommand();
+      var result = await mediator.Send(command);
       return result;
     }
 

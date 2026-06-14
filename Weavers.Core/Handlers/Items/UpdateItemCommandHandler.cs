@@ -75,7 +75,7 @@ namespace Weavers.Core.Handlers.Items {
 
       var itemDto = await _context.GetItemDtoById(item.Id, cancellationToken);
 
-      if (itemDto == null) { throw new Exception("Reload after save failed."); }
+      if (itemDto == null) { return null; }  // update changes isActive to false archiving it. 
 
       ItemDto? parentItem = null;
       if (itemDto.ItemTypeId == (int)WeItemType.OrganizationModel) {

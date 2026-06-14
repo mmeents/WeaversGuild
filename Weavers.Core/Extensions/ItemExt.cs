@@ -38,7 +38,7 @@ namespace Weavers.Core.Extensions {
     public static async Task<ItemDto?> GetItemDtoById(this FabricDbContext context, int Id, CancellationToken cancellationToken = default) {
       var result = await context.Items
         .AsNoTracking()
-        .Where(i => i.Id == Id)
+        .Where(i => i.Id == Id && i.IsActive)
         .Select(i => new ItemDto {
           Id = i.Id,
           ItemTypeId = i.ItemTypeId,

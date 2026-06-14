@@ -1,14 +1,5 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Weavers.Core;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -32,12 +23,20 @@ namespace Weavers.Core.Handlers.Sessions {
     private readonly IMediator _mediator;
     private readonly IAppSettingService _settingService;
     private readonly ISessionItemCacheService _sessionCache;
+    private readonly IAppSessionService _session;
 
-    public GetAppSessionCommandHandler(FabricDbContext fabricDbContext, IMediator mediator, IAppSettingService settingService, ISessionItemCacheService sessionCache) {
+    public GetAppSessionCommandHandler(
+      FabricDbContext fabricDbContext, 
+      IMediator mediator,
+      IAppSettingService settingService,
+      ISessionItemCacheService sessionCache,
+      IAppSessionService session
+    ) {
       _dbContext = fabricDbContext;
       _mediator = mediator;
       _settingService = settingService;
       _sessionCache = sessionCache;
+      _session = session;
     }
 
     public async Task<AppSessionResponse?> Handle(GetAppSessionCommand request, CancellationToken cancellationToken) {
@@ -56,6 +55,7 @@ namespace Weavers.Core.Handlers.Sessions {
       result.OrganizationId = orgRoot?.Id ?? 0;
       ItemDto? orgItem = null;
       if (result.OrganizationId == 0) {
+        _session.Initialize(userName, 1, 2, 3);
         orgItem = await _mediator.Send(new CreateItemCommand(Cx.AppName, (int)WeItemType.OrganizationModel, $"{Cx.AppName} - {Cx.AppDescription}", "{}")).ConfigureAwait(false);
         result.OrganizationId = orgItem?.Id ?? 0;
         if (orgItem == null || result.OrganizationId == 0) {
@@ -65,24 +65,10 @@ namespace Weavers.Core.Handlers.Sessions {
         await _mediator.SetProperty(orgItem, Cx.ItRootFolder, orgRootFolder).ConfigureAwait(false);
         await _mediator.SetProperty(orgItem, Cx.ItCharter, Cx.OrgCharter).ConfigureAwait(false);
       } else { 
-        orgItem = await _dbContext.GetItemDtoById(result.OrganizationId, cancellationToken);
+        orgItem = await _sessionCache.GetItemAsync(result.OrganizationId, cancellationToken).ConfigureAwait(false);        
       }
 
       if (orgItem == null) { throw new Exception("Failed to get Organization from database."); }
-
-      // inforce retention policy, delete stale sessions if any. retention days is configurable at org level, if not set, default to 30 days.
-      var retentionProp = orgItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRetentionDays)?.Value;
-      if (int.TryParse(retentionProp, out int days) && days > 0) {
-        var cutoff = DateTime.UtcNow.AddDays(-days);
-        var stale = await _dbContext.Items
-            .Where(i => (i.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                      || i.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)
-                      && i.Established < cutoff)
-            .ToListAsync(cancellationToken);
-        foreach (var item in stale) {
-          await _mediator.Send(new DeleteItemCommand(item.Id)).ConfigureAwait(false);
-        }        
-      }
       
       // session base object exist?
       var harnessName = $"{Cx.AppHarnessAppName}On{machineName}";
@@ -154,6 +140,7 @@ namespace Weavers.Core.Handlers.Sessions {
       }
       await _mediator.SetProperty(sessionItem, Cx.ItProcessId, processId.ToString()).ConfigureAwait(false);
 
+      _session.Initialize(userName, result.OrganizationId, result.HarnessId, result.SessionId);
       return result;
     }
 

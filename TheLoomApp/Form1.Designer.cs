@@ -91,6 +91,7 @@
       edItemType = new ComboBox();
       edItemName = new TextBox();
       tpReview = new TabPage();
+      cbDeleteNotReady = new CheckBox();
       btnAbortReadUpdate = new Button();
       btnUpdateReady = new Button();
       cbSetReadyfromReview = new CheckBox();
@@ -109,6 +110,15 @@
       lbWorkingStatus = new Label();
       btnStartStop = new Button();
       lbReady = new ListBox();
+      tpResults = new TabPage();
+      cbDeleteResult = new CheckBox();
+      btnCancelUpdateResultStatus = new Button();
+      btnUpdateResultStatus = new Button();
+      cbArchiveResult = new CheckBox();
+      edResultTodoDetails = new TextBox();
+      cbTodoResultType = new ComboBox();
+      label1 = new Label();
+      lbTodoResults = new ListBox();
       tbErrorOut = new TextBox();
       tsErrorPopup = new ToolStrip();
       toolStripLabel1 = new ToolStripLabel();
@@ -138,6 +148,7 @@
       ((System.ComponentModel.ISupportInitialize)wvDescription).BeginInit();
       tpReview.SuspendLayout();
       tpSchedule.SuspendLayout();
+      tpResults.SuspendLayout();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -441,6 +452,7 @@
       tabControl1.Controls.Add(tpItem);
       tabControl1.Controls.Add(tpReview);
       tabControl1.Controls.Add(tpSchedule);
+      tabControl1.Controls.Add(tpResults);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Margin = new Padding(3, 2, 3, 2);
@@ -684,7 +696,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -848,6 +859,7 @@
       // 
       // tpReview
       // 
+      tpReview.Controls.Add(cbDeleteNotReady);
       tpReview.Controls.Add(btnAbortReadUpdate);
       tpReview.Controls.Add(btnUpdateReady);
       tpReview.Controls.Add(cbSetReadyfromReview);
@@ -863,10 +875,22 @@
       tpReview.Text = "Ready Review";
       tpReview.UseVisualStyleBackColor = true;
       // 
+      // cbDeleteNotReady
+      // 
+      cbDeleteNotReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbDeleteNotReady.AutoSize = true;
+      cbDeleteNotReady.Location = new Point(104, 457);
+      cbDeleteNotReady.Name = "cbDeleteNotReady";
+      cbDeleteNotReady.Size = new Size(59, 19);
+      cbDeleteNotReady.TabIndex = 43;
+      cbDeleteNotReady.Text = "Delete";
+      cbDeleteNotReady.UseVisualStyleBackColor = true;
+      cbDeleteNotReady.CheckedChanged += cbSetReadyfromReview_CheckedChanged;
+      // 
       // btnAbortReadUpdate
       // 
       btnAbortReadUpdate.Anchor = AnchorStyles.Bottom;
-      btnAbortReadUpdate.Location = new Point(189, 457);
+      btnAbortReadUpdate.Location = new Point(248, 455);
       btnAbortReadUpdate.Margin = new Padding(3, 2, 3, 2);
       btnAbortReadUpdate.Name = "btnAbortReadUpdate";
       btnAbortReadUpdate.Size = new Size(66, 21);
@@ -878,7 +902,7 @@
       // btnUpdateReady
       // 
       btnUpdateReady.Anchor = AnchorStyles.Bottom;
-      btnUpdateReady.Location = new Point(119, 457);
+      btnUpdateReady.Location = new Point(178, 455);
       btnUpdateReady.Margin = new Padding(3, 2, 3, 2);
       btnUpdateReady.Name = "btnUpdateReady";
       btnUpdateReady.Size = new Size(66, 21);
@@ -904,7 +928,7 @@
       edReadyRefItem.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       edReadyRefItem.Location = new Point(21, 229);
       edReadyRefItem.Name = "edReadyRefItem";
-      edReadyRefItem.Size = new Size(521, 23);
+      edReadyRefItem.Size = new Size(536, 23);
       edReadyRefItem.TabIndex = 6;
       // 
       // edReadyPrompt
@@ -914,7 +938,7 @@
       edReadyPrompt.Multiline = true;
       edReadyPrompt.Name = "edReadyPrompt";
       edReadyPrompt.ScrollBars = ScrollBars.Vertical;
-      edReadyPrompt.Size = new Size(521, 190);
+      edReadyPrompt.Size = new Size(536, 190);
       edReadyPrompt.TabIndex = 5;
       // 
       // edReadyTodoName
@@ -922,7 +946,7 @@
       edReadyTodoName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       edReadyTodoName.Location = new Point(21, 200);
       edReadyTodoName.Name = "edReadyTodoName";
-      edReadyTodoName.Size = new Size(521, 23);
+      edReadyTodoName.Size = new Size(536, 23);
       edReadyTodoName.TabIndex = 4;
       // 
       // labelNotReady
@@ -941,7 +965,7 @@
       lbNotReady.FormattingEnabled = true;
       lbNotReady.Location = new Point(21, 39);
       lbNotReady.Name = "lbNotReady";
-      lbNotReady.Size = new Size(521, 139);
+      lbNotReady.Size = new Size(536, 139);
       lbNotReady.TabIndex = 1;
       lbNotReady.SelectedIndexChanged += lbNotReady_SelectedIndexChanged;
       // 
@@ -967,7 +991,7 @@
       // btnAbortWorking
       // 
       btnAbortWorking.Anchor = AnchorStyles.Bottom;
-      btnAbortWorking.Location = new Point(213, 457);
+      btnAbortWorking.Location = new Point(196, 453);
       btnAbortWorking.Margin = new Padding(3, 2, 3, 2);
       btnAbortWorking.Name = "btnAbortWorking";
       btnAbortWorking.Size = new Size(66, 21);
@@ -979,7 +1003,7 @@
       // btnUpdateWorking
       // 
       btnUpdateWorking.Anchor = AnchorStyles.Bottom;
-      btnUpdateWorking.Location = new Point(143, 457);
+      btnUpdateWorking.Location = new Point(126, 453);
       btnUpdateWorking.Margin = new Padding(3, 2, 3, 2);
       btnUpdateWorking.Name = "btnUpdateWorking";
       btnUpdateWorking.Size = new Size(66, 21);
@@ -992,7 +1016,7 @@
       // 
       cbReadyWorking.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbReadyWorking.AutoSize = true;
-      cbReadyWorking.Location = new Point(45, 457);
+      cbReadyWorking.Location = new Point(27, 455);
       cbReadyWorking.Name = "cbReadyWorking";
       cbReadyWorking.Size = new Size(77, 19);
       cbReadyWorking.TabIndex = 36;
@@ -1002,33 +1026,33 @@
       // 
       // edWorkingRefItem
       // 
-      edWorkingRefItem.Location = new Point(42, 233);
+      edWorkingRefItem.Location = new Point(21, 229);
       edWorkingRefItem.Name = "edWorkingRefItem";
-      edWorkingRefItem.Size = new Size(328, 23);
+      edWorkingRefItem.Size = new Size(534, 23);
       edWorkingRefItem.TabIndex = 21;
       // 
       // edWorkingPrompt
       // 
       edWorkingPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      edWorkingPrompt.Location = new Point(42, 262);
+      edWorkingPrompt.Location = new Point(21, 258);
       edWorkingPrompt.Multiline = true;
       edWorkingPrompt.Name = "edWorkingPrompt";
       edWorkingPrompt.ScrollBars = ScrollBars.Vertical;
-      edWorkingPrompt.Size = new Size(515, 190);
+      edWorkingPrompt.Size = new Size(534, 190);
       edWorkingPrompt.TabIndex = 20;
       // 
       // edWorkingName
       // 
-      edWorkingName.Location = new Point(42, 204);
+      edWorkingName.Location = new Point(21, 200);
       edWorkingName.Name = "edWorkingName";
-      edWorkingName.Size = new Size(328, 23);
+      edWorkingName.Size = new Size(534, 23);
       edWorkingName.TabIndex = 19;
       // 
       // lbWorkingStatus
       // 
       lbWorkingStatus.AutoSize = true;
       lbWorkingStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-      lbWorkingStatus.Location = new Point(86, 23);
+      lbWorkingStatus.Location = new Point(75, 8);
       lbWorkingStatus.Name = "lbWorkingStatus";
       lbWorkingStatus.Size = new Size(182, 21);
       lbWorkingStatus.TabIndex = 18;
@@ -1037,9 +1061,9 @@
       // btnStartStop
       // 
       btnStartStop.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-      btnStartStop.Location = new Point(17, 15);
+      btnStartStop.Location = new Point(5, 3);
       btnStartStop.Name = "btnStartStop";
-      btnStartStop.Size = new Size(63, 37);
+      btnStartStop.Size = new Size(63, 31);
       btnStartStop.TabIndex = 15;
       btnStartStop.Text = "Start";
       btnStartStop.UseVisualStyleBackColor = true;
@@ -1049,11 +1073,117 @@
       // 
       lbReady.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       lbReady.FormattingEnabled = true;
-      lbReady.Location = new Point(42, 64);
+      lbReady.Location = new Point(21, 39);
       lbReady.Name = "lbReady";
-      lbReady.Size = new Size(515, 124);
+      lbReady.Size = new Size(536, 139);
       lbReady.TabIndex = 13;
       lbReady.SelectedIndexChanged += lbReady_SelectedIndexChanged;
+      // 
+      // tpResults
+      // 
+      tpResults.Controls.Add(cbDeleteResult);
+      tpResults.Controls.Add(btnCancelUpdateResultStatus);
+      tpResults.Controls.Add(btnUpdateResultStatus);
+      tpResults.Controls.Add(cbArchiveResult);
+      tpResults.Controls.Add(edResultTodoDetails);
+      tpResults.Controls.Add(cbTodoResultType);
+      tpResults.Controls.Add(label1);
+      tpResults.Controls.Add(lbTodoResults);
+      tpResults.Location = new Point(4, 24);
+      tpResults.Name = "tpResults";
+      tpResults.Size = new Size(580, 485);
+      tpResults.TabIndex = 4;
+      tpResults.Text = "Results";
+      tpResults.UseVisualStyleBackColor = true;
+      // 
+      // cbDeleteResult
+      // 
+      cbDeleteResult.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbDeleteResult.AutoSize = true;
+      cbDeleteResult.Location = new Point(99, 451);
+      cbDeleteResult.Name = "cbDeleteResult";
+      cbDeleteResult.Size = new Size(59, 19);
+      cbDeleteResult.TabIndex = 42;
+      cbDeleteResult.Text = "Delete";
+      cbDeleteResult.UseVisualStyleBackColor = true;
+      cbDeleteResult.CheckedChanged += cbDeleteResult_CheckedChanged;
+      // 
+      // btnCancelUpdateResultStatus
+      // 
+      btnCancelUpdateResultStatus.Anchor = AnchorStyles.Bottom;
+      btnCancelUpdateResultStatus.Location = new Point(259, 449);
+      btnCancelUpdateResultStatus.Margin = new Padding(3, 2, 3, 2);
+      btnCancelUpdateResultStatus.Name = "btnCancelUpdateResultStatus";
+      btnCancelUpdateResultStatus.Size = new Size(66, 21);
+      btnCancelUpdateResultStatus.TabIndex = 41;
+      btnCancelUpdateResultStatus.Text = "Abort";
+      btnCancelUpdateResultStatus.UseVisualStyleBackColor = true;
+      btnCancelUpdateResultStatus.Click += btnCancelUpdateResultStatus_Click;
+      // 
+      // btnUpdateResultStatus
+      // 
+      btnUpdateResultStatus.Anchor = AnchorStyles.Bottom;
+      btnUpdateResultStatus.Location = new Point(189, 449);
+      btnUpdateResultStatus.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateResultStatus.Name = "btnUpdateResultStatus";
+      btnUpdateResultStatus.Size = new Size(66, 21);
+      btnUpdateResultStatus.TabIndex = 40;
+      btnUpdateResultStatus.Text = "Update";
+      btnUpdateResultStatus.UseVisualStyleBackColor = true;
+      btnUpdateResultStatus.Click += btnUpdateResultStatus_Click;
+      // 
+      // cbArchiveResult
+      // 
+      cbArchiveResult.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArchiveResult.AutoSize = true;
+      cbArchiveResult.Location = new Point(27, 451);
+      cbArchiveResult.Name = "cbArchiveResult";
+      cbArchiveResult.Size = new Size(66, 19);
+      cbArchiveResult.TabIndex = 39;
+      cbArchiveResult.Text = "Archive";
+      cbArchiveResult.UseVisualStyleBackColor = true;
+      cbArchiveResult.CheckedChanged += cbArchiveResult_CheckedChanged;
+      // 
+      // edResultTodoDetails
+      // 
+      edResultTodoDetails.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edResultTodoDetails.Location = new Point(23, 222);
+      edResultTodoDetails.Multiline = true;
+      edResultTodoDetails.Name = "edResultTodoDetails";
+      edResultTodoDetails.ScrollBars = ScrollBars.Vertical;
+      edResultTodoDetails.Size = new Size(534, 222);
+      edResultTodoDetails.TabIndex = 21;
+      // 
+      // cbTodoResultType
+      // 
+      cbTodoResultType.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      cbTodoResultType.FormattingEnabled = true;
+      cbTodoResultType.Items.AddRange(new object[] { "Completed", "Aborted", "Failed" });
+      cbTodoResultType.Location = new Point(141, 6);
+      cbTodoResultType.Name = "cbTodoResultType";
+      cbTodoResultType.Size = new Size(121, 27);
+      cbTodoResultType.TabIndex = 6;
+      cbTodoResultType.SelectedIndexChanged += cbTodoResultType_SelectedIndexChanged;
+      // 
+      // label1
+      // 
+      label1.AutoSize = true;
+      label1.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      label1.Location = new Point(9, 8);
+      label1.Name = "label1";
+      label1.Size = new Size(117, 21);
+      label1.TabIndex = 5;
+      label1.Text = "Results by Type";
+      // 
+      // lbTodoResults
+      // 
+      lbTodoResults.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbTodoResults.FormattingEnabled = true;
+      lbTodoResults.Location = new Point(21, 39);
+      lbTodoResults.Name = "lbTodoResults";
+      lbTodoResults.Size = new Size(536, 139);
+      lbTodoResults.TabIndex = 4;
+      lbTodoResults.SelectedIndexChanged += lbTodoResults_SelectedIndexChanged;
       // 
       // tbErrorOut
       // 
@@ -1147,6 +1277,8 @@
       tpReview.PerformLayout();
       tpSchedule.ResumeLayout(false);
       tpSchedule.PerformLayout();
+      tpResults.ResumeLayout(false);
+      tpResults.PerformLayout();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -1244,5 +1376,15 @@
     private Button btnAbortWorking;
     private Button btnUpdateWorking;
     private CheckBox cbReadyWorking;
+    private TabPage tpResults;
+    private Label label1;
+    private ListBox lbTodoResults;
+    private ComboBox cbTodoResultType;
+    private CheckBox cbDeleteResult;
+    private Button btnCancelUpdateResultStatus;
+    private Button btnUpdateResultStatus;
+    private CheckBox cbArchiveResult;
+    private TextBox edResultTodoDetails;
+    private CheckBox cbDeleteNotReady;
   }
 }

@@ -1,11 +1,13 @@
 using Azure.Core;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
 using TheLoomApp.Models;
@@ -167,7 +169,8 @@ namespace TheLoomApp {
 
     #region Tree View Loading and Events
     private async void Form1_Shown(object sender, EventArgs e) {
-      _sessionDetails = await _appDataService.GetAppSession();
+      _sessionDetails = await _appDataService.GetAppSession(); // create session.
+      await _appDataService.EnforceDataRetentionOrgPolicy();
       await LoadRootProjects();
       await LoadItemTypesCache();
       Form1_Resize(sender, e);
@@ -493,6 +496,15 @@ namespace TheLoomApp {
       }
     }
 
+    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
+      if (tabControl1.SelectedTab == tpSchedule) {
+        ReloadSchedules();
+      } else if (tabControl1.SelectedTab == tpReview) {
+        ReloadReadyTab();
+      } else if (tabControl1.SelectedTab == tpResults) {
+        ReloadResultsTab();
+      }
+    }
     #endregion
 
     #region Editing Items and Relations
@@ -1436,8 +1448,8 @@ namespace TheLoomApp {
 
     private ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
 
-    private void ReloadReadyTab() {
-      ReloadReadyTabAsync();
+    private async void ReloadReadyTab() {
+      await ReloadReadyTabAsync();
     }
 
     private async Task<bool> ReloadReadyTabAsync() {
@@ -1447,10 +1459,17 @@ namespace TheLoomApp {
       }
       var notReady = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, false);
       RunOnUi(() => {
+        edReadyTodoName.Text = "";
+        edReadyRefItem.Text = "";
+        edReadyPrompt.Text = "";
+        btnUpdateReady.Visible = false;
+        btnAbortReadUpdate.Visible = false;
+        cbSetReadyfromReview.Checked = false;
+        cbDeleteNotReady.Checked = false;
         lbNotReady.Items.Clear();
         _notReadyDict.Clear();
         foreach (var todo in notReady) {
-          var todoStr = "on " + todo.DeskName + " " + todo.Name;
+          var todoStr = $"{todo.Id}: on " + todo.DeskName + " " + todo.Name;
           var index = lbNotReady.Items.Add(todoStr);
           _notReadyDict[index] = todo;
         }
@@ -1469,6 +1488,7 @@ namespace TheLoomApp {
       btnUpdateReady.Visible = false;
       btnAbortReadUpdate.Visible = false;
       cbSetReadyfromReview.Checked = false;
+      cbDeleteNotReady.Checked = false;
 
       var selectedIndex = lbNotReady.SelectedIndex;
       if (selectedIndex >= 0 && _notReadyDict.TryGetValue(selectedIndex, out var todo)) {
@@ -1494,53 +1514,52 @@ namespace TheLoomApp {
     }
 
     private void cbSetReadyfromReview_CheckedChanged(object sender, EventArgs e) {
-      btnUpdateReady.Visible = cbSetReadyfromReview.Checked;
-      btnAbortReadUpdate.Visible = cbSetReadyfromReview.Checked;
+      btnUpdateReady.Visible = cbSetReadyfromReview.Checked || cbDeleteNotReady.Checked;
+      btnAbortReadUpdate.Visible = cbSetReadyfromReview.Checked || cbDeleteNotReady.Checked;
     }
 
     private void btnAbortReadUpdate_Click(object sender, EventArgs e) {
       btnUpdateReady.Visible = false;
       btnAbortReadUpdate.Visible = false;
       cbSetReadyfromReview.Checked = false;
+      cbDeleteNotReady.Checked = false;
     }
 
     private async void btnUpdateReady_Click(object sender, EventArgs e) {
       btnUpdateReady.Visible = false;
       btnAbortReadUpdate.Visible = false;
+      var isSetReady = cbSetReadyfromReview.Checked;
+      var isDelete = cbDeleteNotReady.Checked;
       cbSetReadyfromReview.Checked = false;
+      cbDeleteNotReady.Checked = false;
 
       var selectedIndex = lbNotReady.SelectedIndex;
       if (selectedIndex >= 0 && _notReadyDict.TryGetValue(selectedIndex, out var todo)) {
         var item = await _appDataService.GetItemById(todo.Id);
         if (item != null) {
-          var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
-          if (readyProp != null) {
-            readyProp.Value = "1";
-            await _appDataService.AddUpdateItemPropertyAsync(readyProp);
-            await ReloadReadyTabAsync();
+          if (isSetReady) {
+            var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+            if (readyProp != null) {
+              readyProp.Value = "1";
+              await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+          
+            }
           }
+          if (isDelete) {
+            await _appDataService.DeleteItemAsync(item.Id);
+          }
+          await ReloadReadyTabAsync();
         }
-
       }
 
     }
 
     #endregion
-    #region Ready and Schedule Tab
-
-    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
-      if (tabControl1.SelectedTab == tpSchedule) {
-        ReloadSchedules();
-      } else if (tabControl1.SelectedTab == tpReview) {
-        ReloadReadyTab();
-      }
-    }
+    #region Schedule Tab
 
     private ConcurrentDictionary<int, ReadyTodoRow> _readyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
     private void ReloadSchedules() {
-
       ReloadSchedulesAsync();
-
     }
 
     private async Task<bool> ReloadSchedulesAsync() {
@@ -1550,10 +1569,13 @@ namespace TheLoomApp {
       }
       var schedules = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, true);
       RunOnUi(() => {
+        edWorkingName.Text = "";
+        edWorkingRefItem.Text = "";
+        edWorkingPrompt.Text = "";
         lbReady.Items.Clear();
         _readyDict.Clear();
         foreach (var schedule in schedules) {
-          var todoStr = "on " + schedule.DeskName + " " + schedule.Name;
+          var todoStr = $"{schedule.Id}: on " + schedule.DeskName + " " + schedule.Name;
           var index = lbReady.Items.Add(todoStr);
           _readyDict[index] = schedule;
         }
@@ -1713,8 +1735,6 @@ namespace TheLoomApp {
       btnAbortWorking.Visible = cbReadyWorking.Checked;
       btnUpdateWorking.Visible = cbReadyWorking.Checked;
     }
-    #endregion
-
 
     private void btnAbortWorking_Click(object sender, EventArgs e) {
       btnAbortWorking.Visible = false;
@@ -1724,7 +1744,7 @@ namespace TheLoomApp {
 
     private async void btnUpdateWorking_Click(object sender, EventArgs e) {
       btnAbortWorking.Visible = false;
-      btnUpdateWorking.Visible = false;      
+      btnUpdateWorking.Visible = false;
       cbReadyWorking.Checked = true;
 
       var selectedIndex = lbReady.SelectedIndex;
@@ -1743,6 +1763,168 @@ namespace TheLoomApp {
 
 
     }
+
+
+    #endregion
+    #region Results tab
+    private async void ReloadResultsTab() {
+      await ReloadResultsTabAsync();
+    }
+
+    private ConcurrentDictionary<int, ReadyTodoRow> _ResultsDict = new ConcurrentDictionary<int, ReadyTodoRow>();
+    private async void cbTodoResultType_SelectedIndexChanged(object sender, EventArgs e) {
+      await ReloadResultsTabAsync();
+    }
+    private async Task<bool> ReloadResultsTabAsync() {
+      if (cbTodoResultType.SelectedIndex == -1) {
+        cbTodoResultType.SelectedIndex = 0;
+      }
+
+      int lbResultIndex = lbTodoResults.SelectedIndex;
+      if (lbResultIndex == -1) {
+        lbResultIndex = 0;
+      }
+      var statusFilter = WeItemType.TodoCompleteForward;
+      switch (cbTodoResultType.SelectedIndex) {
+        case 0:
+          statusFilter = WeItemType.TodoCompleteForward;
+          break;
+        case 1:
+          statusFilter = WeItemType.TodoAbortedPushBack;
+          break;
+        case 2:
+          statusFilter = WeItemType.TodoFailedForward;
+          break;
+      }
+
+      var completed = await _appDataService.GetTodoByStatusReady(statusFilter, true);
+      RunOnUi(() => {
+        btnUpdateResultStatus.Visible = false;
+        btnCancelUpdateResultStatus.Visible = false;
+        edResultTodoDetails.Text = "";
+        lbTodoResults.Items.Clear();
+        _ResultsDict.Clear();
+        foreach (var todo in completed) {
+          var todoStr = $"{todo.Id}: on " + todo.DeskName + " " + todo.Name;
+          var index = lbTodoResults.Items.Add(todoStr);
+          _ResultsDict[index] = todo;
+        }
+
+        if (lbTodoResults.Items.Count > 0) {
+          lbTodoResults.SelectedIndex = Math.Min(lbResultIndex, lbTodoResults.Items.Count - 1);
+        }
+      });
+      return true;
+    }
+
+    private async void lbTodoResults_SelectedIndexChanged(object sender, EventArgs e) {
+      btnUpdateResultStatus.Visible = false;
+      btnCancelUpdateResultStatus.Visible = false;
+      cbArchiveResult.Checked = false;
+      cbDeleteResult.Checked = false;
+      edResultTodoDetails.Text = "";
+      var sb = new StringBuilder();
+      var selectedIndex = lbTodoResults.SelectedIndex;
+      if (selectedIndex >= 0 && _ResultsDict.TryGetValue(selectedIndex, out var todo)) {
+        sb.AppendLine(todo.Id.ToString() + ": " + todo.Name + " on " + todo.DeskName);
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          var refId = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem)?.Value ?? "0";
+          if (refId != null && refId != "0" && int.TryParse(refId, out var refIdInt)) {
+            var refItem = await _appDataService.GetItemById(refIdInt);
+            if (refItem != null) {
+              sb.AppendLine($"RefId: {refItem.Id}, {refItem.Name}");
+            }
+          }
+
+          int lastId = 0;
+          string lastTodoName = "";
+          foreach (var relation in item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.TodoAttemptModel)) {
+            lastId = relation.RelatedItemId ?? 0;
+            lastTodoName = relation.RelatedItemName;            
+          }
+          if (lastId != 0) {
+            var relatedItem = await _appDataService.GetItemById(lastId);
+            if (relatedItem != null) {
+
+              var continueTodo = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
+              if (continueTodo != null) {
+                sb.AppendLine("Continued to TodoId:"+ continueTodo.Value);
+              }
+
+              var response = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResponse);
+              if (response != null) {
+                sb.AppendLine("Response: " + response.Value);
+              }                            
+              
+              var userPrompt = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt);
+              if (userPrompt != null) {
+                sb.AppendLine("User Prompt: " + userPrompt.Value);
+              }
+
+              var systemPrompt = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSystemPrompt);
+              if (systemPrompt != null) {
+                sb.AppendLine("System Prompt: " + systemPrompt.Value);
+              }
+
+            }
+          }
+          edResultTodoDetails.Text = sb.ToString();
+        }
+
+      }
+    }
+
+
+    private void cbArchiveResult_CheckedChanged(object sender, EventArgs e) {
+      if (cbDeleteResult.Checked) {
+        cbDeleteResult.Checked = false;
+      }
+      btnUpdateResultStatus.Visible = cbArchiveResult.Checked;
+      btnCancelUpdateResultStatus.Visible = cbArchiveResult.Checked;
+    }
+
+    private void cbDeleteResult_CheckedChanged(object sender, EventArgs e) {
+      if (cbArchiveResult.Checked) {
+        cbArchiveResult.Checked = false;
+      }
+      btnUpdateResultStatus.Visible = cbDeleteResult.Checked;
+      btnCancelUpdateResultStatus.Visible = cbDeleteResult.Checked;
+    }
+
+    private async void btnUpdateResultStatus_Click(object sender, EventArgs e) {
+      btnCancelUpdateResultStatus.Visible = false;
+      btnUpdateResultStatus.Visible = false;
+      bool isArchive = cbArchiveResult.Checked;
+      bool isDelete = cbDeleteResult.Checked;
+      cbArchiveResult.Checked = false;
+      cbDeleteResult.Checked = false;
+
+      var selectedIndex = lbTodoResults.SelectedIndex;
+      if (selectedIndex >= 0 && _ResultsDict.TryGetValue(selectedIndex, out var todo)) {
+        if (isArchive) {
+          var item = await _appDataService.GetItemById(todo.Id);
+          if (item != null) {
+            item.IsActive = false;
+            await _appDataService.UpdateItemAsync(item);
+          }
+        }
+        if (isDelete) {
+          await _appDataService.DeleteItemAsync(todo.Id);
+        }
+        await ReloadResultsTabAsync();
+      }
+    }
+
+    private void btnCancelUpdateResultStatus_Click(object sender, EventArgs e) {
+      btnCancelUpdateResultStatus.Visible = false;
+      btnUpdateResultStatus.Visible = false;
+      cbArchiveResult.Checked = false;
+      cbDeleteResult.Checked = false;
+    }
+
+    #endregion
+
   }
 
 }
