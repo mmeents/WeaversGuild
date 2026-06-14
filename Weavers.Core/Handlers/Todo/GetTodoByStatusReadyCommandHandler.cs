@@ -9,13 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Weavers.Core.Handlers.Todo {
 
-  public record GetTodoByStatusReadyCommand(WeItemType todoStatusFilter, bool readyFilter) : IRequest<IReadOnlyList<ReadyTodoRow>>;
+  public record GetTodoByStatusReadyCommand(WeItemType TodoStatusFilter, bool ReadyFilter) : IRequest<IReadOnlyList<ReadyTodoRow>>;
 
-  public class GetTodoByStatusReadyCommandHandler : IRequestHandler<GetTodoByStatusReadyCommand, IReadOnlyList<ReadyTodoRow>> {
-    private readonly FabricDbContext _context;
-    public GetTodoByStatusReadyCommandHandler(FabricDbContext context) {
-      _context = context;
-    }
+  public class GetTodoByStatusReadyCommandHandler(FabricDbContext context) : IRequestHandler<GetTodoByStatusReadyCommand, IReadOnlyList<ReadyTodoRow>> {
+    private readonly FabricDbContext _context = context;
 
     public async Task<IReadOnlyList<ReadyTodoRow>> Handle(GetTodoByStatusReadyCommand request, CancellationToken cancellationToken) {
 
@@ -23,10 +20,10 @@ namespace Weavers.Core.Handlers.Todo {
       const int TodoType = (int)WeItemType.TodoModel;       // 1050
       const int DeskType = (int)WeItemType.DeskModel;       // 1045
       int statusFilter = (int)WeItemType.TodoNotStarted; // 221
-      if (request.todoStatusFilter >= WeItemType.TodoNotStarted && request.todoStatusFilter <= WeItemType.TodoFailedForward) {
-        statusFilter = (int)request.todoStatusFilter;
+      if (request.TodoStatusFilter >= WeItemType.TodoNotStarted && request.TodoStatusFilter <= WeItemType.TodoFailedForward) {
+        statusFilter = (int)request.TodoStatusFilter;
       }      
-      bool isReady = request.readyFilter;
+      bool isReady = request.ReadyFilter;
 
       var rows = await _context.Set<ReadyTodoRow>().FromSqlInterpolated($@"
         SELECT distinct it.Id, 

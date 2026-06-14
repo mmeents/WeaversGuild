@@ -199,7 +199,7 @@
       tvKb.SelectedImageIndex = 0;
       tvKb.Size = new Size(249, 569);
       tvKb.TabIndex = 0;
-      tvKb.BeforeExpand += tvKb_BeforeExpand;
+      tvKb.BeforeExpand += TvKb_BeforeExpand;
       tvKb.AfterSelect += tvKb_AfterSelect;
       // 
       // cmsTreeMenus

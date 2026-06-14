@@ -9,14 +9,9 @@ namespace Weavers.Core.Handlers.ItemSummaries {
 
   public record GetSummaryByIdQuery(int Id, bool NodesUp, bool IncludeProps = true) : IMcpRequest, IRequest<ItemSummaryDto?>;
 
-  public class GetSummaryByIdQueryHandler : IRequestHandler<GetSummaryByIdQuery, ItemSummaryDto?> {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly ILogger<GetSummaryByIdQueryHandler> _logger;
-
-    public GetSummaryByIdQueryHandler(IServiceScopeFactory serviceScopeFactory, ILogger<GetSummaryByIdQueryHandler> logger) {
-      _serviceScopeFactory = serviceScopeFactory;
-      _logger = logger;
-    }
+  public class GetSummaryByIdQueryHandler(IServiceScopeFactory serviceScopeFactory, ILogger<GetSummaryByIdQueryHandler> logger) : IRequestHandler<GetSummaryByIdQuery, ItemSummaryDto?> {
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly ILogger<GetSummaryByIdQueryHandler> _logger = logger;
 
     public async Task<ItemSummaryDto?> Handle(GetSummaryByIdQuery request, CancellationToken cancellationToken) {
       try {
@@ -30,9 +25,5 @@ namespace Weavers.Core.Handlers.ItemSummaries {
       }
     }
   }
-
-
-
-
 
 }

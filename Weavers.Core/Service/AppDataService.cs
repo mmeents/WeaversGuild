@@ -55,15 +55,10 @@ namespace Weavers.Core.Service {
     Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(WeItemType todoStatusFilter, bool readyFilter);
 
   }
-  public class AppDataService : IAppDataService {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IAppSessionService _session;
-    private readonly ISessionItemCacheService _sessionCache;
-    public AppDataService(IServiceScopeFactory scopeFactory, IAppSessionService session, ISessionItemCacheService sessionCache) {
-      _scopeFactory = scopeFactory;
-      _session = session;
-      _sessionCache = sessionCache;
-    }
+  public class AppDataService(IServiceScopeFactory scopeFactory, ISessionItemCacheService sessionCache) : IAppDataService {
+    private readonly IServiceScopeFactory _scopeFactory = scopeFactory;    
+    private readonly ISessionItemCacheService _sessionCache = sessionCache;
+
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
       return scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -125,9 +120,7 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<RelationDto?> UpdateRelationAsync(RelationDto relation) {
-      if (relation == null) {
-        throw new ArgumentNullException(nameof(relation));
-      }
+      ArgumentNullException.ThrowIfNull(relation);
       if (relation.RelatedItemId == null) {
         throw new ArgumentException("RelatedItemId cannot be null for updating a relation.");
       }
@@ -153,9 +146,7 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemPropertyDto?> AddUpdateItemPropertyAsync(ItemPropertyDto? itemProperty) {
-      if (itemProperty == null) {
-        throw new ArgumentNullException(nameof(itemProperty));
-      }
+      ArgumentNullException.ThrowIfNull(itemProperty);
       var mediator = GetMediator();
       var command = new AddUpdateItemPropertyCommand(
         itemProperty.Id,

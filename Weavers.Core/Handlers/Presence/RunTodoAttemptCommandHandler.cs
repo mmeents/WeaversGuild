@@ -40,28 +40,18 @@ namespace Weavers.Core.Handlers.Presence {
 
   }
 
-  public class RunTodoAttemptCommandHandler : IRequestHandler<RunTodoAttemptCommand, RunTodoAttemptResult> {
-    private readonly FabricDbContext _context;
-    private readonly IMediator _mediator;
-    private readonly ILogger<RunTodoAttemptCommandHandler> _logger;
-    private readonly ICryptoService _cryptoService;
-    private readonly ILmStudioService _lmService;
-    private readonly IGatewayRunRegistry _runRegistry;
-    public RunTodoAttemptCommandHandler(
-      FabricDbContext context, 
-      IMediator mediator, 
-      ILogger<RunTodoAttemptCommandHandler> logger, 
-      ICryptoService cryptoService,
-      ILmStudioService lmService,
-      IGatewayRunRegistry runRegistry) {
-      _context = context;
-      _mediator = mediator;
-      _logger = logger;
-      _cryptoService = cryptoService;
-      _lmService = lmService;
-      _runRegistry = runRegistry;
-    }
-    
+  public class RunTodoAttemptCommandHandler(
+    FabricDbContext context,
+    IMediator mediator,
+    ILogger<RunTodoAttemptCommandHandler> logger,
+    ILmStudioService lmService,
+    IGatewayRunRegistry runRegistry) : IRequestHandler<RunTodoAttemptCommand, RunTodoAttemptResult> {
+    private readonly FabricDbContext _context = context;
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger<RunTodoAttemptCommandHandler> _logger = logger;    
+    private readonly ILmStudioService _lmService = lmService;
+    private readonly IGatewayRunRegistry _runRegistry = runRegistry;
+
     public async Task<RunTodoAttemptResult> Handle(RunTodoAttemptCommand request, CancellationToken cancellationToken) {
       var result = new RunTodoAttemptResult() { 
         Status =  RunTodoAttemptOutcome.NotConfigured,        
@@ -178,7 +168,7 @@ namespace Weavers.Core.Handlers.Presence {
         // add todo add
         attempt = await _mediator.Send(
          new CreateRelatedItemCommand(todoItem.Id, (int)WeRelationTypes.Contains,
-           (int)WeItemType.TodoAttemptModel, $"Take {nextAttemptNumber}", "", "{}")).ConfigureAwait(false);
+           (int)WeItemType.TodoAttemptModel, $"Take {nextAttemptNumber}", "", "{}"), cancellationToken).ConfigureAwait(false);
 
         if (attempt == null) {
           return result.CreateFailure($"Failed to create Todo Attempt item for Todo with ID {request.TodoId}.", RunTodoAttemptOutcome.InvocationFailed);
@@ -263,9 +253,7 @@ namespace Weavers.Core.Handlers.Presence {
         }
         return result;
       } finally {
-        if (gate != null) { 
-          gate.Release(); 
-        }
+        gate?.Release();
       }
 
       return result;
@@ -281,7 +269,7 @@ namespace Weavers.Core.Handlers.Presence {
     }
 
     public static List<Integration> ToIntegrations(this List<string> listIntegrations) {
-      return listIntegrations.Select(i => (Integration)new PluginIntegration { Id = i }).ToList();
+      return [.. listIntegrations.Select(i => (Integration)new PluginIntegration { Id = i })];
     }
   }
 }

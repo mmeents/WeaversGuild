@@ -18,26 +18,18 @@ namespace Weavers.Core.Handlers.Sessions {
     public DateTime CreatedAt { get; set; } = DateTime.Now;
   }
 
-  internal class GetAppSessionCommandHandler : IRequestHandler<GetAppSessionCommand, AppSessionResponse?> {
-    private readonly FabricDbContext _dbContext;
-    private readonly IMediator _mediator;
-    private readonly IAppSettingService _settingService;
-    private readonly ISessionItemCacheService _sessionCache;
-    private readonly IAppSessionService _session;
-
-    public GetAppSessionCommandHandler(
-      FabricDbContext fabricDbContext, 
-      IMediator mediator,
-      IAppSettingService settingService,
-      ISessionItemCacheService sessionCache,
-      IAppSessionService session
-    ) {
-      _dbContext = fabricDbContext;
-      _mediator = mediator;
-      _settingService = settingService;
-      _sessionCache = sessionCache;
-      _session = session;
-    }
+  internal class GetAppSessionCommandHandler(
+    FabricDbContext fabricDbContext,
+    IMediator mediator,
+    IAppSettingService settingService,
+    ISessionItemCacheService sessionCache,
+    IAppSessionService session
+    ) : IRequestHandler<GetAppSessionCommand, AppSessionResponse?> {
+    private readonly FabricDbContext _dbContext = fabricDbContext;
+    private readonly IMediator _mediator = mediator;
+    private readonly IAppSettingService _settingService = settingService;
+    private readonly ISessionItemCacheService _sessionCache = sessionCache;
+    private readonly IAppSessionService _session = session;
 
     public async Task<AppSessionResponse?> Handle(GetAppSessionCommand request, CancellationToken cancellationToken) {
 
@@ -45,18 +37,18 @@ namespace Weavers.Core.Handlers.Sessions {
       // need to figure out how to identify the instance of the harness that is self so that we can find the model of it.
       // if harness is not there add it.
       // then we can create a session item as child of harness and return the set as the session response.
-      AppSessionResponse result = new AppSessionResponse();
+      AppSessionResponse result = new();
       var machineName = Environment.MachineName.ToLower().AsUpperCaseFirstLetter();
       var userName = Environment.UserName;
       var processId = Environment.ProcessId;
       string orgRootFolder = _settingService.DefaultProjectsPath;
 
-      var orgRoot = await _dbContext.Items.FirstOrDefaultAsync(i => i.ItemTypeId == (int)WeItemType.OrganizationModel);
+      var orgRoot = await _dbContext.Items.FirstOrDefaultAsync(i => i.ItemTypeId == (int)WeItemType.OrganizationModel, cancellationToken);
       result.OrganizationId = orgRoot?.Id ?? 0;
       ItemDto? orgItem = null;
       if (result.OrganizationId == 0) {
         _session.Initialize(userName, 1, 2, 3);
-        orgItem = await _mediator.Send(new CreateItemCommand(Cx.AppName, (int)WeItemType.OrganizationModel, $"{Cx.AppName} - {Cx.AppDescription}", "{}")).ConfigureAwait(false);
+        orgItem = await _mediator.Send(new CreateItemCommand(Cx.AppName, (int)WeItemType.OrganizationModel, $"{Cx.AppName} - {Cx.AppDescription}", "{}"), cancellationToken).ConfigureAwait(false);
         result.OrganizationId = orgItem?.Id ?? 0;
         if (orgItem == null || result.OrganizationId == 0) {
           throw new Exception("Failed to create organization root");
@@ -75,7 +67,7 @@ namespace Weavers.Core.Handlers.Sessions {
       var aHarnessTypeId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.HarnessAppModel && r.RelatedItemName == harnessName)?.RelatedItemId ?? 0;
       if (aHarnessTypeId == 0) {
         var harnessItem = await _mediator.Send(
-          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppModel, harnessName, $"{Cx.AppHarnessAppName}", "{}")).ConfigureAwait(false);
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppModel, harnessName, $"{Cx.AppHarnessAppName}", "{}"), cancellationToken).ConfigureAwait(false);
         result.HarnessId = harnessItem?.Id ?? 0;
         if (harnessItem == null || result.HarnessId == 0) {
           throw new Exception("Failed to create harness item");
@@ -91,7 +83,7 @@ namespace Weavers.Core.Handlers.Sessions {
       if (DigitalOperatorPoolRelation == null) {
         ItemDto? DoPoolDto = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.DigitalOperatorPoolModel, $"Digital Operators", "", "{}")).ConfigureAwait(false);
+            (int)WeItemType.DigitalOperatorPoolModel, $"Digital Operators", "", "{}"), cancellationToken).ConfigureAwait(false);
         if (DoPoolDto != null) {
           var folderPath = Path.Combine(orgRootFolder, Cx.OrgDigiOpPoolFolder);
           await _mediator.SetProperty(DoPoolDto, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
@@ -103,13 +95,13 @@ namespace Weavers.Core.Handlers.Sessions {
       if (OrgChartRelation == null) {
         ItemDto? OrgChart = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.OrgChartModel, $"Org Chart", "", "{}")).ConfigureAwait(false);
+            (int)WeItemType.OrgChartModel, $"Org Chart", "", "{}"), cancellationToken).ConfigureAwait(false);
         if (OrgChart != null) {
           var folderPath = Path.Combine(orgRootFolder, Cx.OrgChartFolder);
           await _mediator.SetProperty(OrgChart, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
           ItemDto? defaultLogDesk = await _mediator.Send(
             new CreateRelatedItemCommand(OrgChart.Id, (int)WeRelationTypes.Contains,
-              (int)WeItemType.DeskLogModel, $"TheLoomAppSyncDesk", "", "{}")).ConfigureAwait(false);
+              (int)WeItemType.DeskLogModel, $"TheLoomAppSyncDesk", "", "{}"), cancellationToken).ConfigureAwait(false);
           if (defaultLogDesk != null) {
             var folderPath2 = Path.Combine(folderPath, "TheLoomAppSyncDesk");
             await _mediator.SetProperty(OrgChart, Cx.ItRelativeFolder, folderPath2).ConfigureAwait(false);
@@ -122,7 +114,7 @@ namespace Weavers.Core.Handlers.Sessions {
       if (DocsRelation == null) {
         ItemDto? DocsItem = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.OrgDocFolderModel, Cx.OrgDocsFolder, "", "{}")).ConfigureAwait(false);
+            (int)WeItemType.OrgDocFolderModel, Cx.OrgDocsFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
 
         if (DocsItem != null) {
           var folderPath = Path.Combine(orgRootFolder, Cx.OrgDocsFolder);
@@ -133,7 +125,7 @@ namespace Weavers.Core.Handlers.Sessions {
       // finally, org looks good, create session level 3 under harness.
 
       ItemDto? sessionItem = await _mediator.Send(
-        new CreateRelatedItemCommand(result.HarnessId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppSessionModel, $"{harnessName} at {DateTime.UtcNow}", "", "{}")).ConfigureAwait(false);
+        new CreateRelatedItemCommand(result.HarnessId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppSessionModel, $"{harnessName} at {DateTime.UtcNow}", "", "{}"), cancellationToken).ConfigureAwait(false);
       result.SessionId = sessionItem?.Id ?? 0;
       if (sessionItem == null || result.SessionId == 0) {
         throw new Exception("Failed to create session item");

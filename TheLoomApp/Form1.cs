@@ -37,11 +37,11 @@ namespace TheLoomApp {
 
     private ItemNode? _selectedNode = null;
     private ItemDto? _CurrentItemBackup = null;
-    private Dictionary<int, ItemNode> _itemCache = new Dictionary<int, ItemNode>();
-    private Dictionary<int, ItemTypeDto> _itemTypeCache = new Dictionary<int, ItemTypeDto>();
-    private HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
-    private PropertiesTab _itemPropertiesTab;
-    private IAppSettingService _settings;
+    private readonly Dictionary<int, ItemNode> _itemCache = new();
+    private readonly Dictionary<int, ItemTypeDto> _itemTypeCache = new();
+    private readonly HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
+    private readonly PropertiesTab _itemPropertiesTab;
+    private readonly IAppSettingService _settings;
     private AppSessionResponse? _sessionDetails = null;
     private bool _inResize = false;
     private bool _ItemTabDirty = false;
@@ -208,7 +208,7 @@ namespace TheLoomApp {
           if (project != null) {
             ItemNode projectNode = project.ToItemNode();
             _itemCache[project.Id] = projectNode;
-            if (project.Relations.Count() > 0) {
+            if (project.Relations.Count > 0) {
               foreach (var rel in project.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
                 if (rel.RelatedItemId.HasValue) {
 
@@ -224,7 +224,7 @@ namespace TheLoomApp {
                       projectNode.Nodes.Add(projectsChildNode);
 
 
-                      if (item.Relations.Count() > 0) {
+                      if (item.Relations.Count > 0) {
                         projectsChildNode.Nodes.Add(new ItemNode());
                       }
                     }
@@ -283,7 +283,7 @@ namespace TheLoomApp {
 
           parent.Nodes.Add(newNode);   // add the node to the tree
 
-          if (bItem.Relations.Count() > 0) {
+          if (bItem.Relations.Count > 0) {
             foreach (var rel in bItem.Relations.OrderBy(r => r.RelatedItemTypeId).ThenBy(r => r.Rank)) {
               var relatedItem = await AddNodeById(toLoad, newNode, rel.RelatedItemId, rel);
             }
@@ -305,7 +305,7 @@ namespace TheLoomApp {
             return null;  // skip adding to tree.
           }
           parent.Nodes.Add(projectsChildNode);  // add the node to the tree
-          if (aItem.Relations.Count() > 0) {
+          if (aItem.Relations.Count > 0) {
             projectsChildNode.Nodes.Add(new ItemNode());
           }
 
@@ -314,7 +314,7 @@ namespace TheLoomApp {
       return null;
     }
 
-    private async void tvKb_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
+    private async void TvKb_BeforeExpand(object sender, TreeViewCancelEventArgs e) {
       if (e.Node is not ItemNode node) return;
       if (_isExpanding) return;
       _isExpanding = true;
@@ -337,7 +337,7 @@ namespace TheLoomApp {
                 continue;
               }
               node.Nodes.Add(itemsChildNode);
-              if (itemChild.Relations.Count() > 0) {
+              if (itemChild.Relations.Count > 0) {
                 itemsChildNode.Nodes.Add(new ItemNode());
               }
             }
@@ -353,7 +353,10 @@ namespace TheLoomApp {
       try {
         _inSetupTpItems = true;
         var itemTypes = await _appDataService.GetAllItemTypesAsync();
-        _itemTypeCache = itemTypes.ToDictionary(t => t.Id, t => t);
+        _itemTypeCache.Clear();
+        foreach (var itemType in itemTypes) {
+          _itemTypeCache[itemType.Id] = itemType;
+        }
 
         edItemType.DataSource = _itemTypeCache.Values.ToList();
         edItemType.DisplayMember = "Name";
@@ -367,15 +370,14 @@ namespace TheLoomApp {
     }
 
     private async void RefreshNode(int itemId) {
-      if (_itemCache.ContainsKey(itemId)) {
-        var node = _itemCache[itemId];
+      if (_itemCache.TryGetValue(itemId, out ItemNode? node)) {
         tvKb.BeginUpdate();
         try {
           node.Collapse();
 
           var itemDto = await _appDataService.GetItemById(itemId);
           if (itemDto != null && node.Relation != null) {
-            var newNode = node.Relation.ToItemNode(itemDto);
+            node.Relation.ToItemNode(itemDto);
             node.Item = itemDto;
             _itemCache[itemId] = node;
           }
@@ -389,8 +391,7 @@ namespace TheLoomApp {
     }
 
     private async void RefreshSelectedNode(int itemId) {
-      if (_itemCache.ContainsKey(itemId)) {
-        var node = _itemCache[itemId];
+      if (_itemCache.TryGetValue(itemId, out ItemNode? node)) {
         tvKb.BeginUpdate();
         try {
           node.Collapse();
@@ -529,7 +530,7 @@ namespace TheLoomApp {
             var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
             await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-            tvKb_BeforeExpand(ee, ee);
+            TvKb_BeforeExpand(ee, ee);
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
             var item = _selectedNode.Item;
             var resyncProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
@@ -541,7 +542,7 @@ namespace TheLoomApp {
                   _selectedNode.Item = updatedGateway;
                 }
                 var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-                tvKb_BeforeExpand(ee, ee);
+                TvKb_BeforeExpand(ee, ee);
               }
             }
 
@@ -557,7 +558,7 @@ namespace TheLoomApp {
               }
             } else if (hasDbContext && _selectedNode.Nodes.Count == 0) {
               var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-              tvKb_BeforeExpand(ee, ee);
+              TvKb_BeforeExpand(ee, ee);
             }
             var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
             var itemId = _selectedNode.Item.Id;
@@ -842,7 +843,7 @@ namespace TheLoomApp {
           }
         }
         var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-        tvKb_BeforeExpand(ee, ee);
+        TvKb_BeforeExpand(ee, ee);
 
       } catch (Exception ex) {
         DoLogMessage("Failed to add desk todo - error:" + ex.Message);
@@ -1446,7 +1447,7 @@ namespace TheLoomApp {
     #region Ready tab
 
 
-    private ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new();
 
     private async void ReloadReadyTab() {
       await ReloadReadyTabAsync();
@@ -1557,9 +1558,9 @@ namespace TheLoomApp {
     #endregion
     #region Schedule Tab
 
-    private ConcurrentDictionary<int, ReadyTodoRow> _readyDict = new ConcurrentDictionary<int, ReadyTodoRow>();
-    private void ReloadSchedules() {
-      ReloadSchedulesAsync();
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _readyDict = new();
+    private async void ReloadSchedules() {
+      await ReloadSchedulesAsync();
     }
 
     private async Task<bool> ReloadSchedulesAsync() {
@@ -1771,7 +1772,7 @@ namespace TheLoomApp {
       await ReloadResultsTabAsync();
     }
 
-    private ConcurrentDictionary<int, ReadyTodoRow> _ResultsDict = new ConcurrentDictionary<int, ReadyTodoRow>();
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _ResultsDict = new();
     private async void cbTodoResultType_SelectedIndexChanged(object sender, EventArgs e) {
       await ReloadResultsTabAsync();
     }
