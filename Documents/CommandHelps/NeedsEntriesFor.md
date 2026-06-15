@@ -52,6 +52,11 @@ Enum name = Mcp text for command name.
    CmdUpdateItemContent  = "updateItemContent";
    CmdUpdateItemProperty = "updateItemProperty";
 
+   CmdCompleteTodo = "completeTodo";
+   CmdRejectTodo   = "rejectTodo";
+   CmdReviewPass   = "reviewPass";
+   CmdReviewFail   = "reviewFail";
+   
    CmdAddOrgDesk  = "addOrgDesk";
    CmdAddDeskTodo = "addDeskTodo";
 
@@ -63,10 +68,6 @@ Enum name = Mcp text for command name.
    CmdAddSolution        = "addSolution";
    CmdAddSolutionImport  = "addSolutionImport";    
 
-   CmdCompleteTodo = "completeTodo";
-   CmdRejectTodo   = "rejectTodo";
-   CmdReviewPass   = "reviewPass";
-   CmdReviewFail   = "reviewFail";
 
    CmdAddMdFile     = "addMdFile";
    CmdAddHtmlFile   = "addHtmlFile";

@@ -32,7 +32,12 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
-- Db Verion 134 x3 (6/13/2026)
+- Db Version 135 (6/14/2024
+  - Makes DeskRole and OrgDeskRole as first class graph items
+  - Adds CmdPickerEditor to show a list and to select a set of them.
+  ![OrgDeskRole](https://mmeents.github.io/files/OrgDeskRoleEditor.png)
+  
+- Db Version 134 x3 (6/13/2026)
   - Adds Results Tab like Ready and Schedule 
     - shows completed todo's with archive and delete operations. 
     - adds delete operation to Review Ready tab. 

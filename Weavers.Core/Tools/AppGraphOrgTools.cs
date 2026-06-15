@@ -7,6 +7,9 @@ namespace Weavers.Core.Tools {
   public class AppGraphOrgTools {
     private static IAppGraphOrgToolsHandler GetTools() => DiBridgeService.GetService<IAppGraphOrgToolsHandler>();
 
+    [McpTool(Cx.CmdAddOrgDeskRole, "Adds a new desk role to the specified Org desk roles item.")]
+    public static Task<string> AddOrgDeskRole(int orgDeskRolesId, string? roleName)
+      => GetTools().AddOrgDeskRole(orgDeskRolesId, roleName);
 
     [McpTool(Cx.CmdAddOrgDesk, "Adds a new Org desk to the specified Org chart.")]
     public static Task<string> AddOrgDesk(int orgChartId, string deskName)

@@ -13,6 +13,7 @@ using Weavers.Core.Models;
 
 namespace Weavers.Core.Service {
   public interface IAppGraphOrgService {
+    Task<ItemDto?> AddOrgDeskRole(ItemDto orgDeskRoles, string? roleName);
     Task<ItemDto?> AddOrgDesk(ItemDto OrgChart, string? deskName);
     Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName, int? refId, string? promptTemplate);
 
@@ -28,6 +29,25 @@ namespace Weavers.Core.Service {
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
       return scope.ServiceProvider.GetRequiredService<IMediator>();
+    }
+
+    public async Task<ItemDto?> AddOrgDeskRole(ItemDto orgDeskRoles, string? roleName) {
+      var mediator = GetMediator();
+      var nextRank = await mediator.Send(new GetNextItemRankQuery(orgDeskRoles.Id)) + 1;
+      var name = roleName == null ? $"Role {nextRank}" : roleName;
+      var newItem = await mediator.Send(
+        new CreateRelatedItemCommand(orgDeskRoles.Id, (int)WeRelationTypes.Contains,
+          (int)WeItemType.DeskRoleModel, name, "", "{}"));
+      if (newItem != null) {
+        var itsFilePathProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
+        if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {
+          string parentFolderPath = orgDeskRoles.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+          var fullPath = Path.Combine(parentFolderPath, newItem.Name.UrlSafe() + ".json");
+          itsFilePathProp.Value = fullPath;
+          await itsFilePathProp.SaveProp(newItem, mediator);
+        }
+      }
+      return newItem;
     }
 
     public async Task<ItemDto?> AddOrgDesk(ItemDto OrgChart, string? deskName) {

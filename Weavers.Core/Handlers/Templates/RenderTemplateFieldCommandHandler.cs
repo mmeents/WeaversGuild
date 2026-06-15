@@ -33,18 +33,18 @@ namespace Weavers.Core.Handlers.Templates {
               operatorName = operatorItem.Name;
             }
           }
+
           var roleProp = fieldsItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskRole);
-          var roleIdStr = roleProp != null ? roleProp.Value : WeItemType.RoleNone.AsIntString();
-          if (int.TryParse(roleIdStr, out int roleId) 
-            && roleId > (int)WeItemType.RoleNone 
-            && roleId < (int)WeItemType.TodoStatuses)
-          {
-            WeItemType roleItemType = (WeItemType)roleId;
-            var model = roleItemType.AsRoleModel(deskName, operatorName);
-            var scriptObject1 = new ScriptObject();
-            scriptObject1["model"] = model;
-            return DoRendering(templateText, scriptObject1);
-          }
+          var roleIdStr = roleProp != null ? roleProp.Value : "";
+          if (int.TryParse(roleIdStr, out int roleId)) { 
+            var roleItem = await _context.GetItemDtoById(roleId);
+            if (roleItem != null) {           
+              var model = roleItem.AsRoleModel(deskName, operatorName);
+              var scriptObject1 = new ScriptObject();
+              scriptObject1["model"] = model;
+              return DoRendering(templateText, scriptObject1);             
+            }
+          }           
           return $"Invalid role ID: {roleIdStr} found on {deskName}";
 
         } else if (fieldItemTypeId == (int)WeItemType.TodoModel) { 

@@ -198,16 +198,16 @@ namespace Weavers.Core.Handlers.Import {
             await _mediator.SetProperty(deskItem, Cx.ItFilePath, docPath).ConfigureAwait(false);
           }
 
-          var deskRoleEnumInt = model.DeskRoleEnumInt;
-          if (deskRoleEnumInt >= (int)WeItemType.DeskRoles && deskRoleEnumInt < (int)WeItemType.RunStatus) {
-            var deskRoleProp = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskRole);
-            if (deskRoleProp != null) {
-              if (deskRoleProp.Value != model.DeskRoleEnumInt.ToString()) {
-                deskRoleProp.Value = model.DeskRoleEnumInt.ToString();
-                await _mediator.UpdateItemProp(deskItem, deskRoleProp).ConfigureAwait(false);
-              }
-            }
-          }    
+      //    var deskRoleEnumInt = model.DeskRoleEnumInt;
+      //    if (deskRoleEnumInt >= (int)WeItemType.DeskRoles && deskRoleEnumInt < (int)WeItemType.RunStatus) {
+      //      var deskRoleProp = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskRole);
+      //      if (deskRoleProp != null) {
+      //        if (deskRoleProp.Value != model.DeskRoleEnumInt.ToString()) {
+      //          deskRoleProp.Value = model.DeskRoleEnumInt.ToString();
+      //          await _mediator.UpdateItemProp(deskItem, deskRoleProp).ConfigureAwait(false);
+      //        }
+      //      }
+      //    }    
 
           var sysPromptTemplateProp = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSystemPromptTemplate);
           if (sysPromptTemplateProp != null) {

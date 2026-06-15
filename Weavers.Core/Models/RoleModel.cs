@@ -25,46 +25,30 @@ namespace Weavers.Core.Models {
 
   public static class RolesExts {
 
-    public static RoleModel AsRoleModel(this WeItemType deskRole, string deskName, string operatorName) {
+    public static RoleModel AsRoleModel(this ItemDto roleItem, string deskName, string operatorName) {
+
+      var roleCommandsProp = roleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRoleCommands);
+      var roleCmdPropValue = roleCommandsProp?.Value ?? string.Empty;
+      var roleCommands = roleCmdPropValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
+              .Select(s => int.TryParse(s, out int id) ? id : (int?)null)
+              .Where(id => id.HasValue)
+              .Select(id => id!.Value)
+              .ToHashSet();
+
       var role = new RoleModel {
         Desk = deskName,
         Operator = operatorName,
-        Role = RolesExts.DeskRoleToString(deskRole)
+        Role = roleItem.Name
       };
 
-      switch (deskRole) {
-        case WeItemType.RoleOrgDocWriter:
-          role.WithCommand(WeItemType.CmdHelp)
-             .WithCommand(WeItemType.CmdGetSummaryById)
-             .WithCommand(WeItemType.CmdAddOrgFile)
-             .WithCommand(WeItemType.CmdUpdateItemContent)
-             .WithCommand(WeItemType.CmdCompleteTodo)
-             .WithCommand(WeItemType.CmdRejectTodo);
-          break;
-        case WeItemType.RoleReviewOrgDocWriter:
-          role.WithCommand(WeItemType.CmdHelp)
-            .WithCommand(WeItemType.CmdGetSummaryById)
-            .WithCommand(WeItemType.CmdReviewPass)
-            .WithCommand(WeItemType.CmdReviewFail);
-          break;
-        case WeItemType.RoleOrgResearcher:
-          role.WithCommand(WeItemType.CmdHelp)
-            .WithCommand(WeItemType.CmdGetSummaryById)
-            .WithCommand(WeItemType.CmdAddOrgFile)
-            .WithCommand(WeItemType.CmdUpdateItemContent)
-            .WithCommand(WeItemType.CmdCompleteTodo)
-            .WithCommand(WeItemType.CmdRejectTodo);
-          break;
-        case WeItemType.RoleReviewOrgResearcher:
-          role.WithCommand(WeItemType.CmdHelp)
-            .WithCommand(WeItemType.CmdGetSummaryById)
-            .WithCommand(WeItemType.CmdReviewPass)
-            .WithCommand(WeItemType.CmdReviewFail);
-          break;    
-          
+      foreach(var cmdId in roleCommands) {
+        if (Enum.IsDefined(typeof(WeItemType), cmdId)) {
+          var cmdType = (WeItemType)cmdId;
+          role.RoleCommands.Add(new RoleCommand(cmdType));
+        }
       }
 
-      return role;  
+      return role;
     }
 
     public static RoleModel WithCommand(this RoleModel roleModel, WeItemType command) {
@@ -73,11 +57,7 @@ namespace Weavers.Core.Models {
     }
 
     public static string DeskRoleToString(WeItemType deskRole) {
-      return deskRole switch {        
-        WeItemType.RoleOrgDocWriter => "Org Doc Writer",
-        WeItemType.RoleReviewOrgDocWriter => "Review Org Doc Writer",
-        WeItemType.RoleOrgResearcher => "Org Researcher",
-        WeItemType.RoleReviewOrgResearcher => "Review Org Researcher",      
+      return deskRole switch {                
         _ => ""
       };
     }

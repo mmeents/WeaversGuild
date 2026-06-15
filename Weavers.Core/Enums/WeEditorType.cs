@@ -25,6 +25,7 @@ namespace Weavers.Core.Enums {
     Url = 15,
     Reference = 16,
     Template = 17,
+    CmdPickerEditor = 18,
 
   }
 

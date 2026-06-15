@@ -70,6 +70,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.DigitalOperatorPoolModel => 13,
         WeItemType.DigitalOperatorModel => 19,
 
+        WeItemType.OrgDeskRolesModel => 21,
+        WeItemType.DeskRoleModel => 17,
+
         WeItemType.OrgChartModel => 21,  
         WeItemType.DeskLogModel => 22,   
         WeItemType.DeskModel => 22,      
@@ -122,6 +125,8 @@ namespace Weavers.Core.Extensions {
     public static HashSet<WeItemType> GetParentFileFolderDependTypes() {
       HashSet<WeItemType> fileNodeTypes = new HashSet<WeItemType>(){
  //       WeItemType.OrganizationModel,  removed because root is different than folder of leaf, no parent dependency.
+        WeItemType.OrgDeskRolesModel,
+        WeItemType.DeskRoleModel,
         WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel,
         WeItemType.OrgChartModel,
@@ -190,10 +195,10 @@ namespace Weavers.Core.Extensions {
           WeItemType.RatingStatus,
           WeItemType.Ratings,
           WeItemType.FloorStatus,
-          WeItemType.LoomMcpCommands,
-          WeItemType.DeskRoles,
-          WeItemType.TodoStatuses,
-          WeItemType.RunStatus
+          WeItemType.LoomMcpCommands,          
+          WeItemType.TodoStatuses,          
+          WeItemType.RunStatus,
+          WeItemType.DeskPreAssertCheckTypes,
       };
       return lookupTypes;
     }
@@ -211,6 +216,7 @@ namespace Weavers.Core.Extensions {
     // as a folder, so trim filenames if in the set.
     public static bool IsFileNameType(this int itemTypeId) {
       return itemTypeId switch {
+        (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.DeskModel => true,        
         (int)WeItemType.OrgDocModel => true,
@@ -231,6 +237,7 @@ namespace Weavers.Core.Extensions {
     public static bool IsFolderType(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.OrgChartModel => true,
         (int)WeItemType.DeskLogModel => true,
@@ -244,6 +251,7 @@ namespace Weavers.Core.Extensions {
     public static bool IsAParentFolder(this int itemTypeId) {
       return itemTypeId switch {
         //(int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.OrgChartModel => true,
         (int)WeItemType.DeskLogModel => true,        
@@ -302,6 +310,8 @@ namespace Weavers.Core.Extensions {
     public static bool IsOnPostPathUpdate(this int itemTypeId) {      
       return itemTypeId switch {        
         (int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgDeskRolesModel => true,
+        (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.OrgChartModel => true,
@@ -325,6 +335,8 @@ namespace Weavers.Core.Extensions {
     public static string GetFolderPropertyName(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.OrganizationModel => Cx.ItRootFolder,
+        (int)WeItemType.OrgDeskRolesModel => Cx.ItRelativeFolder,
+        (int)WeItemType.DeskRoleModel => Cx.ItRelativeFolder,
         (int)WeItemType.DigitalOperatorPoolModel => Cx.ItRelativeFolder,
         (int)WeItemType.DigitalOperatorModel => Cx.ItFilePath,
         (int)WeItemType.OrgChartModel => Cx.ItRelativeFolder,

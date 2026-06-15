@@ -11,6 +11,15 @@ using Weavers.Core.Service;
 namespace TheLoomApp.Extensions {
   public static class AppGraphExts {
 
+    public static async Task AddOrgDeskRole(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.OrgDeskRolesModel) { return; }
+      var newSubItem = await graphSrvs.AddOrgDeskRole(item, name);
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
+
     public static async Task AddDesk(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;

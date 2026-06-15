@@ -51,6 +51,19 @@ namespace Weavers.Core.Extensions {
         }
       },
       #endregion
+      { WeItemType.OrgDeskRolesModel, new List<ItemPropertyDefault>(){
+          new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
+        }
+      },
+      {
+        WeItemType.DeskRoleModel,  // roll named models that serve as model for templates moving here from static role model to dynamic. 
+        new List<ItemPropertyDefault>(){
+          new() {Rank = 10, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
+          new() {Rank = 9, Key = Cx.ItRole, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo},
+          new() {Rank = 8, Key = Cx.ItRoleCommands, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, ReferenceItemTypeId=(int)WeItemType.LoomMcpCommands, EditorTypeId=(int)WeEditorType.CmdPickerEditor },
+          new() {Rank = 7, Key = Cx.ItDeskPreAsserts, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, ReferenceItemTypeId=(int)WeItemType.DeskPreAssertCheckTypes, EditorTypeId=(int)WeEditorType.CmdPickerEditor },
+        }
+      },
       { WeItemType.DigitalOperatorPoolModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
         } 
@@ -78,7 +91,7 @@ namespace Weavers.Core.Extensions {
       },
       {
         WeItemType.DeskModel,  new List<ItemPropertyDefault>(){                 
-          new() {Rank = 12, Key = Cx.ItDeskRole, DefaultValue = "0",  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskRoles, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 12, Key = Cx.ItDeskRole, DefaultValue = "0",  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskRoleModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
 
           new() {Rank = 11, Key = Cx.ItEnabled, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() {Rank = 10, Key = Cx.ItOperator, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DigitalOperatorModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },

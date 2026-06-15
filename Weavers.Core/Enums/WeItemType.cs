@@ -149,12 +149,6 @@ namespace Weavers.Core.Enums {
       CmdAddEntityClassImport = 180,
       CmdAddEntityProperty = 182,
 
-    DeskRoles = 199,    // role roadmap
-      RoleNone = 200,
-      RoleOrgDocWriter = 201,
-      RoleReviewOrgDocWriter = 202,
-      RoleOrgResearcher = 203,    
-      RoleReviewOrgResearcher = 204,
 
     TodoStatuses = 220,
       TodoNotStarted = 221,
@@ -169,6 +163,10 @@ namespace Weavers.Core.Enums {
       RunFailed = 233,
       RanWithoutClose = 234,
 
+    DeskPreAssertCheckTypes = 250,
+      AssertItemExists = 251,
+      AssertItemIsType = 252,
+
 
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
@@ -180,6 +178,9 @@ namespace Weavers.Core.Enums {
 
       HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
         HarnessMcpSessionModel = 1022,  // mcp session 
+        
+      OrgDeskRolesModel = 1026,   // folder for org roles like doc writer, researcher, reviewer.
+        DeskRoleModel = 1028,    // (Id, name, description)  // role details.
         
       DigitalOperatorPoolModel  = 1030, // folder or pool 
         DigitalOperatorModel = 1035, //(Id, name, Presence, Rating)  // digital worker. 

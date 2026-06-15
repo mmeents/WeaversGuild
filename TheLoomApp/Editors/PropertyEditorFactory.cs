@@ -42,6 +42,7 @@ namespace TheLoomApp.Editors {
         WeEditorType.Url => new UrlPropertyEditor(),
         WeEditorType.Reference => new ReferencePropertyEditor(),
         WeEditorType.Template => new TemplatePropertyEditor(),
+        WeEditorType.CmdPickerEditor => new CmdPickerPropertyEditor(),
         _ => new TextPropertyEditor()
       };
       if (config != null) {

@@ -13,7 +13,7 @@ using Weavers.Core.Service;
 
 namespace Weavers.Core.Tools {
   public interface IAppGraphOrgToolsHandler {
-
+    Task<string> AddOrgDeskRole(int orgDeskRolesId, string? roleName);
     Task<string> AddOrgDesk(int orgChartId, string deskName);
     Task<string> AddDeskTodo(int orgDeskId, string todoName, int? refId, string? promptTemplate);
     Task<string> AddDigitalOperator(int parentItemId, string operatorName);
@@ -27,6 +27,23 @@ namespace Weavers.Core.Tools {
     public AppGraphOrgToolsHandler(IServiceScopeFactory scopeFactory, ILogger<AppGraphOrgToolsHandler> logger) {
       _scopeFactory = scopeFactory;
       _logger = logger;
+    }
+
+    public async Task<string> AddOrgDeskRole(int orgDeskRolesId, string? roleName) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(orgDeskRolesId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddOrgDeskRole, orgDeskRolesId);
+        if (item.ItemTypeId != (int)WeItemType.OrgDeskRolesModel) return _logger.DefaultInvalidParentMessage(Cx.CmdAddOrgDeskRole, orgDeskRolesId);
+        var addedItem = await service.AddOrgDeskRole(item, roleName);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddOrgDeskRole, orgDeskRolesId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddOrgDeskRole, await context.ToSummary(addedItem));
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddOrgDeskRole, orgDeskRolesId, $"Failed to add role {roleName} to parent item with ID {orgDeskRolesId}");
+      }
     }
 
     public async Task<string> AddOrgDesk(int orgChartId, string deskName) {

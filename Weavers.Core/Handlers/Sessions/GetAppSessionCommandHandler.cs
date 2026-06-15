@@ -90,6 +90,18 @@ namespace Weavers.Core.Handlers.Sessions {
         }
       }
 
+      // Orgs Desk Roles folder
+      var DeskRolesRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDeskRolesModel);
+      if (DeskRolesRelation == null) {
+        ItemDto? DeskRoles = await _mediator.Send(
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
+            (int)WeItemType.OrgDeskRolesModel, $"Org Desk Roles", "", "{}"), cancellationToken).ConfigureAwait(false);
+        if (DeskRoles != null) {
+          var folderPath = Path.Combine(orgRootFolder, Cx.OrgDeskRolesFolder);
+          await _mediator.SetProperty(DeskRoles, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+        }
+      }
+
       // org chart
       var OrgChartRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgChartModel);
       if (OrgChartRelation == null) {

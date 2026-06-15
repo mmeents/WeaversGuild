@@ -106,45 +106,44 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdSearch => WeItemType.LoomMcpCommands,
         WeItemType.CmdGetSummaryById => WeItemType.LoomMcpCommands,
         WeItemType.CmdGetTypeDetails => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdUpdateItemName => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemContent => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemProperty => WeItemType.LoomMcpCommands,
-        
-        WeItemType.CmdAddOrgDesk => WeItemType.LoomMcpCommands,
-        WeItemType.CmdAddDeskTodo => WeItemType.LoomMcpCommands,
-        WeItemType.CmdAddDigitalOperatior => WeItemType.LoomMcpCommands,
-        WeItemType.CmdAddOrgFolder => WeItemType.LoomMcpCommands,
-        WeItemType.CmdAddOrgFile => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdCompleteTodo => WeItemType.LoomMcpCommands,
         WeItemType.CmdRejectTodo => WeItemType.LoomMcpCommands,
         WeItemType.CmdReviewPass => WeItemType.LoomMcpCommands,
-        WeItemType.CmdReviewFail => WeItemType.LoomMcpCommands,
+        WeItemType.CmdReviewFail => WeItemType.LoomMcpCommands,    
+        
+        WeItemType.CmdAddOrgDesk => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddDeskTodo => WeItemType.LoomMcpCommands,
+
+        WeItemType.CmdAddDigitalOperatior => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddOrgFolder => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddOrgFile => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdAddProjectRoot => WeItemType.LoomMcpCommands,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddSolution => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddSolutionImport => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddMdFile => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddHtmlFile => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddConfigFile => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddLibrary => WeItemType.LoomMcpCommands,  // in AppGraphLibraryTools
         WeItemType.CmdAddNamespace => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddClass => WeItemType.LoomMcpCommands,  // in AppGraphClassTools
         WeItemType.CmdAddClassImport => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddClassProperty => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddClassMethod => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddClassMethodParam => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddEntityClass => WeItemType.LoomMcpCommands,  // in AppGraphEntityTools
         WeItemType.CmdAddEntityClassImport => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddEntityProperty => WeItemType.LoomMcpCommands,
-
-        WeItemType.DeskRoles => null,    // role roadmap
-        WeItemType.RoleNone => WeItemType.DeskRoles,
-        WeItemType.RoleOrgDocWriter => WeItemType.DeskRoles,
-        WeItemType.RoleReviewOrgDocWriter => WeItemType.DeskRoles,
-        WeItemType.RoleOrgResearcher => WeItemType.DeskRoles,
-        WeItemType.RoleReviewOrgResearcher => WeItemType.DeskRoles,        
 
         WeItemType.TodoStatuses => null,
         WeItemType.TodoNotStarted => WeItemType.TodoStatuses,
@@ -159,6 +158,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.RunFailed => WeItemType.RunStatus,
         WeItemType.RanWithoutClose => WeItemType.RunStatus,
 
+        WeItemType.DeskPreAssertCheckTypes => null,
+        WeItemType.AssertItemExists => WeItemType.DeskPreAssertCheckTypes,
+        WeItemType.AssertItemIsType => WeItemType.DeskPreAssertCheckTypes,
+
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
         WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
@@ -168,6 +171,9 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.HarnessMcpModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
         WeItemType.HarnessMcpSessionModel => WeItemType.HarnessMcpModel,
+
+        WeItemType.OrgDeskRolesModel => WeItemType.OrganizationModel,
+        WeItemType.DeskRoleModel => WeItemType.OrgDeskRolesModel,
 
         WeItemType.DigitalOperatorPoolModel => WeItemType.OrganizationModel,
         WeItemType.DigitalOperatorModel => WeItemType.DigitalOperatorPoolModel,
@@ -382,9 +388,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddEntityClassImport => (int)WeEditorType.String,
         WeItemType.CmdAddEntityProperty => (int)WeEditorType.String,
 
-        WeItemType.DeskRoles => (int)WeEditorType.LookupTypeEditor,    // role roadmap
         WeItemType.TodoStatuses => (int)WeEditorType.LookupTypeEditor,
         WeItemType.RunStatus => (int)WeEditorType.LookupTypeEditor,
+        WeItemType.DeskPreAssertCheckTypes => (int)WeEditorType.LookupTypeEditor,
 
         WeItemType.OrganizationModel => (int)WeEditorType.None, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeEditorType.None,   
@@ -393,6 +399,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresModelLmStudioModel => (int)WeEditorType.None,
         WeItemType.HarnessMcpModel => (int)WeEditorType.None,   
         WeItemType.HarnessMcpSessionModel => (int)WeEditorType.None,
+
+        WeItemType.OrgDeskRolesModel => (int)WeEditorType.None,
+        WeItemType.DeskRoleModel => (int)WeEditorType.None,
 
         WeItemType.DigitalOperatorPoolModel => (int)WeEditorType.None,
         WeItemType.DigitalOperatorModel => (int)WeEditorType.String,
@@ -419,7 +428,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileConfigDocs => (int)WeEditorType.String,
         WeItemType.FileImageModel => (int)WeEditorType.String,
         WeItemType.FileImageDocs => (int)WeEditorType.String,
-
 
         WeItemType.SolutionModel => (int)WeEditorType.String,
         WeItemType.SolutionDocs => (int)WeEditorType.String,
@@ -618,26 +626,23 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddEntityClass => 32,  // in AppGraphEntityTools
         WeItemType.CmdAddEntityClassImport => 33,
         WeItemType.CmdAddEntityProperty => 34,
-
-        WeItemType.DeskRoles => 1,    // role roadmap
-        WeItemType.RoleNone => 1,
-        WeItemType.RoleOrgDocWriter => 2,
-        WeItemType.RoleReviewOrgDocWriter => 3,
-        WeItemType.RoleOrgResearcher => 4,
-        WeItemType.RoleReviewOrgResearcher => 5,
-        
+       
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
         WeItemType.TodoInProgress => 2,
         WeItemType.TodoCompleteForward => 3,
         WeItemType.TodoAbortedPushBack => 4,
         WeItemType.TodoFailedForward => 5,
+
         WeItemType.RunStatus => 1,
         WeItemType.RunInProgress => 1,
         WeItemType.RunCompleted => 2,
         WeItemType.RunFailed => 3,
         WeItemType.RanWithoutClose => 4,
 
+        WeItemType.DeskPreAssertCheckTypes => 1,
+        WeItemType.AssertItemExists => 1,
+        WeItemType.AssertItemIsType => 2,
 
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
@@ -840,6 +845,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdSearch => "Search Command",
         WeItemType.CmdGetSummaryById => "Get Summary By Id Command",
         WeItemType.CmdGetTypeDetails => "Get Type Details Command",
+
         WeItemType.CmdUpdateItemName => "Update Item Name Command",
         WeItemType.CmdUpdateItemContent => "Update Item Content Command",
         WeItemType.CmdUpdateItemProperty => "Update Item Property Command",
@@ -851,6 +857,7 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddOrgDesk => "Add Org Desk Command",
         WeItemType.CmdAddDeskTodo => "Add Desk Todo Command",
+
         WeItemType.CmdAddDigitalOperatior => "Add Digital Operator Command",
         WeItemType.CmdAddOrgFolder => "Add Org Folder Command",
         WeItemType.CmdAddOrgFile => "Add Org File Command",
@@ -859,28 +866,23 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
         WeItemType.CmdAddSolution => "Add Solution Command",
         WeItemType.CmdAddSolutionImport => "Add Solution Import Command",
+
         WeItemType.CmdAddMdFile => "Add Md File Command",
         WeItemType.CmdAddHtmlFile => "Add Html File Command",
         WeItemType.CmdAddConfigFile => "Add Config File Command",
+
         WeItemType.CmdAddLibrary => "Add Library Command",  // in AppGraphLibraryTools
         WeItemType.CmdAddNamespace => "Add Namespace Command",
+
         WeItemType.CmdAddClass => "Add Class Command",  // in AppGraphClassTools
         WeItemType.CmdAddClassImport => "Add Class Import Command",
         WeItemType.CmdAddClassProperty => "Add Class Property Command",
         WeItemType.CmdAddClassMethod => "Add Class Method Command",
         WeItemType.CmdAddClassMethodParam => "Add Class Method Param Command",
+
         WeItemType.CmdAddEntityClass => "Add Entity Class Command",  // in AppGraphEntityTools
         WeItemType.CmdAddEntityClassImport => "Add Entity Class Import Command",
         WeItemType.CmdAddEntityProperty => "Add Entity Property Command",
-
-
-        WeItemType.DeskRoles => "Desk Roles",    // role roadmap
-        WeItemType.RoleNone => "None",
-        WeItemType.RoleOrgDocWriter => "Org Doc Writer",
-        WeItemType.RoleReviewOrgDocWriter => "Review Org Doc Writer",
-        WeItemType.RoleOrgResearcher => "Org Researcher",
-        WeItemType.RoleReviewOrgResearcher => "Review Org Researcher",
-
         
         WeItemType.TodoStatuses => "Todo Statuses",
         WeItemType.TodoNotStarted => "Not Started",
@@ -895,6 +897,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RunFailed => "Failed",
         WeItemType.RanWithoutClose => "Ran Without Close",
 
+        WeItemType.DeskPreAssertCheckTypes =>"Desk Pre-Assert Check Types",
+        WeItemType.AssertItemExists => "Assert Item Exists",
+        WeItemType.AssertItemIsType => "Assert Item Is Type",        
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "Harness App",

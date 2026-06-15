@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -60,6 +61,7 @@ namespace Weavers.Core.Constants {
     public const string CmdUpdateItemContent = "updateItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
 
+    public const string CmdAddOrgDeskRole = "addOrgDeskRole";
     public const string CmdAddOrgDesk = "addOrgDesk";
     public const string CmdAddDeskTodo = "addDeskTodo";
     public const string CmdAddDigitalOperator = "addDigitalOperator";
@@ -105,6 +107,7 @@ namespace Weavers.Core.Constants {
 
     // Org folder names
     public const string OrgChartFolder = "OrgChart";
+    public const string OrgDeskRolesFolder = "OrgDeskRoles";
     public const string OrgDigiOpPoolFolder = "DigitalOperators";
     public const string OrgDocsFolder = "Documents";
 
@@ -121,6 +124,7 @@ namespace Weavers.Core.Constants {
     public const string ItCurrentTodo = "CurrentTodo";
     public const string ItDataType = "DataType";
     public const string ItDeleteBehavior = "DeleteBehavior";
+    public const string ItDeskPreAsserts = "PreAsserts";
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
     public const string ItDbTableName = "DbTableName";
@@ -196,6 +200,8 @@ namespace Weavers.Core.Constants {
     public const string ItResponse = "Response";
     public const string ItRetentionDays = "KeepDays";
     public const string ItDeskRole = "DeskRole";
+    public const string ItRole = "Role";
+    public const string ItRoleCommands = "RoleCmds";
     public const string ItRootFolder = "RootFolder";
     public const string ItRepoUrl = "RepoUrl";
     public const string ItSolutionGuid = "SlnGuid";
@@ -212,6 +218,7 @@ namespace Weavers.Core.Constants {
     public const string ItUseThis = "UseThis";
     public const string ItUserName = "UserName";
     public const string ItVote = "Votes";
+    public const string ItValidate = "Validate";
 
     public const string TestMethodType = "TestMethod";
 

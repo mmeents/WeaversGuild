@@ -704,6 +704,7 @@ namespace TheLoomApp {
     #region Context Menu Events
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
+        miAddOrgRole.Visible = false;
         miAddOrgDesk.Visible = false;
         miAddDeskTodo.Visible = false;
         miAddForeachTodo.Visible = false;
@@ -736,6 +737,7 @@ namespace TheLoomApp {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
+        miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
         miAddOrgDesk.Visible = itemType == WeItemType.OrgChartModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
         miAddForeachTodo.Visible = itemType == WeItemType.DeskModel;
@@ -770,6 +772,21 @@ namespace TheLoomApp {
     }
 
 
+
+    private async void miAddOrgRole_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskRoleModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgDeskRole(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add project root - error:" + ex.Message);
+        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
 
     private async void miAddDigitalOperator_Click(object sender, EventArgs e) {
       try {
@@ -1543,7 +1560,7 @@ namespace TheLoomApp {
             if (readyProp != null) {
               readyProp.Value = "1";
               await _appDataService.AddUpdateItemPropertyAsync(readyProp);
-          
+
             }
           }
           if (isDelete) {
@@ -1842,7 +1859,7 @@ namespace TheLoomApp {
           string lastTodoName = "";
           foreach (var relation in item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.TodoAttemptModel)) {
             lastId = relation.RelatedItemId ?? 0;
-            lastTodoName = relation.RelatedItemName;            
+            lastTodoName = relation.RelatedItemName;
           }
           if (lastId != 0) {
             var relatedItem = await _appDataService.GetItemById(lastId);
@@ -1850,14 +1867,14 @@ namespace TheLoomApp {
 
               var continueTodo = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
               if (continueTodo != null) {
-                sb.AppendLine("Continued to TodoId:"+ continueTodo.Value);
+                sb.AppendLine("Continued to TodoId:" + continueTodo.Value);
               }
 
               var response = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResponse);
               if (response != null) {
                 sb.AppendLine("Response: " + response.Value);
-              }                            
-              
+              }
+
               var userPrompt = relatedItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt);
               if (userPrompt != null) {
                 sb.AppendLine("User Prompt: " + userPrompt.Value);
