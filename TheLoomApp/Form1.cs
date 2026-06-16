@@ -1216,7 +1216,6 @@ namespace TheLoomApp {
             fbd.OrgRootFileName = Path.Combine(rootFolder, Cx.AppOrgExport); ;
           }
         }
-        List<string> operatorList = new List<string>();
         List<string> deskList = new List<string>();
         if (fbd.ShowDialog() == DialogResult.OK) {
           var resultList = fbd.FinalRelToFullPathDict;
@@ -1226,36 +1225,20 @@ namespace TheLoomApp {
 
             string fileExt = Path.GetExtension(fullPath).ToLower();
             bool isOrgDoc = fileExt == ".md";
-            bool isDigitalOperator = fileExt == ".json" && fullPath.Contains("DigitalOperators");
-            bool isDesk = fileExt == ".json" && fullPath.Contains("OrgChart");
+            bool isDigitalOperator = fileExt == ".json" && fullPath.Contains(Cx.OrgDigiOpPoolFolder);
+            bool isDesk = fileExt == ".json" && fullPath.Contains(Cx.OrgChartFolder);
+            bool isRole = fileExt == ".json" && fullPath.Contains(Cx.OrgDeskRolesFolder);
 
-            if (isOrgDoc) {
+            if (isOrgDoc || isDigitalOperator || isRole || isDesk) {
               var result = await _appDataService.ImportOrgDoc(fullPath, relPath, false);
               if (!result.IsSuccess) {
                 DoLogMessage($"Failed to import {relPath} - error: {result.Message}");
               }
-            } else if (isDigitalOperator) {
-              operatorList.Add(relPath);
-            } else if (isDesk) {
-              deskList.Add(relPath);
-            }
-          }
-
-          foreach (var operatorRelPath in operatorList) {
-            string fullPath = resultList[operatorRelPath];
-            var result = await _appDataService.ImportOrgDoc(fullPath, operatorRelPath, false);
-            if (!result.IsSuccess) {
-              DoLogMessage($"Failed to import digital operator {operatorRelPath} - error: {result.Message}");
-            }
-          }
-
-          foreach (var deskRelPath in deskList) {
-            string fullPath = resultList[deskRelPath];
-            var result = await _appDataService.ImportOrgDoc(fullPath, deskRelPath, false);
-            if (!result.IsSuccess) {
-              DoLogMessage($"Failed to import desk {deskRelPath} - error: {result.Message}");
-            }
-          }
+              if (isDesk) {
+                deskList.Add(relPath);
+              }
+            } 
+          }                  
 
           foreach (var deskRelPath in deskList) {  // second time for properties that refer to other desks
             string fullPath = resultList[deskRelPath];

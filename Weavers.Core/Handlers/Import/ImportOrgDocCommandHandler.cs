@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -34,8 +29,9 @@ namespace Weavers.Core.Handlers.Import {
       }
       string fileExt = Path.GetExtension(request.OrgDocFullPath).ToLower();
       bool isOrgDoc = fileExt == ".md";
-      bool isDigitalOperator = fileExt == ".json" && request.OrgDocFullPath.Contains("DigitalOperators");
-      bool isDesk = fileExt == ".json" && request.OrgDocFullPath.Contains("OrgChart");
+      bool isDigitalOperator = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgDigiOpPoolFolder);
+      bool isDesk = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgChartFolder);
+      bool isRole = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgDeskRolesFolder);      
 
       var orgId = _appSessionService.OrganizationId;
       var orgItem = await _context.GetItemDtoById(orgId, cancellationToken);
@@ -160,6 +156,75 @@ namespace Weavers.Core.Handlers.Import {
           }
 
         }
+      }
+
+      if (isRole) {
+        var listItemId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDeskRolesModel)?.RelatedItemId ?? 0;
+        if (listItemId == 0) {
+          return new ImportOrgResponse("Org desk roles not found in organization.", false);
+        }
+        var listItem = await _context.GetItemDtoById(listItemId, cancellationToken);
+        if (listItem != null) {
+          string fileContent = await File.ReadAllTextAsync(request.OrgDocFullPath, cancellationToken).ConfigureAwait(false);
+          DeskRoleExportModels? model = fileContent.FromJsonToDeskRole();
+          if (model != null && model.Name != string.Empty) {
+
+            var existingDeskRoleId = listItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DeskRoleModel
+              && r.RelatedItemName == model.Name)?.RelatedItemId ?? 0;
+            if (existingDeskRoleId != 0) {
+              if (request.OverwriteExisting) {
+                var existingDeskRole = await _context.GetItemDtoById(existingDeskRoleId, cancellationToken);
+                if (existingDeskRole != null) {
+
+                  var roleCommandsProp = existingDeskRole.Properties.FirstOrDefault(p => p.Name == Cx.ItRoleCommands);
+                  if (roleCommandsProp != null) {
+                    roleCommandsProp.Value = model.RoleCommands;
+                    await _mediator.UpdateItemProp(existingDeskRole, roleCommandsProp).ConfigureAwait(false);
+                  }
+
+                  var preAssertCommandsProp = existingDeskRole.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskPreAsserts);
+                  if (preAssertCommandsProp != null) {
+                    preAssertCommandsProp.Value = model.DeskPreAsserts;
+                    await _mediator.UpdateItemProp(existingDeskRole, preAssertCommandsProp).ConfigureAwait(false);
+                  }
+
+                  return new ImportOrgResponse("Desk role updated successfully.", true);
+                } else {
+                  return new ImportOrgResponse("Existing desk role item not found for update.", false);
+                }
+              } else {
+                return new ImportOrgResponse("Desk role already exists and overwrite is false.", false);
+              }
+            } else {
+              var deskRoleItem = await _mediator.Send(
+                new CreateRelatedItemCommand(listItem.Id, (int)WeRelationTypes.Contains,
+                  (int)WeItemType.DeskRoleModel, model.Name, "", "{}")).ConfigureAwait(false);
+              if (deskRoleItem != null) {
+                var newFolderPath = Path.Combine(orgRootFolder, Cx.OrgDeskRolesFolder);
+                var docPath = Path.Combine(newFolderPath, model.Name + ".json");
+                await _mediator.SetProperty(deskRoleItem, Cx.ItFilePath, docPath).ConfigureAwait(false);
+
+                var roleCommandsProp = deskRoleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRoleCommands);
+                if (roleCommandsProp != null) {
+                  roleCommandsProp.Value = model.RoleCommands;
+                  await _mediator.UpdateItemProp(deskRoleItem, roleCommandsProp).ConfigureAwait(false);
+                }
+
+                var preAssertCommandsProp = deskRoleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskPreAsserts);
+                if (preAssertCommandsProp != null) {
+                  preAssertCommandsProp.Value = model.DeskPreAsserts;
+                  await _mediator.UpdateItemProp(deskRoleItem, preAssertCommandsProp).ConfigureAwait(false);
+                }
+
+                return new ImportOrgResponse("Desk role imported successfully.", true);
+              }
+            }
+
+          }
+
+        }
+
+
       }
 
       if (isDesk) {

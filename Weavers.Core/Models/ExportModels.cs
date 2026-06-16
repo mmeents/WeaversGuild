@@ -13,6 +13,15 @@ namespace Weavers.Core.Models {
 
   }
 
+  public class DeskRoleExportModels {
+    public int Id { get; set; } = 0;
+    public string Name { get; set; } = string.Empty;
+    public string RoleCommands { get; set; } = string.Empty;
+    public string DeskPreAsserts { get; set; } = string.Empty;
+
+  }
+
+
   public class DeskExportModels {
     
     public int MaxAttempts { get; set; } = 0; 
@@ -27,6 +36,29 @@ namespace Weavers.Core.Models {
     public string SuccessDeskName { get; set; } = string.Empty;
   }
 
+
+  public static class DeskRoleExportModelsExt {
+    public static DeskRoleExportModels ToExportDeskRoleModel(this ItemDto deskRoleItem) {
+      string roleCommands = deskRoleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRoleCommands)?.Value ?? "";
+      string deskPreAsserts = deskRoleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItDeskPreAsserts)?.Value ?? "";
+      return new DeskRoleExportModels {
+        Id = deskRoleItem.Id,
+        Name = deskRoleItem.Name,
+        RoleCommands = roleCommands,
+        DeskPreAsserts = deskPreAsserts
+      };
+    }
+    public static string ToJson(this DeskRoleExportModels model) {
+      return System.Text.Json.JsonSerializer.Serialize(model);
+    }
+    public static DeskRoleExportModels? FromJsonToDeskRole(this string json) {
+      try {
+        return System.Text.Json.JsonSerializer.Deserialize<DeskRoleExportModels>(json);
+      } catch (Exception) {
+        return null;
+      }
+    }
+  }
 
   public static class DeskExportModelsExt {
     public static DeskExportModels ToExportDeskModel(this FabricDbContext _context, ItemDto deskItem) {

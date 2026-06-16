@@ -116,6 +116,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdReviewPass => WeItemType.LoomMcpCommands,
         WeItemType.CmdReviewFail => WeItemType.LoomMcpCommands,    
         
+        WeItemType.CmdAddOrgDeskRole => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgDesk => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddDeskTodo => WeItemType.LoomMcpCommands,
 
@@ -370,6 +371,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemName => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemContent => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemProperty => (int)WeEditorType.String,
+        WeItemType.CmdAddOrgDeskRole => (int)WeEditorType.String,
         WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => (int)WeEditorType.String,
         WeItemType.CmdAddSolution => (int)WeEditorType.String,
@@ -602,30 +604,30 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdRejectTodo => 10,
         WeItemType.CmdReviewPass => 11,
         WeItemType.CmdReviewFail => 12,
+        WeItemType.CmdAddOrgDeskRole => 13,
+        WeItemType.CmdAddOrgDesk => 14,  // in AppGraphDeskTools
+        WeItemType.CmdAddDeskTodo => 15,
+        WeItemType.CmdAddDigitalOperatior => 16,
+        WeItemType.CmdAddOrgFolder => 17,
+        WeItemType.CmdAddOrgFile => 18,
 
-        WeItemType.CmdAddOrgDesk => 13,  // in AppGraphDeskTools
-        WeItemType.CmdAddDeskTodo => 14,
-        WeItemType.CmdAddDigitalOperatior => 15,
-        WeItemType.CmdAddOrgFolder => 16,
-        WeItemType.CmdAddOrgFile => 17,
-
-        WeItemType.CmdAddProjectRoot => 18,  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => 19,
-        WeItemType.CmdAddSolution => 20,
-        WeItemType.CmdAddSolutionImport => 21,
-        WeItemType.CmdAddMdFile => 22,
-        WeItemType.CmdAddHtmlFile => 23,
-        WeItemType.CmdAddConfigFile => 24,
-        WeItemType.CmdAddLibrary => 25,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 26,
-        WeItemType.CmdAddClass => 27,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 28,
-        WeItemType.CmdAddClassProperty => 29,
-        WeItemType.CmdAddClassMethod => 30,
-        WeItemType.CmdAddClassMethodParam => 31,
-        WeItemType.CmdAddEntityClass => 32,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 33,
-        WeItemType.CmdAddEntityProperty => 34,
+        WeItemType.CmdAddProjectRoot => 19,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 20,
+        WeItemType.CmdAddSolution => 21,
+        WeItemType.CmdAddSolutionImport => 22,
+        WeItemType.CmdAddMdFile => 23,
+        WeItemType.CmdAddHtmlFile => 24,
+        WeItemType.CmdAddConfigFile => 25,
+        WeItemType.CmdAddLibrary => 26,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 27,
+        WeItemType.CmdAddClass => 28,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 29,
+        WeItemType.CmdAddClassProperty => 30,
+        WeItemType.CmdAddClassMethod => 31,
+        WeItemType.CmdAddClassMethodParam => 32,
+        WeItemType.CmdAddEntityClass => 33,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 34,
+        WeItemType.CmdAddEntityProperty => 35,
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -855,6 +857,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdReviewPass => "Review Pass Command",
         WeItemType.CmdReviewFail => "Review Fail Command",
 
+        WeItemType.CmdAddOrgDeskRole => "Add Org Desk Role Command",
         WeItemType.CmdAddOrgDesk => "Add Org Desk Command",
         WeItemType.CmdAddDeskTodo => "Add Desk Todo Command",
 

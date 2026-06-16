@@ -59,7 +59,6 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskRoleModel,  // roll named models that serve as model for templates moving here from static role model to dynamic. 
         new List<ItemPropertyDefault>(){
           new() {Rank = 10, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
-          new() {Rank = 9, Key = Cx.ItRole, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo},
           new() {Rank = 8, Key = Cx.ItRoleCommands, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, ReferenceItemTypeId=(int)WeItemType.LoomMcpCommands, EditorTypeId=(int)WeEditorType.CmdPickerEditor },
           new() {Rank = 7, Key = Cx.ItDeskPreAsserts, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, ReferenceItemTypeId=(int)WeItemType.DeskPreAssertCheckTypes, EditorTypeId=(int)WeEditorType.CmdPickerEditor },
         }

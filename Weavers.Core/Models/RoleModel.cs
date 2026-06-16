@@ -80,6 +80,7 @@ namespace Weavers.Core.Models {
         WeItemType.CmdReviewPass => Cx.CmdReviewPass,
         WeItemType.CmdReviewFail => Cx.CmdReviewFail,
 
+        WeItemType.CmdAddOrgDeskRole => Cx.CmdAddOrgDeskRole,
         WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
         WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
         WeItemType.CmdAddDigitalOperatior => Cx.CmdAddDigitalOperator,

@@ -120,10 +120,11 @@ namespace Weavers.Core.Enums {
       CmdReviewPass = 140,
       CmdReviewFail = 141,
 
-      CmdAddOrgDesk = 142,  // in AppGraphDeskTools
-      CmdAddDeskTodo = 143,
+      CmdAddOrgDeskRole = 142,
+      CmdAddOrgDesk = 143,  // in AppGraphDeskTools
+      CmdAddDeskTodo = 144,
 
-      CmdAddDigitalOperatior =144,
+      CmdAddDigitalOperatior =145,
       CmdAddOrgFolder = 146,
       CmdAddOrgFile = 148,
 

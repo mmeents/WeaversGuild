@@ -32,6 +32,13 @@ namespace TheLoomApp {
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public string? OrgDeskRolesPath {
+      get {
+        return Path.Combine(OrgRootPath!, "OrgDeskRoles");
+      }
+    }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? DigitalOperatorsPath {
       get {
         return Path.Combine(OrgRootPath!, "DigitalOperators");
@@ -86,7 +93,7 @@ namespace TheLoomApp {
       }
 
       var digitalOperatorsPath = DigitalOperatorsPath;
-      if (!string.IsNullOrEmpty(digitalOperatorsPath)) {
+      if (!string.IsNullOrEmpty(digitalOperatorsPath) && Directory.Exists(digitalOperatorsPath)) {
         var subFolders2 = Directory.GetFiles(digitalOperatorsPath, "*.json", SearchOption.AllDirectories);
         foreach (var jsonFile in subFolders2) {
           var basePathLength = OrgRootPath?.Length ?? 0;
@@ -100,8 +107,23 @@ namespace TheLoomApp {
         }
       }
 
+      var orgDeskRolesPath = OrgDeskRolesPath;
+      if (!string.IsNullOrEmpty(orgDeskRolesPath) && Directory.Exists(orgDeskRolesPath)) {
+        var subFolders2 = Directory.GetFiles(orgDeskRolesPath, "*.json", SearchOption.AllDirectories);
+        foreach (var jsonFile in subFolders2) {
+          var basePathLength = OrgRootPath?.Length ?? 0;
+          if (basePathLength > 0) {
+            var relPath = jsonFile.Substring(basePathLength);
+            if (!lbItemToImport.Items.Contains(relPath)) {
+              lbItemToImport.Items.Add(relPath);
+              _relToFullPathDict[relPath] = jsonFile;
+            }
+          }
+        }
+      }
+
       var orgChartPath = OrgChartPath;
-      if (!string.IsNullOrEmpty(orgChartPath)) {
+      if (!string.IsNullOrEmpty(orgChartPath) && Directory.Exists(orgChartPath)) {
         var subFolders3 = Directory.GetFiles(orgChartPath, "*.json", SearchOption.AllDirectories);
         foreach (var jsonFile in subFolders3) {
           var basePathLength = OrgRootPath?.Length ?? 0;

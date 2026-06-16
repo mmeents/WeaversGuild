@@ -91,6 +91,7 @@ namespace Weavers.Core.Handlers.Builds {
       }
 
       await WriteDigitalOperators(organization, buildContext, cancellationToken);
+      await WriteOrgDeskRoles(organization, buildContext, cancellationToken);
       await WriteOrgChart(organization, buildContext, cancellationToken);
       await WriteFolder(organization, buildContext, cancellationToken);
       await WriteOrganization(organization, buildContext, cancellationToken);
@@ -207,6 +208,62 @@ namespace Weavers.Core.Handlers.Builds {
       return bldContext;
     }
 
+
+
+    public async Task<BuildContext> WriteOrgDeskRoles(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {
+      var OrgDeskRolesModelId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDeskRolesModel)?.RelatedItemId;
+      if (OrgDeskRolesModelId == null) {
+        return bldContext.Fail($"No OrgDeskRolesModel found for organization with id {organizationItem.Id}");
+      }
+
+      var OrgDeskRolesItem = await _context.GetItemDtoById(OrgDeskRolesModelId.Value, cancellationToken);
+      if (OrgDeskRolesItem == null) {
+        return bldContext.Fail($"OrgDeskRolesModel with id {OrgDeskRolesModelId.Value} not found.");
+      }
+
+      var RoleFolderPath = OrgDeskRolesItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value ?? "";
+      if (string.IsNullOrEmpty(RoleFolderPath)) {
+        return bldContext.Fail($"OrgDeskRolesModel with id {OrgDeskRolesModelId.Value} does not have a relative folder property.");
+      }
+
+      try {
+        if (!Directory.Exists(RoleFolderPath)) {
+          Directory.CreateDirectory(RoleFolderPath);
+          if (!Directory.Exists(RoleFolderPath)) {
+            return bldContext.Fail($"Failed to create directory for OrgDeskRolesModel file at path: {RoleFolderPath}");
+          }
+        }
+      } catch (Exception ex) {
+        return bldContext.Fail($"Error accessing OrgDeskRolesModel file path: {ex.Message}");
+      }
+
+      var RolesIds = OrgDeskRolesItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
+        .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      foreach (var roleId in RolesIds) {
+        var roleItem = await _context.GetItemDtoById(roleId, cancellationToken);
+        if (roleItem != null) {
+          bldContext.LibItems[roleItem.Id] = roleItem;
+          try {
+            string fileContent = roleItem.ToExportDeskRoleModel().ToJson();
+            string filePath = roleItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value ?? "";
+            if (filePath != "" && File.Exists(filePath)) {
+              File.Delete(filePath);
+            }
+            await File.WriteAllTextAsync(filePath, fileContent, cancellationToken);
+            await _context.MarkItemUpdated(roleItem.Id, cancellationToken);
+            await _context.AddBuildItem(bldContext.BuildId, roleItem.Id, filePath, cancellationToken);
+            bldContext.FilesWritten++;
+          } catch (Exception ex) {
+            bldContext.Errors.Add($"Error writing document '{roleItem.Name}' to file: {ex.Message}");
+          }
+
+        } else {
+          bldContext.Errors.Add($"Related Desk Role with id {roleId} not found.");
+        }
+      }
+
+      return bldContext;
+    }
 
 
     public async Task<BuildContext> WriteOrgChart(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {

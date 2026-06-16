@@ -32,6 +32,11 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
+- Db Version 136 (6/15/2026)
+  - Adds Missing Mcp Cmd for AddOrgDeskRole
+  - Removes Role from DeskRole.
+  - Adds Import for DeskRoles.  They Read and Write with the Organization like the desk and operators. 
+  
 - Db Version 135 (6/14/2024
   - Makes DeskRole and OrgDeskRole as first class graph items
   - Adds CmdPickerEditor to show a list and to select a set of them.
