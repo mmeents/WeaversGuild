@@ -18,9 +18,9 @@ namespace Weavers.Core.Models {
 
 
   public static class TodoExts { 
-    public static async Task<TodoTemplateModel> TodoToTemplateModel(this FabricDbContext context, ItemDto TodoItem, ItemDto refItem, CancellationToken cancellationToken) {      
+    public static async Task<TodoTemplateModel> TodoToTemplateModel(this FabricDbContext context, ItemDto TodoItem, ItemDto? refItem, CancellationToken cancellationToken) {      
       var todoItem = await context.GetSummaryDtoById(TodoItem.Id, false, true, cancellationToken);
-      var refModel = await context.GetSummaryDtoById(refItem.Id, true, true, cancellationToken);      
+      var refModel = refItem != null ? await context.GetSummaryDtoById(refItem.Id, true, true, cancellationToken) : null;      
       var result = new TodoTemplateModel {        
         Todo = todoItem,
         Target = refModel,

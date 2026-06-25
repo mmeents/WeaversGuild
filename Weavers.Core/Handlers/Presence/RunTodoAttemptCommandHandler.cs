@@ -45,11 +45,13 @@ namespace Weavers.Core.Handlers.Presence {
     IMediator mediator,
     ILogger<RunTodoAttemptCommandHandler> logger,
     ILmStudioService lmService,
+    IClaudeCodeService claudeService,
     IGatewayRunRegistry runRegistry) : IRequestHandler<RunTodoAttemptCommand, RunTodoAttemptResult> {
     private readonly FabricDbContext _context = context;
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<RunTodoAttemptCommandHandler> _logger = logger;    
     private readonly ILmStudioService _lmService = lmService;
+    private readonly IClaudeCodeService _claudeService = claudeService;  
     private readonly IGatewayRunRegistry _runRegistry = runRegistry;
 
     public async Task<RunTodoAttemptResult> Handle(RunTodoAttemptCommand request, CancellationToken cancellationToken) {
@@ -126,17 +128,21 @@ namespace Weavers.Core.Handlers.Presence {
         }
         // get presence name is model.
         var presenceItem = await _context.GetItemDtoById(presId.Value, cancellationToken);
-        if (presenceItem == null || presenceItem.ItemTypeId != (int)WeItemType.PresModelLmStudioModel) {
+        if (presenceItem == null || (presenceItem.ItemTypeId != (int)WeItemType.PresModelLmStudioModel && presenceItem.ItemTypeId != (int)WeItemType.PresModelClaudeModel)) {
           return result.CreateFailure($"Presence with ID {presId.Value} not found.");
         }
         
         presenceModel = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItModelName)?.Value ?? string.Empty;
+        bool skipPermissions = false;
+        if (presenceItem.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
+          skipPermissions = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSkipPermissions)?.Value.AsBoolean() ?? false;
+        }
         harnessId = presenceItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemId;
         result.HarnessName = presenceItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemName ?? string.Empty;
         if (harnessId == null || harnessId == 0) {
           return result.CreateFailure($"Harness not found for Presence with ID {presId.Value}.");
         }
-        result.HarnessId = harnessId.Value;
+        result.HarnessId = harnessId.Value;        
 
         if (request.IsPreview) {
           result.Status = RunTodoAttemptOutcome.PreviewNotSent;
@@ -144,6 +150,12 @@ namespace Weavers.Core.Handlers.Presence {
         }
 
         //  Preview ends from here is to make call. -----------------------------------------------------
+
+        var gateway = await _context.GetItemDtoById(result.HarnessId, cancellationToken);
+        if (gateway == null) {
+          throw new InvalidOperationException($"Gateway with ID {result.HarnessId} not found.");
+        }
+
         var deskCurrentTodoProp = desk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo);
         if (deskCurrentTodoProp == null) {
           return result.CreateFailure($"Current Todo property not found for Desk with ID {deskId}.");
@@ -190,10 +202,18 @@ namespace Weavers.Core.Handlers.Presence {
           Integrations = Cx.availableToolsList.ToIntegrations()
         };
 
-        // make the call for infrence and get response.
-        var chatResponse = await _lmService.ChatAsync(result.HarnessId, chatRequest, cancellationToken);
 
-        result.ResponseText = chatResponse.GetText();
+        ChatResponse chatResponse;
+        if (gateway.ItemTypeId == (int)WeItemType.PresModelLmStudioModel) {
+          chatResponse = await _lmService.ChatAsync(result.HarnessId, chatRequest, cancellationToken);
+          result.ResponseText = chatResponse.GetText();
+        } else if (gateway.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
+          chatResponse = await _claudeService.ChatAsync(result.HarnessId, chatRequest, skipPermissions, cancellationToken);
+          result.ResponseText = chatResponse.GetText();
+        } else {
+          return result.CreateFailure($"Unsupported gateway type {gateway.ItemTypeId} for gateway with ID {result.HarnessId}.", RunTodoAttemptOutcome.InvocationFailed);
+        }
+        
         await _mediator.SetProperty(attempt, Cx.ItResponse, result.ResponseText ?? string.Empty).ConfigureAwait(false);
 
         // The operator may have called a close tool (Complete/Reject/Fail) THROUGH MCP during inference,

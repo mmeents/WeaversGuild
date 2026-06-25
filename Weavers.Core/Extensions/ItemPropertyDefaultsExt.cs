@@ -21,7 +21,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppModel, new List<ItemPropertyDefault>(){          
           new() {Rank = 5, Key = Cx.ItMachineName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
           new() {Rank = 4, Key = Cx.ItUserName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() {Rank = 3, Key = Cx.ItHasLmStudioPresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }           
+          new() {Rank = 3, Key = Cx.ItHasLmStudioPresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },           
+          new() {Rank = 2, Key = Cx.ItHasClaudePresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
         }
       },
       { WeItemType.HarnessAppSessionModel, new List<ItemPropertyDefault>(){
@@ -38,17 +39,25 @@ namespace Weavers.Core.Extensions {
       {
         WeItemType.PresModelLmStudioModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 2, Key = Cx.ItContextLength, DefaultValue = "24000", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
         }
-      },
-       {
+      },      
+      {
+        WeItemType.PresModelClaudeModel, new List<ItemPropertyDefault>(){
+          new() {Rank = 1, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 2, Key = Cx.ItSkipPermissions, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+        }
+      },                    
+
+      {
         WeItemType.HarnessMcpModel, new List<ItemPropertyDefault>(){          
           new() {Rank = 2, Key = Cx.ItMachineName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }
         }
       },
-       { WeItemType.HarnessMcpSessionModel, new List<ItemPropertyDefault>(){
+      { WeItemType.HarnessMcpSessionModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItProcessId, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
           new() {Rank = 2, Key = Cx.ItProviderType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }
-        }
+       }
       },
       #endregion
       { WeItemType.OrgDeskRolesModel, new List<ItemPropertyDefault>(){

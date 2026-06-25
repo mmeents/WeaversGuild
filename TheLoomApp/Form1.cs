@@ -90,6 +90,7 @@ namespace TheLoomApp {
       SetupForStartup();
     }
     public void SetupForStartup() {
+      lbClaudeLaunch.Text = WeaverExt.ClaudeExecutablePath;
       tabControl2.TabPages.Add(_itemPropertiesTab);
       _itemPropertiesTab.SetLabelRight(76);
       _itemPropertiesTab.OnPostEvent += ProjectTab_OnPostEvent;
@@ -458,13 +459,7 @@ namespace TheLoomApp {
         btnAttemptTodo.Visible = item.ItemTypeId == (int)WeItemType.TodoModel;
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
-        if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
-          wvDescription.CoreWebView2.NavigateToString(item.Description);
-        } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgDocModel) {
-          wvDescription.NavigateToMdString(item.Description);
-        } else {
-          wvDescription.CoreWebView2.NavigateToString("[about:blank]");
-        }
+        wvDescription.SetupHtmlViewForItem(item);
 
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
         edItemType.DataBindings.Clear();
@@ -528,7 +523,8 @@ namespace TheLoomApp {
             }
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessAppModel) {
             var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
-            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio);
+            var hasClaude = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
+            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
@@ -1237,8 +1233,8 @@ namespace TheLoomApp {
               if (isDesk) {
                 deskList.Add(relPath);
               }
-            } 
-          }                  
+            }
+          }
 
           foreach (var deskRelPath in deskList) {  // second time for properties that refer to other desks
             string fullPath = resultList[deskRelPath];
@@ -1430,6 +1426,11 @@ namespace TheLoomApp {
         pad.UserPrompt = result.UserPrompt;
         pad.Harness = $"{result.HarnessName} (Id:{result.HarnessId})";
         if (pad.ShowDialog() == DialogResult.OK) {
+          if (result.HarnessId != _sessionDetails!.HarnessId) {
+            MessageBox.Show("The harness for this todo is not accessible from the current session harness.", "Harness Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DoLogMessage($"{DateTime.Now}: Aborted Attempting TodoId {item.Id}");
+            return;
+          }
           DoLogMessage($"{DateTime.Now}: {result.Operator} Attempting TodoId {item.Id}");
           var attemptResult = await _appDataService.RunTodoItem(item.Id, false);
           if (attemptResult.Status == RunTodoAttemptOutcome.SuccessWithResponse) {
@@ -1458,7 +1459,7 @@ namespace TheLoomApp {
       if (lbNotReadyIndex == -1) {
         lbNotReadyIndex = 0;
       }
-      var notReady = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, false);
+      var notReady = await _appDataService.GetTodoByStatusReady(_sessionDetails!.HarnessId, WeItemType.TodoNotStarted, false);
       RunOnUi(() => {
         edReadyTodoName.Text = "";
         edReadyRefItem.Text = "";
@@ -1562,13 +1563,24 @@ namespace TheLoomApp {
     private async void ReloadSchedules() {
       await ReloadSchedulesAsync();
     }
+    private void cbHarness_SelectedIndexChanged(object sender, EventArgs e) {
+      if (_cbHarnessLoading) {
+        return;
+      }
+      ReloadSchedules();
+    }
 
+    bool _cbHarnessLoading = false;
+    int _currentHarnessId = 0;
     private async Task<bool> ReloadSchedulesAsync() {
       int lbReadyIndex = lbReady.SelectedIndex;
       if (lbReadyIndex == -1) {
         lbReadyIndex = 0;
       }
-      var schedules = await _appDataService.GetTodoByStatusReady(WeItemType.TodoNotStarted, true);
+      await ReloadCbHarnessAsync();
+      var selectedHarness = cbHarness.SelectedItem as ItemLookup;
+      var selectedHarnessId = Convert.ToInt32(selectedHarness?.Value ?? _sessionDetails!.HarnessId);
+      var schedules = await _appDataService.GetTodoByStatusReady(selectedHarnessId, WeItemType.TodoNotStarted, true);
       RunOnUi(() => {
         edWorkingName.Text = "";
         edWorkingRefItem.Text = "";
@@ -1584,6 +1596,35 @@ namespace TheLoomApp {
           lbReady.SelectedIndex = Math.Min(lbReadyIndex, lbReady.Items.Count - 1);
         }
       });
+      return true;
+    }
+
+    private async Task<bool> ReloadCbHarnessAsync() {
+      _cbHarnessLoading = true;
+      var selectedHarness = cbHarness.SelectedItem as ItemLookup;
+      _currentHarnessId = Convert.ToInt32(selectedHarness?.Value ?? _sessionDetails!.HarnessId);
+
+      var orgItem = await _appDataService.GetItemById(_sessionDetails!.OrganizationId);
+      var harnesses = orgItem!.Relations
+        .Where(r => r.RelatedItemTypeId == (int)WeItemType.HarnessAppModel && r.RelatedItemId.HasValue)
+        .Select(r => new ItemLookup(r!.RelatedItemId!.Value, r.RelatedItemName, r.RelatedItemName)).ToList();
+
+      RunOnUi(() => {
+        cbHarness.Items.Clear();
+        int selIndx = 0;
+        foreach (var harness in harnesses) {
+          var index = cbHarness.Items.Add(harness);
+          if (Convert.ToInt32(harness.Value) == _currentHarnessId) {
+            selIndx = index;
+          }
+        }
+        if (cbHarness.Items.Count > 0) {
+          cbHarness.SelectedIndex = selIndx;
+          btnStartStop.Visible = _currentHarnessId == _sessionDetails?.HarnessId;
+        }
+      });
+
+      _cbHarnessLoading = false;
       return true;
     }
 
@@ -1639,11 +1680,11 @@ namespace TheLoomApp {
             await ReloadReadyTabAsync();
             _workingTodo = null;
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose) {
+          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose ||
+            result.Status == RunTodoAttemptOutcome.InvocationFailed) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt did not complete. retrying next. Response: {result.ResponseText}");
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured ||
-            result.Status == RunTodoAttemptOutcome.InvocationFailed) {
+          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt Failed, Status: {result.Status}, Error: {result.ErrorMessage}");
             _workingTodo = null;
           }
@@ -1684,6 +1725,7 @@ namespace TheLoomApp {
         if (_engineRunning) {
           lbWorkingStatus.Text = "Status: Pipeline Running";
           btnStartStop.Text = "Stop";
+          cbHarness.Enabled = false;
           _isStopping = false;
         } else {
           if (!_isStopping) {
@@ -1695,6 +1737,7 @@ namespace TheLoomApp {
             lbWorkingStatus.Text = "Status: Pipeline Stopped";
             btnStartStop.Text = "Start";
             btnStartStop.Enabled = true;
+            cbHarness.Enabled = true;
             _isStopping = false;
           }
         }
@@ -1733,8 +1776,8 @@ namespace TheLoomApp {
     }
 
     private void cbReadyWorking_CheckedChanged(object sender, EventArgs e) {
-      btnAbortWorking.Visible = cbReadyWorking.Checked;
-      btnUpdateWorking.Visible = cbReadyWorking.Checked;
+      btnAbortWorking.Visible = !cbReadyWorking.Checked;
+      btnUpdateWorking.Visible = !cbReadyWorking.Checked;
     }
 
     private void btnAbortWorking_Click(object sender, EventArgs e) {
@@ -1798,7 +1841,7 @@ namespace TheLoomApp {
           break;
       }
 
-      var completed = await _appDataService.GetTodoByStatusReady(statusFilter, true);
+      var completed = await _appDataService.GetTodoByStatusReady(_sessionDetails!.HarnessId, statusFilter, true);
       RunOnUi(() => {
         btnUpdateResultStatus.Visible = false;
         btnCancelUpdateResultStatus.Visible = false;
@@ -1926,6 +1969,27 @@ namespace TheLoomApp {
 
     #endregion
 
+
+    private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+      // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
+      try {
+        var claudePath = WeaverExt.ClaudeExecutablePath;
+
+        if (claudePath != null) {
+          System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo() {
+            FileName = claudePath,
+            UseShellExecute = true,
+            Verb = "open"
+          });
+        } else {
+          MessageBox.Show("Could not determine the folder path for the Claude executable to start.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage(ex.Message + " Error opening Claude executable folder.");
+        MessageBox.Show("An error occurred while trying to open the Claude executable folder. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
   }
 
 }

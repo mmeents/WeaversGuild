@@ -237,7 +237,7 @@ namespace Weavers.Core.Handlers.Builds {
         return bldContext.Fail($"Error accessing OrgDeskRolesModel file path: {ex.Message}");
       }
 
-      var RolesIds = OrgDeskRolesItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
+      var RolesIds = OrgDeskRolesItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskRoleModel)
         .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
       foreach (var roleId in RolesIds) {
         var roleItem = await _context.GetItemDtoById(roleId, cancellationToken);
@@ -254,7 +254,7 @@ namespace Weavers.Core.Handlers.Builds {
             await _context.AddBuildItem(bldContext.BuildId, roleItem.Id, filePath, cancellationToken);
             bldContext.FilesWritten++;
           } catch (Exception ex) {
-            bldContext.Errors.Add($"Error writing document '{roleItem.Name}' to file: {ex.Message}");
+            bldContext.Errors.Add($"Error writing desk role '{roleItem.Name}' to file: {ex.Message}");
           }
 
         } else {

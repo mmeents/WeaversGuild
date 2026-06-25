@@ -41,7 +41,8 @@ namespace Weavers.Core {
       services.AddScoped<IAppGraphClassService, AppGraphClassService>();
       services.AddScoped<IAppItemTemplateService, AppItemTemplateService>();
       services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
-      services.AddScoped<ILmStudioService, LmStudioService>();      
+      services.AddScoped<ILmStudioService, LmStudioService>();  
+      services.AddScoped<IClaudeCodeService, ClaudeCodeService>();
 
       services.AddSingleton<IBaseToolsHandler, BaseToolsHandler>();
       services.AddSingleton<ISummaryToolsHandler, SummaryToolsHandler>();

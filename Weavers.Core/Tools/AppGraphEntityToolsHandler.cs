@@ -84,7 +84,8 @@ namespace Weavers.Core.Tools {
           return _logger.DefaultInvalidParentMessage(Cx.CmdAddEntityProperty, entityClassId);
         }
 
-        var addedItem = await service.AddEntityPropertyModel(parentItem, propertyName, propertyTypeId, isNav, navEntityClassId);
+        int? newNavEntityClassId = navEntityClassId.HasValue && navEntityClassId.Value == 0 ? null : navEntityClassId;
+        var addedItem = await service.AddEntityPropertyModel(parentItem, propertyName, propertyTypeId, isNav, newNavEntityClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddEntityProperty, entityClassId);
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityProperty, await context.ToSummary(addedItem));
         return opResult.ToString();

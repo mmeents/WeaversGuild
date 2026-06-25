@@ -51,17 +51,14 @@ namespace Weavers.Core.Handlers.Templates {
           
           var refItemIdStr = fieldsItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem)?.Value ?? "0";
           int refItemId = int.TryParse(refItemIdStr, out int tempRefId) ? tempRefId : 0;
-          if (refItemId >= 1) { 
-            var refItem = await _context.GetItemDtoById(refItemId);
-            if (refItem != null) {
-              TodoTemplateModel model = await _context.TodoToTemplateModel(fieldsItem, refItem, cancellationToken);
-              var scriptObject1 = new ScriptObject();
-              scriptObject1["model"] = model;
-              return DoRendering(templateText, scriptObject1);              
-            }
-            return $"Referenced item with ID {refItemId} not found";
+          ItemDto? refItem = null;
+          if (refItemId >= 1) {
+            refItem = await _context.GetItemDtoById(refItemId);
           }
-          return $"Todo Reference itemId did not parse";
+          TodoTemplateModel model = await _context.TodoToTemplateModel(fieldsItem, refItem, cancellationToken);
+          var scriptObject1 = new ScriptObject();
+          scriptObject1["model"] = model;
+          return DoRendering(templateText, scriptObject1);          
 
         }
         return $"Referenced unsupported field type.";

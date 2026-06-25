@@ -31,6 +31,7 @@
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
       toolStripSeparator1 = new ToolStripSeparator();
+      miAddOrgRole = new ToolStripMenuItem();
       miAddDigitalOperator = new ToolStripMenuItem();
       miAddOrgDesk = new ToolStripMenuItem();
       miAddDeskTodo = new ToolStripMenuItem();
@@ -60,6 +61,7 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      lbClaudeLaunch = new LinkLabel();
       btnImportOrgDocs = new Button();
       cbShowSessions = new CheckBox();
       button1 = new Button();
@@ -101,6 +103,7 @@
       labelNotReady = new Label();
       lbNotReady = new ListBox();
       tpSchedule = new TabPage();
+      cbHarness = new ComboBox();
       btnAbortWorking = new Button();
       btnUpdateWorking = new Button();
       cbReadyWorking = new CheckBox();
@@ -125,7 +128,6 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miAddOrgRole = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -208,7 +210,7 @@
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddOrgRole, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 594);
+      cmsTreeMenus.Size = new Size(209, 572);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -222,6 +224,13 @@
       // 
       toolStripSeparator1.Name = "toolStripSeparator1";
       toolStripSeparator1.Size = new Size(205, 6);
+      // 
+      // miAddOrgRole
+      // 
+      miAddOrgRole.Name = "miAddOrgRole";
+      miAddOrgRole.Size = new Size(208, 22);
+      miAddOrgRole.Text = "Add Org DeskRole";
+      miAddOrgRole.Click += miAddOrgRole_Click;
       // 
       // miAddDigitalOperator
       // 
@@ -424,6 +433,7 @@
       ilTreeImages.Images.SetKeyName(22, "Mail-Send--Streamline-Micro.png");
       ilTreeImages.Images.SetKeyName(23, "Inbox-Open--Streamline-Micro.png");
       ilTreeImages.Images.SetKeyName(24, "narration.png");
+      ilTreeImages.Images.SetKeyName(25, "GatwayWeave.png");
       // 
       // splitContainer3
       // 
@@ -465,6 +475,7 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(lbClaudeLaunch);
       tpSettings.Controls.Add(btnImportOrgDocs);
       tpSettings.Controls.Add(cbShowSessions);
       tpSettings.Controls.Add(button1);
@@ -483,6 +494,17 @@
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
+      // 
+      // lbClaudeLaunch
+      // 
+      lbClaudeLaunch.AutoSize = true;
+      lbClaudeLaunch.Location = new Point(35, 159);
+      lbClaudeLaunch.Name = "lbClaudeLaunch";
+      lbClaudeLaunch.Size = new Size(93, 15);
+      lbClaudeLaunch.TabIndex = 10;
+      lbClaudeLaunch.TabStop = true;
+      lbClaudeLaunch.Text = "lbClaudeLaunch";
+      lbClaudeLaunch.LinkClicked += lbClaudeLaunch_LinkClicked;
       // 
       // btnImportOrgDocs
       // 
@@ -507,7 +529,7 @@
       // 
       // button1
       // 
-      button1.Location = new Point(473, 84);
+      button1.Location = new Point(438, 84);
       button1.Name = "button1";
       button1.Size = new Size(125, 23);
       button1.TabIndex = 7;
@@ -697,7 +719,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -973,6 +994,7 @@
       // 
       // tpSchedule
       // 
+      tpSchedule.Controls.Add(cbHarness);
       tpSchedule.Controls.Add(btnAbortWorking);
       tpSchedule.Controls.Add(btnUpdateWorking);
       tpSchedule.Controls.Add(cbReadyWorking);
@@ -989,6 +1011,17 @@
       tpSchedule.TabIndex = 2;
       tpSchedule.Text = "Schedule";
       tpSchedule.UseVisualStyleBackColor = true;
+      // 
+      // cbHarness
+      // 
+      cbHarness.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      cbHarness.Font = new Font("Segoe UI", 10.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      cbHarness.FormattingEnabled = true;
+      cbHarness.Location = new Point(365, 7);
+      cbHarness.Name = "cbHarness";
+      cbHarness.Size = new Size(190, 27);
+      cbHarness.TabIndex = 39;
+      cbHarness.SelectedIndexChanged += cbHarness_SelectedIndexChanged;
       // 
       // btnAbortWorking
       // 
@@ -1238,13 +1271,6 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miAddOrgRole
-      // 
-      miAddOrgRole.Name = "miAddOrgRole";
-      miAddOrgRole.Size = new Size(208, 22);
-      miAddOrgRole.Text = "Add Org DeskRole";
-      miAddOrgRole.Click += miAddOrgRole_Click;
-      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1396,5 +1422,7 @@
     private TextBox edResultTodoDetails;
     private CheckBox cbDeleteNotReady;
     private ToolStripMenuItem miAddOrgRole;
+    private ComboBox cbHarness;
+    private LinkLabel lbClaudeLaunch;
   }
 }

@@ -3,22 +3,8 @@
 ## Overview
 
 Thinking a desk is the primary part of the organization. They consist of the following:
-- Desk has a Role.  The Guild has set up a set of Roles desks can have. It's a primary component of the setup of a new desk. Was thinking the roles would add a new DeskRole lookup type with items being like the following: 
-  -  WeItemType.Researching
-  -  WeItemType.ReviewResearch  
-  -  WeItemType.Designing
-  -  WeItemType.ReviewDesign  
-  -  WeItemType.Planning
-  -  WeItemType.ReviewPlan  
-  -  WeItemType.BuildingOut
-  -  WeItemType.ReviewBuildOut  
-  -  WeItemType.Testing
-  -  WeItemType.ReviewTests  
-  -  WeItemType.Documenting
-  -  WeItemType.ReviewDocument  
-  -  WeItemType.Packaging
-  -  WeItemType.ReviewPackage
-- Has a on call Digital Operator(Weaver) as a property of the desk.  this is the LLM used to service infrence for the desk. 
+- Desk has a DeskRole that needs setup and are located under the Org Desk Roles node.
+- Has a on Digital Operator(Weaver) as a property of the desk.  this is the LLM used to service infrence for the desk. 
 - Maintain a todo list. Maintain a catagory of documentation centered around the desks purpose. 
 - OrgChartModel the Desks Parent Drives the infrence progress. 
 - Maintain Success and Failed continuation operations.  (Create a new todo on the destinations todo list. Catch log Errors)

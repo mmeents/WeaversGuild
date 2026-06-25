@@ -19,7 +19,7 @@ namespace Weavers.Core.Constants {
     public static string AppExeName => "TheLoomApp.exe";
     public static string AppApiName => "Weavers.Api";
     public static string McpAppName => "TheLoomMCP";
-    public static string AppVersion => "0.1.2";
+    public static string AppVersion => "1.1.37";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
     public const string CredentialProtectorName = "WeaversGuild.YouGotThis";
@@ -28,9 +28,7 @@ namespace Weavers.Core.Constants {
     public const double DefaultTemperature = 0.76;
     public const int DefaultLmStudioContextLength = 24000;
     public const int intPropertyLabelLeft = 116;
-
-    public const string LMStudioUrl = "http://10.0.0.118:8669";
-    public const string LMStudioApiKey = "sk-lm-njtLGuVe:Vcbn9IXvEghho3wt9TCx";
+        
     public const string DaemonsMcpToolName = "mcp/daemonsmcp";
     public const string WeaversMcpToolName = "mcp/theloommcp";
 
@@ -59,6 +57,7 @@ namespace Weavers.Core.Constants {
     public const string CmdGetTypeDetails = "getTypeDetails";
     public const string CmdUpdateItemName = "updateItemName";
     public const string CmdUpdateItemContent = "updateItemContent";
+    public const string CmdAppendItemContent = "appendItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
 
     public const string CmdAddOrgDeskRole = "addOrgDeskRole";
@@ -120,6 +119,7 @@ namespace Weavers.Core.Constants {
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
+    public const string ItContextLength = "ContextLength";
     public const string ItCloseReason = "CloseReason";
     public const string ItCurrentTodo = "CurrentTodo";
     public const string ItDataType = "DataType";
@@ -138,7 +138,7 @@ namespace Weavers.Core.Constants {
     public const string ItHarnessId = "HarnessId";
     public const string ItHasDbContext = "HasDbContext";
     public const string ItHasLmStudioPresence = "HasLmStudio";
-    //public const string ItHasClaudePresence = "HasClaude";
+    public const string ItHasClaudePresence = "HasClaudeCode";
     public const string ItHasMediator = "HasMediator";
     public const string ItHasNavigation = "HasNav";
     public const string ItHasSetter = "HasSetter";
@@ -204,6 +204,7 @@ namespace Weavers.Core.Constants {
     public const string ItRoleCommands = "RoleCmds";
     public const string ItRootFolder = "RootFolder";
     public const string ItRepoUrl = "RepoUrl";
+    public const string ItSkipPermissions = "SkipPerms";
     public const string ItSolutionGuid = "SlnGuid";
     public const string ItStatus = "Status";
     public const string ItSystemPrompt = "SysPrompt";

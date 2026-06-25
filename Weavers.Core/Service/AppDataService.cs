@@ -43,7 +43,7 @@ namespace Weavers.Core.Service {
     Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite);
     Task<WriteDocumentCmdResult> WriteDocument(int itemId);
 
-    Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio);
+    Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude);
 
     Task<ItemDto?> SyncLmStudioModels(int gatewayModelId);
     Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting);
@@ -52,7 +52,7 @@ namespace Weavers.Core.Service {
 
     Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
 
-    Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(WeItemType todoStatusFilter, bool readyFilter);
+    Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter);
 
   }
   public class AppDataService(IServiceScopeFactory scopeFactory, ISessionItemCacheService sessionCache) : IAppDataService {
@@ -112,6 +112,7 @@ namespace Weavers.Core.Service {
       var result = await mediator.Send(command);
       return result;
     }
+
     public async Task<ItemDto?> UpdateItemAsync(ItemDto request) {
       var mediator = GetMediator();
       var command = new UpdateItemCommand(request.Id, request.ItemTypeId, request.Name, request.Description, request.Data, request.IsActive, request.WrittenAt);
@@ -239,9 +240,9 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio) {
+    public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude) {
       var mediator = GetMediator();
-      var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio);
+      var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio, hasClaude);
       var result = await mediator.Send(command);
       return result;
     }
@@ -272,9 +273,9 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(WeItemType todoStatusFilter, bool readyFilter) {
+    public async Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter) {
       var mediator = GetMediator();
-      var command = new GetTodoByStatusReadyCommand(todoStatusFilter, readyFilter);
+      var command = new GetTodoByStatusReadyCommand(harnessId, todoStatusFilter, readyFilter);
       var result = await mediator.Send(command);
       return result;
     }

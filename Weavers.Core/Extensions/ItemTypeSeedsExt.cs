@@ -109,6 +109,7 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdUpdateItemName => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemContent => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAppendItemContent => WeItemType.LoomMcpCommands,
         WeItemType.CmdUpdateItemProperty => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdCompleteTodo => WeItemType.LoomMcpCommands,
@@ -169,6 +170,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppSessionModel => WeItemType.HarnessAppModel, // each run makes a session for tacking. 
         WeItemType.PresenceLmStudioGatewayModel => WeItemType.HarnessAppModel,   // LM Studio instance details for 1 model. this or next, to be used as base for the DigitalOperatorModel.
         WeItemType.PresModelLmStudioModel => WeItemType.PresenceLmStudioGatewayModel,     // Claude instance details for 1 model.
+
+        WeItemType.PresenceClaudeGatewayModel => WeItemType.HarnessAppModel,   // Claude instance details for 1 Harness.
+        WeItemType.PresModelClaudeModel => WeItemType.PresenceClaudeGatewayModel,     // Claude instance details for 1 model. 
 
         WeItemType.HarnessMcpModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
         WeItemType.HarnessMcpSessionModel => WeItemType.HarnessMcpModel,
@@ -370,6 +374,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdGetTypeDetails => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemName => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemContent => (int)WeEditorType.String,
+        WeItemType.CmdAppendItemContent => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemProperty => (int)WeEditorType.String,
         WeItemType.CmdAddOrgDeskRole => (int)WeEditorType.String,
         WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
@@ -399,6 +404,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppSessionModel => (int)WeEditorType.None,
         WeItemType.PresenceLmStudioGatewayModel => (int)WeEditorType.None,
         WeItemType.PresModelLmStudioModel => (int)WeEditorType.None,
+        WeItemType.PresenceClaudeGatewayModel => (int)WeEditorType.None,
+        WeItemType.PresModelClaudeModel => (int)WeEditorType.None,
+
         WeItemType.HarnessMcpModel => (int)WeEditorType.None,   
         WeItemType.HarnessMcpSessionModel => (int)WeEditorType.None,
 
@@ -598,36 +606,37 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdGetTypeDetails => 5,
         WeItemType.CmdUpdateItemName => 6,
         WeItemType.CmdUpdateItemContent => 7,
-        WeItemType.CmdUpdateItemProperty => 8,
+        WeItemType.CmdAppendItemContent => 8,
+        WeItemType.CmdUpdateItemProperty => 9,
 
-        WeItemType.CmdCompleteTodo => 9,  // in TodoTools
-        WeItemType.CmdRejectTodo => 10,
-        WeItemType.CmdReviewPass => 11,
-        WeItemType.CmdReviewFail => 12,
-        WeItemType.CmdAddOrgDeskRole => 13,
-        WeItemType.CmdAddOrgDesk => 14,  // in AppGraphDeskTools
-        WeItemType.CmdAddDeskTodo => 15,
-        WeItemType.CmdAddDigitalOperatior => 16,
-        WeItemType.CmdAddOrgFolder => 17,
-        WeItemType.CmdAddOrgFile => 18,
+        WeItemType.CmdCompleteTodo => 10,  // in TodoTools
+        WeItemType.CmdRejectTodo => 11,
+        WeItemType.CmdReviewPass => 12,
+        WeItemType.CmdReviewFail => 13,
+        WeItemType.CmdAddOrgDeskRole => 14,
+        WeItemType.CmdAddOrgDesk => 15,  // in AppGraphDeskTools
+        WeItemType.CmdAddDeskTodo => 16,
+        WeItemType.CmdAddDigitalOperatior => 17,
+        WeItemType.CmdAddOrgFolder => 18,
+        WeItemType.CmdAddOrgFile => 19,
 
-        WeItemType.CmdAddProjectRoot => 19,  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => 20,
-        WeItemType.CmdAddSolution => 21,
-        WeItemType.CmdAddSolutionImport => 22,
-        WeItemType.CmdAddMdFile => 23,
-        WeItemType.CmdAddHtmlFile => 24,
-        WeItemType.CmdAddConfigFile => 25,
-        WeItemType.CmdAddLibrary => 26,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 27,
-        WeItemType.CmdAddClass => 28,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 29,
-        WeItemType.CmdAddClassProperty => 30,
-        WeItemType.CmdAddClassMethod => 31,
-        WeItemType.CmdAddClassMethodParam => 32,
-        WeItemType.CmdAddEntityClass => 33,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 34,
-        WeItemType.CmdAddEntityProperty => 35,
+        WeItemType.CmdAddProjectRoot => 20,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 21,
+        WeItemType.CmdAddSolution => 22,
+        WeItemType.CmdAddSolutionImport => 23,
+        WeItemType.CmdAddMdFile => 24,
+        WeItemType.CmdAddHtmlFile => 25,
+        WeItemType.CmdAddConfigFile => 26,
+        WeItemType.CmdAddLibrary => 27,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 28,
+        WeItemType.CmdAddClass => 29,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 30,
+        WeItemType.CmdAddClassProperty => 31,
+        WeItemType.CmdAddClassMethod => 32,
+        WeItemType.CmdAddClassMethodParam => 33,
+        WeItemType.CmdAddEntityClass => 34,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 35,
+        WeItemType.CmdAddEntityProperty => 36,
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -651,6 +660,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppSessionModel => (int)WeItemType.HarnessAppSessionModel,
         WeItemType.PresenceLmStudioGatewayModel => (int)WeItemType.PresenceLmStudioGatewayModel,
         WeItemType.PresModelLmStudioModel => (int)WeItemType.PresModelLmStudioModel,
+        WeItemType.PresenceClaudeGatewayModel => (int)WeItemType.PresenceClaudeGatewayModel,
+        WeItemType.PresModelClaudeModel => (int)WeItemType.PresModelClaudeModel,
+
         WeItemType.HarnessMcpModel => (int)WeItemType.HarnessMcpModel,
         WeItemType.HarnessMcpSessionModel => (int)WeItemType.HarnessMcpSessionModel,
 
@@ -850,6 +862,7 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdUpdateItemName => "Update Item Name Command",
         WeItemType.CmdUpdateItemContent => "Update Item Content Command",
+        WeItemType.CmdAppendItemContent => "Append Item Content Command",
         WeItemType.CmdUpdateItemProperty => "Update Item Property Command",
 
         WeItemType.CmdCompleteTodo => "Complete Todo Command",
@@ -909,6 +922,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppSessionModel => "Harness App Session",
         WeItemType.PresenceLmStudioGatewayModel => "Lm Studio Gateway",
         WeItemType.PresModelLmStudioModel => "Specific Lm Studio Model",
+        WeItemType.PresenceClaudeGatewayModel => "Claude Gateway",
+        WeItemType.PresModelClaudeModel => "Claude Model",
+
         WeItemType.HarnessMcpModel => "Harness Mcp",
         WeItemType.HarnessMcpSessionModel => "Harness Mcp Session",
 

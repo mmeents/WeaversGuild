@@ -1,14 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
+using Weavers.Core.Entities;
+using Weavers.Core.Enums;
+using Weavers.Core.Extensions;
+using Weavers.Core.Models;
 
 namespace TheLoomApp.Extensions {
   public static class WebView2Exts {
 
-    public static void NavigateToMdString(this Microsoft.Web.WebView2.WinForms.WebView2 webView,
-      string mdString) {
+    public static void SetupHtmlViewForItem(this Microsoft.Web.WebView2.WinForms.WebView2 webView, ItemDto item) {
+      if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
+        webView.NavigateToHtmlString(item.Description);
+      } else if (item.ItemTypeId == (int)WeItemType.FileMdModel
+        || item.ItemTypeId == (int)WeItemType.OrgDocModel) {
+        webView.NavigateToMdString(item.Description);
+      } else {
+        webView.NavigateToMdString(item.ToMdString());
+      }
+    }
+
+    public static void NavigateToHtmlString(this Microsoft.Web.WebView2.WinForms.WebView2 webView, string htmlString) {
+      webView.CoreWebView2.NavigateToString(htmlString);
+    }
+
+    public static void NavigateToMdString(this Microsoft.Web.WebView2.WinForms.WebView2 webView, string mdString) {
 
       var htmlContent2 = @"<!DOCTYPE html>
 <html>
@@ -41,6 +61,46 @@ namespace TheLoomApp.Extensions {
 @"</script>
 </html>";
       webView.NavigateToString(htmlContent2);
+      //webView.CoreWebView2.NavigateToString(htmlContent2);
     }
+
+
+    public static string ToMdString(this ItemDto item) {
+
+      StringBuilder sb = new StringBuilder();
+      sb.AppendLine($"# {item.Name}");
+
+      sb.AppendLine("## Item Type");
+      WeItemType itemTypeEnum = (WeItemType)item.ItemTypeId;
+      sb.AppendLine($"ItemType ID: {item.ItemTypeId}, Description: {itemTypeEnum.Description()}");
+
+      sb.AppendLine("## Items Properties");
+      foreach(var prop in item.Properties) {
+        if (prop.EditorTypeId.HasValue && prop.EditorTypeId.Value == (int)WeEditorType.Password) {
+          sb.AppendLine($"- {prop.Name}: ******");
+        //} else if (prop.EditorTypeId.HasValue && prop.EditorTypeId.Value == (int)WeEditorType.LookupTypeEditor) {
+          
+        //} else if (prop.EditorTypeId.HasValue && prop.EditorTypeId.Value == (int)WeEditorType.Password) {
+        } else {
+          sb.AppendLine($"- {prop.Name}: {prop.Value}");
+        }
+      }
+
+
+      sb.AppendLine("## Inbound Parent Relations");
+      foreach(var rel in item.IncomingRelations) {
+        sb.AppendLine($"- {rel.ItemId} ({rel.ItemName})");
+      }
+
+      sb.AppendLine("## Outbound Child Relations");
+      foreach(var rel in item.Relations) {
+        sb.AppendLine($"- {rel.RelatedItemId} ({rel.RelatedItemName})");
+      }
+
+
+
+      return sb.ToString();
+    }
+
   }
 }

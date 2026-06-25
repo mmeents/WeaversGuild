@@ -46,8 +46,9 @@ namespace Weavers.Core.Extensions {
         string filePath = Path.Combine(claudePath, ".mcp.json");
         if (!Directory.Exists(claudePath)) Directory.CreateDirectory(claudePath);
         if (!File.Exists(filePath)) {
+          var escapePath = claudePath.Replace("\\", "\\\\");
           StringBuilder sb = new();
-          sb.Append($"{{\r\n\t\"mcpServers\": {{\r\n\t  \"weavers-mcp\": {{\r\n\t\t\"type\": \"stdio\",\r\n\t\t\"command\": \"{claudePath}\\\\WeaversMCP.exe\",\r\n\t\t\"args\": []\r\n\t  }}\r\n\t}}\r\n}}");
+          sb.Append($"{{\r\n\t\"mcpServers\": {{\r\n\t  \"theloommcp\": {{\r\n\t\t\"type\": \"stdio\",\r\n\t\t\"command\": \"{escapePath}\\\\TheLoomMCP.exe\",\r\n\t\t\"args\": [ \"--provider\", \"ClaudeCode\"]\r\n\t  }}\r\n\t}}\r\n}}");
           if (File.Exists(filePath)) {
             File.Delete(filePath);
           }
@@ -75,7 +76,7 @@ namespace Weavers.Core.Extensions {
         }
         return keysPath;
       }
-    }
+    }  
 
 
   }

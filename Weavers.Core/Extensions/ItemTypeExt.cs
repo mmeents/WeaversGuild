@@ -61,8 +61,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.OrganizationModel => 13,
         WeItemType.HarnessAppModel => 18,
         WeItemType.HarnessAppSessionModel => 15,
-        WeItemType.PresenceLmStudioGatewayModel => 19,
+        WeItemType.PresenceLmStudioGatewayModel => 25,
         WeItemType.PresModelLmStudioModel => 19,
+        WeItemType.PresenceClaudeGatewayModel => 25,
+        WeItemType.PresModelClaudeModel => 19,
 
         WeItemType.HarnessMcpModel => 18,
         WeItemType.HarnessMcpSessionModel => 15,

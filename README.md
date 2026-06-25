@@ -32,10 +32,23 @@ WeaversGuild is dedicated to creating tools that seamlessly integrate code, docu
 
 
 ## Update History
+- Db Version 138 (6/24/2026)
+  - Adds appendItemContent tool for Md files MCP tool. so users dont have to write everything to add a bit at the end. 
+  - Testing found Claude code .mcp.json file first time in startup folder gets written, is pointed at nothing by default.  One needs to add the path to theLoomMcp.exe publish location.
+  
+- Db Version 137 (6/23/2026)
+  - Adds Claude Code Gateway
+    - Adds 2 new types a ClaudeGateway and PreClaudeModel types.
+    - Adds new HasClaudeCode property to the app harness and updated the on update to pass it's value and create if checked.
+    - Model discovery is just hard coded 2 models opus and sonnet atm.
+    - Updated the queue query to include the claude types of gateway and presence in the todo queue results.
+    - Update the call to switch depending on the gateway.
+    
 - Db Version 136 (6/15/2026)
   - Adds Missing Mcp Cmd for AddOrgDeskRole
   - Removes Role from DeskRole.
-  - Adds Import for DeskRoles.  They Read and Write with the Organization like the desk and operators. 
+  - Adds Import for DeskRoles.  They Read and Write with the Organization like the desk and operators.
+  - Multi machine testing. 
   
 - Db Version 135 (6/14/2024
   - Makes DeskRole and OrgDeskRole as first class graph items

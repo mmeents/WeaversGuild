@@ -113,6 +113,7 @@ namespace Weavers.Core.Enums {
 
       CmdUpdateItemName = 132,
       CmdUpdateItemContent = 134,
+      CmdAppendItemContent = 135,
       CmdUpdateItemProperty = 136,
 
       CmdCompleteTodo = 138,
@@ -177,7 +178,10 @@ namespace Weavers.Core.Enums {
         PresenceLmStudioGatewayModel = 1014,   // LM Studio instance details. enough to query the models.
           PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
 
-      HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
+        PresenceClaudeGatewayModel = 1016,   // Claude instance details. enough to query the models.
+          PresModelClaudeModel = 1017,     // Claude model for each model found.
+
+    HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
         HarnessMcpSessionModel = 1022,  // mcp session 
         
       OrgDeskRolesModel = 1026,   // folder for org roles like doc writer, researcher, reviewer.

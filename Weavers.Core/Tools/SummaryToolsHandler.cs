@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Handlers.ItemSummaries;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Handlers.ItemTypes;
@@ -24,6 +25,7 @@ namespace Weavers.Core.Tools {
     Task<string> GetTypeDetails(int itemTypeId = 0);
     Task<string> UpdateItemName(int id, string name);
     Task<string> UpdateItemContent(int id, string content);
+    Task<string> AppendItemContent(int id, string content);
     Task<string> UpdateItemProperty(int itemPropertyId, string propertyValue);
   }
 
@@ -209,6 +211,55 @@ namespace Weavers.Core.Tools {
         return JsonSerializer.Serialize(opResult);
       }
     }
+
+
+    public async Task<string> AppendItemContent(int id, string content) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+
+        var item = await mediator.Send(new GetItemByIdQuery(id));
+        if (item == null) {
+          return JsonSerializer.Serialize(
+            McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"No item found for id {id}"));
+        }
+        if (!item.ItemTypeId.IsContentType()) {
+          return JsonSerializer.Serialize(
+            McpOpResult.CreateFailure(Cx.CmdAppendItemContent, "Unsupported item type for content append"));
+        }
+
+        const string Sep = "\n\n---\n\n";
+        var addition = (content ?? string.Empty).Trim();   // trim in C#, not in the expression tree
+
+        var rows = await context.Items
+          .Where(x => x.Id == id && x.ItemTypeId == item.ItemTypeId)   // type predicate in the WHERE
+          .ExecuteUpdateAsync(s => s.SetProperty(
+            x => x.Description,
+            x => x.Description == null || x.Description == ""
+              ? addition
+              : x.Description + Sep + addition));                      // no leading sep on empty doc
+
+        if (rows == 0) {
+          return JsonSerializer.Serialize(
+            McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"No appendable item for id {id}"));
+        }
+
+        var updatedItem = await mediator.Send(new GetItemByIdQuery(id));   // re-fetch for the summary
+        if (updatedItem == null) {
+          return JsonSerializer.Serialize(
+            McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"Failed to reload item with id {id}"));
+        }
+
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAppendItemContent, await context.ToSummary(updatedItem));
+        return JsonSerializer.Serialize(opResult);
+      } catch (Exception ex) {
+        _logger.LogError(ex, "Error appending item content");
+        return JsonSerializer.Serialize(
+          McpOpResult.CreateFailure(Cx.CmdAppendItemContent, "Failed to append item content", ex));
+      }
+    }
+
 
     public async Task<string> UpdateItemProperty(int itemPropertyId, string propertyValue) {
       try {

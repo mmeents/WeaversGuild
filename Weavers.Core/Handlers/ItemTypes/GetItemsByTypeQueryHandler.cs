@@ -75,6 +75,22 @@ namespace Weavers.Core.Handlers.ItemTypes {
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
+          } else if (rt == WeItemType.PresenceLmStudioGatewayModel || rt == WeItemType.PresenceClaudeGatewayModel) {
+
+            var items = await _context.Items
+              .Where(i => i.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel)
+              .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
+              .ToListAsync(cancellationToken);
+            return items;
+
+          } else if (rt == WeItemType.PresModelLmStudioModel || rt == WeItemType.PresModelClaudeModel) {
+
+            var items = await _context.Items
+              .Where(i => i.ItemTypeId == (int)WeItemType.PresModelLmStudioModel || i.ItemTypeId == (int)WeItemType.PresModelClaudeModel)
+              .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
+              .ToListAsync(cancellationToken);
+            return items;
+
           } else {
             var items = await _context.Items
               .Where(i => i.ItemTypeId == request.ItemTypeId)

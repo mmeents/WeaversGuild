@@ -15,18 +15,13 @@ namespace Weavers.Core.Tools {
     public static async Task<string> ListProjects() 
       => await GetTools().ListProjects();
 
-    [McpTool(Cx.CmdSearch, "Searches for items by name")]
+    [McpTool(Cx.CmdSearch, "Searches for items by name.")]
     public static async Task<string> Search(
       [Description("The search query")] string query,
       [Description("The type of items to search for, 0 means all types")] int byType = 0,
       [Description("Maximum number of results to return")] int maxResults = 10
     ) => await GetTools().Search(query, byType, maxResults);
 
-    /// <summary>
-    ///Retrieves a summary description for the specified item by its int identifier.
-    /// </summary>
-    /// <param name="id">The int identifier of the item for which to retrieve the summary.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a string with the summary of the item.</returns>
     [McpTool(Cx.CmdGetSummaryById, "Gets the summary of an item.")]
     public static async Task<string> GetSummaryById(
       [Description("Item Id to get")] int id,
@@ -50,6 +45,12 @@ namespace Weavers.Core.Tools {
       [Description("Item Id to update")] int id,
       [Description("Updated content for the item")] string content
     ) => await GetTools().UpdateItemContent(id, content);
+
+    [McpTool(Cx.CmdAppendItemContent, "Append content to end of existing item.  Valid types are Md document types: OrgDocModel and FileMdModel. recommend double pound header followed by md section.")]
+    public static async Task<string> AppendItemContent(
+      [Description("Item Id to update")] int id,
+      [Description("Content to append to the item")] string content
+    ) => await GetTools().AppendItemContent(id, content);
 
     [McpTool(Cx.CmdUpdateItemProperty, "Update a property of an item by its property ID.")]
     public static async Task<string> UpdateItemProperty(

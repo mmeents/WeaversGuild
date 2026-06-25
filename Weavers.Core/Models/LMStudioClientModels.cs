@@ -283,10 +283,10 @@ namespace Weavers.Core.Models {
     [JsonPropertyName("publisher")]
     public string? Publisher { get; set; }
 
-    [JsonPropertyName("key")]
+    [JsonPropertyName("key")]  // is used saved in app as model name key.
     public string Key { get; set; } = string.Empty;
 
-    [JsonPropertyName("display_name")]
+    [JsonPropertyName("display_name")] // is used for display in UI as human readable name.
     public string DisplayName { get; set; } = string.Empty;
 
     [JsonPropertyName("architecture")]
