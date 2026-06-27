@@ -63,8 +63,7 @@ namespace Weavers.Core.Extensions {
     }
 
     private static readonly int[] SystemTypeIds = [
-        (int)WeItemType.HarnessAppSessionModel,
-        (int)WeItemType.HarnessMcpSessionModel,
+       // (int)WeItemType.HarnessAppSessionModel,        
         (int)WeItemType.LibPackageRefModel,
     ];
 
@@ -136,7 +135,7 @@ namespace Weavers.Core.Extensions {
         Id = item.Id,
         Name = item.Name,
         TypeId = item.ItemTypeId,
-        TypeName = item.ItemType != null ? item.ItemType.Name : "",
+        TypeName = item.ItemTypeName ?? "",
         ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),        
         Content = item.ItemTypeId.IsContentType() ? item.Description : item.ItemTypeId.IsMethodCodeType() ? code : null,
         Props = item.Properties.Select(p => new PropSummaryDto {

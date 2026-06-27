@@ -174,23 +174,24 @@ namespace Weavers.Core.Enums {
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
     
       HarnessAppModel = 1010,   // A processor core model for the organization. A model of the pc the loom app is running on. 
-        HarnessAppSessionModel = 1012, // each run makes a session for tacking. 
-        PresenceLmStudioGatewayModel = 1014,   // LM Studio instance details. enough to query the models.
-          PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
+        HarnessSessionsModel = 1011,  // folder for sessions of the harness.
+          HarnessAppSessionModel = 1012, // each run makes a session for tacking. 
 
-        PresenceClaudeGatewayModel = 1016,   // Claude instance details. enough to query the models.
-          PresModelClaudeModel = 1017,     // Claude model for each model found.
+        HarnessGatewaysModel = 1013,  // folder for gateways of the harness.
+          PresenceLmStudioGatewayModel = 1014,   // LM Studio instance details. enough to query the models.
+            PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
 
-    HarnessMcpModel = 1020,   // A processor core model for the organization. A model of the pc the loom app is running on. 
-        HarnessMcpSessionModel = 1022,  // mcp session 
-        
-      OrgDeskRolesModel = 1026,   // folder for org roles like doc writer, researcher, reviewer.
-        DeskRoleModel = 1028,    // (Id, name, description)  // role details.
-        
+          PresenceClaudeGatewayModel = 1016,   // Claude instance details. enough to query the models.
+            PresModelClaudeModel = 1017,     // Claude model for each model found.
+
+         
       DigitalOperatorPoolModel  = 1030, // folder or pool 
-        DigitalOperatorModel = 1035, //(Id, name, Presence, Rating)  // digital worker. 
+        DigitalOperatorModel = 1035, //(Id, name, Presence, Rating)  // digital worker.
+                                     //
+      OrgDeskRolesModel = 1036,   // folder for org roles like doc writer, researcher, reviewer.
+        DeskRoleModel = 1038,    // (Id, name, description)  // role details.
 
-      OrgChartModel = 1040,     // automation central.
+      WorkGroupModel = 1040,     // automation central.
         DeskLogModel = 1043,    // default type of desk as default for desk flow chaining
         DeskModel = 1045,       // The regeular desk model
           TodoModel = 1050,     // desk has a stack of todos to complete its work.

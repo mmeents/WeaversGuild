@@ -12,7 +12,7 @@ using Weavers.Core.Handlers.Items;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Sessions {
-  public record SyncHarnessPresenceCommand(int HarnessId, bool? HasLmStudio, bool? HasClaude) : IRequest<bool>;
+  public record SyncHarnessPresenceCommand(int HarnessGatewayId, bool? HasLmStudio, bool? HasClaude) : IRequest<bool>;
   public class SyncHarnessPresenceCommandHandler : IRequestHandler<SyncHarnessPresenceCommand, bool> {
     private readonly FabricDbContext _dbContext;
     private readonly IMediator _mediator;
@@ -26,7 +26,7 @@ namespace Weavers.Core.Handlers.Sessions {
     public async Task<bool> Handle(SyncHarnessPresenceCommand request, CancellationToken cancellationToken) {
       if (request == null || request.HasLmStudio == null) return false;
 
-      var harness = await _dbContext.GetItemDtoById(request.HarnessId);
+      var harness = await _dbContext.GetItemDtoById(request.HarnessGatewayId);
       if (harness == null) { return false; }
 
 

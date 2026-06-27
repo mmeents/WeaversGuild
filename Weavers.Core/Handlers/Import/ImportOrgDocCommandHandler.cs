@@ -29,9 +29,9 @@ namespace Weavers.Core.Handlers.Import {
       }
       string fileExt = Path.GetExtension(request.OrgDocFullPath).ToLower();
       bool isOrgDoc = fileExt == ".md";
-      bool isDigitalOperator = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgDigiOpPoolFolder);
-      bool isDesk = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgChartFolder);
-      bool isRole = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.OrgDeskRolesFolder);      
+      bool isDigitalOperator = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppTeamFolder);
+      bool isDesk = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppWorkGroupFolder);
+      bool isRole = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppDeskRolesFolder);      
 
       var orgId = _appSessionService.OrganizationId;
       var orgItem = await _context.GetItemDtoById(orgId, cancellationToken);
@@ -200,7 +200,7 @@ namespace Weavers.Core.Handlers.Import {
                 new CreateRelatedItemCommand(listItem.Id, (int)WeRelationTypes.Contains,
                   (int)WeItemType.DeskRoleModel, model.Name, "", "{}")).ConfigureAwait(false);
               if (deskRoleItem != null) {
-                var newFolderPath = Path.Combine(orgRootFolder, Cx.OrgDeskRolesFolder);
+                var newFolderPath = Path.Combine(orgRootFolder, Cx.AppDeskRolesFolder);
                 var docPath = Path.Combine(newFolderPath, model.Name + ".json");
                 await _mediator.SetProperty(deskRoleItem, Cx.ItFilePath, docPath).ConfigureAwait(false);
 
@@ -228,7 +228,7 @@ namespace Weavers.Core.Handlers.Import {
       }
 
       if (isDesk) {
-        var orgChartId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgChartModel)?.RelatedItemId ?? 0;
+        var orgChartId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)?.RelatedItemId ?? 0;
         if (orgChartId == 0) {
           return new ImportOrgResponse("Org chart not found in organization.", false);
         }
@@ -256,7 +256,7 @@ namespace Weavers.Core.Handlers.Import {
 
         if (deskItem != null) {
 
-          var newFolderPath = Path.Combine(orgRootFolder, Cx.OrgChartFolder);
+          var newFolderPath = Path.Combine(orgRootFolder, Cx.AppWorkGroupFolder);
           var docPath = Path.Combine(newFolderPath, model.DeskName + ".json");
           var itemPath = deskItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value ?? string.Empty;
           if (itemPath != null && itemPath != docPath) {

@@ -137,12 +137,38 @@ namespace Weavers.Core.Handlers.Presence {
         if (presenceItem.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
           skipPermissions = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSkipPermissions)?.Value.AsBoolean() ?? false;
         }
-        harnessId = presenceItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemId;
-        result.HarnessName = presenceItem.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains)?.ItemName ?? string.Empty;
+
+        var presenceGatewayId = presenceItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel || r.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel)?.ItemId;
+        if (presenceGatewayId == null || presenceGatewayId == 0) {
+          return result.CreateFailure($"Presence gateway not found for Presence with ID {presId.Value}.");
+        }
+
+        var presenceGatewayItem = await _context.GetItemDtoById(presenceGatewayId.Value, cancellationToken);
+        if (presenceGatewayItem == null) {
+          return result.CreateFailure($"Presence gateway item with ID {presenceGatewayId.Value} not found.");
+        }
+
+        var gatewaysfolderId = presenceGatewayItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.HarnessGatewaysModel)?.ItemId;
+        if (gatewaysfolderId == null) {
+          return result.CreateFailure($"Gateways folder not found for Presence gateway with ID {presenceGatewayId.Value}.");
+        }
+              
+        var gatewayItem = await _context.GetItemDtoById(gatewaysfolderId.Value, cancellationToken);
+        if (gatewayItem == null) {
+          return result.CreateFailure($"Gateways folder item with ID {gatewaysfolderId.Value} not found.");
+        }
+
+        harnessId = gatewayItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.HarnessAppModel)?.ItemId;        
         if (harnessId == null || harnessId == 0) {
           return result.CreateFailure($"Harness not found for Presence with ID {presId.Value}.");
         }
-        result.HarnessId = harnessId.Value;        
+        result.HarnessId = harnessId.Value;
+
+        var aHarnessName = gatewayItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.HarnessAppModel)?.ItemName;
+        if (aHarnessName == null) { 
+          return result.CreateFailure($"Harness name not found for Presence with ID {presId.Value}.");
+        }
+        result.HarnessName = aHarnessName;
 
         if (request.IsPreview) {
           result.Status = RunTodoAttemptOutcome.PreviewNotSent;
@@ -150,11 +176,6 @@ namespace Weavers.Core.Handlers.Presence {
         }
 
         //  Preview ends from here is to make call. -----------------------------------------------------
-
-        var gateway = await _context.GetItemDtoById(result.HarnessId, cancellationToken);
-        if (gateway == null) {
-          throw new InvalidOperationException($"Gateway with ID {result.HarnessId} not found.");
-        }
 
         var deskCurrentTodoProp = desk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo);
         if (deskCurrentTodoProp == null) {
@@ -204,14 +225,14 @@ namespace Weavers.Core.Handlers.Presence {
 
 
         ChatResponse chatResponse;
-        if (gateway.ItemTypeId == (int)WeItemType.PresModelLmStudioModel) {
-          chatResponse = await _lmService.ChatAsync(result.HarnessId, chatRequest, cancellationToken);
+        if (presenceItem.ItemTypeId == (int)WeItemType.PresModelLmStudioModel) {
+          chatResponse = await _lmService.ChatAsync(presenceGatewayId.Value, chatRequest, cancellationToken);
           result.ResponseText = chatResponse.GetText();
-        } else if (gateway.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
-          chatResponse = await _claudeService.ChatAsync(result.HarnessId, chatRequest, skipPermissions, cancellationToken);
+        } else if (presenceItem.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
+          chatResponse = await _claudeService.ChatAsync(presenceGatewayId.Value, chatRequest, skipPermissions, cancellationToken);
           result.ResponseText = chatResponse.GetText();
         } else {
-          return result.CreateFailure($"Unsupported gateway type {gateway.ItemTypeId} for gateway with ID {result.HarnessId}.", RunTodoAttemptOutcome.InvocationFailed);
+          return result.CreateFailure($"Unsupported gateway type {presenceItem.ItemTypeId} for gateway with ID {result.HarnessId}.", RunTodoAttemptOutcome.InvocationFailed);
         }
         
         await _mediator.SetProperty(attempt, Cx.ItResponse, result.ResponseText ?? string.Empty).ConfigureAwait(false);

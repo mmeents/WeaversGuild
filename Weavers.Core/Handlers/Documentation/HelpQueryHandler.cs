@@ -26,10 +26,10 @@ namespace Weavers.Core.Handlers.Documentation {
       sb.AppendLine("Relations link Items; RelatedItem is the right-side child, Item is the left-side self.  In SummaryDto you have a Parent and Nodes as the name of Relations.");
       sb.AppendLine($"Folder tree starts with an item of type {WeItemType.OrganizationModel} {WeItemType.OrganizationModel.AsIntString()}. It has Org Folders and Project Folders.");
       sb.AppendLine($"Org Folders have main folders with types:");
-      sb.AppendLine($"  {WeItemType.HarnessAppModel} {WeItemType.HarnessAppModel.AsIntString()}, {WeItemType.HarnessMcpModel} {WeItemType.HarnessMcpModel.AsIntString()} are Main App Settings and Operator session tracking.");
+      sb.AppendLine($"  {WeItemType.HarnessAppModel} {WeItemType.HarnessAppModel.AsIntString()} are Main App Type holds Gateway and Session tracking models.");
       sb.AppendLine($"  {WeItemType.OrgDeskRolesModel} {WeItemType.OrgDeskRolesModel.AsIntString()} is a folder for Desk Roles used to assign commands to roles for a Desk.");
       sb.AppendLine($"  {WeItemType.DigitalOperatorPoolModel} {WeItemType.DigitalOperatorPoolModel.AsIntString()} is a folder for Digital Operators used for desk assignment to presence models.");
-      sb.AppendLine($"  {WeItemType.OrgChartModel} {WeItemType.OrgChartModel.AsIntString()} is a folder for the desks of the organization.");
+      sb.AppendLine($"  {WeItemType.WorkGroupModel} {WeItemType.WorkGroupModel.AsIntString()} is a folder for the desks of the organization.");
       sb.AppendLine($"  {WeItemType.OrgDocFolderModel} {WeItemType.OrgDocFolderModel.AsIntString()} is a root folder for non-project-related organization documents.");
       sb.AppendLine($"Apps have 2 gateway models( {WeItemType.PresenceLmStudioGatewayModel} and {WeItemType.PresenceClaudeGatewayModel}). They are enabled via setting Has<setting> property, the {WeItemType.HarnessAppModel} typed item. Presence LLM models are children of the specific gateway.");
       sb.AppendLine($"Org can have any number of projects.  Project: use {Cx.CmdListProjects} for a list of root project folders.");

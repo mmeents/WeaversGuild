@@ -53,7 +53,7 @@ namespace Weavers.Core.Tools {
         var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
         var item = await context.GetItemDtoById(orgChartId);
         if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddOrgDesk, orgChartId);
-        if (item.ItemTypeId != (int)WeItemType.OrgChartModel) return _logger.DefaultInvalidParentMessage(Cx.CmdAddOrgDesk, orgChartId);
+        if (item.ItemTypeId != (int)WeItemType.WorkGroupModel) return _logger.DefaultInvalidParentMessage(Cx.CmdAddOrgDesk, orgChartId);
         var addedItem = await service.AddOrgDesk(item, deskName);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddOrgDesk, orgChartId);
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddOrgDesk, await context.ToSummary(addedItem));

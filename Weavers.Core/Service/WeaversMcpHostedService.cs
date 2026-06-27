@@ -38,7 +38,7 @@ namespace Weavers.Core.Service {
       var mcpDriver = _configuration[Cx.Provider] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-      var result = await mediator.Send(new GetMcpSessionCommand(mcpDriver), stoppingToken);
+      var result = await mediator.Send(new GetAppSessionCommand(mcpDriver), stoppingToken);
       if (result == null) {
         _logger.LogError("Failed to get MCP session for driver {Driver}. MCP Server cannot start without a valid session.", mcpDriver);
         return;

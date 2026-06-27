@@ -23,7 +23,7 @@ namespace TheLoomApp.Extensions {
     public static async Task AddDesk(this TreeView _tv, IAppGraphOrgService graphSrvs, string name) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
-      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.OrgChartModel) { return; }
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.WorkGroupModel) { return; }
       var newSubItem = await graphSrvs.AddOrgDesk(item, name);
       if (newSubItem == null) { return; }
       _tv.AddNewItem(newSubItem);

@@ -26,7 +26,7 @@ namespace Weavers.Core.Tools {
       "    command_type - string\r\n" +
       "    command - string")]
     public static Task<string> AddOrgDesk(
-  [Description("The Item Id of the OrgChartModel 1040 to add the desk to.")] int orgChartId,
+  [Description("The Item Id of the WorkGroupModel 1040 to add the desk to.")] int orgChartId,
   [Description("The name of the new desk.")] string deskName)
   => GetTools().AddOrgDesk(orgChartId, deskName);
 

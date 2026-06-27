@@ -81,7 +81,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
 
         } else if (weItemType >= WeItemType.OrganizationModel) {
 
-          if (weItemType == WeItemType.OrgChartModel || weItemType == WeItemType.DeskModel) {
+          if (weItemType == WeItemType.WorkGroupModel || weItemType == WeItemType.DeskModel) {
             var res3 = new GetTypeDetailsResponse() {
               WeItemTypeId = (int)weItemType,
               Name = $"{weItemType.ToString()}",

@@ -277,8 +277,7 @@ namespace TheLoomApp {
           if (!_showPkgInLib && bItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
             return null;  // skip adding to tree.
           }
-          if (!_showSessions && (bItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                              || bItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
+          if (!_showSessions && (bItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel)) {
             return null;  // skip adding to tree.
           }
 
@@ -301,8 +300,7 @@ namespace TheLoomApp {
           if (!_showPkgInLib && aItem.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
             return null;  // skip adding to tree.
           }
-          if (!_showSessions && (aItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                              || aItem.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
+          if (!_showSessions && (aItem.ItemTypeId == (int)WeItemType.HarnessAppSessionModel)) {
             return null;  // skip adding to tree.
           }
           parent.Nodes.Add(projectsChildNode);  // add the node to the tree
@@ -333,8 +331,7 @@ namespace TheLoomApp {
               if (!_showPkgInLib && itemChild.ItemTypeId == (int)WeItemType.LibPackageRefModel) {
                 continue;
               }
-              if (!_showSessions && (itemChild.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                                  || itemChild.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)) {
+              if (!_showSessions && (itemChild.ItemTypeId == (int)WeItemType.HarnessAppSessionModel)) {
                 continue;
               }
               node.Nodes.Add(itemsChildNode);
@@ -521,7 +518,7 @@ namespace TheLoomApp {
               string basePath = folderProp.Value ?? "";
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessAppModel) {
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
             var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
             var hasClaude = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
             await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude);
@@ -621,7 +618,7 @@ namespace TheLoomApp {
     private async Task UpdateItemAsync() {
       if (_selectedNode != null && _selectedNode.Item != null) {
         await _appDataService.UpdateItemAsync(_selectedNode.Item);
-        _selectedNode.Text = _selectedNode.Item.Name;
+        _selectedNode.Text = _selectedNode.Item.Id.ToString() + ": " + _selectedNode.Item.Name;
         this.Invoke(() => RefreshSelectedNode(_selectedNode.Item.Id));
       }
     }
@@ -734,12 +731,12 @@ namespace TheLoomApp {
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
         miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
-        miAddOrgDesk.Visible = itemType == WeItemType.OrgChartModel;
+        miAddOrgDesk.Visible = itemType == WeItemType.WorkGroupModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
         miAddForeachTodo.Visible = itemType == WeItemType.DeskModel;
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
-        miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel;
+        miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel || itemType == WeItemType.OrganizationModel;
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -1221,9 +1218,9 @@ namespace TheLoomApp {
 
             string fileExt = Path.GetExtension(fullPath).ToLower();
             bool isOrgDoc = fileExt == ".md";
-            bool isDigitalOperator = fileExt == ".json" && fullPath.Contains(Cx.OrgDigiOpPoolFolder);
-            bool isDesk = fileExt == ".json" && fullPath.Contains(Cx.OrgChartFolder);
-            bool isRole = fileExt == ".json" && fullPath.Contains(Cx.OrgDeskRolesFolder);
+            bool isDigitalOperator = fileExt == ".json" && fullPath.Contains(Cx.AppTeamFolder);
+            bool isDesk = fileExt == ".json" && fullPath.Contains(Cx.AppWorkGroupFolder);
+            bool isRole = fileExt == ".json" && fullPath.Contains(Cx.AppDeskRolesFolder);
 
             if (isOrgDoc || isDigitalOperator || isRole || isDesk) {
               var result = await _appDataService.ImportOrgDoc(fullPath, relPath, false);
@@ -1244,7 +1241,7 @@ namespace TheLoomApp {
             }
           }
 
-          await LoadRootProjects();
+          miReloadTree_Click(sender, e);
         }
 
 
@@ -1668,6 +1665,9 @@ namespace TheLoomApp {
         }
         if (_workingTodo != null) {
           DoLogMessage($"Running scheduled todo {_workingTodo.Name} on {_workingTodo.DeskName} (Id: {_workingTodo.Id})");
+          RunOnUi(() => {
+            lbWorkingStatus.Text = "Status: Pipeline running "+ _workingTodo.Id.ToString() + ": " + _workingTodo.Name + " on " + _workingTodo.DeskName;
+          });
           var result = await _appDataService.RunTodoItem(_workingTodo.Id, false);
           if (result.Status == RunTodoAttemptOutcome.SuccessWithResponse ||
               result.Status == RunTodoAttemptOutcome.MaxAttemptsReached) {

@@ -167,25 +167,24 @@ namespace Weavers.Core.Extensions {
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
         WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
-        WeItemType.HarnessAppSessionModel => WeItemType.HarnessAppModel, // each run makes a session for tacking. 
-        WeItemType.PresenceLmStudioGatewayModel => WeItemType.HarnessAppModel,   // LM Studio instance details for 1 model. this or next, to be used as base for the DigitalOperatorModel.
+        WeItemType.HarnessSessionsModel => WeItemType.HarnessAppModel,
+        WeItemType.HarnessAppSessionModel => WeItemType.HarnessSessionsModel, // each run makes a session for tacking. 
+        WeItemType.HarnessGatewaysModel => WeItemType.HarnessAppModel,
+        WeItemType.PresenceLmStudioGatewayModel => WeItemType.HarnessGatewaysModel,   // LM Studio instance details for 1 model. this or next, to be used as base for the DigitalOperatorModel.
         WeItemType.PresModelLmStudioModel => WeItemType.PresenceLmStudioGatewayModel,     // Claude instance details for 1 model.
 
-        WeItemType.PresenceClaudeGatewayModel => WeItemType.HarnessAppModel,   // Claude instance details for 1 Harness.
+        WeItemType.PresenceClaudeGatewayModel => WeItemType.HarnessGatewaysModel,   // Claude instance details for 1 Harness.
         WeItemType.PresModelClaudeModel => WeItemType.PresenceClaudeGatewayModel,     // Claude instance details for 1 model. 
 
-        WeItemType.HarnessMcpModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
-        WeItemType.HarnessMcpSessionModel => WeItemType.HarnessMcpModel,
-
+        WeItemType.DigitalOperatorPoolModel => WeItemType.OrganizationModel,
+        WeItemType.DigitalOperatorModel => WeItemType.DigitalOperatorPoolModel,   
+        
         WeItemType.OrgDeskRolesModel => WeItemType.OrganizationModel,
         WeItemType.DeskRoleModel => WeItemType.OrgDeskRolesModel,
 
-        WeItemType.DigitalOperatorPoolModel => WeItemType.OrganizationModel,
-        WeItemType.DigitalOperatorModel => WeItemType.DigitalOperatorPoolModel,
-
-        WeItemType.OrgChartModel => WeItemType.OrganizationModel,
-        WeItemType.DeskLogModel => WeItemType.OrgChartModel,
-        WeItemType.DeskModel => WeItemType.OrgChartModel,
+        WeItemType.WorkGroupModel => WeItemType.OrganizationModel,
+        WeItemType.DeskLogModel => WeItemType.WorkGroupModel,
+        WeItemType.DeskModel => WeItemType.WorkGroupModel,
         WeItemType.TodoModel => WeItemType.DeskModel,
         WeItemType.TodoAttemptModel => WeItemType.TodoModel,
 
@@ -407,16 +406,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceClaudeGatewayModel => (int)WeEditorType.None,
         WeItemType.PresModelClaudeModel => (int)WeEditorType.None,
 
-        WeItemType.HarnessMcpModel => (int)WeEditorType.None,   
-        WeItemType.HarnessMcpSessionModel => (int)WeEditorType.None,
-
         WeItemType.OrgDeskRolesModel => (int)WeEditorType.None,
         WeItemType.DeskRoleModel => (int)WeEditorType.None,
 
         WeItemType.DigitalOperatorPoolModel => (int)WeEditorType.None,
         WeItemType.DigitalOperatorModel => (int)WeEditorType.String,
 
-        WeItemType.OrgChartModel => (int)WeEditorType.String,
+        WeItemType.WorkGroupModel => (int)WeEditorType.String,
         WeItemType.DeskLogModel => (int)WeEditorType.String,
         WeItemType.DeskModel => (int)WeEditorType.String,
         WeItemType.TodoModel => (int)WeEditorType.String,
@@ -657,19 +653,18 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
+        WeItemType.HarnessSessionsModel => (int)WeItemType.HarnessSessionsModel,
         WeItemType.HarnessAppSessionModel => (int)WeItemType.HarnessAppSessionModel,
+        WeItemType.HarnessGatewaysModel => (int)WeItemType.HarnessGatewaysModel,
         WeItemType.PresenceLmStudioGatewayModel => (int)WeItemType.PresenceLmStudioGatewayModel,
         WeItemType.PresModelLmStudioModel => (int)WeItemType.PresModelLmStudioModel,
         WeItemType.PresenceClaudeGatewayModel => (int)WeItemType.PresenceClaudeGatewayModel,
         WeItemType.PresModelClaudeModel => (int)WeItemType.PresModelClaudeModel,
 
-        WeItemType.HarnessMcpModel => (int)WeItemType.HarnessMcpModel,
-        WeItemType.HarnessMcpSessionModel => (int)WeItemType.HarnessMcpSessionModel,
-
         WeItemType.DigitalOperatorPoolModel => (int)WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel => (int)WeItemType.DigitalOperatorModel,
 
-        WeItemType.OrgChartModel => 1040,
+        WeItemType.WorkGroupModel => 1040,
         WeItemType.DeskLogModel => 1043, 
         WeItemType.DeskModel => 1045,    
         WeItemType.TodoModel => 1050,    
@@ -918,20 +913,22 @@ namespace Weavers.Core.Extensions {
         WeItemType.AssertItemIsType => "Assert Item Is Type",        
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
-        WeItemType.HarnessAppModel => "Harness App",
+        WeItemType.HarnessAppModel => "App Harness",
+        WeItemType.HarnessSessionsModel => "Sessions",
         WeItemType.HarnessAppSessionModel => "Harness App Session",
+        WeItemType.HarnessGatewaysModel => "Gateways",
         WeItemType.PresenceLmStudioGatewayModel => "Lm Studio Gateway",
         WeItemType.PresModelLmStudioModel => "Specific Lm Studio Model",
         WeItemType.PresenceClaudeGatewayModel => "Claude Gateway",
         WeItemType.PresModelClaudeModel => "Claude Model",
 
-        WeItemType.HarnessMcpModel => "Harness Mcp",
-        WeItemType.HarnessMcpSessionModel => "Harness Mcp Session",
-
         WeItemType.DigitalOperatorPoolModel => "Digital Operator Pool",
         WeItemType.DigitalOperatorModel => "Digital Operator",
 
-        WeItemType.OrgChartModel => "Org Chart",
+        WeItemType.OrgDeskRolesModel => "Desk Roles",
+        WeItemType.DeskRoleModel => "Desk Role",
+
+        WeItemType.WorkGroupModel => "Org Chart",
         WeItemType.DeskLogModel => "Default Log Desk",
         WeItemType.DeskModel => "Desk",
         WeItemType.TodoModel => "Todo",

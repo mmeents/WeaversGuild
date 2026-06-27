@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbVer138 : Migration
+    public partial class InitialDbVer139 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -567,11 +567,10 @@ namespace Weavers.Core.Migrations
                     { 234, "Ran Without Close", -1, "", true, "RanWithoutClose", 230, 4 },
                     { 251, "Assert Item Exists", -1, "", true, "AssertItemExists", 250, 1 },
                     { 252, "Assert Item Is Type", -1, "", true, "AssertItemIsType", 250, 2 },
-                    { 1010, "Harness App", -1, "", true, "HarnessAppModel", 1000, 1010 },
-                    { 1020, "Harness Mcp", -1, "", true, "HarnessMcpModel", 1000, 1020 },
-                    { 1026, "OrgDeskRolesModel", -1, "", true, "OrgDeskRolesModel", 1000, 0 },
+                    { 1010, "App Harness", -1, "", true, "HarnessAppModel", 1000, 1010 },
                     { 1030, "Digital Operator Pool", -1, "", true, "DigitalOperatorPoolModel", 1000, 1030 },
-                    { 1040, "Org Chart", 4, "", true, "OrgChartModel", 1000, 1040 },
+                    { 1036, "Desk Roles", -1, "", true, "OrgDeskRolesModel", 1000, 0 },
+                    { 1040, "Org Chart", 4, "", true, "WorkGroupModel", 1000, 1040 },
                     { 1060, "Org Doc Folder", 4, "", true, "OrgDocFolderModel", 1000, 1060 },
                     { 1100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", 1000, 1100 }
                 });
@@ -581,15 +580,12 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 4, "", 4, true, 1010, "MachineName", 5, null, 54 },
-                    { 5, "", 4, true, 1010, "UserName", 4, null, 54 },
-                    { 6, "0", 2, true, 1010, "HasLmStudio", 3, null, 55 },
-                    { 7, "0", 2, true, 1010, "HasClaudeCode", 2, null, 55 },
-                    { 16, "", 4, true, 1020, "MachineName", 2, null, 54 },
-                    { 19, "", 14, true, 1026, "RelativeFolder", 1, null, 54 },
-                    { 23, "", 14, true, 1030, "RelativeFolder", 1, null, 54 },
-                    { 27, "116", 10, true, 1040, "FloorStatus", 9, 115, 57 },
-                    { 28, "", 14, true, 1040, "RelativeFolder", 1, null, 54 },
+                    { 4, "", 4, true, 1010, "MachineName", 3, null, 54 },
+                    { 18, "", 14, true, 1030, "RelativeFolder", 1, null, 54 },
+                    { 22, "", 14, true, 1036, "RelativeFolder", 1, null, 54 },
+                    { 26, "116", 10, true, 1040, "FloorStatus", 9, 115, 57 },
+                    { 27, "", 14, true, 1040, "RelativeFolder", 7, null, 54 },
+                    { 28, "", 12, true, 1040, "Notes", 5, null, 54 },
                     { 54, "", 14, true, 1060, "RelativeFolder", 1, null, 54 },
                     { 56, "", 13, true, 1100, "RelativeFolder", 2, null, 54 },
                     { 57, "", 4, true, 1100, "RepoUrl", 1, null, 54 }
@@ -600,12 +596,10 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 1012, "Harness App Session", -1, "", true, "HarnessAppSessionModel", 1010, 1012 },
-                    { 1014, "Lm Studio Gateway", -1, "", true, "PresenceLmStudioGatewayModel", 1010, 1014 },
-                    { 1016, "Claude Gateway", -1, "", true, "PresenceClaudeGatewayModel", 1010, 1016 },
-                    { 1022, "Harness Mcp Session", -1, "", true, "HarnessMcpSessionModel", 1020, 1022 },
-                    { 1028, "DeskRoleModel", -1, "", true, "DeskRoleModel", 1026, 0 },
+                    { 1011, "Sessions", -1, "", true, "HarnessSessionsModel", 1010, 1011 },
+                    { 1013, "Gateways", -1, "", true, "HarnessGatewaysModel", 1010, 1013 },
                     { 1035, "Digital Operator", 4, "", true, "DigitalOperatorModel", 1030, 1035 },
+                    { 1038, "Desk Role", -1, "", true, "DeskRoleModel", 1036, 0 },
                     { 1043, "Default Log Desk", 4, "", true, "DeskLogModel", 1040, 1043 },
                     { 1045, "Desk", 4, "", true, "DeskModel", 1040, 1045 },
                     { 1065, "Org Doc", 4, "", true, "OrgDocModel", 1060, 1065 },
@@ -618,20 +612,16 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 8, "", 3, true, 1012, "ProcessId", 1, null, 57 },
-                    { 9, "0", 2, true, 1014, "DoReSync", 4, null, 55 },
-                    { 10, "", 4, true, 1014, "UrlBase", 3, null, 54 },
-                    { 11, "", 9, true, 1014, "ApiToken", 2, null, 54 },
-                    { 17, "", 3, true, 1022, "ProcessId", 1, null, 57 },
-                    { 18, "", 4, true, 1022, "ProviderType", 2, null, 54 },
-                    { 20, "", 5, true, 1028, "FilePath", 10, null, 54 },
-                    { 21, "", 18, true, 1028, "RoleCmds", 8, 120, 54 },
-                    { 22, "", 18, true, 1028, "PreAsserts", 7, 250, 54 },
-                    { 25, "", 12, true, 1035, "SysPrompt", 7, null, 54 },
-                    { 26, "", 5, true, 1035, "FilePath", 1, null, 54 },
+                    { 9, "0", 2, true, 1013, "HasLmStudio", 3, null, 55 },
+                    { 10, "0", 2, true, 1013, "HasClaudeCode", 2, null, 55 },
+                    { 20, "", 12, true, 1035, "SysPrompt", 7, null, 54 },
+                    { 21, "", 5, true, 1035, "FilePath", 1, null, 54 },
+                    { 23, "", 5, true, 1038, "FilePath", 10, null, 54 },
+                    { 24, "", 18, true, 1038, "RoleCmds", 8, 120, 54 },
+                    { 25, "", 18, true, 1038, "PreAsserts", 7, 250, 54 },
                     { 29, "1", 2, true, 1043, "Enabled", 11, null, 55 },
                     { 30, "", 14, true, 1043, "RelativeFolder", 1, null, 54 },
-                    { 31, "0", 10, true, 1045, "DeskRole", 12, 1028, 57 },
+                    { 31, "0", 10, true, 1045, "DeskRole", 12, 1038, 57 },
                     { 32, "0", 2, true, 1045, "Enabled", 11, null, 55 },
                     { 33, "", 10, true, 1045, "Operator", 10, 1035, 57 },
                     { 34, "", 17, true, 1045, "SysPrompt", 9, null, 54 },
@@ -650,8 +640,9 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
-                    { 1015, "Specific Lm Studio Model", -1, "", true, "PresModelLmStudioModel", 1014, 1015 },
-                    { 1017, "Claude Model", -1, "", true, "PresModelClaudeModel", 1016, 1017 },
+                    { 1012, "Harness App Session", -1, "", true, "HarnessAppSessionModel", 1011, 1012 },
+                    { 1014, "Lm Studio Gateway", -1, "", true, "PresenceLmStudioGatewayModel", 1013, 1014 },
+                    { 1016, "Claude Gateway", -1, "", true, "PresenceClaudeGatewayModel", 1013, 1016 },
                     { 1050, "Todo", 4, "", true, "TodoModel", 1045, 1050 },
                     { 1111, "Relative Folder Documentation", 4, "", true, "RelativeFolderDocs", 1110, 1111 },
                     { 1120, "Md File", 4, "pi pi-file", true, "FileMdModel", 1110, 1120 },
@@ -667,11 +658,13 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
-                    { 12, "", 4, true, 1015, "ModelName", 1, null, 54 },
-                    { 13, "24000", 3, true, 1015, "ContextLength", 2, null, 57 },
-                    { 14, "", 4, true, 1017, "ModelName", 1, null, 54 },
-                    { 15, "1", 2, true, 1017, "SkipPerms", 2, null, 55 },
-                    { 24, "", 10, true, 1035, "Presence", 8, 1015, 57 },
+                    { 5, "", 3, true, 1012, "ProcessId", 1, null, 57 },
+                    { 6, "", 4, true, 1012, "ProviderType", 2, null, 54 },
+                    { 7, "", 4, true, 1012, "MachineName", 3, null, 54 },
+                    { 8, "", 4, true, 1012, "UserName", 4, null, 54 },
+                    { 11, "0", 2, true, 1014, "DoReSync", 4, null, 55 },
+                    { 12, "", 4, true, 1014, "UrlBase", 3, null, 54 },
+                    { 13, "", 9, true, 1014, "ApiToken", 2, null, 54 },
                     { 39, "", 10, true, 1045, "CurrentTodo", 2, 1050, 57 },
                     { 41, "0", 2, true, 1050, "Ready", 12, null, 55 },
                     { 42, "221", 10, true, 1050, "Status", 11, 220, 57 },
@@ -709,6 +702,8 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
+                    { 1015, "Specific Lm Studio Model", -1, "", true, "PresModelLmStudioModel", 1014, 1015 },
+                    { 1017, "Claude Model", -1, "", true, "PresModelClaudeModel", 1016, 1017 },
                     { 1055, "Todo Attempt", 4, "", true, "TodoAttemptModel", 1050, 1055 },
                     { 1121, "Md File Documentation", 4, "", true, "FileMdDocs", 1120, 1121 },
                     { 1131, "Html File Documentation", 4, "", true, "FileHtmlDocs", 1130, 1131 },
@@ -728,6 +723,11 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
+                    { 14, "", 4, true, 1015, "ModelName", 1, null, 54 },
+                    { 15, "24000", 3, true, 1015, "ContextLength", 2, null, 57 },
+                    { 16, "", 4, true, 1017, "ModelName", 1, null, 54 },
+                    { 17, "1", 2, true, 1017, "SkipPerms", 2, null, 55 },
+                    { 19, "", 10, true, 1035, "Presence", 8, 1015, 57 },
                     { 48, "231", 10, true, 1055, "Status", 10, 230, 57 },
                     { 49, "", 10, true, 1055, "NextTodo", 9, 1050, 57 },
                     { 50, "", 12, true, 1055, "SysPrompt", 8, null, 54 },

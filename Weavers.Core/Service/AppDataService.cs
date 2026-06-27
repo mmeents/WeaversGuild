@@ -66,7 +66,7 @@ namespace Weavers.Core.Service {
 
     public async Task<AppSessionResponse?> GetAppSession() {
       var mediator = GetMediator();
-      var command = new GetAppSessionCommand();
+      var command = new GetAppSessionCommand("TheLoomAppUI");
       var result = await mediator.Send(command);
       return result;
     }

@@ -267,7 +267,7 @@ namespace Weavers.Core.Handlers.Builds {
 
 
     public async Task<BuildContext> WriteOrgChart(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {
-      var OrgChartItemId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgChartModel)?.RelatedItemId;
+      var OrgChartItemId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)?.RelatedItemId;
       if (OrgChartItemId == null) {
         return bldContext.Fail($"No Operator Pool found for organization with id {organizationItem.Id}");
       }

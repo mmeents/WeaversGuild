@@ -60,22 +60,22 @@ namespace Weavers.Core.Extensions {
       return itemType switch {
         WeItemType.OrganizationModel => 13,
         WeItemType.HarnessAppModel => 18,
+        WeItemType.HarnessSessionsModel => 13,
         WeItemType.HarnessAppSessionModel => 15,
+
+        WeItemType.HarnessGatewaysModel => 13,
         WeItemType.PresenceLmStudioGatewayModel => 25,
         WeItemType.PresModelLmStudioModel => 19,
         WeItemType.PresenceClaudeGatewayModel => 25,
-        WeItemType.PresModelClaudeModel => 19,
+        WeItemType.PresModelClaudeModel => 19,        
 
-        WeItemType.HarnessMcpModel => 18,
-        WeItemType.HarnessMcpSessionModel => 15,
-
-        WeItemType.DigitalOperatorPoolModel => 13,
+        WeItemType.DigitalOperatorPoolModel => 19,
         WeItemType.DigitalOperatorModel => 19,
 
         WeItemType.OrgDeskRolesModel => 21,
         WeItemType.DeskRoleModel => 17,
 
-        WeItemType.OrgChartModel => 21,  
+        WeItemType.WorkGroupModel => 21,  
         WeItemType.DeskLogModel => 22,   
         WeItemType.DeskModel => 22,      
         WeItemType.TodoModel => 23,     
@@ -131,7 +131,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskRoleModel,
         WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel,
-        WeItemType.OrgChartModel,
+        WeItemType.WorkGroupModel,
         WeItemType.DeskLogModel,
         WeItemType.DeskModel,
         WeItemType.OrgDocFolderModel, 
@@ -241,7 +241,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.OrganizationModel => true,
         (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
-        (int)WeItemType.OrgChartModel => true,
+        (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.OrgDocFolderModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
@@ -255,7 +255,7 @@ namespace Weavers.Core.Extensions {
         //(int)WeItemType.OrganizationModel => true,
         (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
-        (int)WeItemType.OrgChartModel => true,
+        (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,        
         (int)WeItemType.OrgDocFolderModel => true,
         (int)WeItemType.ProjectFolderModel => true,
@@ -316,7 +316,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
-        (int)WeItemType.OrgChartModel => true,
+        (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.DeskModel => true,
         (int)WeItemType.OrgDocFolderModel => true,
@@ -341,7 +341,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskRoleModel => Cx.ItRelativeFolder,
         (int)WeItemType.DigitalOperatorPoolModel => Cx.ItRelativeFolder,
         (int)WeItemType.DigitalOperatorModel => Cx.ItFilePath,
-        (int)WeItemType.OrgChartModel => Cx.ItRelativeFolder,
+        (int)WeItemType.WorkGroupModel => Cx.ItRelativeFolder,
         (int)WeItemType.DeskLogModel => Cx.ItRelativeFolder,
         (int)WeItemType.DeskModel => Cx.ItFilePath,
         (int)WeItemType.OrgDocFolderModel => Cx.ItRelativeFolder,
@@ -461,6 +461,58 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityDeleteNoAction => ".OnDelete(DeleteBehavior.NoAction)",
         WeItemType.EntityDeleteClientNoAction => ".OnDelete(DeleteBehavior.ClientNoAction)",
         _ => ""
+      };
+    }
+
+
+    public static string? GetMcpCommandString(this WeItemType loomCommand) {
+      return loomCommand switch {
+        WeItemType.CmdHelp => Cx.CmdHelp,
+        WeItemType.CmdListProjects => Cx.CmdListProjects,
+        WeItemType.CmdSearch => Cx.CmdSearch,
+        WeItemType.CmdGetSummaryById => Cx.CmdGetSummaryById,
+
+        WeItemType.CmdGetTypeDetails => Cx.CmdGetTypeDetails,
+
+        WeItemType.CmdUpdateItemName => Cx.CmdUpdateItemName,
+        WeItemType.CmdUpdateItemContent => Cx.CmdUpdateItemContent,
+        WeItemType.CmdAppendItemContent => Cx.CmdAppendItemContent,
+        WeItemType.CmdUpdateItemProperty => Cx.CmdUpdateItemProperty,
+
+        WeItemType.CmdCompleteTodo => Cx.CmdCompleteTodo,
+        WeItemType.CmdRejectTodo => Cx.CmdRejectTodo,
+        WeItemType.CmdReviewPass => Cx.CmdReviewPass,
+        WeItemType.CmdReviewFail => Cx.CmdReviewFail,
+
+        WeItemType.CmdAddOrgDeskRole => Cx.CmdAddOrgDeskRole,
+        WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
+        WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
+        WeItemType.CmdAddDigitalOperatior => Cx.CmdAddDigitalOperator,
+        WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
+        WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
+
+        WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,
+        WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,
+        WeItemType.CmdAddSolution => Cx.CmdAddSolution,
+        WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
+
+        WeItemType.CmdAddMdFile => Cx.CmdAddMdFile,
+        WeItemType.CmdAddHtmlFile => Cx.CmdAddHtmlFile,
+        WeItemType.CmdAddConfigFile => Cx.CmdAddConfigFile,
+
+        WeItemType.CmdAddLibrary => Cx.CmdAddLibrary,
+        WeItemType.CmdAddNamespace => Cx.CmdAddNamespace,
+
+        WeItemType.CmdAddClass => Cx.CmdAddClass,
+        WeItemType.CmdAddClassImport => Cx.CmdAddClassImport,
+        WeItemType.CmdAddClassProperty => Cx.CmdAddClassProperty,
+        WeItemType.CmdAddClassMethod => Cx.CmdAddClassMethod,
+        WeItemType.CmdAddClassMethodParam => Cx.CmdAddClassMethodParam,
+
+        WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,
+        WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
+        WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
+        _ => null
       };
     }
 

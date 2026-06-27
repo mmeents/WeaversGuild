@@ -13,7 +13,14 @@ namespace Weavers.Core.Constants {
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, and data together in a structured agentic manner.";
     // will just go with what they said below lol... 
     public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, documentation, and data to enhance software development. Our mission is to empower developers with innovative solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";
-    public static string AppHarnessAppName => "TheLoomApp";
+
+    // Org folder names
+    public static string AppHarnessAppName => "TheLoom";
+    public static string AppSessionsFolder => "Sessions";
+    public static string AppGatewayFolder => "Gateways";
+    public static string AppTeamFolder => "Team";
+    public static string AppDeskRolesFolder => "DeskRoles";
+    public static string AppWorkGroupFolder => "WorkGroups";
     public static string AppHarnessMcpName => "TheLoomMcp";
     public static string Provider => "provider";
     public static string AppExeName => "TheLoomApp.exe";
@@ -103,11 +110,7 @@ namespace Weavers.Core.Constants {
 
     // AppSettings keys
     public const string ApsDefaultFolder = "AppDefaultFolder";
-
-    // Org folder names
-    public const string OrgChartFolder = "OrgChart";
-    public const string OrgDeskRolesFolder = "OrgDeskRoles";
-    public const string OrgDigiOpPoolFolder = "DigitalOperators";
+        
     public const string OrgDocsFolder = "Documents";
 
     // itemProperty names constants 
@@ -171,6 +174,7 @@ namespace Weavers.Core.Constants {
     public const string ItModelName = "ModelName";
     public const string ItNamespace = "Namespace";
     public const string ItNamespaceRoot = "NamespaceRoot";
+    public const string ItNotes = "Notes";
     public const string ItOnSuccessSendTo = "OnSuccessTo";
     public const string ItOnFailSendTo = "OnFailTo";
     public const string ItOnPushbackSendTo = "OnPushbackTo";

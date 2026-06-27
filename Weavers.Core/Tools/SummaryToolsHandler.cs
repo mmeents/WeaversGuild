@@ -245,7 +245,8 @@ namespace Weavers.Core.Tools {
             McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"No appendable item for id {id}"));
         }
 
-        var updatedItem = await mediator.Send(new GetItemByIdQuery(id));   // re-fetch for the summary
+       
+        var updatedItem = await context.GetItemDtoById(id);
         if (updatedItem == null) {
           return JsonSerializer.Serialize(
             McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"Failed to reload item with id {id}"));

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Weavers.Core.Constants;
 using Weavers.Core.Service;
 
 namespace TheLoomApp {
@@ -34,21 +35,21 @@ namespace TheLoomApp {
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? OrgDeskRolesPath {
       get {
-        return Path.Combine(OrgRootPath!, "OrgDeskRoles");
+        return Path.Combine(OrgRootPath!, Cx.AppDeskRolesFolder);
       }
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public string? DigitalOperatorsPath {
+    public string DigitalOperatorsPath {
       get {
-        return Path.Combine(OrgRootPath!, "DigitalOperators");
+        return Path.Combine(OrgRootPath!, Cx.AppTeamFolder);
       }
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? OrgChartPath {
       get {
-        return Path.Combine(OrgRootPath!, "OrgChart");
+        return Path.Combine(OrgRootPath!, Cx.AppWorkGroupFolder);
       }
     }
 

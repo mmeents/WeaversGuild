@@ -46,7 +46,7 @@ namespace Weavers.Core.Tools {
       [Description("Updated content for the item")] string content
     ) => await GetTools().UpdateItemContent(id, content);
 
-    [McpTool(Cx.CmdAppendItemContent, "Append content to end of existing item.  Valid types are Md document types: OrgDocModel and FileMdModel. recommend double pound header followed by md section.")]
+    [McpTool(Cx.CmdAppendItemContent, "Append content to end of existing item. Valid types are Md document types: OrgDocModel and FileMdModel. Infra will handle seperators on append.")]
     public static async Task<string> AppendItemContent(
       [Description("Item Id to update")] int id,
       [Description("Content to append to the item")] string content

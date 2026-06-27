@@ -27,11 +27,11 @@ namespace Weavers.Core.Service {
     }   
 
     public async Task<ItemDto?> GetItemAsync(int itemId, CancellationToken cancellationToken) {
+      if (_itemCache.TryGetValue(itemId, out var cachedItem)) {
+        return cachedItem;
+      }
       using (var scope = _serviceScopeFactory.CreateScope()) {
-        var _fabricDbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-        if (_itemCache.TryGetValue(itemId, out var cachedItem)) {
-          return cachedItem;
-        }
+        var _fabricDbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();        
         var item = await _fabricDbContext.GetItemDtoById(itemId, cancellationToken);
         if (item != null) {        
           _itemCache.TryAdd(itemId, item);

@@ -34,11 +34,13 @@ namespace Weavers.Core.Handlers.Todo {
       var sql = $@"
         with gwl (Id) as (
           select 
-            rel.RelatedItemId GateWayId
-            from dbo.Items itHarness  
-              inner join dbo.Relations rel on rel.ItemId = itHarness.Id
-              inner join dbo.Items itGateWay on itGateWay.Id = rel.RelatedItemId and (itGateWay.ItemTypeId = {PresenceLmStudioGatewayModel} or itGateWay.ItemTypeId = {PresenceClaudeGatewayModel})
-            {gwlWhereClause}
+            rel2.RelatedItemId GateWayId
+          from dbo.Items itHarness  
+            inner join dbo.Relations rel on rel.ItemId = itHarness.Id
+            inner join dbo.Items itGateways on itGateways.Id = rel.RelatedItemId
+            inner join dbo.Relations rel2 on rel2.ItemId = itGateways.Id
+            inner join dbo.Items itGateWay on itGateWay.Id = rel2.RelatedItemId and (itGateWay.ItemTypeId = {PresenceLmStudioGatewayModel} or itGateWay.ItemTypeId = {PresenceClaudeGatewayModel})
+          {gwlWhereClause}
         )
         SELECT distinct it.Id, 
           it.ItemTypeId, 

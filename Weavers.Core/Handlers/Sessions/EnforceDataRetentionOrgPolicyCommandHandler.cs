@@ -34,8 +34,7 @@ namespace Weavers.Core.Handlers.Sessions {
       if (int.TryParse(retentionProp, out int days) && days > 0) {
         var cutoff = DateTime.UtcNow.AddDays(-days);
         var stale = await _dbContext.Items
-            .Where(i => (i.ItemTypeId == (int)WeItemType.HarnessAppSessionModel
-                      || i.ItemTypeId == (int)WeItemType.HarnessMcpSessionModel)
+            .Where(i => (i.ItemTypeId == (int)WeItemType.HarnessAppSessionModel)
                       && i.Established < cutoff)
             .ToListAsync(cancellationToken);
         foreach (var item in stale) {
