@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="Scriban" Version="7.2.3" />
   </ItemGroup>

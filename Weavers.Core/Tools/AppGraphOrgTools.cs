@@ -59,5 +59,34 @@ namespace Weavers.Core.Tools {
       [Description("The file name without extension; infra adds the .md extension.")] string fileName,
       [Description("The markdown content of the file.")] string fileContent)
       => GetTools().AddOrgFile(folderItemId, fileName, fileContent);
+
+    [McpTool(Cx.CmdAddRssFolder, "Adds a new Rss folder to the specified parent Rss folder or Organization folder.")]
+    public static Task<string> AddRssFolder(
+      [Description("The Item Id of the parent Rss folder or Organization folder to add the subfolder to.")] int parentItemId,
+      [Description("The name of the new Rss folder.")] string subFolderName)
+      => GetTools().AddRssFolder(parentItemId, subFolderName);
+
+    [McpTool(Cx.CmdAddRssChannel, "Adds a new Rss channel to the specified Rss folder.")]
+    public static Task<string> AddRssChannel(
+      [Description("The Item Id of the Rss folder to add the channel to.")] int rssFolderId,
+      [Description("The name of the new Rss channel.")] string channelName,
+      [Description("The url of the new Rss channel.")] string channelUrl)
+      => GetTools().AddRssChannel(rssFolderId, channelName, channelUrl);
+
+    [McpTool(Cx.CmdRssResyncChannel, "Resyncs the specified Rss channel.")]
+    public static Task<string> RssResyncChannel(
+      [Description("The Item Id of the Rss channel to resync.")] int rssChannelId)
+      => GetTools().RssResyncChannel(rssChannelId);
+
+    [McpTool(Cx.CmdRssResolveLink, "Resolves the specified Rss link to an Org file.")]
+    public static Task<string> RssResolveLink(
+      [Description("The Item Id of the Rss linked html to resolve.")] int rssLinkedHtmlItemId)
+      => GetTools().RssResolveLink(rssLinkedHtmlItemId);
+
+    [McpTool(Cx.CmdRssExtractLinks, "Extracts links from the specified Rss link.")]
+    public static Task<string> RssExtractLinks(
+      [Description("The Item Id of the Rss linked html to extract links from.")] int rssLinkedHtmlItemId)
+      => GetTools().RssExtractLinks(rssLinkedHtmlItemId);
+
   }
 }

@@ -1,9 +1,6 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Weavers.Core.Enums;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
@@ -16,7 +13,9 @@ namespace Weavers.Core.Extensions {
       var existingProperty = item.Properties.FirstOrDefault(p => p.Name == property.Name);
       if (existingProperty != null) {
         existingProperty.Value = property.Value;
+        existingProperty.ValueHash = property.Value.ComputeHash();
       } else {
+        property.ValueHash = property.Value.ComputeHash();
         item.Properties.Add(property);
       }
     }
@@ -26,7 +25,7 @@ namespace Weavers.Core.Extensions {
         property.Id,
         property.ItemId,
         property.Name,
-        property.Value,
+        property.Value,        
         property.ValueDataTypeId,
         property.EditorTypeId,
         property.ReferenceItemTypeId
@@ -64,8 +63,15 @@ namespace Weavers.Core.Extensions {
       var prop = item.Properties.FirstOrDefault(p => p.Name == propertyName);
       if (prop != null) {
         prop.Value = propertyValue;
+        prop.ValueHash = propertyValue.ComputeHash();
         await prop.SaveProp(item, mediator).ConfigureAwait(false);
       }
+    }
+
+    public static long? ComputeHash(this string? value) {
+      if (value is null) return null;
+      var bytes = SHA256.HashData(Encoding.Unicode.GetBytes(value));
+      return BitConverter.ToInt64(bytes, 0);
     }
 
   }

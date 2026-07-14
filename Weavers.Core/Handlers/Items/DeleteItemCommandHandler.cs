@@ -80,7 +80,7 @@ namespace Weavers.Core.Handlers.Items {
 
       }
 
-      // Remove inbound relations (other items pointing here)
+      // Remove inbound relations (link to parent)
       _context.Relations.RemoveRange(item.IncomingRelations);
 
       // Walk outbound relations, cascade delete orphaned targets
@@ -95,19 +95,19 @@ namespace Weavers.Core.Handlers.Items {
       return true;
     }
 
-    private async Task CascadeIfOrphan(int itemId, CancellationToken cancellationToken) {
+    private async Task CascadeIfOrphan(int itemId, CancellationToken ct) {
       _sessionCache.RemoveCacheItem(itemId);
       var related = await _context.Items
           .Include(i => i.Relations)
           .Include(i => i.IncomingRelations)
-          .FirstOrDefaultAsync(i => i.Id == itemId, cancellationToken);
+          .FirstOrDefaultAsync(i => i.Id == itemId, ct);
       if (related == null) return;
 
-      // Only cascade if no remaining connections after this delete
-      var remainingIncoming = related.IncomingRelations.Count(r => r.ItemId != itemId);
+      var remainingIncoming = related.IncomingRelations
+        .Count(r => _context.Entry(r).State != EntityState.Deleted && r.ItemId != itemId);
 
-      if (remainingIncoming == 0 && !related.Relations.Any()) {
-        _context.Items.Remove(related);
+      if (remainingIncoming == 0) {
+        await _mediator.Send(new DeleteItemCommand(related.Id), ct);
       }
     }
 

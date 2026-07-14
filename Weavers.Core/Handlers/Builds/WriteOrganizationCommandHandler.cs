@@ -277,9 +277,18 @@ namespace Weavers.Core.Handlers.Builds {
         return bldContext.Fail($"Operator Pool with id {OrgChartItemId.Value} not found.");
       }
 
-      var ChartFolderPath = OrgChartItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value ?? "";
+      await RecWriteWorkGroup(OrgChartItem, bldContext, cancellationToken);
+
+      return bldContext;
+    }
+
+
+
+    private async Task<BuildContext> RecWriteWorkGroup(ItemDto workGrp, BuildContext bldContext, CancellationToken cancellationToken) {
+      
+      var ChartFolderPath = workGrp.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value ?? "";
       if (string.IsNullOrEmpty(ChartFolderPath)) {
-        return bldContext.Fail($"Operator Pool with id {OrgChartItemId.Value} does not have a relative folder property.");
+        return bldContext.Fail($"Operator Pool with id {workGrp.Id} does not have a relative folder property.");
       }
 
       try {
@@ -293,7 +302,16 @@ namespace Weavers.Core.Handlers.Builds {
         return bldContext.Fail($"Error accessing Operator Pool file path: {ex.Message}");
       }
 
-      var DeskIds = OrgChartItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
+      var recursiveCharts = workGrp.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)
+       .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+      foreach (var wg in recursiveCharts) { 
+        var wgItem = await _context.GetItemDtoById(wg, cancellationToken);
+        if (wgItem != null) {
+          await RecWriteWorkGroup(wgItem, bldContext, cancellationToken);
+        }
+      }  // recursive call to write child workgroups.
+
+      var DeskIds = workGrp.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
         .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
       foreach (var itemId in DeskIds) {
         var deskItem = await _context.GetItemDtoById(itemId, cancellationToken);
@@ -319,6 +337,7 @@ namespace Weavers.Core.Handlers.Builds {
       }
 
       return bldContext;
+
     }
 
     private async Task<BuildContext> WriteOrganization(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {

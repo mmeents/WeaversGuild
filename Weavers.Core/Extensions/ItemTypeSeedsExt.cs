@@ -125,6 +125,12 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddOrgFolder => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgFile => WeItemType.LoomMcpCommands,
 
+        WeItemType.CmdAddRssFolder => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddRssChannel => WeItemType.LoomMcpCommands,
+        WeItemType.CmdRssResyncChannel => WeItemType.LoomMcpCommands,
+        WeItemType.CmdRssResolveLink => WeItemType.LoomMcpCommands,
+        WeItemType.CmdRssExtractLinks => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddProjectRoot => WeItemType.LoomMcpCommands,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddSolution => WeItemType.LoomMcpCommands,
@@ -190,6 +196,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.OrgDocFolderModel => WeItemType.OrganizationModel,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
         WeItemType.OrgDocModel => WeItemType.OrgDocFolderModel,       // doc for Skill details.
+
+        WeItemType.RssFolderModel => WeItemType.OrganizationModel,
+        WeItemType.RssChannelModel => WeItemType.RssFolderModel,
+        WeItemType.RssItemModel => WeItemType.RssChannelModel,
+        WeItemType.RssLinkedHtmlModel => WeItemType.RssItemModel,
 
         WeItemType.ProjectFolderModel => WeItemType.OrganizationModel,
         WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
@@ -276,7 +287,109 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    // not really seed data...
+    public static bool IsDragable(this WeItemType itemType) {
+      return itemType switch {
+        WeItemType.DigitalOperatorPoolModel => true,
+        WeItemType.DigitalOperatorModel => true,
 
+        WeItemType.OrgDeskRolesModel => true,
+        WeItemType.DeskRoleModel => true,
+
+        WeItemType.WorkGroupModel => true,
+        WeItemType.DeskModel => true,
+        WeItemType.TodoModel => true,
+
+        WeItemType.OrgDocFolderModel => true,
+        WeItemType.OrgDocModel => true,
+
+        WeItemType.RssFolderModel => true,
+        WeItemType.RssChannelModel => true,
+
+        WeItemType.ProjectFolderModel => true,
+        WeItemType.RelativeFolderModel => true,
+        WeItemType.FileMdModel => true,
+        WeItemType.FileHtmlModel => true,
+        WeItemType.FileConfigModel => true,
+        WeItemType.SolutionModel => true,        
+        WeItemType.LibraryModel => true,                        
+        WeItemType.NamespaceModel => true,
+        WeItemType.InterfaceModel => true,
+        WeItemType.InterfacePropertyModel => true,
+        WeItemType.InterfaceMethodModel => true,
+        WeItemType.InterfaceMethodParameterModel => true,
+        WeItemType.RecordModel => true,
+        WeItemType.StructModel => true,
+        WeItemType.ClassModel => true,        
+        WeItemType.ClassPropertyModel => true,
+        WeItemType.ClassMethodModel => true,
+        WeItemType.ClassMethodParameterModel => true,
+        WeItemType.EntityClassModel => true,        
+        WeItemType.EntityPropertyModel => true,        
+        _ => false
+      };
+    }
+
+    // function is to act as a filter for a drag drop operation, to determine if the dragged item can be dropped onto the target item.
+    public static HashSet<WeItemType> GetValidParentTypesByItem(this WeItemType itemType) {
+      return itemType switch {        
+        WeItemType.DigitalOperatorPoolModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.DigitalOperatorPoolModel },
+        WeItemType.DigitalOperatorModel => new HashSet<WeItemType> { WeItemType.DigitalOperatorPoolModel },
+
+        WeItemType.OrgDeskRolesModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDeskRolesModel },
+        WeItemType.DeskRoleModel => new HashSet<WeItemType> { WeItemType.OrgDeskRolesModel },
+
+        WeItemType.WorkGroupModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.WorkGroupModel },        
+        WeItemType.DeskModel => new HashSet<WeItemType> { WeItemType.WorkGroupModel },
+
+        WeItemType.TodoModel => new HashSet<WeItemType> { WeItemType.DeskModel },
+
+        WeItemType.OrgDocFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDocFolderModel },
+        WeItemType.OrgDocModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDocFolderModel },
+
+        WeItemType.RssFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.RssFolderModel },
+        WeItemType.RssChannelModel => new HashSet<WeItemType> { WeItemType.RssFolderModel },
+        WeItemType.RssItemModel => new HashSet<WeItemType> { WeItemType.RssChannelModel },
+        WeItemType.RssLinkedHtmlModel => new HashSet<WeItemType> { WeItemType.RssItemModel },
+
+        WeItemType.ProjectFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel },
+        WeItemType.RelativeFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.FileMdModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.FileHtmlModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.FileConfigModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.SolutionModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.SolutionImportModel => new HashSet<WeItemType> { WeItemType.SolutionModel },
+
+        WeItemType.LibraryModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+          WeItemType.LibPackageRefModel => new HashSet<WeItemType> { WeItemType.LibraryModel },
+          WeItemType.LibLibraryRefModel => new HashSet<WeItemType> { WeItemType.LibraryModel },
+          WeItemType.DependencyInjectionModel => new HashSet<WeItemType> { WeItemType.LibraryModel },
+            WeItemType.DiImportModel => new HashSet<WeItemType> { WeItemType.DependencyInjectionModel },
+            WeItemType.DbContextModel => new HashSet<WeItemType> { WeItemType.DependencyInjectionModel },
+              WeItemType.DbContextEntityImportModel => new HashSet<WeItemType> { WeItemType.DbContextModel },
+          WeItemType.NamespaceModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+          WeItemType.InterfaceModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+            WeItemType.InterfacePropertyModel => new HashSet<WeItemType> { WeItemType.InterfaceModel },
+            WeItemType.InterfaceMethodModel => new HashSet<WeItemType> { WeItemType.InterfaceModel },
+              WeItemType.InterfaceMethodParameterModel => new HashSet<WeItemType> { WeItemType.InterfaceMethodModel },
+          WeItemType.RecordModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+          WeItemType.StructModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+          WeItemType.ClassModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+            WeItemType.ClassImportModel => new HashSet<WeItemType> { WeItemType.ClassModel },
+            WeItemType.ClassPropertyModel => new HashSet<WeItemType> { WeItemType.ClassModel },
+            WeItemType.ClassMethodModel => new HashSet<WeItemType> { WeItemType.ClassModel },
+              WeItemType.ClassMethodParameterModel => new HashSet<WeItemType> { WeItemType.ClassMethodModel },
+
+          WeItemType.EntityClassModel => new HashSet<WeItemType> { WeItemType.LibraryModel, WeItemType.NamespaceModel },
+            WeItemType.EntityClassImportModel => new HashSet<WeItemType> { WeItemType.EntityClassModel },
+            WeItemType.EntityPropertyModel => new HashSet<WeItemType> { WeItemType.EntityClassModel },
+              WeItemType.EntityNavigationModel => new HashSet<WeItemType> { WeItemType.EntityPropertyModel },
+            WeItemType.EntityInboundNavigationModel => new HashSet<WeItemType> { WeItemType.EntityClassModel },
+            WeItemType.EntityConfigurationModel => new HashSet<WeItemType> { WeItemType.EntityClassModel }, 
+
+        _ => new HashSet<WeItemType>()
+      };
+    }
     public static int DefaultEditorTypeId(this WeItemType itemType) {
       return itemType switch {
         
@@ -376,6 +489,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAppendItemContent => (int)WeEditorType.String,
         WeItemType.CmdUpdateItemProperty => (int)WeEditorType.String,
         WeItemType.CmdAddOrgDeskRole => (int)WeEditorType.String,
+
+        WeItemType.CmdAddRssFolder => (int)WeEditorType.String,
+        WeItemType.CmdAddRssChannel => (int)WeEditorType.String,
+        WeItemType.CmdRssResyncChannel => (int)WeEditorType.String,
+        WeItemType.CmdRssResolveLink => (int)WeEditorType.String,
+        WeItemType.CmdRssExtractLinks => (int)WeEditorType.String,
+
         WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => (int)WeEditorType.String,
         WeItemType.CmdAddSolution => (int)WeEditorType.String,
@@ -609,30 +729,37 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdRejectTodo => 11,
         WeItemType.CmdReviewPass => 12,
         WeItemType.CmdReviewFail => 13,
-        WeItemType.CmdAddOrgDeskRole => 14,
-        WeItemType.CmdAddOrgDesk => 15,  // in AppGraphDeskTools
+
+        WeItemType.CmdAddOrgDeskRole => 14, // in AppGraphOrgTools
+        WeItemType.CmdAddOrgDesk => 15,  
         WeItemType.CmdAddDeskTodo => 16,
         WeItemType.CmdAddDigitalOperatior => 17,
         WeItemType.CmdAddOrgFolder => 18,
         WeItemType.CmdAddOrgFile => 19,
 
-        WeItemType.CmdAddProjectRoot => 20,  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => 21,
-        WeItemType.CmdAddSolution => 22,
-        WeItemType.CmdAddSolutionImport => 23,
-        WeItemType.CmdAddMdFile => 24,
-        WeItemType.CmdAddHtmlFile => 25,
-        WeItemType.CmdAddConfigFile => 26,
-        WeItemType.CmdAddLibrary => 27,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 28,
-        WeItemType.CmdAddClass => 29,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 30,
-        WeItemType.CmdAddClassProperty => 31,
-        WeItemType.CmdAddClassMethod => 32,
-        WeItemType.CmdAddClassMethodParam => 33,
-        WeItemType.CmdAddEntityClass => 34,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 35,
-        WeItemType.CmdAddEntityProperty => 36,
+        WeItemType.CmdAddRssFolder => 20,
+        WeItemType.CmdAddRssChannel => 21,
+        WeItemType.CmdRssResyncChannel => 22,
+        WeItemType.CmdRssResolveLink => 23,
+        WeItemType.CmdRssExtractLinks => 24,
+
+        WeItemType.CmdAddProjectRoot => 23,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 24,
+        WeItemType.CmdAddSolution => 25,
+        WeItemType.CmdAddSolutionImport => 26,
+        WeItemType.CmdAddMdFile => 27,
+        WeItemType.CmdAddHtmlFile => 28,
+        WeItemType.CmdAddConfigFile => 29,
+        WeItemType.CmdAddLibrary => 30,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 31,
+        WeItemType.CmdAddClass => 32,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 33,
+        WeItemType.CmdAddClassProperty => 34,
+        WeItemType.CmdAddClassMethod => 35,
+        WeItemType.CmdAddClassMethodParam => 36,
+        WeItemType.CmdAddEntityClass => 37,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 38,
+        WeItemType.CmdAddEntityProperty => 39,
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -672,6 +799,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.OrgDocFolderModel => (int)WeItemType.OrgDocFolderModel,
         WeItemType.OrgDocModel => (int)WeItemType.OrgDocModel,
+
+        WeItemType.RssFolderModel => (int)WeItemType.RssFolderModel,
+        WeItemType.RssChannelModel => (int)WeItemType.RssChannelModel,
+        WeItemType.RssItemModel => (int)WeItemType.RssItemModel,
+        WeItemType.RssLinkedHtmlModel => (int)WeItemType.RssLinkedHtmlModel,
 
         WeItemType.ProjectFolderModel => (int)WeItemType.ProjectFolderModel,
         WeItemType.ProjectDocs => (int)WeItemType.ProjectDocs,
@@ -873,6 +1005,12 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddOrgFolder => "Add Org Folder Command",
         WeItemType.CmdAddOrgFile => "Add Org File Command",
 
+        WeItemType.CmdAddRssFolder => "Add Rss Folder Command",
+        WeItemType.CmdAddRssChannel => "Add Rss Channel Command",
+        WeItemType.CmdRssResyncChannel => "Resync Rss Channel Command",
+        WeItemType.CmdRssResolveLink => "Resolve Rss Link Command",
+        WeItemType.CmdRssExtractLinks => "Extract Rss Links Command",
+
         WeItemType.CmdAddProjectRoot => "Add Project Root Command",  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
         WeItemType.CmdAddSolution => "Add Solution Command",
@@ -936,6 +1074,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.OrgDocFolderModel => "Org Doc Folder",
         WeItemType.OrgDocModel => "Org Doc",
+
+        WeItemType.RssFolderModel => "RssFolder",
+        WeItemType.RssChannelModel => "RssChannel",
+        WeItemType.RssItemModel => "RssItem",
+        WeItemType.RssLinkedHtmlModel => "LinkedHtml",
 
         WeItemType.ProjectFolderModel => "Project Folder",
         WeItemType.ProjectDocs => "Project Documentation",

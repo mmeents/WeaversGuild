@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -35,7 +36,8 @@ namespace Weavers.Core.Constants {
     public const double DefaultTemperature = 0.76;
     public const int DefaultLmStudioContextLength = 24000;
     public const int intPropertyLabelLeft = 116;
-        
+    public const int NameFieldMaxLength = 500;
+
     public const string DaemonsMcpToolName = "mcp/daemonsmcp";
     public const string WeaversMcpToolName = "mcp/theloommcp";
 
@@ -73,6 +75,13 @@ namespace Weavers.Core.Constants {
     public const string CmdAddDigitalOperator = "addDigitalOperator";
     public const string CmdAddOrgFolder = "addOrgFolder";
     public const string CmdAddOrgFile = "addOrgFile";
+
+    public const string CmdAddRssFolder = "addRssFolder";
+    public const string CmdAddRssChannel = "addRssChannel";
+    public const string CmdRssResyncChannel = "rssResyncChannel";
+    public const string CmdRssResolveLink = "rssResolveLink";
+    public const string CmdRssExtractLinks = "rssExtractLinks";
+
     public const string CmdAddProjectRoot = "addProjectRoot";
     public const string CmdAddSubFolder = "addSubFolder";
     public const string CmdAddSolution = "addSolution";
@@ -118,6 +127,7 @@ namespace Weavers.Core.Constants {
     public const string ItApiToken = "ApiToken";
     public const string ItBaseType = "BaseType";
     public const string ItCharter = "Charter";
+    public const string ItChannelUrl = "ChannelUrl";
     public const string ItClassType = "ClassType";
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
     public const string ItConfirmedReady = "Ready";
@@ -144,6 +154,7 @@ namespace Weavers.Core.Constants {
     public const string ItHasClaudePresence = "HasClaudeCode";
     public const string ItHasMediator = "HasMediator";
     public const string ItHasNavigation = "HasNav";
+    public const string ItHasUrl = "HasUrl";
     public const string ItHasSetter = "HasSetter";
     public const string ItImportObject = "ImportObj";
     public const string ItImportUseInterface = "UseIntf";
@@ -170,6 +181,7 @@ namespace Weavers.Core.Constants {
     public const string ItLmStudioConfig = "LmStudioCfg";
     public const string ItMaxSize = "MaxSize";  
     public const string ItMaxAttempts = "MaxAttempts";
+    public const string ItMaxLinks = "MaxLinks";
     public const string ItMachineName = "MachineName";
     public const string ItModelName = "ModelName";
     public const string ItNamespace = "Namespace";
@@ -190,6 +202,8 @@ namespace Weavers.Core.Constants {
     public const string ItProjectGuid = "ProjectGuid";
     public const string ItProviderType = "ProviderType";
     public const string ItRecordContent = "RecordContent";
+    public const string ItResolveLink = "ResolveLink";
+    public const string ItExtractLink = "ExtractLink";
     public const string ItStructContent = "StructContent";
     public const string ItRating = "Rating";
     public const string ItReferenceItem = "RefItem";
@@ -202,6 +216,7 @@ namespace Weavers.Core.Constants {
     public const string ItRelativeFolder = "RelativeFolder";
     public const string ItResultingState = "Results";
     public const string ItResponse = "Response";
+    public const string ItResyncChannel = "DoResync";
     public const string ItRetentionDays = "KeepDays";
     public const string ItDeskRole = "DeskRole";
     public const string ItRole = "Role";

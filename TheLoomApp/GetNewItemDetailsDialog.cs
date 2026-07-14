@@ -36,6 +36,8 @@ namespace TheLoomApp {
     }
     public string? DbTableName => edDbTableName.Text;
 
+    public string? RssUrl => edDbTableName.Text;
+
     public GetNewItemDetailsDialog(IServiceScopeFactory serviceScopeFactory, WeItemType targetTypeToCreate) {
       _serviceScopeFactory = serviceScopeFactory;
       _targetTypeToCreate = targetTypeToCreate;
@@ -117,6 +119,16 @@ namespace TheLoomApp {
         cbIsAsync.Visible = true;
         lbItemType.Visible = true;
         cbDataType.Visible = true;
+      }
+
+      if (_targetTypeToCreate == WeItemType.RssChannelModel) {
+        edDbTableName.Top = edName.Top + edName.Height + 10;
+        edDbTableName.Left = edName.Left;
+        lbDbTableName.Top = edDbTableName.Top;
+        lbDbTableName.Left = lbNewItemName.Left + lbNewItemName.Width - lbDbTableName.Width;
+        lbDbTableName.Text = "Rss Url:";
+        edDbTableName.Visible = true;
+        lbDbTableName.Visible = true;
       }
 
     }

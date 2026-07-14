@@ -1,7 +1,24 @@
 
 ## Update History
+- Db Version 142 (7/13/2026)
+  - Adds ValueHash property to the ItemProperty table to support an indexed search on values.
+  - Adds RssLinkHtml item type to support link discovery and content extraction.  
+  - Adds RssResolveLink, RssExtractLinks commands to the MCP tool for Rss operations on items having RssLinkedHtml and RssItems types.
+  - RssResyncChannel only emits one layer of items now.
+  - Drops the ItKey property. reset to use the ItHasUrl property for either the RssLinkedHtml or RssItems types.
+  - Adds export/import of the new types, with folder and file names to support in future.
 
-- Db Version 138 (6/27/2026)
+- Db Version 140 - 141 (7/12/2026)
+  - Adds RssFolders, RssChannels, RssItems RssLinkHtml item types.
+  - Adds CodeHollow.FeedReader to grab and parse the feeds.  
+  - Adds SmartReader for general link content extraction and link discovery.  
+  - Adds Commands in App and MCP tools for Rss operations 
+    - AddRssFolder, nestable.
+    - AddRssChannel, RssResyncChannel on channels 
+    - RssResolveLink, RssExtractLinks on linkedHtml items.
+  - Lacks export/import of the new types, but added folder and file names to support in future.  
+  
+- Db Version 139 (6/27/2026)
   - ✅ v139 remodel (Capabilities/Sessions split, single harness, WorkGroup nesting, Team rename, per-model SkipPerms)
   - ✅ Chain linkage reworked for the new harness structure 
   - ✅ Import/export folder-string fix (proven by importing the Documenter desks)
@@ -11,6 +28,9 @@
   - ✅ appendItemContent: atomic concat, op-owned separator, CASE guard, TypeName fix, help command
   - ✅ Both gateways verified — the remodel is genuinely done
   - Verified fail celing is intact an stopped on schedule.
+  
+- Db Version 138 
+  - Minor cleanup after 137 (6/25/2026)
 
 - Db Version 137 (6/24/2026)
   - Adds Claude Code Gateway

@@ -12,8 +12,8 @@ using Weavers.Core;
 namespace Weavers.Core.Migrations
 {
     [DbContext(typeof(FabricDbContext))]
-    [Migration("20260626200346_InitialDbVer139")]
-    partial class InitialDbVer139
+    [Migration("20260714014924_InitialDbVersion142")]
+    partial class InitialDbVersion142
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -593,6 +593,9 @@ namespace Weavers.Core.Migrations
                     b.Property<int?>("ValueDataTypeId")
                         .HasColumnType("int");
 
+                    b.Property<long?>("ValueHash")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EditorTypeId");
@@ -609,6 +612,8 @@ namespace Weavers.Core.Migrations
 
                     b.HasIndex("ItemId", "Name")
                         .IsUnique();
+
+                    b.HasIndex("Name", "ValueHash");
 
                     b.ToTable("ItemProperties");
                 });
@@ -1413,6 +1418,188 @@ namespace Weavers.Core.Migrations
                         {
                             Id = 56,
                             DefaultValue = "",
+                            EditorTypeId = 14,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1070,
+                            Key = "RelativeFolder",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 57,
+                            DefaultValue = "",
+                            EditorTypeId = 14,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1075,
+                            Key = "RelativeFolder",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 58,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1075,
+                            Key = "ChannelUrl",
+                            Rank = 5,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 59,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1075,
+                            Key = "DoResync",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 60,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1076,
+                            Key = "FilePath",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 61,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1076,
+                            Key = "HasUrl",
+                            Rank = 3,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 62,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1076,
+                            Key = "ResolveLink",
+                            Rank = 5,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 63,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1076,
+                            Key = "ExtractLink",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 64,
+                            DefaultValue = "20",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1076,
+                            Key = "MaxLinks",
+                            Rank = 1,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 65,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1077,
+                            Key = "FilePath",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 66,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1077,
+                            Key = "HasUrl",
+                            Rank = 8,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 67,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1077,
+                            Key = "ResolveLink",
+                            Rank = 5,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 68,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1077,
+                            Key = "ExtractLink",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 69,
+                            DefaultValue = "20",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1077,
+                            Key = "MaxLinks",
+                            Rank = 1,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 70,
+                            DefaultValue = "",
                             EditorTypeId = 13,
                             IsReadOnly = false,
                             IsRequired = false,
@@ -1424,7 +1611,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 57,
+                            Id = 71,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1437,7 +1624,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 58,
+                            Id = 72,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1451,7 +1638,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 59,
+                            Id = 73,
                             DefaultValue = "112",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1465,7 +1652,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 60,
+                            Id = 74,
                             DefaultValue = "",
                             EditorTypeId = 14,
                             IsReadOnly = false,
@@ -1478,7 +1665,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 61,
+                            Id = 75,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1492,7 +1679,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 62,
+                            Id = 76,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
@@ -1505,7 +1692,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 63,
+                            Id = 77,
                             DefaultValue = ".md",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1518,7 +1705,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 64,
+                            Id = 78,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1532,7 +1719,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 65,
+                            Id = 79,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
@@ -1545,7 +1732,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 66,
+                            Id = 80,
                             DefaultValue = ".html",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1558,7 +1745,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 67,
+                            Id = 81,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1572,7 +1759,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 68,
+                            Id = 82,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
@@ -1585,7 +1772,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 69,
+                            Id = 83,
                             DefaultValue = ".json",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1598,7 +1785,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 70,
+                            Id = 84,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1612,7 +1799,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 71,
+                            Id = 85,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
@@ -1625,7 +1812,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 72,
+                            Id = 86,
                             DefaultValue = ".png",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1638,7 +1825,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 73,
+                            Id = 87,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1652,7 +1839,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 74,
+                            Id = 88,
                             DefaultValue = "",
                             EditorTypeId = 5,
                             IsReadOnly = false,
@@ -1665,7 +1852,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 75,
+                            Id = 89,
                             DefaultValue = ".sln",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -1678,7 +1865,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 76,
+                            Id = 90,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1691,7 +1878,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 77,
+                            Id = 91,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1705,7 +1892,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 78,
+                            Id = 92,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1719,7 +1906,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 79,
+                            Id = 93,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1732,7 +1919,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 80,
+                            Id = 94,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1745,7 +1932,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 81,
+                            Id = 95,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1758,7 +1945,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 82,
+                            Id = 96,
                             DefaultValue = "net9.0",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1771,7 +1958,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 83,
+                            Id = 97,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1784,7 +1971,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 84,
+                            Id = 98,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1797,7 +1984,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 85,
+                            Id = 99,
                             DefaultValue = "1.0.0",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1810,7 +1997,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 86,
+                            Id = 100,
                             DefaultValue = "1.0.0.0",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1823,7 +2010,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 87,
+                            Id = 101,
                             DefaultValue = "1.0.0.0",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1836,7 +2023,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 88,
+                            Id = 102,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1849,7 +2036,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 89,
+                            Id = 103,
                             DefaultValue = ".csproj",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -1862,7 +2049,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 90,
+                            Id = 104,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1876,7 +2063,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 91,
+                            Id = 105,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1889,7 +2076,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 92,
+                            Id = 106,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1902,7 +2089,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 93,
+                            Id = 107,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1915,7 +2102,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 94,
+                            Id = 108,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1928,7 +2115,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 95,
+                            Id = 109,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -1942,7 +2129,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 96,
+                            Id = 110,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1955,7 +2142,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 97,
+                            Id = 111,
                             DefaultValue = ".cs",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -1968,7 +2155,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 98,
+                            Id = 112,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -1981,7 +2168,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 99,
+                            Id = 113,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -1994,7 +2181,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 100,
+                            Id = 114,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2007,7 +2194,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 101,
+                            Id = 115,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2021,7 +2208,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 102,
+                            Id = 116,
                             DefaultValue = "42",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2035,7 +2222,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 103,
+                            Id = 117,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2049,7 +2236,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 104,
+                            Id = 118,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2062,7 +2249,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 105,
+                            Id = 119,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2075,7 +2262,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 106,
+                            Id = 120,
                             DefaultValue = ".cs",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2088,7 +2275,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 107,
+                            Id = 121,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2101,7 +2288,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 108,
+                            Id = 122,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2115,7 +2302,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 109,
+                            Id = 123,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2129,7 +2316,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 110,
+                            Id = 124,
                             DefaultValue = "",
                             EditorTypeId = 14,
                             IsReadOnly = false,
@@ -2142,7 +2329,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 111,
+                            Id = 125,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2155,7 +2342,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 112,
+                            Id = 126,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2169,7 +2356,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 113,
+                            Id = 127,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2183,7 +2370,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 114,
+                            Id = 128,
                             DefaultValue = ".cs",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2196,7 +2383,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 115,
+                            Id = 129,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2209,7 +2396,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 116,
+                            Id = 130,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2222,7 +2409,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 117,
+                            Id = 131,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2236,7 +2423,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 118,
+                            Id = 132,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2250,7 +2437,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 119,
+                            Id = 133,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2264,7 +2451,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 120,
+                            Id = 134,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2278,7 +2465,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 121,
+                            Id = 135,
                             DefaultValue = ".cs",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2291,7 +2478,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 122,
+                            Id = 136,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2304,7 +2491,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 123,
+                            Id = 137,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2317,7 +2504,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 124,
+                            Id = 138,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2331,7 +2518,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 125,
+                            Id = 139,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2344,7 +2531,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 126,
+                            Id = 140,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2358,7 +2545,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 127,
+                            Id = 141,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2371,7 +2558,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 128,
+                            Id = 142,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2385,7 +2572,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 129,
+                            Id = 143,
                             DefaultValue = ".cs",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -2398,7 +2585,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 130,
+                            Id = 144,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2411,7 +2598,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 131,
+                            Id = 145,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2424,7 +2611,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 132,
+                            Id = 146,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2438,7 +2625,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 133,
+                            Id = 147,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2451,7 +2638,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 134,
+                            Id = 148,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2464,7 +2651,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 135,
+                            Id = 149,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2477,7 +2664,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 136,
+                            Id = 150,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2491,7 +2678,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 137,
+                            Id = 151,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2505,7 +2692,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 138,
+                            Id = 152,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2518,7 +2705,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 139,
+                            Id = 153,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2532,7 +2719,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 140,
+                            Id = 154,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2546,7 +2733,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 141,
+                            Id = 155,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2559,7 +2746,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 142,
+                            Id = 156,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2572,7 +2759,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 143,
+                            Id = 157,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2586,7 +2773,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 144,
+                            Id = 158,
                             DefaultValue = "32",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2600,7 +2787,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 145,
+                            Id = 159,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2614,7 +2801,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 146,
+                            Id = 160,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2628,7 +2815,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 147,
+                            Id = 161,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2642,7 +2829,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 148,
+                            Id = 162,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2655,7 +2842,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 149,
+                            Id = 163,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2668,7 +2855,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 150,
+                            Id = 164,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2681,7 +2868,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 151,
+                            Id = 165,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2694,7 +2881,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 152,
+                            Id = 166,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2707,7 +2894,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 153,
+                            Id = 167,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2720,7 +2907,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 154,
+                            Id = 168,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2734,7 +2921,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 155,
+                            Id = 169,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2748,7 +2935,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 156,
+                            Id = 170,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2762,7 +2949,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 157,
+                            Id = 171,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2775,7 +2962,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 158,
+                            Id = 172,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2788,7 +2975,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 159,
+                            Id = 173,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2802,7 +2989,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 160,
+                            Id = 174,
                             DefaultValue = ".cs",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -2815,7 +3002,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 161,
+                            Id = 175,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2828,7 +3015,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 162,
+                            Id = 176,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2841,7 +3028,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 163,
+                            Id = 177,
                             DefaultValue = "dbo",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2854,7 +3041,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 164,
+                            Id = 178,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -2867,7 +3054,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 165,
+                            Id = 179,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2881,7 +3068,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 166,
+                            Id = 180,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2895,7 +3082,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 167,
+                            Id = 181,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2908,7 +3095,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 168,
+                            Id = 182,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -2922,7 +3109,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 169,
+                            Id = 183,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2935,7 +3122,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 170,
+                            Id = 184,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2948,7 +3135,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 171,
+                            Id = 185,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2961,7 +3148,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 172,
+                            Id = 186,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -2974,7 +3161,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 173,
+                            Id = 187,
                             DefaultValue = "-1",
                             EditorTypeId = 3,
                             IsReadOnly = false,
@@ -2987,7 +3174,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 174,
+                            Id = 188,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3001,7 +3188,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 175,
+                            Id = 189,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3015,7 +3202,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 176,
+                            Id = 190,
                             DefaultValue = "7",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3029,7 +3216,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 177,
+                            Id = 191,
                             DefaultValue = "84",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3043,7 +3230,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 178,
+                            Id = 192,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3056,7 +3243,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 179,
+                            Id = 193,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3070,7 +3257,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 180,
+                            Id = 194,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3084,7 +3271,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 181,
+                            Id = 195,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3098,7 +3285,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 182,
+                            Id = 196,
                             DefaultValue = "8",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3112,7 +3299,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 183,
+                            Id = 197,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3125,7 +3312,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 184,
+                            Id = 198,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -3138,7 +3325,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 185,
+                            Id = 199,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3152,7 +3339,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 186,
+                            Id = 200,
                             DefaultValue = ".cs",
                             EditorTypeId = 1,
                             IsReadOnly = false,
@@ -3165,7 +3352,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 187,
+                            Id = 201,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -3178,7 +3365,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 188,
+                            Id = 202,
                             DefaultValue = "",
                             EditorTypeId = 4,
                             IsReadOnly = false,
@@ -3191,7 +3378,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 189,
+                            Id = 203,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3205,7 +3392,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 190,
+                            Id = 204,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3219,7 +3406,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 191,
+                            Id = 205,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3233,7 +3420,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 192,
+                            Id = 206,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3247,7 +3434,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 193,
+                            Id = 207,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3261,7 +3448,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 194,
+                            Id = 208,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3275,7 +3462,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 195,
+                            Id = 209,
                             DefaultValue = "",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3288,7 +3475,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 196,
+                            Id = 210,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3302,7 +3489,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 197,
+                            Id = 211,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3316,7 +3503,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 198,
+                            Id = 212,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3329,7 +3516,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 199,
+                            Id = 213,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3342,7 +3529,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 200,
+                            Id = 214,
                             DefaultValue = "32",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3356,7 +3543,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 201,
+                            Id = 215,
                             DefaultValue = "91",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3370,7 +3557,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 202,
+                            Id = 216,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3384,7 +3571,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 203,
+                            Id = 217,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3398,7 +3585,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 204,
+                            Id = 218,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3411,7 +3598,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 205,
+                            Id = 219,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3424,7 +3611,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 206,
+                            Id = 220,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3437,7 +3624,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 207,
+                            Id = 221,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3450,7 +3637,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 208,
+                            Id = 222,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3463,7 +3650,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 209,
+                            Id = 223,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3476,7 +3663,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 210,
+                            Id = 224,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3490,7 +3677,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 211,
+                            Id = 225,
                             DefaultValue = "57",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3504,7 +3691,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 212,
+                            Id = 226,
                             DefaultValue = "",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -3518,7 +3705,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 213,
+                            Id = 227,
                             DefaultValue = "1",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3531,7 +3718,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 214,
+                            Id = 228,
                             DefaultValue = "0",
                             EditorTypeId = 2,
                             IsReadOnly = false,
@@ -3544,7 +3731,7 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 215,
+                            Id = 229,
                             DefaultValue = "104",
                             EditorTypeId = 10,
                             IsReadOnly = false,
@@ -4817,7 +5004,67 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 149,
+                            Description = "Add Rss Folder Command",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdAddRssFolder",
+                            ParentTypeId = 120,
+                            Rank = 20
+                        },
+                        new
+                        {
                             Id = 150,
+                            Description = "Add Rss Channel Command",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdAddRssChannel",
+                            ParentTypeId = 120,
+                            Rank = 21
+                        },
+                        new
+                        {
+                            Id = 151,
+                            Description = "Resync Rss Channel Command",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdRssResyncChannel",
+                            ParentTypeId = 120,
+                            Rank = 22
+                        },
+                        new
+                        {
+                            Id = 152,
+                            Description = "Resolve Rss Link Command",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdRssResolveLink",
+                            ParentTypeId = 120,
+                            Rank = 23
+                        },
+                        new
+                        {
+                            Id = 153,
+                            Description = "Extract Rss Links Command",
+                            EditorTypeId = 4,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CmdRssExtractLinks",
+                            ParentTypeId = 120,
+                            Rank = 24
+                        },
+                        new
+                        {
+                            Id = 154,
                             Description = "Add Project Root Command",
                             EditorTypeId = 4,
                             IconName = "",
@@ -4825,11 +5072,11 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddProjectRoot",
                             ParentTypeId = 120,
-                            Rank = 20
+                            Rank = 23
                         },
                         new
                         {
-                            Id = 152,
+                            Id = 155,
                             Description = "Add Sub Folder Command",
                             EditorTypeId = 4,
                             IconName = "",
@@ -4837,11 +5084,11 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSubFolder",
                             ParentTypeId = 120,
-                            Rank = 21
+                            Rank = 24
                         },
                         new
                         {
-                            Id = 154,
+                            Id = 156,
                             Description = "Add Solution Command",
                             EditorTypeId = 4,
                             IconName = "",
@@ -4849,11 +5096,11 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSolution",
                             ParentTypeId = 120,
-                            Rank = 22
+                            Rank = 25
                         },
                         new
                         {
-                            Id = 156,
+                            Id = 157,
                             Description = "Add Solution Import Command",
                             EditorTypeId = 4,
                             IconName = "",
@@ -4861,7 +5108,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddSolutionImport",
                             ParentTypeId = 120,
-                            Rank = 23
+                            Rank = 26
                         },
                         new
                         {
@@ -4873,7 +5120,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddMdFile",
                             ParentTypeId = 120,
-                            Rank = 24
+                            Rank = 27
                         },
                         new
                         {
@@ -4885,7 +5132,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddHtmlFile",
                             ParentTypeId = 120,
-                            Rank = 25
+                            Rank = 28
                         },
                         new
                         {
@@ -4897,7 +5144,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddConfigFile",
                             ParentTypeId = 120,
-                            Rank = 26
+                            Rank = 29
                         },
                         new
                         {
@@ -4909,7 +5156,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddLibrary",
                             ParentTypeId = 120,
-                            Rank = 27
+                            Rank = 30
                         },
                         new
                         {
@@ -4921,7 +5168,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddNamespace",
                             ParentTypeId = 120,
-                            Rank = 28
+                            Rank = 31
                         },
                         new
                         {
@@ -4933,7 +5180,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClass",
                             ParentTypeId = 120,
-                            Rank = 29
+                            Rank = 32
                         },
                         new
                         {
@@ -4945,7 +5192,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassImport",
                             ParentTypeId = 120,
-                            Rank = 30
+                            Rank = 33
                         },
                         new
                         {
@@ -4957,7 +5204,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassProperty",
                             ParentTypeId = 120,
-                            Rank = 31
+                            Rank = 34
                         },
                         new
                         {
@@ -4969,7 +5216,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassMethod",
                             ParentTypeId = 120,
-                            Rank = 32
+                            Rank = 35
                         },
                         new
                         {
@@ -4981,7 +5228,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddClassMethodParam",
                             ParentTypeId = 120,
-                            Rank = 33
+                            Rank = 36
                         },
                         new
                         {
@@ -4993,7 +5240,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityClass",
                             ParentTypeId = 120,
-                            Rank = 34
+                            Rank = 37
                         },
                         new
                         {
@@ -5005,7 +5252,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityClassImport",
                             ParentTypeId = 120,
-                            Rank = 35
+                            Rank = 38
                         },
                         new
                         {
@@ -5017,7 +5264,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "CmdAddEntityProperty",
                             ParentTypeId = 120,
-                            Rank = 36
+                            Rank = 39
                         },
                         new
                         {
@@ -5422,6 +5669,54 @@ namespace Weavers.Core.Migrations
                             Name = "OrgDocModel",
                             ParentTypeId = 1060,
                             Rank = 1065
+                        },
+                        new
+                        {
+                            Id = 1070,
+                            Description = "RssFolder",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RssFolderModel",
+                            ParentTypeId = 1000,
+                            Rank = 1070
+                        },
+                        new
+                        {
+                            Id = 1075,
+                            Description = "RssChannel",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RssChannelModel",
+                            ParentTypeId = 1070,
+                            Rank = 1075
+                        },
+                        new
+                        {
+                            Id = 1076,
+                            Description = "RssItem",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RssItemModel",
+                            ParentTypeId = 1075,
+                            Rank = 1076
+                        },
+                        new
+                        {
+                            Id = 1077,
+                            Description = "LinkedHtml",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "RssLinkedHtmlModel",
+                            ParentTypeId = 1076,
+                            Rank = 1077
                         },
                         new
                         {
@@ -6362,6 +6657,16 @@ namespace Weavers.Core.Migrations
                             Description = "Item has associated documentation",
                             Name = "HasDocs"
                         });
+                });
+
+            modelBuilder.Entity("Weavers.Core.Handlers.Rss.IdOnlyRow", b =>
+                {
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Handlers.Todo.ReadyTodoRow", b =>

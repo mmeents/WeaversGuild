@@ -1,13 +1,9 @@
-using Azure.Core;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Web.WebView2.Core;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
 using TheLoomApp.Models;
@@ -15,7 +11,6 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
-using Weavers.Core.Handlers.Import;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Todo;
@@ -107,6 +102,7 @@ namespace TheLoomApp {
       }
       SettingDefaultFolderDirty = false;
 
+
     }
 
     private void Form1_Resize(object sender, EventArgs e) {
@@ -171,13 +167,25 @@ namespace TheLoomApp {
     #region Tree View Loading and Events
     private async void Form1_Shown(object sender, EventArgs e) {
       _sessionDetails = await _appDataService.GetAppSession(); // create session.
+
+      await wvDescription.EnsureCoreWebView2Async();
+      wvDescription.CoreWebView2.NavigationStarting += (s, ev) => {
+        var uri = new Uri(ev.Uri);
+        if (uri.Scheme is "http" or "https") {
+          ev.Cancel = true;
+          Process.Start(new ProcessStartInfo(ev.Uri) { UseShellExecute = true });
+        }
+      };
+      wvDescription.CoreWebView2.NewWindowRequested += (s, ev) => {
+        ev.Handled = true;
+        Process.Start(new ProcessStartInfo(ev.Uri) { UseShellExecute = true });
+      };
+      //wvDescription.CoreWebView2.Settings.IsScriptEnabled = false;
+
       await _appDataService.EnforceDataRetentionOrgPolicy();
       await LoadRootProjects();
       await LoadItemTypesCache();
       Form1_Resize(sender, e);
-      this.Invoke((Action)(async () => {
-        await wvDescription.EnsureCoreWebView2Async().ConfigureAwait(false);
-      }));
     }
 
     private async Task LoadRootProjects(int? NodeIdToExpand = null, CancellationToken ct = default) {
@@ -538,6 +546,19 @@ namespace TheLoomApp {
                 TvKb_BeforeExpand(ee, ee);
               }
             }
+          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.RssChannelModel) {
+            var resyncProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResyncChannel);
+            if (resyncProp != null) {
+              bool shouldResync = resyncProp.Value.AsBoolean();
+              if (shouldResync) {
+                var updatedChannel = await _appGraphOrgService.RssResyncChannel(_selectedNode.Item);
+                if (updatedChannel != null) {
+                  _selectedNode.Item = updatedChannel;
+                }
+                var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+                TvKb_BeforeExpand(ee, ee);
+              }
+            }
 
           } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
             var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
@@ -697,6 +718,7 @@ namespace TheLoomApp {
     #region Context Menu Events
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
+        miAddWorkGroup.Visible = false;
         miAddOrgRole.Visible = false;
         miAddOrgDesk.Visible = false;
         miAddDeskTodo.Visible = false;
@@ -704,6 +726,11 @@ namespace TheLoomApp {
         miAddDigitalOperator.Visible = false;
         miAddOrgFolder.Visible = false;
         miAddOrgFile.Visible = false;
+        miAddOrgRssFolder.Visible = false;
+        miAddRssChannel.Visible = false;
+        miResyncChannel.Visible = false;
+        miResolveLink.Visible = false;
+        miExtractLinks.Visible = false;
         miAddProjectRoot.Visible = true;
         miAddSubProject.Visible = false;
         miAddSolution.Visible = false;
@@ -730,6 +757,7 @@ namespace TheLoomApp {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
+        miAddWorkGroup.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.WorkGroupModel;
         miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
         miAddOrgDesk.Visible = itemType == WeItemType.WorkGroupModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
@@ -737,6 +765,11 @@ namespace TheLoomApp {
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
         miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel || itemType == WeItemType.OrganizationModel;
+        miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.RssFolderModel;
+        miAddRssChannel.Visible = itemType == WeItemType.RssFolderModel;
+        miResyncChannel.Visible = itemType == WeItemType.RssChannelModel;
+        miResolveLink.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
+        miExtractLinks.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -765,6 +798,20 @@ namespace TheLoomApp {
     }
 
 
+    private async void miAddWorkGroup_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.WorkGroupModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgWorkGroup(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add work group - error:" + ex.Message);
+        MessageBox.Show($"Error adding work group: {ex.Message}", "Add Work Group Failed");
+      }
+    }
 
     private async void miAddOrgRole_Click(object sender, EventArgs e) {
       try {
@@ -888,6 +935,72 @@ namespace TheLoomApp {
       } catch (Exception ex) {
         DoLogMessage("Failed to add file - error:" + ex.Message);
         MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
+      }
+    }
+
+    private async void miAddOrgRssFolder_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddRssFolder(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add RSS folder - error:" + ex.Message);
+        MessageBox.Show($"Error adding RSS folder: {ex.Message}", "Add RSS Folder Failed");
+      }
+    }
+    private async void miAddRssChannel_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssChannelModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var rssUrl = dlg.RssUrl;
+          await tvKb.AddRssChannel(_appGraphOrgService, newItemName, rssUrl);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add RSS channel - error:" + ex.Message);
+        MessageBox.Show($"Error adding RSS channel: {ex.Message}", "Add RSS Channel Failed");
+      }
+    }
+    private async void miResyncChannel_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssResyncChannel(_appGraphOrgService);
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to resync RSS channel - error:" + ex.Message);
+        MessageBox.Show($"Error resyncing RSS channel: {ex.Message}", "Resync RSS Channel Failed");
+      }
+    }
+
+
+    private async void miResolveLink_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssResolveLink(_appGraphOrgService);
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to resolve RSS link - error:" + ex.Message);
+        MessageBox.Show($"Error resolving RSS link: {ex.Message}", "Resolve RSS Link Failed");
+      }
+    }
+
+    private async void miExtractLinks_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssExtractLinks(_appGraphOrgService);
+        _appDataService.ClearCache();
+        var selected = tvKb.SelectedNode as ItemNode;
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to extract RSS links - error:" + ex.Message);
+        MessageBox.Show($"Error extracting RSS links: {ex.Message}", "Extract RSS Links Failed");
       }
     }
 
@@ -1111,8 +1224,11 @@ namespace TheLoomApp {
     private void miDeleteItem_Click(object sender, EventArgs e) {
       var itemNode = _selectedNode;
       if (itemNode == null || itemNode.Item == null) return;
-      var confirmResult = MessageBox.Show($"Are you sure you want to delete '{itemNode.Item.Name}'? This action cannot be undone.", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-      if (confirmResult == DialogResult.Yes) {
+      DialogResult dlgResult = DialogResult.Yes;
+      if (itemNode.Item.Relations.Count > 0) {
+        dlgResult = MessageBox.Show($"Are you sure you want to delete '{itemNode.Item.Name}'? This action cannot be undone.", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+      }
+      if (dlgResult == DialogResult.Yes) {
         _appDataService.DeleteItemAsync(itemNode.Item.Id);
         var parentNode = itemNode.Parent;
         tvKb.SelectedNode = parentNode;  // this sets the selected node.
@@ -1666,7 +1782,7 @@ namespace TheLoomApp {
         if (_workingTodo != null) {
           DoLogMessage($"Running scheduled todo {_workingTodo.Name} on {_workingTodo.DeskName} (Id: {_workingTodo.Id})");
           RunOnUi(() => {
-            lbWorkingStatus.Text = "Status: Pipeline running "+ _workingTodo.Id.ToString() + ": " + _workingTodo.Name + " on " + _workingTodo.DeskName;
+            lbWorkingStatus.Text = "Status: Pipeline running " + _workingTodo.Id.ToString() + ": " + _workingTodo.Name + " on " + _workingTodo.DeskName;
           });
           var result = await _appDataService.RunTodoItem(_workingTodo.Id, false);
           if (result.Status == RunTodoAttemptOutcome.SuccessWithResponse ||
@@ -1969,7 +2085,7 @@ namespace TheLoomApp {
 
     #endregion
 
-
+    #region Drag Drop on Tree
     private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
       // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
       try {
@@ -1990,6 +2106,66 @@ namespace TheLoomApp {
         MessageBox.Show("An error occurred while trying to open the Claude executable folder. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
+
+    private void tvKb_ItemDrag(object sender, ItemDragEventArgs e) {
+      if (e.Button == MouseButtons.Left && e.Item != null) {
+        var item = e.Item as ItemNode;
+        var itemType = (WeItemType?)item?.Item?.ItemTypeId;
+        if (itemType != null && itemType.Value.IsDragable()) {
+          DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+      }
+    }
+
+    private async void tvKb_DragDrop(object sender, DragEventArgs e) {
+      try {
+        Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
+        ItemNode? targetItem = (ItemNode?)tvKb.GetNodeAt(targetPt);
+
+        if (targetItem != null && e.Data != null) {
+          ItemNode? dragNode = (ItemNode?)e.Data.GetData(typeof(ItemNode));
+          if (dragNode != null && dragNode.Item != null && targetItem.Item != null) {
+            var fnn = await _appDataService.MoveItemTo(dragNode.Item.Id, targetItem.Item.Id);
+            _appDataService.ClearCache();
+            await LoadRootProjects();
+          }
+        }
+
+      } catch (Exception edd) {
+        DoLogMessage(edd.Message);
+      } finally {
+      }
+    }
+
+    private void tvKb_DragEnter(object sender, DragEventArgs e) {
+      e.Effect = DragDropEffects.Move;
+    }
+
+    private void tvKb_DragOver(object sender, DragEventArgs e) {
+      if (e.Data != null) {
+        ItemNode? selectedItem = (ItemNode?)e.Data.GetData(typeof(ItemNode));
+        if (selectedItem != null) {
+          var selItemtype = (WeItemType?)selectedItem?.Item?.ItemTypeId;
+          if (selItemtype == null || !selItemtype.Value.IsDragable()) {
+            e.Effect = DragDropEffects.None;
+            return;
+          }
+          var validTargetTypes = selItemtype.Value.GetValidParentTypesByItem();
+          Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
+          ItemNode? targetNode = (ItemNode?)tvKb.GetNodeAt(targetPt);
+          var targetItemType = (WeItemType?)targetNode?.Item?.ItemTypeId;
+          if (targetItemType == null || !validTargetTypes.Contains(targetItemType.Value)) {
+            e.Effect = DragDropEffects.None;
+            return;
+          }
+          e.Effect = DragDropEffects.Move;
+
+        }
+      }
+    }
+
   }
+
+  #endregion
 
 }

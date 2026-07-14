@@ -19,6 +19,13 @@ namespace Weavers.Core.Tools {
     Task<string> AddDigitalOperator(int parentItemId, string operatorName);
     Task<string> AddOrgFolder(int parentItemId, string subFolderName);
     Task<string> AddOrgFile(int folderItemId, string fileName, string fileContent);
+
+    Task<string> AddRssFolder(int parentItemId, string subFolderName);
+    Task<string> AddRssChannel(int folderItemId, string channelName, string channelUrl);
+    Task<string> RssResyncChannel(int rssChannelId);
+    Task<string> RssResolveLink(int rssLinkedHtmlItemId);
+    Task<string> RssExtractLinks(int rssLinkedHtmlItemId);
+
   }
   public class AppGraphOrgToolsHandler : IAppGraphOrgToolsHandler {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -130,6 +137,97 @@ namespace Weavers.Core.Tools {
         return opResult.ToString();
       } catch (Exception ex) {
         return ex.ToOpResult(_logger, Cx.CmdAddOrgFile, folderItemId, $"Failed to add file {fileName} to parent item with ID {folderItemId}");
+      }
+    }
+
+    public async Task<string> AddRssFolder(int parentItemId, string subFolderName) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(parentItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddRssFolder, parentItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddRssFolder, parentItemId);
+        var addedItem = await service.AddRssFolder(item, subFolderName);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddRssFolder, parentItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddRssFolder, await context.ToSummary(addedItem));
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddRssFolder, parentItemId, $"Failed to add RSS folder {subFolderName} to parent item with ID {parentItemId}");
+      }
+    }
+    public async Task<string> AddRssChannel(int parentItemId, string channelName, string channelUrl) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(parentItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddRssChannel, parentItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddRssChannel, parentItemId);
+        var addedItem = await service.AddRssChannel(item, channelName, channelUrl);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddRssChannel, parentItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddRssChannel, await context.ToSummary(addedItem));
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddRssChannel, parentItemId, $"Failed to add RSS channel {channelName} to parent item with ID {parentItemId}");
+      }
+    }
+
+    public async Task<string> RssResyncChannel(int rssChannelId) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(rssChannelId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdRssResyncChannel, rssChannelId);
+        if (item.ItemTypeId != (int)WeItemType.RssChannelModel) return _logger.DefaultInvalidParentMessage(Cx.CmdRssResyncChannel, rssChannelId);
+        var resyncResult = await service.RssResyncChannel(item);
+        if (resyncResult == null) return _logger.DefaultAddEmptyMessage(Cx.CmdRssResyncChannel, rssChannelId);
+        var summary = await context.ToSummary(resyncResult);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdRssResyncChannel, summary);
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdRssResyncChannel, rssChannelId, $"Failed to resync RSS channel with ID {rssChannelId}");
+      }
+    }
+
+    public async Task<string> RssResolveLink(int rssLinkedHtmlItemId) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(rssLinkedHtmlItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdRssResolveLink, rssLinkedHtmlItemId);
+        if (item.ItemTypeId != (int)WeItemType.RssLinkedHtmlModel && item.ItemTypeId != (int)WeItemType.RssItemModel) {
+          return _logger.DefaultInvalidParentMessage(Cx.CmdRssResolveLink, rssLinkedHtmlItemId);
+        }
+        var resolveResult = await service.RssResolveLink(item);
+        if (resolveResult == null) return _logger.DefaultAddEmptyMessage(Cx.CmdRssResolveLink, rssLinkedHtmlItemId);
+        var summary = await context.ToSummary(resolveResult);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdRssResolveLink, summary);
+        return opResult.ToString();
+      } catch (Exception ex) { 
+        return ex.ToOpResult(_logger, Cx.CmdRssResolveLink, rssLinkedHtmlItemId, $"Failed to resolve RSS link with ID {rssLinkedHtmlItemId}");
+      }
+    }
+
+    public async Task<string> RssExtractLinks(int rssLinkedHtmlItemId) {
+      try {
+        using var scope = _scopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(rssLinkedHtmlItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdRssExtractLinks, rssLinkedHtmlItemId);
+        if (item.ItemTypeId != (int)WeItemType.RssLinkedHtmlModel && item.ItemTypeId != (int)WeItemType.RssItemModel) {
+          return _logger.DefaultInvalidParentMessage(Cx.CmdRssExtractLinks, rssLinkedHtmlItemId);
+        }
+        var extractResult = await service.RssExtractLinks(item);
+        if (extractResult == null) return _logger.DefaultAddEmptyMessage(Cx.CmdRssExtractLinks, rssLinkedHtmlItemId);
+        var summary = await context.ToSummary(extractResult);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdRssExtractLinks, summary);
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdRssExtractLinks, rssLinkedHtmlItemId, $"Failed to extract RSS links from item with ID {rssLinkedHtmlItemId}");
       }
     }
 

@@ -31,13 +31,17 @@
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
       toolStripSeparator1 = new ToolStripSeparator();
-      miAddOrgRole = new ToolStripMenuItem();
       miAddDigitalOperator = new ToolStripMenuItem();
+      miAddOrgRole = new ToolStripMenuItem();
+      miAddWorkGroup = new ToolStripMenuItem();
       miAddOrgDesk = new ToolStripMenuItem();
       miAddDeskTodo = new ToolStripMenuItem();
       miAddForeachTodo = new ToolStripMenuItem();
       miAddOrgFolder = new ToolStripMenuItem();
       miAddOrgFile = new ToolStripMenuItem();
+      miAddOrgRssFolder = new ToolStripMenuItem();
+      miAddRssChannel = new ToolStripMenuItem();
+      miResyncChannel = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
@@ -128,6 +132,8 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
+      miResolveLink = new ToolStripMenuItem();
+      miExtractLinks = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -192,6 +198,7 @@
       // 
       // tvKb
       // 
+      tvKb.AllowDrop = true;
       tvKb.ContextMenuStrip = cmsTreeMenus;
       tvKb.Dock = DockStyle.Fill;
       tvKb.ImageIndex = 0;
@@ -203,14 +210,18 @@
       tvKb.Size = new Size(249, 569);
       tvKb.TabIndex = 0;
       tvKb.BeforeExpand += TvKb_BeforeExpand;
+      tvKb.ItemDrag += tvKb_ItemDrag;
       tvKb.AfterSelect += tvKb_AfterSelect;
+      tvKb.DragDrop += tvKb_DragDrop;
+      tvKb.DragEnter += tvKb_DragEnter;
+      tvKb.DragOver += tvKb_DragOver;
       // 
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddOrgRole, miAddDigitalOperator, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 572);
+      cmsTreeMenus.Size = new Size(209, 726);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -225,6 +236,13 @@
       toolStripSeparator1.Name = "toolStripSeparator1";
       toolStripSeparator1.Size = new Size(205, 6);
       // 
+      // miAddDigitalOperator
+      // 
+      miAddDigitalOperator.Name = "miAddDigitalOperator";
+      miAddDigitalOperator.Size = new Size(208, 22);
+      miAddDigitalOperator.Text = "Add Digital Operator";
+      miAddDigitalOperator.Click += miAddDigitalOperator_Click;
+      // 
       // miAddOrgRole
       // 
       miAddOrgRole.Name = "miAddOrgRole";
@@ -232,12 +250,12 @@
       miAddOrgRole.Text = "Add Org DeskRole";
       miAddOrgRole.Click += miAddOrgRole_Click;
       // 
-      // miAddDigitalOperator
+      // miAddWorkGroup
       // 
-      miAddDigitalOperator.Name = "miAddDigitalOperator";
-      miAddDigitalOperator.Size = new Size(208, 22);
-      miAddDigitalOperator.Text = "Add Digital Operator";
-      miAddDigitalOperator.Click += miAddDigitalOperator_Click;
+      miAddWorkGroup.Name = "miAddWorkGroup";
+      miAddWorkGroup.Size = new Size(208, 22);
+      miAddWorkGroup.Text = "Add Work Group";
+      miAddWorkGroup.Click += miAddWorkGroup_Click;
       // 
       // miAddOrgDesk
       // 
@@ -273,6 +291,27 @@
       miAddOrgFile.Size = new Size(208, 22);
       miAddOrgFile.Text = "Add Org File";
       miAddOrgFile.Click += miAddOrgFile_Click;
+      // 
+      // miAddOrgRssFolder
+      // 
+      miAddOrgRssFolder.Name = "miAddOrgRssFolder";
+      miAddOrgRssFolder.Size = new Size(208, 22);
+      miAddOrgRssFolder.Text = "Add Org Rss Folder";
+      miAddOrgRssFolder.Click += miAddOrgRssFolder_Click;
+      // 
+      // miAddRssChannel
+      // 
+      miAddRssChannel.Name = "miAddRssChannel";
+      miAddRssChannel.Size = new Size(208, 22);
+      miAddRssChannel.Text = "Add Rss Channel";
+      miAddRssChannel.Click += miAddRssChannel_Click;
+      // 
+      // miResyncChannel
+      // 
+      miResyncChannel.Name = "miResyncChannel";
+      miResyncChannel.Size = new Size(208, 22);
+      miResyncChannel.Text = "Resync Channel";
+      miResyncChannel.Click += miResyncChannel_Click;
       // 
       // miAddProjectRoot
       // 
@@ -1271,6 +1310,20 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
+      // miResolveLink
+      // 
+      miResolveLink.Name = "miResolveLink";
+      miResolveLink.Size = new Size(208, 22);
+      miResolveLink.Text = "Resolve Link";
+      miResolveLink.Click += miResolveLink_Click;
+      // 
+      // miExtractLinks
+      // 
+      miExtractLinks.Name = "miExtractLinks";
+      miExtractLinks.Size = new Size(208, 22);
+      miExtractLinks.Text = "Extract Links";
+      miExtractLinks.Click += miExtractLinks_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1424,5 +1477,11 @@
     private ToolStripMenuItem miAddOrgRole;
     private ComboBox cbHarness;
     private LinkLabel lbClaudeLaunch;
+    private ToolStripMenuItem miAddWorkGroup;
+    private ToolStripMenuItem miAddOrgRssFolder;
+    private ToolStripMenuItem miAddRssChannel;
+    private ToolStripMenuItem miResyncChannel;
+    private ToolStripMenuItem miResolveLink;
+    private ToolStripMenuItem miExtractLinks;
   }
 }

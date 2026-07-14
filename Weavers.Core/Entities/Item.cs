@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Weavers.Core.Constants;
 
 
 namespace Weavers.Core.Entities {
@@ -32,7 +33,7 @@ namespace Weavers.Core.Entities {
       builder.HasKey(x => x.Id);
 
       builder.Property(x => x.Id).ValueGeneratedOnAdd();
-      builder.Property(x => x.Name).IsRequired().HasMaxLength(500);
+      builder.Property(x => x.Name).IsRequired().HasMaxLength(Cx.NameFieldMaxLength);
       builder.Property(x => x.Description).HasMaxLength(-1);
       builder.Property(x => x.Data).HasColumnType("nvarchar(max)").HasDefaultValue("{}");
       builder.Property(x => x.IsActive).HasDefaultValue(true);

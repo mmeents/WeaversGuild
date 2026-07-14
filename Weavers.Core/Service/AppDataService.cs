@@ -3,11 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Enums;
-using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Handlers.RelationTypes;
 using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.DepItems;
-using System.Runtime.CompilerServices;
 using Weavers.Core.Handlers.Builds;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Presence;
@@ -38,6 +36,8 @@ namespace Weavers.Core.Service {
     Task AddRemoveDbContextToLibDi(int DiItemId, bool add);
     //Task AddRemoveEntityToDbContext(int entityItemId, bool add);
     Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem);
+
+    Task<bool> MoveItemTo(int itemId, int newParentItemId);
     Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite);
     Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite);
     Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite);
@@ -210,6 +210,13 @@ namespace Weavers.Core.Service {
       var mediator = GetMediator();
       var command = new ProcessPropertyUpdateCommand(entityItem, propertyItem);
       await mediator.Send(command);
+    }
+
+    public async Task<bool> MoveItemTo(int itemId, int newParentItemId) {
+      var mediator = GetMediator();
+      var command = new MoveItemToCommand(itemId, newParentItemId);
+      var result = await mediator.Send(command);
+      return true;
     }
 
     public async Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite) {

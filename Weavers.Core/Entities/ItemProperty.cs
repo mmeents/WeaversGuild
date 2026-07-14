@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Weavers.Core.Extensions;
 
 namespace Weavers.Core.Entities {
   public  class ItemProperty {
@@ -8,6 +9,7 @@ namespace Weavers.Core.Entities {
     public int ItemId { get; set; }    
     public string Name { get; set; } = string.Empty;    
     public string? Value { get; set; }
+    public long? ValueHash { get; set; }
     public int? ValueDataTypeId { get; set; }
     public int? ReferenceItemTypeId { get; set; }
     public int? EditorTypeId { get; set; }
@@ -37,6 +39,7 @@ namespace Weavers.Core.Entities {
       ItemId = itemId;
       Name = name;
       Value = value;
+      ValueHash = value.ComputeHash();
       ValueDataTypeId = valueDataTypeId;
       ReferenceItemTypeId = referenceItemTypeId;
       EditorTypeId = editorTypeId;
@@ -44,6 +47,7 @@ namespace Weavers.Core.Entities {
 
     public void Update(string? value, int? valueDataTypeId = null, int? referenceItemTypeId = null, int? editorTypeId = null) {
       Value = value;
+      ValueHash = value.ComputeHash();
       if (valueDataTypeId.HasValue) {
         ValueDataTypeId = valueDataTypeId;
       }
@@ -63,6 +67,8 @@ namespace Weavers.Core.Entities {
       builder.Property(p => p.Name).IsRequired().HasMaxLength(100);
 
       builder.Property(p => p.Value).HasMaxLength(-1).IsRequired(false);
+
+      builder.Property(p => p.ValueHash).IsRequired(false);
 
       builder.Property(p => p.ValueDataTypeId).IsRequired(false);
       
@@ -106,6 +112,7 @@ namespace Weavers.Core.Entities {
       builder.HasIndex(p => p.ValueDataTypeId);
       builder.HasIndex(p => p.ReferenceItemTypeId);
       builder.HasIndex(p => p.EditorTypeId);
+      builder.HasIndex(p => new { p.Name, p.ValueHash });
     }
   }
 

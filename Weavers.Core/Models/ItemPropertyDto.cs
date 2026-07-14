@@ -13,6 +13,8 @@ namespace Weavers.Core.Models {
     public int ItemId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Value { get; set; }
+
+    public long? ValueHash { get; set; }
     public int? ValueDataTypeId { get; set; }
     public int? ReferenceItemTypeId { get; set; }
     public int? EditorTypeId { get; set; }
@@ -38,6 +40,7 @@ namespace Weavers.Core.Models {
         ItemId = itemProperty.ItemId,
         Name = itemProperty.Name,
         Value = itemProperty.Value,
+        ValueHash = itemProperty.ValueHash,
         ValueDataTypeId = itemProperty.ValueDataTypeId,
         ReferenceItemTypeId = itemProperty.ReferenceItemTypeId,
         EditorTypeId = itemProperty.EditorTypeId,
@@ -58,6 +61,7 @@ namespace Weavers.Core.Models {
         ItemId = itemProperty.ItemId,
         Name = itemProperty.Name,
         Value = itemProperty.Value,
+        ValueHash = itemProperty.ValueHash,
         ValueDataTypeId = itemProperty.ValueDataTypeId,
         ReferenceItemTypeId = itemProperty.ReferenceItemTypeId,
         EditorTypeId = itemProperty.EditorTypeId,

@@ -122,17 +122,23 @@ namespace Weavers.Core.Enums {
       CmdReviewFail = 141,
 
       CmdAddOrgDeskRole = 142,
-      CmdAddOrgDesk = 143,  // in AppGraphDeskTools
+      CmdAddOrgDesk = 143,  // in AppGraphOrgTools
       CmdAddDeskTodo = 144,
 
       CmdAddDigitalOperatior =145,
       CmdAddOrgFolder = 146,
       CmdAddOrgFile = 148,
 
-      CmdAddProjectRoot = 150,  // in AppGraphFileTools
-      CmdAddSubFolder = 152,
-      CmdAddSolution = 154,
-      CmdAddSolutionImport = 156,
+      CmdAddRssFolder = 149,
+      CmdAddRssChannel = 150,
+      CmdRssResyncChannel = 151,
+      CmdRssResolveLink = 152,
+      CmdRssExtractLinks = 153,
+
+      CmdAddProjectRoot = 154,  // in AppGraphFileTools
+      CmdAddSubFolder = 155,
+      CmdAddSolution = 156,
+      CmdAddSolutionImport = 157,
 
       CmdAddMdFile = 158,
       CmdAddHtmlFile = 160,
@@ -199,7 +205,11 @@ namespace Weavers.Core.Enums {
 
       OrgDocFolderModel = 1060,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
         OrgDocModel = 1065,       // doc for Skill details.
-            
+        
+      RssFolderModel = 1070,
+      RssChannelModel = 1075,
+        RssItemModel = 1076,
+          RssLinkedHtmlModel = 1077,
 
       ProjectFolderModel = 1100,
       ProjectDocs = 1101,       // doc types are 1-1 systme generated type of documentation where expectation that documentation department will fill in later.

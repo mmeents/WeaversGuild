@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using Weavers.Core.Constants;
@@ -38,13 +39,13 @@ namespace Weavers.Core.Handlers.Items {
 
 
   public class UpdateItemCommandHandler(
-    FabricDbContext context, 
+    IServiceScopeFactory serviceScopeFactory,
     IMediator mediator,
     ILogger<UpdateItemCommandHandler> logger,
     IAppSettingService appSettingService,
     ISessionItemCacheService sessionCache
   ) : IMcpRequest, IRequestHandler<UpdateItemCommand, ItemDto?> {
-    private readonly FabricDbContext _context = context;
+    private readonly IServiceScopeFactory _scopeFactory = serviceScopeFactory;    
     private readonly IMediator _mediator = mediator;
     private readonly ILogger<UpdateItemCommandHandler> _logger = logger;
     private readonly IAppSettingService _appSettingService = appSettingService;
@@ -52,7 +53,8 @@ namespace Weavers.Core.Handlers.Items {
     private readonly HashSet<WeItemType> _parentFolderTypes = WeItemTypeExtensions.GetParentFileFolderDependTypes();
     private readonly HashSet<WeItemType> _parentNamespaceTypes = WeItemTypeExtensions.GetParentNamespaceDependTypes();
     public async Task<ItemDto?> Handle(UpdateItemCommand request, CancellationToken cancellationToken) {
-
+      var scope = _scopeFactory.CreateScope();
+      var _context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       var item = await _context.Items.FindAsync(request.Id);
       var nameWas = item?.Name;
 
@@ -63,7 +65,7 @@ namespace Weavers.Core.Handlers.Items {
       }
 
       item.Name = request.Name;
-      item.Description = request.Description;
+      item.Description = request.Description ?? "";
       item.Data = request.Data;
       item.ItemTypeId = request.ItemTypeId;
       item.Established = DateTime.UtcNow;  //updates to current time on update.
@@ -193,6 +195,8 @@ namespace Weavers.Core.Handlers.Items {
     }
 
     private async Task<bool> DoRename(int? itemId, string newName, CancellationToken cancellationToken) {
+      var scope = _scopeFactory.CreateScope();
+      var _context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       int theId = 0;
       if (itemId != null) { 
         theId = itemId.Value;

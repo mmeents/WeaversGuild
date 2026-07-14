@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.4.0" />
+    <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="MCPSharpMM" Version="1.0.14" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="MessagePack" Version="3.1.7" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="9.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.3.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
@@ -24,7 +28,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
     <PackageReference Include="Scriban" Version="7.2.3" />
+    <PackageReference Include="SmartReader" Version="0.10.1" />
   </ItemGroup>
 
   <ItemGroup>

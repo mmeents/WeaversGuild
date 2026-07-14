@@ -53,6 +53,12 @@ namespace Weavers.Core {
       services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();      
       services.AddSingleton<ITodoToolsHandler, TodoToolsHandler>();
 
+      services.AddHttpClient("RssResolver", c => {
+        c.Timeout = TimeSpan.FromSeconds(30);
+        c.DefaultRequestHeaders.UserAgent.ParseAdd("WeaversGuild/1.0 (+RSS capture)");
+        c.MaxResponseContentBufferSize = 10 * 1024 * 1024; // 10 MB cap, free size guard
+      });
+
       return services;
     }
 

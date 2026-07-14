@@ -47,6 +47,7 @@ namespace Weavers.Core.Extensions {
             ItemId = p.ItemId,
             Name = p.Name,
             Value = p.Value,
+            ValueHash = p.ValueHash,
             ValueDataTypeId = p.ValueDataTypeId,
             ReferenceItemTypeId = p.ReferenceItemTypeId,
             EditorTypeId = p.EditorTypeId,

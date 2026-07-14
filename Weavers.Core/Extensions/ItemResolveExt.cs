@@ -39,12 +39,20 @@ namespace Weavers.Core.Extensions {
       return propKey != "";
     }
 
+    public static bool IsValidRssFolderParent(this ItemDto item) =>
+      item.ItemTypeId == (int)WeItemType.OrganizationModel ||
+      item.ItemTypeId == (int)WeItemType.RssFolderModel;
+
     public static string GetFileName(this ItemDto item) {
       if (item.ItemTypeId.IsFileNameType()) {
         var result = item.ItemTypeId switch {
           (int)WeItemType.DigitalOperatorModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.DeskModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.OrgDocModel => item.Name.UrlSafe() + ".md",
+          (int)WeItemType.RssFolderModel => item.Name.UrlSafe() + ".json",
+          (int)WeItemType.RssChannelModel => item.Name.UrlSafe() + ".json",
+          (int)WeItemType.RssItemModel => item.Name.UrlSafe() + ".json",
+          (int)WeItemType.RssLinkedHtmlModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.FileMdModel => item.Name.UrlSafe() + ".md",
           (int)WeItemType.FileHtmlModel => item.Name.UrlSafe() + ".html",
           (int)WeItemType.FileConfigModel => item.Name.UrlSafe() + ".json",

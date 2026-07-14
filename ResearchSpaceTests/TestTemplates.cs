@@ -8,7 +8,7 @@ using Weavers.Core.Models;
 namespace ResearchSpaceTests {
 
   [TestClass]
-  public sealed class Test1 {
+  public sealed class TestTemplates {
 
     [TestMethod]
     public void TestMethod1() {

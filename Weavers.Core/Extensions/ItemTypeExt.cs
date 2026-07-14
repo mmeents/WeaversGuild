@@ -84,6 +84,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.OrgDocFolderModel => 1,
         WeItemType.OrgDocModel => 17,
 
+        WeItemType.RssFolderModel => 21,
+        WeItemType.RssChannelModel => 6,
+        WeItemType.RssItemModel => 14,
+        WeItemType.RssLinkedHtmlModel => 16,
+
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
         WeItemType.FileMdModel => 2,
@@ -136,6 +141,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskModel,
         WeItemType.OrgDocFolderModel, 
         WeItemType.OrgDocModel,
+        WeItemType.RssFolderModel,
+        WeItemType.RssChannelModel,
+        WeItemType.RssItemModel,
+        WeItemType.RssLinkedHtmlModel,
         WeItemType.ProjectFolderModel, 
         WeItemType.RelativeFolderModel,        
         WeItemType.FileMdModel,
@@ -222,7 +231,11 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.DeskModel => true,        
         (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.RssItemModel => true,
+        (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.FileMdModel => true,
+        (int)WeItemType.FileHtmlModel => true,
+        (int)WeItemType.FileConfigModel => true,
         (int)WeItemType.SolutionModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
@@ -243,7 +256,9 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,
-        (int)WeItemType.OrgDocFolderModel => true,        
+        (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.RssFolderModel => true,
+        (int)WeItemType.RssChannelModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,        
         _ => false
@@ -258,6 +273,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,        
         (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.RssFolderModel => true,
+        (int)WeItemType.RssChannelModel => true,
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.NamespaceModel => true,
@@ -276,6 +293,8 @@ namespace Weavers.Core.Extensions {
     public static bool IsContentType(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.RssItemModel => true,
+        (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
@@ -320,7 +339,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.DeskModel => true,
         (int)WeItemType.OrgDocFolderModel => true,
-        (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.OrgDocModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.FileMdModel => true,
@@ -346,6 +365,10 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskModel => Cx.ItFilePath,
         (int)WeItemType.OrgDocFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.OrgDocModel => Cx.ItFilePath,
+        (int)WeItemType.RssFolderModel => Cx.ItRelativeFolder,
+        (int)WeItemType.RssChannelModel => Cx.ItRelativeFolder,
+        (int)WeItemType.RssItemModel => Cx.ItFilePath,
+        (int)WeItemType.RssLinkedHtmlModel => Cx.ItFilePath,
         (int)WeItemType.ProjectFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.RelativeFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.FileMdModel => Cx.ItFilePath,
@@ -366,7 +389,9 @@ namespace Weavers.Core.Extensions {
     }
     
     public static bool IsParentFileWithFileLikeKids(this int itemTypeId) {
-      return itemTypeId switch {        
+      return itemTypeId switch {      
+        (int)WeItemType.RssItemModel => true,
+        (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
         (int)WeItemType.DbContextModel => true,                                
@@ -490,6 +515,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddDigitalOperatior => Cx.CmdAddDigitalOperator,
         WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
         WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
+
+        WeItemType.CmdAddRssFolder => Cx.CmdAddRssFolder,
+        WeItemType.CmdAddRssChannel => Cx.CmdAddRssChannel,
+        WeItemType.CmdRssResyncChannel => Cx.CmdRssResyncChannel,
 
         WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,
         WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,

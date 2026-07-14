@@ -1,23 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Weavers.Core.Constants;
 
 namespace Weavers.Core.Extensions {
   public static class StringExt {
+    private static readonly string[] _tokenFilter = ["www", "http", "https"];
     public static char[] InvalidFileNameChars() => [.. Path.GetInvalidFileNameChars(), .. MyInvalidList()];
     public static char[] MyInvalidList() => " `~!@#$%^&*()_-+=[]{},.;'".ToCharArray();
+    public static char[] NamesafeChars() => " `~!@#$%^&*()_-+=[]{},;'".ToCharArray();
+
     public static string UrlSafe(this string str) {
-      return string.Concat(str.Split(InvalidFileNameChars()));
+      var u = str.CutQuery();
+      var sb = new StringBuilder(u.Length);
+      foreach (var item in u.Split(InvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)) {
+        if (!_tokenFilter.Contains(item.ToLower(), StringComparer.OrdinalIgnoreCase))
+          sb.Append(item.AsUpperCaseFirstLetter());
+      }
+      return sb.ToString(0, Math.Min(sb.Length, Cx.NameFieldMaxLength));
+    }
+            
+    public static char[] InvalidNamesafeChars() => [.. Path.GetInvalidFileNameChars(), .. NamesafeChars()];
+    
+    public static string NameSafe(this string str) {
+      var u = str.CutQuery();
+      var sb = new StringBuilder(u.Length);
+      foreach (var item in u.Split(InvalidNamesafeChars(), StringSplitOptions.RemoveEmptyEntries)) {
+        if (!_tokenFilter.Contains(item.ToLower(), StringComparer.OrdinalIgnoreCase))
+          sb.Append(item.AsUpperCaseFirstLetter());
+      }
+      return sb.ToString(0, Math.Min(sb.Length, Cx.NameFieldMaxLength));
     }
 
-    // same as UrlSafe but allows for period.
-    public static char[] NamesafeChars() => " `~!@#$%^&*()_-+=[]{},;'".ToCharArray();
-    public static char[] InvalidNamesafeChars() => [.. Path.GetInvalidFileNameChars(), .. NamesafeChars()];
-    public static string NameSafe(this string str) {
-      return string.Concat(str.Split(InvalidNamesafeChars()));
+    public static string CutQuery(this string str) {
+      var u = str.Trim();
+      var i = u.IndexOfAny(['?', '#']);
+      return i >= 0 ? u[..i] : u;
+    }
+
+    public static string AsUpperCaseFirstLetter(this string content) {
+      if (string.IsNullOrEmpty(content)) return "";
+      return content.Substring(0, 1).ToUpper() + content.Substring(1);      
     }
 
     public static bool AsBoolean(this string? value) {
@@ -55,11 +76,6 @@ namespace Weavers.Core.Extensions {
       return newName.UrlSafe();
     }
 
-    public static string AsUpperCaseFirstLetter(this string content) {
-      if (string.IsNullOrEmpty(content)) return "";
-      var newName = content.Substring(0, 1).ToUpper() + content.Substring(1);
-      return newName.UrlSafe();
-    }
     
     public static string ResolvePath(this string path) {
       if (!Path.IsPathRooted(path)) {
