@@ -1,0 +1,1 @@
+{"MaxAttempts":3,"DeskId":33,"DeskName":"DeskOfFails","OperatorId":42,"Operator":"Nemo","DeskRoleEnumInt":0,"SysPromptTemplate":"","PushDeskName":"TheLoomAppSyncDesk","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"TheLoomAppSyncDesk"}

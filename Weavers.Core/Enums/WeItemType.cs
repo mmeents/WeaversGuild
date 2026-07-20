@@ -116,7 +116,8 @@ namespace Weavers.Core.Enums {
       CmdAppendItemContent = 135,
       CmdUpdateItemProperty = 136,
 
-      CmdCompleteTodo = 138,
+      CmdCompleteTodo = 137,
+      CmdSetTodoReady = 138,
       CmdRejectTodo = 139,
       CmdReviewPass = 140,
       CmdReviewFail = 141,
@@ -134,17 +135,21 @@ namespace Weavers.Core.Enums {
       CmdRssResyncChannel = 151,
       CmdRssResolveLink = 152,
       CmdRssExtractLinks = 153,
+      CmdAppendGuildNote = 154,
+      CmdUpdateGuildNote = 155,
+      CmdArchiveItem = 156,
+      CmdUnarchiveItem =157,
 
-      CmdAddProjectRoot = 154,  // in AppGraphFileTools
-      CmdAddSubFolder = 155,
-      CmdAddSolution = 156,
-      CmdAddSolutionImport = 157,
+      CmdAddProjectRoot = 158,  // in AppGraphFileTools
+      CmdAddSubFolder = 159,
+      CmdAddSolution = 160,
+      CmdAddSolutionImport = 161,
 
-      CmdAddMdFile = 158,
-      CmdAddHtmlFile = 160,
-      CmdAddConfigFile = 162,
+      CmdAddMdFile = 162,
+      CmdAddHtmlFile = 163,
+      CmdAddConfigFile = 164,
 
-      CmdAddLibrary = 164,  // in AppGraphLibraryTools
+      CmdAddLibrary = 165,  // in AppGraphLibraryTools
       CmdAddNamespace = 166,
 
       CmdAddClass = 168,  // in AppGraphClassTools
@@ -175,6 +180,9 @@ namespace Weavers.Core.Enums {
       AssertItemExists = 251,
       AssertItemIsType = 252,
 
+    LinkResolutionTypes = 260,
+      LinkNotResolved = 261,
+      LinkResolved = 262,
 
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 

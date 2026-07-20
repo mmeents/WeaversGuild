@@ -60,7 +60,7 @@ namespace Weavers.Core.Tools {
         var ItemDtoList = await mediator.Send(new GetRootProjectsQuery());
         List<ItemSummaryDto> result = new List<ItemSummaryDto>();
         foreach (var item in ItemDtoList) {
-          result.Add(await context.ToSummary(item));
+          result.Add(await context.ToSummary(item, false));
         }
         var opResult = McpOpResult.CreateSuccess(Cx.CmdListProjects, result);
         return JsonSerializer.Serialize(opResult);
@@ -166,7 +166,7 @@ namespace Weavers.Core.Tools {
           var updateFailedResult = McpOpResult.CreateFailure("UpdateSummary", $"Failed to update item with id {id}");
           return JsonSerializer.Serialize(updateFailedResult);
         }
-        var opResult = McpOpResult.CreateSuccess("UpdateSummary", await context.ToSummary(updatedItem));
+        var opResult = McpOpResult.CreateSuccess("UpdateSummary", await context.ToSummary(updatedItem, false));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating summary");
@@ -202,7 +202,7 @@ namespace Weavers.Core.Tools {
           var updateFailedResult = McpOpResult.CreateFailure(Cx.CmdUpdateItemContent, $"Failed to update item with id {id}");
           return JsonSerializer.Serialize(updateFailedResult);
         }
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdUpdateItemContent, await context.ToSummary(updatedItem));
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdUpdateItemContent, await context.ToSummary(updatedItem, true));
         return JsonSerializer.Serialize(opResult);
 
       } catch (Exception ex) {
@@ -252,7 +252,7 @@ namespace Weavers.Core.Tools {
             McpOpResult.CreateFailure(Cx.CmdAppendItemContent, $"Failed to reload item with id {id}"));
         }
 
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAppendItemContent, await context.ToSummary(updatedItem));
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAppendItemContent, await context.ToSummary(updatedItem, true));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error appending item content");
@@ -273,7 +273,7 @@ namespace Weavers.Core.Tools {
           var notFoundResult = McpOpResult.CreateFailure("UpdateItemProperty", $"No item property found for id {itemPropertyId}");
           return JsonSerializer.Serialize(notFoundResult);
         }
-        var opResult = McpOpResult.CreateSuccess("UpdateItemProperty", await context.ToSummary(result));
+        var opResult = McpOpResult.CreateSuccess("UpdateItemProperty", await context.ToSummary(result, false));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
         _logger.LogError(ex, "Error updating item property");

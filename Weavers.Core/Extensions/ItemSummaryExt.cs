@@ -13,7 +13,7 @@ namespace Weavers.Core.Extensions {
 
       var result = await context.Items
         .AsNoTracking()
-        .Where(i => i.Id == id)
+        .Where(i => i.Id == id && i.IsActive == true)
         .Select(i => new ItemSummaryDto {
           Id = i.Id,
           ParentId = i.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != id),
@@ -23,7 +23,9 @@ namespace Weavers.Core.Extensions {
           Content = i.ItemTypeId.IsContentType() ? i.Description : null,
           NodesUp = nodesUp,
           Nodes = !nodesUp ? null : i.Relations
-            .Where(r => r.RelatedItem != null && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
+            .Where(r => r.RelatedItem != null 
+              && r.RelatedItem.IsActive
+              && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
             .Select(r => new ItemSummaryDto {
               Id = r.RelatedItemId ?? 0,
               ParentId = r.ItemId,
@@ -75,9 +77,11 @@ namespace Weavers.Core.Extensions {
 
       var children = await context.Items
         .AsNoTracking()
-        .Where(i => i.Id == itemSummary.Id)
+        .Where(i => i.Id == itemSummary.Id && i.IsActive)
         .SelectMany(i => i.Relations)
-        .Where(r => r.RelatedItem != null && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
+        .Where(r => r.RelatedItem != null 
+          && r.RelatedItem.IsActive
+          && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
         .Select(r => new ItemSummaryDto
         {
           Id = r.RelatedItemId ?? 0,
@@ -85,7 +89,7 @@ namespace Weavers.Core.Extensions {
           Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
           TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
           TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
-          Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
+          Content = null,//r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
           Props = !includeProps ? null : r.RelatedItem != null
             ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,
@@ -120,13 +124,18 @@ namespace Weavers.Core.Extensions {
     }
 
 
-    public static async Task<ItemSummaryDto> ToSummary(this FabricDbContext context, ItemDto item, CancellationToken cancellationToken = default) {
+    public static async Task<ItemSummaryDto> ToSummary(
+     this FabricDbContext context,
+     ItemDto item,
+     bool includeContent,            // no default — forces a decision at all 35 callers
+     CancellationToken cancellationToken = default) {
       if (item == null) throw new ArgumentNullException(nameof(item));
+
       string? code = null;
-      if (item.ItemTypeId.IsMethodCodeType()) {
+      if (includeContent && item.ItemTypeId.IsMethodCodeType()) {   // gate the BuildMethod call too
         var codeProps = await context.BuildMethod(item.Id, cancellationToken);
         if (codeProps != null) {
-          code = codeProps.MethodSignature + $"{{" + Environment.NewLine+Cx.MethodStartMarker + Environment.NewLine
+          code = codeProps.MethodSignature + "{" + Environment.NewLine + Cx.MethodStartMarker + Environment.NewLine
             + codeProps.MethodBody + Environment.NewLine + Cx.MethodEndMarker;
         }
       }
@@ -136,8 +145,11 @@ namespace Weavers.Core.Extensions {
         Name = item.Name,
         TypeId = item.ItemTypeId,
         TypeName = item.ItemTypeName ?? "",
-        ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),        
-        Content = item.ItemTypeId.IsContentType() ? item.Description : item.ItemTypeId.IsMethodCodeType() ? code : null,
+        ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),
+        Content = includeContent
+            ? (item.ItemTypeId.IsContentType() ? item.Description
+               : item.ItemTypeId.IsMethodCodeType() ? code : null)
+            : null,
         Props = item.Properties.Select(p => new PropSummaryDto {
           Id = p.Id,
           Name = p.Name,

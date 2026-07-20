@@ -210,6 +210,7 @@ namespace Weavers.Core.Extensions {
           WeItemType.TodoStatuses,          
           WeItemType.RunStatus,
           WeItemType.DeskPreAssertCheckTypes,
+          WeItemType.LinkResolutionTypes
       };
       return lookupTypes;
     }
@@ -505,6 +506,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemProperty => Cx.CmdUpdateItemProperty,
 
         WeItemType.CmdCompleteTodo => Cx.CmdCompleteTodo,
+        WeItemType.CmdSetTodoReady => Cx.CmdSetTodoReady,
         WeItemType.CmdRejectTodo => Cx.CmdRejectTodo,
         WeItemType.CmdReviewPass => Cx.CmdReviewPass,
         WeItemType.CmdReviewFail => Cx.CmdReviewFail,
@@ -519,6 +521,12 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddRssFolder => Cx.CmdAddRssFolder,
         WeItemType.CmdAddRssChannel => Cx.CmdAddRssChannel,
         WeItemType.CmdRssResyncChannel => Cx.CmdRssResyncChannel,
+        WeItemType.CmdRssResolveLink => Cx.CmdRssResolveLink,
+        WeItemType.CmdRssExtractLinks => Cx.CmdRssExtractLinks,
+        WeItemType.CmdAppendGuildNote => Cx.CmdAppendGuildNote,
+        WeItemType.CmdUpdateGuildNote => Cx.CmdUpdateGuildNote,
+        WeItemType.CmdArchiveItem => Cx.CmdArchiveItem,
+        WeItemType.CmdUnarchiveItem => Cx.CmdUnarchiveItem,
 
         WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,
         WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,

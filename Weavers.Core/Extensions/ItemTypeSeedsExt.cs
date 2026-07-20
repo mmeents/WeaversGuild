@@ -113,6 +113,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemProperty => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdCompleteTodo => WeItemType.LoomMcpCommands,
+        WeItemType.CmdSetTodoReady => WeItemType.LoomMcpCommands,
         WeItemType.CmdRejectTodo => WeItemType.LoomMcpCommands,
         WeItemType.CmdReviewPass => WeItemType.LoomMcpCommands,
         WeItemType.CmdReviewFail => WeItemType.LoomMcpCommands,    
@@ -130,6 +131,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdRssResyncChannel => WeItemType.LoomMcpCommands,
         WeItemType.CmdRssResolveLink => WeItemType.LoomMcpCommands,
         WeItemType.CmdRssExtractLinks => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAppendGuildNote => WeItemType.LoomMcpCommands,
+        WeItemType.CmdUpdateGuildNote => WeItemType.LoomMcpCommands,
+        WeItemType.CmdArchiveItem => WeItemType.LoomMcpCommands,
+        WeItemType.CmdUnarchiveItem => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdAddProjectRoot => WeItemType.LoomMcpCommands,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => WeItemType.LoomMcpCommands,
@@ -169,6 +174,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskPreAssertCheckTypes => null,
         WeItemType.AssertItemExists => WeItemType.DeskPreAssertCheckTypes,
         WeItemType.AssertItemIsType => WeItemType.DeskPreAssertCheckTypes,
+
+        WeItemType.LinkResolutionTypes => null,
+        WeItemType.LinkNotResolved => WeItemType.LinkResolutionTypes,
+        WeItemType.LinkResolved => WeItemType.LinkResolutionTypes,
 
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
@@ -495,6 +504,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdRssResyncChannel => (int)WeEditorType.String,
         WeItemType.CmdRssResolveLink => (int)WeEditorType.String,
         WeItemType.CmdRssExtractLinks => (int)WeEditorType.String,
+        WeItemType.CmdAppendGuildNote => (int)WeEditorType.String,
+        WeItemType.CmdUpdateGuildNote => (int)WeEditorType.String,
+        WeItemType.CmdArchiveItem => (int)WeEditorType.String,
+        WeItemType.CmdUnarchiveItem => (int)WeEditorType.String,
 
         WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => (int)WeEditorType.String,
@@ -726,40 +739,45 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemProperty => 9,
 
         WeItemType.CmdCompleteTodo => 10,  // in TodoTools
-        WeItemType.CmdRejectTodo => 11,
-        WeItemType.CmdReviewPass => 12,
-        WeItemType.CmdReviewFail => 13,
+        WeItemType.CmdSetTodoReady => 11,
+        WeItemType.CmdRejectTodo => 12,
+        WeItemType.CmdReviewPass => 13,
+        WeItemType.CmdReviewFail => 14,
 
-        WeItemType.CmdAddOrgDeskRole => 14, // in AppGraphOrgTools
-        WeItemType.CmdAddOrgDesk => 15,  
-        WeItemType.CmdAddDeskTodo => 16,
-        WeItemType.CmdAddDigitalOperatior => 17,
-        WeItemType.CmdAddOrgFolder => 18,
-        WeItemType.CmdAddOrgFile => 19,
+        WeItemType.CmdAddOrgDeskRole => 15, // in AppGraphOrgTools
+        WeItemType.CmdAddOrgDesk => 16,  
+        WeItemType.CmdAddDeskTodo => 17,
+        WeItemType.CmdAddDigitalOperatior => 18,
+        WeItemType.CmdAddOrgFolder => 19,
+        WeItemType.CmdAddOrgFile => 20,
 
-        WeItemType.CmdAddRssFolder => 20,
-        WeItemType.CmdAddRssChannel => 21,
-        WeItemType.CmdRssResyncChannel => 22,
-        WeItemType.CmdRssResolveLink => 23,
-        WeItemType.CmdRssExtractLinks => 24,
+        WeItemType.CmdAddRssFolder => 21,
+        WeItemType.CmdAddRssChannel => 22,
+        WeItemType.CmdRssResyncChannel => 23,
+        WeItemType.CmdRssResolveLink => 24,
+        WeItemType.CmdRssExtractLinks => 25,
+        WeItemType.CmdAppendGuildNote => 26,
+        WeItemType.CmdUpdateGuildNote => 27,
+        WeItemType.CmdArchiveItem => 28,
+        WeItemType.CmdUnarchiveItem => 29,
 
-        WeItemType.CmdAddProjectRoot => 23,  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => 24,
-        WeItemType.CmdAddSolution => 25,
-        WeItemType.CmdAddSolutionImport => 26,
-        WeItemType.CmdAddMdFile => 27,
-        WeItemType.CmdAddHtmlFile => 28,
-        WeItemType.CmdAddConfigFile => 29,
-        WeItemType.CmdAddLibrary => 30,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 31,
-        WeItemType.CmdAddClass => 32,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 33,
-        WeItemType.CmdAddClassProperty => 34,
-        WeItemType.CmdAddClassMethod => 35,
-        WeItemType.CmdAddClassMethodParam => 36,
-        WeItemType.CmdAddEntityClass => 37,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 38,
-        WeItemType.CmdAddEntityProperty => 39,
+        WeItemType.CmdAddProjectRoot => 30,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => 31,
+        WeItemType.CmdAddSolution => 32,
+        WeItemType.CmdAddSolutionImport => 33,
+        WeItemType.CmdAddMdFile => 34,
+        WeItemType.CmdAddHtmlFile => 35,
+        WeItemType.CmdAddConfigFile => 36,
+        WeItemType.CmdAddLibrary => 37,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 38,
+        WeItemType.CmdAddClass => 39,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 40,
+        WeItemType.CmdAddClassProperty => 41,
+        WeItemType.CmdAddClassMethod => 42,
+        WeItemType.CmdAddClassMethodParam => 43,
+        WeItemType.CmdAddEntityClass => 44,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 45,
+        WeItemType.CmdAddEntityProperty => 46,
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -777,6 +795,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskPreAssertCheckTypes => 1,
         WeItemType.AssertItemExists => 1,
         WeItemType.AssertItemIsType => 2,
+
+        WeItemType.LinkResolutionTypes => 1,
+        WeItemType.LinkNotResolved => 1,
+        WeItemType.LinkResolved => 2,
 
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
@@ -993,6 +1015,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdUpdateItemProperty => "Update Item Property Command",
 
         WeItemType.CmdCompleteTodo => "Complete Todo Command",
+        WeItemType.CmdSetTodoReady => "Set Todo Ready Command",
         WeItemType.CmdRejectTodo => "Reject Todo Command",
         WeItemType.CmdReviewPass => "Review Pass Command",
         WeItemType.CmdReviewFail => "Review Fail Command",
@@ -1010,6 +1033,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdRssResyncChannel => "Resync Rss Channel Command",
         WeItemType.CmdRssResolveLink => "Resolve Rss Link Command",
         WeItemType.CmdRssExtractLinks => "Extract Rss Links Command",
+        WeItemType.CmdAppendGuildNote => "Append Guild Note Command",
+        WeItemType.CmdUpdateGuildNote => "Update Guild Note Command",
+        WeItemType.CmdArchiveItem => "Archive Item Command",
+        WeItemType.CmdUnarchiveItem => "Unarchive Item Command",
 
         WeItemType.CmdAddProjectRoot => "Add Project Root Command",  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
@@ -1048,7 +1075,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.DeskPreAssertCheckTypes =>"Desk Pre-Assert Check Types",
         WeItemType.AssertItemExists => "Assert Item Exists",
-        WeItemType.AssertItemIsType => "Assert Item Is Type",        
+        WeItemType.AssertItemIsType => "Assert Item Is Type",
+
+        WeItemType.LinkResolutionTypes => "Link Resolution Types",
+        WeItemType.LinkNotResolved => "Not Resolved",
+        WeItemType.LinkResolved => "Resolved",
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",

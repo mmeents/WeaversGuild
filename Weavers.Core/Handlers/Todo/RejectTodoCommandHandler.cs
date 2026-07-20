@@ -62,8 +62,15 @@ namespace Weavers.Core.Handlers.Todo {
       }
 
       // create new todo on the onPushbackDesk with the same note and link it to the rejected todo item.
-      var nextRank = await _mediator.Send(new GetNextItemRankQuery(onPushbackDesk.Id)) + 1;
-      var name = todoItem.Name == null ? $"Todo {nextRank}" : todoItem.Name;
+      var nextRank = await _mediator.Send(new GetNextItemRankQuery(onPushbackDesk.Id)) + 1;      
+      var name = "";
+      if (todoItem.Name != null) {
+        var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
+        name = $"{baseName} fromId:{todoItem.Id}";
+      } else {        
+        name = $"Todo {nextRank} fromId:{todoItem.Id}";
+      }
+
       var newTodoItem = await _mediator.Send(
         new CreateRelatedItemCommand(onPushbackDesk.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.TodoModel, name, "", "{}"));
@@ -166,12 +173,16 @@ namespace Weavers.Core.Handlers.Todo {
       }
 
       // Implement the logic for handling the RejectTodoCommand here
-      return result;
+      return result.CreateSuccess(newTodoItem);
     }
   }
 
   public static class RejectTodoCmdResultExts {
-
+    public static RejectTodoCmdResult CreateSuccess(this RejectTodoCmdResult result, ItemDto? newTodo) {
+      result.Success = true;
+      result.Message = $"Todo item rejected successfully. New rejection todo Id: {(newTodo != null ? newTodo.Id.ToString() : "N/A")} was also created.";
+      return result;
+    }
     public static RejectTodoCmdResult CreateFailure(this RejectTodoCmdResult result, string errorMessage) {
       result.Success = false;
       result.Message = errorMessage;

@@ -38,6 +38,8 @@
       // 
       // textBox1
       // 
+      textBox1.AcceptsReturn = true;
+      textBox1.AcceptsTab = true;
       textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
       textBox1.Location = new Point(119, 4);
       textBox1.Multiline = true;

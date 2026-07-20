@@ -75,8 +75,9 @@ namespace Weavers.Core.Handlers.Todo {
 
       // create new todo on the onSuccessDesk with the same note and link it to the completed todo item.
       var name = "";
-      if (todoItem.Name != null) {
-        name = todoItem.Name + $" fromId:{todoItem.Id}";
+      if (todoItem.Name != null) {        
+        var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
+        name = $"{baseName} fromId:{todoItem.Id}";
       } else {
         var nextRank = await _mediator.Send(new GetNextItemRankQuery(onSuccessDesk.Id)) + 1;
         name = $"Todo {nextRank} fromId:{todoItem.Id}";
@@ -191,7 +192,7 @@ namespace Weavers.Core.Handlers.Todo {
         await currentDeskTodoProp.SaveProp(parentDesk, _mediator);
       }
 
-      return result.CreateSuccess();
+      return result.CreateSuccess(newTodoItem);
 
     }
   }
@@ -199,9 +200,9 @@ namespace Weavers.Core.Handlers.Todo {
 
 
   public static class CompleteTodoCmdResultExts {
-    public static CompleteTodoCmdResult CreateSuccess(this CompleteTodoCmdResult result) {
+    public static CompleteTodoCmdResult CreateSuccess(this CompleteTodoCmdResult result, ItemDto? newTodo) {
       result.Success = true;
-      result.Message = "Todo item completed successfully.";
+      result.Message = $"Todo item completed successfully. New forward todo Id: {(newTodo != null ? newTodo.Id.ToString() : "N/A")} was also created.";
       return result;
     }
 

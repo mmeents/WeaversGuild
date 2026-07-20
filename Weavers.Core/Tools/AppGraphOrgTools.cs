@@ -30,7 +30,9 @@ namespace Weavers.Core.Tools {
   [Description("The name of the new desk.")] string deskName)
   => GetTools().AddOrgDesk(orgChartId, deskName);
 
-    [McpTool(Cx.CmdAddDeskTodo, "Adds a new Todo to the specified Org desk.")]
+    [McpTool(Cx.CmdAddDeskTodo, "Adds a new Todo to the specified Org desk. Note: promptTemplate follows Scriban syntax. "+
+      "model being passed in has both Todo and Target ItemSummaryDto objects. ex: {{ model.todo.id }} {{ model.target.name }} would "+
+      "render todo id and target name.  ")]
     public static Task<string> AddDeskTodo(
       [Description("The Item Id of the Org desk to add the todo to.")] int orgDeskId,
       [Description("The name of the new todo.")] string todoName,
@@ -87,6 +89,28 @@ namespace Weavers.Core.Tools {
     public static Task<string> RssExtractLinks(
       [Description("The Item Id of the Rss linked html to extract links from.")] int rssLinkedHtmlItemId)
       => GetTools().RssExtractLinks(rssLinkedHtmlItemId);
+
+    [McpTool(Cx.CmdAppendGuildNote, "Appends a note to the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel")]
+    public static Task<string> AppendGuildNote(
+      [Description("The Item Id of the rss item to append the note to.")] int rssItemId,
+      [Description("The content of the note to append.")] string noteContent)
+      => GetTools().AppendGuildNote(rssItemId, noteContent);
+
+    [McpTool(Cx.CmdUpdateGuildNote, "Updates a note in the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel")]
+    public static Task<string> UpdateGuildNote(
+      [Description("The Item Id of the rss item to update the note in.")] int rssItemId,
+      [Description("The new content of the note.")] string noteContent)
+      => GetTools().UpdateGuildNote(rssItemId, noteContent);
+
+    [McpTool(Cx.CmdArchiveItem, "Archives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel")]
+    public static Task<string> ArchiveItem(
+      [Description("The Item Id of the item to archive.")] int itemId)
+      => GetTools().ArchiveItem(itemId);
+
+    [McpTool(Cx.CmdUnarchiveItem, "Unarchives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel")]
+    public static Task<string> UnarchiveItem(
+      [Description("The Item Id of the item to unarchive.")] int itemId)
+      => GetTools().UnarchiveItem(itemId);
 
   }
 }

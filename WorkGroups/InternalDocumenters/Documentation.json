@@ -1,0 +1,1 @@
+{"MaxAttempts":3,"DeskId":106,"DeskName":"Documentation","OperatorId":88,"Operator":"Sonnet","DeskRoleEnumInt":112,"SysPromptTemplate":"This is the {{model.desk}} desk.  \r\n\r\nTools available to you are:\r\n{{for cmd in model.role_commands}}  {{cmd.command}}\r\n{{end}} ","PushDeskName":"TheLoomAppSyncDesk","FailDeskName":"DeskOfFails","SuccessDeskName":"DocumenterReview"}

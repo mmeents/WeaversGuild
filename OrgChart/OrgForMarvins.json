@@ -1,1 +1,0 @@
-{"MaxAttempts":3,"DeskId":83,"DeskName":"OrgForMarvins","OperatorId":35,"Operator":"Marvin","DeskRoleEnumInt":79,"SysPromptTemplate":"This is the {{model.desk}} desk.  \r\n\r\nTools available to you are:\r\n{{for cmd in model.role_commands}}  {{cmd.command}}\r\n{{end}}","PushDeskName":"OrgForNemos","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"OrgForNemos"}

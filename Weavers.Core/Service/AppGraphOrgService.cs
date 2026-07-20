@@ -28,6 +28,10 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> RssResyncChannel(ItemDto rssChannelItem);
     Task<ItemDto?> RssResolveLink(ItemDto rssLinkedHtmlItem, CancellationToken ct = default);
     Task<ItemDto?> RssExtractLinks(ItemDto rssLinkedHtmlItem, CancellationToken ct = default);
+    Task<ItemDto?> AppendGuildNote(ItemDto rssItem, string noteContent);
+    Task<ItemDto?> UpdateGuildNote(ItemDto rssItem, string noteContent);
+    Task<bool> ArchiveItem(ItemDto ArchiveItem);
+    Task<bool> UnarchiveItem(int itemId);
   }
   public class AppGraphOrgService : IAppGraphOrgService {
     private readonly IServiceScopeFactory _scopeFactory;
@@ -326,6 +330,12 @@ namespace Weavers.Core.Service {
       }
       var url = itsLinkItemProp.Value;
 
+      var resolveLinkProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink);
+      if (resolveLinkProp != null && resolveLinkProp.Value.AsBoolean()) {
+        resolveLinkProp.Value = "0";
+        await resolveLinkProp.SaveProp(rssLinkedHtmlItem, mediator);
+      }
+
       using var resp = await _httpClientFactory.CreateClient("RssResolver").GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
       if (!resp.IsSuccessStatusCode) throw new Exception($"Failed to fetch URL: {url}, Status Code: {resp.StatusCode}");
 
@@ -340,6 +350,12 @@ namespace Weavers.Core.Service {
            : Sanitizer.Sanitize(html);            // degrade: whole page, defanged
 
       content = content.Replace("<div></div>","").Replace("<div></div>", ""); 
+
+      var resolvedStateProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveState);
+      if (resolvedStateProp != null) {
+        resolvedStateProp.Value = $"{(int)WeItemType.LinkResolved}";
+        await resolvedStateProp.SaveProp(rssLinkedHtmlItem, mediator);
+      }
 
       rssLinkedHtmlItem.Name = title;
       rssLinkedHtmlItem.Description = content.Trim();
@@ -360,6 +376,12 @@ namespace Weavers.Core.Service {
       var maxLinks = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItMaxLinks)?.Value.AsInt() ?? 20;
       var context = BrowsingContext.New(Configuration.Default);
       var doc = await context.OpenAsync(req => req.Content(sanitizedHtml));
+
+      var extractedLinksProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItExtractLink);
+      if (extractedLinksProp != null && extractedLinksProp.Value.AsBoolean()) {
+        extractedLinksProp.Value = "0";
+        await extractedLinksProp.SaveProp(rssLinkedHtmlItem, mediator);
+      }
 
       var baseUri = new Uri(baseUrl);
       var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -410,7 +432,45 @@ namespace Weavers.Core.Service {
       return resultItem;      
     }
 
+    public async Task<ItemDto?> AppendGuildNote(ItemDto rssItem, string noteContent) {
+      var mediator = GetMediator();
+      if (rssItem == null) throw new ArgumentNullException(nameof(rssItem));
+      if (string.IsNullOrWhiteSpace(noteContent)) throw new ArgumentException("Note content cannot be empty.", nameof(noteContent));
 
+      var guildNodeProp = rssItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGuildNotes);
+      var existingNotes = "";
+      if (guildNodeProp != null) { 
+        existingNotes = guildNodeProp.Value ?? "";
+        const string Sep = "\n\n---\n\n";
+        var updatedNotes = string.IsNullOrEmpty(existingNotes) ? noteContent : $"{existingNotes}{Sep}{noteContent}";
+        guildNodeProp.Value = updatedNotes;
+        await guildNodeProp.SaveProp(rssItem, mediator);
+      }        
+      return rssItem;
+    }
+
+    public async Task<ItemDto?> UpdateGuildNote(ItemDto RssItem, string noteContent) {
+      var mediator = GetMediator();
+      if (RssItem == null) throw new ArgumentNullException(nameof(RssItem));      
+      var guildNotesProp = RssItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGuildNotes);
+      if (guildNotesProp != null) {         
+        guildNotesProp.Value = noteContent;
+        await guildNotesProp.SaveProp(RssItem, mediator);
+      }        
+      return RssItem;
+    }
+
+    public async Task<bool> ArchiveItem(ItemDto ArchiveItem) { 
+      var mediator = GetMediator();
+      var item = await mediator.Send(new ArchiveItemCommand(ArchiveItem.Id, true));
+      return item;
+    }
+
+    public async Task<bool> UnarchiveItem(int itemId) {
+      var mediator = GetMediator();
+      var item = await mediator.Send(new ArchiveItemCommand(itemId, false));
+      return item;
+    }
 
   }
 }

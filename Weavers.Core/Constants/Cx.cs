@@ -34,7 +34,7 @@ namespace Weavers.Core.Constants {
     public const int KeyLifetimeDays = 90;
 
     public const double DefaultTemperature = 0.76;
-    public const int DefaultLmStudioContextLength = 24000;
+    public const int DefaultLmStudioContextLength = 120000;
     public const int intPropertyLabelLeft = 116;
     public const int NameFieldMaxLength = 500;
 
@@ -68,6 +68,8 @@ namespace Weavers.Core.Constants {
     public const string CmdUpdateItemContent = "updateItemContent";
     public const string CmdAppendItemContent = "appendItemContent";
     public const string CmdUpdateItemProperty = "updateItemProperty";
+    public const string CmdArchiveItem = "archiveItem";
+    public const string CmdUnarchiveItem = "unarchiveItem";
 
     public const string CmdAddOrgDeskRole = "addOrgDeskRole";
     public const string CmdAddOrgDesk = "addOrgDesk";
@@ -81,6 +83,8 @@ namespace Weavers.Core.Constants {
     public const string CmdRssResyncChannel = "rssResyncChannel";
     public const string CmdRssResolveLink = "rssResolveLink";
     public const string CmdRssExtractLinks = "rssExtractLinks";
+    public const string CmdAppendGuildNote = "appendGuildNote";
+    public const string CmdUpdateGuildNote = "updateGuildNote";
 
     public const string CmdAddProjectRoot = "addProjectRoot";
     public const string CmdAddSubFolder = "addSubFolder";
@@ -91,6 +95,7 @@ namespace Weavers.Core.Constants {
     public const string CmdRejectTodo = "rejectTodo";
     public const string CmdReviewPass = "reviewPass";
     public const string CmdReviewFail = "reviewFail";
+    public const string CmdSetTodoReady = "setTodoReady";
 
     public const string CmdAddMdFile = "addMdFile";
     public const string CmdAddHtmlFile = "addHtmlFile";
@@ -132,7 +137,7 @@ namespace Weavers.Core.Constants {
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
-    public const string ItContextLength = "ContextLength";
+    public const string ItContextLength = "ContextLength";    
     public const string ItCloseReason = "CloseReason";
     public const string ItCurrentTodo = "CurrentTodo";
     public const string ItDataType = "DataType";
@@ -191,7 +196,8 @@ namespace Weavers.Core.Constants {
     public const string ItOnFailSendTo = "OnFailTo";
     public const string ItOnPushbackSendTo = "OnPushbackTo";
     public const string ItOperator = "Operator";
-       
+    public const string ItGuildNotes = "GuildNotes";
+
     public const string ItParameterDataType = "ParamType";
     public const string ItParameterClassType = "ParamClass";
     public const string ItPresence = "Presence";
@@ -216,6 +222,7 @@ namespace Weavers.Core.Constants {
     public const string ItRelativeFolder = "RelativeFolder";
     public const string ItResultingState = "Results";
     public const string ItResponse = "Response";
+    public const string ItResolveState = "ResolveState";
     public const string ItResyncChannel = "DoResync";
     public const string ItRetentionDays = "KeepDays";
     public const string ItDeskRole = "DeskRole";

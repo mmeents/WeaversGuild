@@ -1,5 +1,11 @@
 
 ## Update History
+- Db Version 143, 144 (7/19/2026)
+  - Adds SetTodoReady and updates CompleteTodo, PushbackTodo, ReviewPass, ReviewFail to return forward todo id in result.
+  - Adds GuildNote property to Rss items for agents to keep notes as they process items.
+  - Adds Methods AppendGuildNote and UpdateGuildNote to allow for easy writing to the notes. (seperator bug but it's working)
+  - Adds Archive and Unarchive Mcp calls. (mcp side limited to RssItem, RssLinkedHtml, DeskTodo.)  
+  
 - Db Version 142 (7/13/2026)
   - Adds ValueHash property to the ItemProperty table to support an indexed search on values.
   - Adds RssLinkHtml item type to support link discovery and content extraction.  

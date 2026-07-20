@@ -150,7 +150,8 @@ namespace Weavers.Core.Extensions {
       #region Rss Feed Defaults
       {
         WeItemType.RssFolderModel, new List<ItemPropertyDefault>(){
-          new() {Rank = 10, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
+          new() {Rank = 10, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
+          new() {Rank = 2, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
         }
 
       },
@@ -158,15 +159,18 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel, new List<ItemPropertyDefault>(){
           new() {Rank = 10, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
           new() {Rank = 5, Key = Cx.ItChannelUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() {Rank = 3, Key = Cx.ItResyncChannel, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
+          new() {Rank = 3, Key = Cx.ItResyncChannel, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 2, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
         }
       },
       {
         WeItemType.RssItemModel, new List<ItemPropertyDefault>(){
           new() {Rank = 10, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },          
-          new() {Rank = 3, Key = Cx.ItHasUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 8, Key = Cx.ItHasUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 7, Key = Cx.ItResolveState, DefaultValue = $"{(int)WeItemType.LinkNotResolved}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.LinkResolutionTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() {Rank = 5, Key = Cx.ItResolveLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() {Rank = 3, Key = Cx.ItExtractLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 2, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 1, Key = Cx.ItMaxLinks, DefaultValue = "20", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }
         }
       },
@@ -174,8 +178,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssLinkedHtmlModel, new List<ItemPropertyDefault>(){
           new() {Rank = 10, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
           new() {Rank = 8, Key = Cx.ItHasUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 7, Key = Cx.ItResolveState, DefaultValue = $"{(int)WeItemType.LinkNotResolved}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.LinkResolutionTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() {Rank = 5, Key = Cx.ItResolveLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() {Rank = 3, Key = Cx.ItExtractLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 2, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 1, Key = Cx.ItMaxLinks, DefaultValue = "20", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }
         }
       },

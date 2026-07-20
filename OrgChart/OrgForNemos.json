@@ -1,1 +1,0 @@
-{"MaxAttempts":3,"DeskId":80,"DeskName":"OrgForNemos","OperatorId":78,"Operator":"Nemo","DeskRoleEnumInt":79,"SysPromptTemplate":"This is the {{model.desk}} desk.  \r\n\r\nTools available to you are:\r\n{{for cmd in model.role_commands}}  {{cmd.command}}\r\n{{end}} ","PushDeskName":"ComponentDesigner","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"ComponentDesigner"}

@@ -64,7 +64,8 @@ namespace Weavers.Core.Handlers.Todo {
       // create new todo on the onPushbackDesk with the same note and link it to the rejected todo item.
       var name = "";
       if (todoItem.Name != null) {
-        name = todoItem.Name + $" fromId:{todoItem.Id}";
+        var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
+        name = $"{baseName} fromId:{todoItem.Id}";
       } else {
         var nextRank = await _mediator.Send(new GetNextItemRankQuery(onPushbackDesk.Id)) + 1;
         name = $"Todo {nextRank} fromId:{todoItem.Id}";
@@ -166,17 +167,16 @@ namespace Weavers.Core.Handlers.Todo {
         await currentDeskTodoProp.SaveProp(parentDesk, _mediator);
       }
 
-      return result.CreateSuccess(); 
+      return result.CreateSuccess(newTodoItem); 
     }
   }
 
   public static class ReviewFailCmdResultExts {
-    public static ReviewFailCmdResult CreateSuccess(this ReviewFailCmdResult result) {
+    public static ReviewFailCmdResult CreateSuccess(this ReviewFailCmdResult result, ItemDto? newTodo) {
       result.Success = true;
-      result.Message = "Review failed op completed successfully.";
+      result.Message = $"Review failed op completed successfully. A new pushback todo Id: {(newTodo != null ? newTodo.Id.ToString() : "N/A")} was also created.";
       return result;
     }
-
     public static ReviewFailCmdResult CreateFailure(this ReviewFailCmdResult result, string errorMessage) {
       result.Success = false;
       result.Message = errorMessage;

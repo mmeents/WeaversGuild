@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Constants;
-using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.DepItems;
 using Weavers.Core.Handlers.Pipeline;
-using Weavers.Core.Models;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {

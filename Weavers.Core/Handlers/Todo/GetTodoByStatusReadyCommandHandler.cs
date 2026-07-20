@@ -69,7 +69,7 @@ namespace Weavers.Core.Handlers.Todo {
           AND CAST(itPS.Value AS int) = {statusFilter}
           AND it.IsActive = 1
           and itGw.Id in (select id from gwl)
-        ORDER BY CAST(itPD.Value AS int) DESC, it.Established ASC";
+        ORDER BY it.Id ASC";
 
       var rows = await _context.Set<ReadyTodoRow>().FromSqlRaw(sql)
       .AsNoTracking()

@@ -70,7 +70,8 @@ namespace Weavers.Core.Handlers.Todo {
       // create new todo on the onSuccessDesk with the same note and link it to the completed todo item.
       var name = "";
       if (todoItem.Name != null) {
-        name = todoItem.Name + $" fromId:{todoItem.Id}";
+        var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
+        name = $"{baseName} fromId:{todoItem.Id}";
       } else {
         var nextRank = await _mediator.Send(new GetNextItemRankQuery(onSuccessDesk.Id)) + 1;
         name = $"Todo {nextRank} fromId:{todoItem.Id}";
@@ -177,15 +178,15 @@ namespace Weavers.Core.Handlers.Todo {
       }
 
       // Implement the logic for handling the ReviewPassCommand here
-      return result.CreateSuccess();
+      return result.CreateSuccess(newTodoItem);
     }
   }
 
 
   public static class ReviewPassCmdResultExts {
-    public static ReviewPassCmdResult CreateSuccess(this ReviewPassCmdResult result) {
+    public static ReviewPassCmdResult CreateSuccess(this ReviewPassCmdResult result, ItemDto? newTodo) {
       result.Success = true;
-      result.Message = "Todo item marked as reviewed successfully.";
+      result.Message = $"Todo item marked as reviewed successfully. A new forward todo Id: {(newTodo != null ? newTodo.Id.ToString() : "N/A")} was also created.";
       return result;
     }
 

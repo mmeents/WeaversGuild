@@ -18,6 +18,7 @@ namespace Weavers.Core.Tools {
 
     Task<string> ReviewPass(int todoId, string reviewNotes);
     Task<string> ReviewFail(int todoId, string reviewNotes, string changeRequest);
+    Task<string> SetTodoReady(int todoId);
   }
 
   public class TodoToolsHandler : ITodoToolsHandler {
@@ -38,9 +39,10 @@ namespace Weavers.Core.Tools {
         var helpText = await mediator.Send(new CompleteTodoCommand(todoId, todoNote, producedItemId));
         var opResult = McpOpResult.CreateSuccess(Cx.CmdCompleteTodo, helpText);
         return JsonSerializer.Serialize(opResult);
-      } catch (Exception ex) {        
-        _logger.LogError(ex, "Error completing todo");
-        var opResult = McpOpResult.CreateFailure(Cx.CmdCompleteTodo, "Failed to complete todo", ex);
+      } catch (Exception ex) {
+        var errorMessage = $"Error completing todo for Id {todoId}: {ex.Message}";
+        _logger.LogError(ex, errorMessage);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdCompleteTodo, errorMessage, ex);
         return JsonSerializer.Serialize(opResult);
       }
     }
@@ -53,8 +55,9 @@ namespace Weavers.Core.Tools {
         var opResult = McpOpResult.CreateSuccess(Cx.CmdRejectTodo, helpText);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
-        _logger.LogError(ex, "Error rejecting todo");
-        var opResult = McpOpResult.CreateFailure(Cx.CmdRejectTodo, "Failed to reject todo", ex);
+        var errorMessage = $"Error rejecting todo for Id {todoId}: {ex.Message}";
+        _logger.LogError(ex, errorMessage);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdRejectTodo, errorMessage, ex);
         return JsonSerializer.Serialize(opResult);
       }
     }
@@ -67,8 +70,9 @@ namespace Weavers.Core.Tools {
         var opResult = McpOpResult.CreateSuccess(Cx.CmdReviewPass, helpText);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
-        _logger.LogError(ex, "Error reviewing pass");
-        var opResult = McpOpResult.CreateFailure(Cx.CmdReviewPass, "Failed to review pass", ex);
+        var errorMessage = $"Error reviewing pass for Id {todoId}: {ex.Message}";
+        _logger.LogError(ex, errorMessage);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdReviewPass, errorMessage, ex);
         return JsonSerializer.Serialize(opResult);
       }
     }
@@ -80,8 +84,28 @@ namespace Weavers.Core.Tools {
         var opResult = McpOpResult.CreateSuccess(Cx.CmdReviewFail, helpText);
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {
-        _logger.LogError(ex, "Error reviewing fails");
-        var opResult = McpOpResult.CreateFailure(Cx.CmdReviewFail, "Failed to review fails", ex);
+        var errorMessage = $"Error reviewing fails for Id {todoId}: {ex.Message}";
+        _logger.LogError(ex, errorMessage);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdReviewFail, errorMessage, ex);
+        return JsonSerializer.Serialize(opResult);
+      }
+    }
+
+    public async Task<string> SetTodoReady(int todoId) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var itemDto = await mediator.Send(new SetTodoReadyCommand(todoId));
+        if (itemDto == null) {
+          var opResultNotFound = McpOpResult.CreateFailure(Cx.CmdSetTodoReady, $"Todo item with Id {todoId} not found.");
+          return JsonSerializer.Serialize(opResultNotFound);
+        }
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdSetTodoReady, $"Todo item with Id {todoId} is now marked as ready.");
+        return JsonSerializer.Serialize(opResult);
+      } catch (Exception ex) {
+        var errorMessage = $"Error setting todo ready for Id {todoId}: {ex.Message}";
+        _logger.LogError(ex, errorMessage);
+        var opResult = McpOpResult.CreateFailure(Cx.CmdSetTodoReady, errorMessage, ex);
         return JsonSerializer.Serialize(opResult);
       }
     }

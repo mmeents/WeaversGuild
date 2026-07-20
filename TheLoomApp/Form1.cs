@@ -518,21 +518,22 @@ namespace TheLoomApp {
           _itemPropertiesTab.SetEditingMode(false);
           _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
 
+          var selectedItemTypeId = _selectedNode.Item.ItemTypeId;
 
-          if (_selectedNode.Item.ItemTypeId.IsOnPostPathUpdate()) {
+          if (selectedItemTypeId.IsOnPostPathUpdate()) {
             var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
               || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
             if (folderProp != null) {
               string basePath = folderProp.Value ?? "";
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
             var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
             var hasClaude = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
             await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
             var item = _selectedNode.Item;
             var resyncProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
             if (resyncProp != null) {
@@ -546,7 +547,7 @@ namespace TheLoomApp {
                 TvKb_BeforeExpand(ee, ee);
               }
             }
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.RssChannelModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.RssChannelModel) {
             var resyncProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResyncChannel);
             if (resyncProp != null) {
               bool shouldResync = resyncProp.Value.AsBoolean();
@@ -557,10 +558,29 @@ namespace TheLoomApp {
                 }
                 var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
                 TvKb_BeforeExpand(ee, ee);
+                SetupPropertiesTabForItem(_selectedNode.Item);
               }
             }
-
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.DependencyInjectionModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.RssItemModel 
+            || selectedItemTypeId == (int)WeItemType.RssLinkedHtmlModel) { 
+            var isCheckedResolveLink = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink)?.Value.AsBoolean();
+            var isCheckedExtractLinks = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItExtractLink)?.Value.AsBoolean();
+            if (isCheckedResolveLink == true) {
+              var updatedItem = await _appGraphOrgService.RssResolveLink(_selectedNode.Item);
+              if (updatedItem != null) {
+                _selectedNode.Item = updatedItem;
+              }
+            }
+            if (isCheckedExtractLinks == true) {
+              var updatedItem = await _appGraphOrgService.RssExtractLinks(_selectedNode.Item);
+              if (updatedItem != null) {
+                _selectedNode.Item = updatedItem;
+              }
+            }
+            var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+            TvKb_BeforeExpand(ee, ee);
+            SetupPropertiesTabForItem(_selectedNode.Item);
+          } else if (selectedItemTypeId == (int)WeItemType.DependencyInjectionModel) {
             var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
             await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
 
@@ -583,7 +603,7 @@ namespace TheLoomApp {
                 await _appDataService.UpdateItemAsync(_selectedNode.Item);
               }
             }
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.ClassModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.ClassModel) {
             var itemId = _selectedNode.Item.Id;
             var propGenerateInterface = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
             bool generateInterface = false;
@@ -605,8 +625,8 @@ namespace TheLoomApp {
               }
             }
 
-          } else if (_selectedNode.Item.ItemTypeId == (int)WeItemType.EntityPropertyModel
-              || _selectedNode.Item.ItemTypeId == (int)WeItemType.EntityNavigationModel) {
+          } else if (selectedItemTypeId == (int)WeItemType.EntityPropertyModel
+              || selectedItemTypeId == (int)WeItemType.EntityNavigationModel) {
             ItemNode? parent = _selectedNode.Parent as ItemNode;
             if (parent != null) {
               var prevParent = _selectedNode;
@@ -1796,11 +1816,11 @@ namespace TheLoomApp {
             await ReloadReadyTabAsync();
             _workingTodo = null;
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose ||
-            result.Status == RunTodoAttemptOutcome.InvocationFailed) {
+          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose ) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt did not complete. retrying next. Response: {result.ResponseText}");
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured) {
+          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured||
+            result.Status == RunTodoAttemptOutcome.InvocationFailed) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt Failed, Status: {result.Status}, Error: {result.ErrorMessage}");
             _workingTodo = null;
           }

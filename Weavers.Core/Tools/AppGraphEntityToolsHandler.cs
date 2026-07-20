@@ -42,7 +42,7 @@ namespace Weavers.Core.Tools {
 
         var addedItem = await service.AddEntityClassModel(parentItem, className, entityDbTableName);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddClass, parentItemId);
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityClass, await context.ToSummary(addedItem));
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityClass, await context.ToSummary(addedItem, false));
         return opResult.ToString();
       } catch (Exception ex) {
         return ex.ToOpResult(_logger, Cx.CmdAddEntityClass, parentItemId, $"Failed to add Entity Class {className}");
@@ -87,7 +87,7 @@ namespace Weavers.Core.Tools {
         int? newNavEntityClassId = navEntityClassId.HasValue && navEntityClassId.Value == 0 ? null : navEntityClassId;
         var addedItem = await service.AddEntityPropertyModel(parentItem, propertyName, propertyTypeId, isNav, newNavEntityClassId);
         if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddEntityProperty, entityClassId);
-        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityProperty, await context.ToSummary(addedItem));
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddEntityProperty, await context.ToSummary(addedItem, false));
         return opResult.ToString();
       } catch (Exception ex) {
         return ex.ToOpResult(_logger, Cx.CmdAddEntityProperty, entityClassId, $"Failed to add Property {propertyName}");

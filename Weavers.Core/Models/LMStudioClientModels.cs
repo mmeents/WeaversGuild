@@ -18,7 +18,7 @@ namespace Weavers.Core.Models {
   }
 
   public class TextInputItem : InputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "message";
 
     [JsonPropertyName("content")]
@@ -26,7 +26,7 @@ namespace Weavers.Core.Models {
   }
 
   public class ImageInputItem : InputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "image";
 
     [JsonPropertyName("data_url")]
@@ -39,12 +39,12 @@ namespace Weavers.Core.Models {
   [JsonDerivedType(typeof(PluginIntegration), "plugin")]
   [JsonDerivedType(typeof(EphemeralMcpIntegration), "ephemeral_mcp")]
   public abstract class Integration {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public abstract string Type { get; }
   }
 
   public class PluginIntegration : Integration {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "plugin";
 
     [JsonPropertyName("id")]
@@ -55,7 +55,7 @@ namespace Weavers.Core.Models {
   }
 
   public class EphemeralMcpIntegration : Integration {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "ephemeral_mcp";
 
     [JsonPropertyName("server_label")]
@@ -176,7 +176,7 @@ namespace Weavers.Core.Models {
   }
 
   public class MessageOutputItem : OutputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "message";
 
     [JsonPropertyName("content")]
@@ -184,7 +184,7 @@ namespace Weavers.Core.Models {
   }
 
   public class ToolCallOutputItem : OutputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "tool_call";
 
     [JsonPropertyName("tool")]
@@ -201,7 +201,7 @@ namespace Weavers.Core.Models {
   }
 
   public class ReasoningOutputItem : OutputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "reasoning";
 
     [JsonPropertyName("content")]
@@ -209,7 +209,7 @@ namespace Weavers.Core.Models {
   }
 
   public class InvalidToolCallOutputItem : OutputItem {
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public override string Type => "invalid_tool_call";
 
     [JsonPropertyName("reason")]
@@ -221,7 +221,7 @@ namespace Weavers.Core.Models {
 
   public class InvalidToolCallMetadata {
     /// <summary>"invalid_name" | "invalid_arguments"</summary>
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("tool_name")]
@@ -236,7 +236,7 @@ namespace Weavers.Core.Models {
 
   public class ProviderInfo {
     /// <summary>"plugin" | "ephemeral_mcp"</summary>
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("plugin_id")]
@@ -277,7 +277,7 @@ namespace Weavers.Core.Models {
 
   public class LmModel {
     /// <summary>"llm" | "embedding"</summary>
-    [JsonPropertyName("type")]
+    [JsonIgnore]
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("publisher")]
