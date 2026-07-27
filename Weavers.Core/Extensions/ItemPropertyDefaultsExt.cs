@@ -55,9 +55,18 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
           new() {Rank = 2, Key = Cx.ItSkipPermissions, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
         }
-      },                    
+      },
 
-      #endregion      
+      #endregion
+      #region Credentials Vault
+      { WeItemType.GitHubCredentialModel, new List<ItemPropertyDefault>(){
+          new() {Rank = 10, Key = Cx.ItGithubUser, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 9, Key = Cx.ItGithubPAT, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Password },
+          new() {Rank = 8, Key = Cx.ItExpires, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Date, EditorTypeId=(int)WeEditorType.Date},
+          new() {Rank = 7, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+        }
+      },
+      #endregion
       { WeItemType.DigitalOperatorPoolModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
         }
@@ -190,8 +199,7 @@ namespace Weavers.Core.Extensions {
       {
         WeItemType.ProjectFolderModel,
         new List<ItemPropertyDefault>(){
-            new() {Rank = 2, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
-            new() {Rank = 1, Key = Cx.ItRepoUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }
+            new() {Rank = 2, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder }            
         }
       },
       { WeItemType.ProjectDocs, new List<ItemPropertyDefault>() {
@@ -212,6 +220,49 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItResultingState, DefaultValue = WeItemType.Tie.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.RatingStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor }
         }
       },
+      { WeItemType.GithubRepoModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 20, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
+          new() {Rank = 19, Key = Cx.ItGithubCreds, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GitHubCredentialModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 18, Key = Cx.ItRepoUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 17, Key = Cx.ItRemoteName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 16, Key = Cx.ItCurrentBranch, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GithubRepoBranchModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 15, Key = Cx.ItLastCommitSha, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 14, Key = Cx.ItLastStatusChk, DefaultValue = "", ValueDataTypeId=(int)WeDataType.DateTime, EditorTypeId=(int)WeEditorType.Date },
+          new() {Rank = 13, Key = Cx.ItIsDirty, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 12, Key = Cx.ItModifiedCount, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },          
+          new() {Rank = 10, Key = Cx.ItUntrackedFiles, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }
+        }
+      },
+      { 
+        WeItemType.GithubRepoBranchModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 20, Key = Cx.ItBranchName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 19, Key = Cx.ItFriendlyName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 17, Key = Cx.ItIsRemote, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 16, Key = Cx.ItTrackedBranchName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 15, Key = Cx.ItLastCommitSha, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 14, Key = Cx.ItLastCommitDate, DefaultValue = "", ValueDataTypeId=(int)WeDataType.DateTime, EditorTypeId=(int)WeEditorType.Date },
+          new() {Rank = 13, Key = Cx.ItLastCommitMessage, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 12, Key = Cx.ItLastCommitAuthor, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }          
+        }
+      },
+      {   WeItemType.GitFolderModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 20, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
+          new() {Rank = 17, Key = Cx.ItGitPath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 15, Key = Cx.ItEntrySha, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 9, Key = Cx.ItRepoItemId, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GithubRepoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        }
+      },
+      { WeItemType.GitFileModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 20, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
+          new() {Rank = 20, Key = Cx.ItGitPath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
+          new() {Rank = 18, Key = Cx.ItFileExt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 15, Key = Cx.ItEntrySha, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 13, Key = Cx.ItFileSize, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Long, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 11, Key = Cx.ItIsBinary, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 9, Key = Cx.ItRepoItemId, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GithubRepoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 7, Key = Cx.ItParsedOn, DefaultValue = "", ValueDataTypeId=(int)WeDataType.DateTime, EditorTypeId=(int)WeEditorType.Date }
+        }
+      },          
       {
         WeItemType.FileMdModel,
         new List<ItemPropertyDefault>(){

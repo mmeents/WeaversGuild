@@ -11,6 +11,7 @@ using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Import;
 using Weavers.Core.Handlers.Todo;
+using Weavers.Core.Handlers.Repos;
 
 
 namespace Weavers.Core.Service {
@@ -53,6 +54,8 @@ namespace Weavers.Core.Service {
     Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
 
     Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter);
+
+    Task<bool> CheckHasRepoInHeirarcy(int repoId);
 
   }
   public class AppDataService(IServiceScopeFactory scopeFactory, ISessionItemCacheService sessionCache) : IAppDataService {
@@ -283,6 +286,13 @@ namespace Weavers.Core.Service {
     public async Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter) {
       var mediator = GetMediator();
       var command = new GetTodoByStatusReadyCommand(harnessId, todoStatusFilter, readyFilter);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
+    public async Task<bool> CheckHasRepoInHeirarcy(int repoId) {
+      var mediator = GetMediator();
+      var command = new HierarchyContainsRepoQuery(repoId);
       var result = await mediator.Send(command);
       return result;
     }

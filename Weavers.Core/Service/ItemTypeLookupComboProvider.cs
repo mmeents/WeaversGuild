@@ -51,11 +51,11 @@ namespace Weavers.Core.Service {
         await mediator.Send(new GetItemsByItemTypeQuery((int)WeItemType.ActiveItemTypes));
     }
 
-    public async Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId) {
+    public async Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId, int? propertyItemId = null) {
       if (itemTypeId is null or 0) return Enumerable.Empty<ItemLookup>();
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-      return await mediator.Send(new GetItemsByItemTypeQuery(itemTypeId.Value));
+      return await mediator.Send(new GetItemsByItemTypeQuery(itemTypeId.Value, propertyItemId));
     }
 
     public async Task<ItemDto?> GetItemByIdAsync(int id) {

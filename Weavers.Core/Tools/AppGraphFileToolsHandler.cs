@@ -13,6 +13,13 @@ namespace Weavers.Core.Tools {
   public interface IAppGraphFileToolsHandler {
     Task<string> AddProjectRoot(string projectRootName);
     Task<string> AddSubFolder(int itemId, string subFolderName);
+
+    Task<string> AddGithubRepo(int folderItemId, string repoUrl);
+    Task<string> DoCloneGithubRepoItem(int repoItemId);
+    Task<string> DoGitRefreshStatus(int repoItemId);
+    Task<string> DoCheckoutBranch(int branchItemId);
+
+
     Task<string> AddSolution(int folderItemId, string solutionName);
     Task<string> AddSolutionImport(int solutionItemId, int importLibraryId);
     Task<string> AddMdFile(int folderItemId, string fileName, string fileContent);
@@ -66,6 +73,78 @@ namespace Weavers.Core.Tools {
 
       } catch (Exception ex) {
         return ex.ToOpResult(_logger, Cx.CmdAddSubFolder, itemId, $"Failed to add folder {subFolderName} to parent item with ID {itemId}");
+      }
+    }
+
+    public async Task<string> AddGithubRepo(int folderItemId, string repoUrl) {
+      try {
+
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(folderItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdAddGithubRepo, folderItemId);
+        if (!item.ItemTypeId.IsFolderType()) return _logger.DefaultInvalidParentMessage(Cx.CmdAddGithubRepo, folderItemId);
+        var addedItem = await service.AddGithubRepo(item, repoUrl);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdAddGithubRepo, folderItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdAddGithubRepo, await context.ToSummary(addedItem, false));
+        return opResult.ToString();
+
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdAddGithubRepo, folderItemId, $"Failed to add GitHub repository {repoUrl} to parent item with ID {folderItemId}");
+      }
+    }
+
+    public async Task<string> DoCloneGithubRepoItem(int repoItemId) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(repoItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdDoGitClone, repoItemId);
+        if (item.ItemTypeId != (int)WeItemType.GithubRepoModel) return _logger.DefaultInvalidParentMessage(Cx.CmdDoGitClone, repoItemId);
+        var addedItem = await service.DoCloneGithubRepoItem(item);
+        if (addedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdDoGitClone, repoItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdDoGitClone, await context.ToSummary(addedItem, false));
+        return opResult.ToString();
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdDoGitClone, repoItemId, $"Failed to clone GitHub repository item with ID {repoItemId}");
+      }
+    }
+
+    public async Task<string> DoGitRefreshStatus(int repoItemId) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(repoItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdDoGitRefreshStatus, repoItemId);
+        if (item.ItemTypeId != (int)WeItemType.GithubRepoModel) return _logger.DefaultInvalidParentMessage(Cx.CmdDoGitRefreshStatus, repoItemId);
+        var updatedItem = await service.DoGitRefreshStatus(item);
+        if (updatedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdDoGitRefreshStatus, repoItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdDoGitRefreshStatus, await context.ToSummary(updatedItem, false));
+        return opResult.ToString();
+
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdDoGitRefreshStatus, repoItemId, $"Failed to refresh Git status for repository item with ID {repoItemId}");
+      }
+    }
+
+    public async Task<string> DoCheckoutBranch(int branchItemId) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var service = scope.ServiceProvider.GetRequiredService<IAppGraphFileService>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var item = await context.GetItemDtoById(branchItemId);
+        if (item == null) return _logger.DefaultFailToFindMessage(Cx.CmdDoGitCheckout, branchItemId);
+        if (item.ItemTypeId != (int)WeItemType.GithubRepoBranchModel) return _logger.DefaultInvalidParentMessage(Cx.CmdDoGitCheckout, branchItemId);
+        var updatedItem = await service.DoCheckoutBranch(item);
+        if (updatedItem == null) return _logger.DefaultAddEmptyMessage(Cx.CmdDoGitCheckout, branchItemId);
+        var opResult = McpOpResult.CreateSuccess(Cx.CmdDoGitCheckout, await context.ToSummary(updatedItem, false));
+        return opResult.ToString();
+
+      } catch (Exception ex) {
+        return ex.ToOpResult(_logger, Cx.CmdDoGitCheckout, branchItemId, $"Failed to checkout branch item with ID {branchItemId}");
       }
     }
 

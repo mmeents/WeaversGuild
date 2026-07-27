@@ -89,7 +89,7 @@ namespace TheLoomApp.Editors {
         int? typeId = Field?.ReferenceItemTypeId;
         var items = (typeId is null or 0)
             ? Enumerable.Empty<ItemLookup>()
-            : await _dataProvider.GetValuesAsync(typeId);
+            : await _dataProvider.GetValuesAsync(typeId, Field?.ItemId);
 
         RunOnUi(() => FillCombo(items, _originalValue));
       } catch (Exception ex) {

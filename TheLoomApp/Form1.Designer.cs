@@ -30,7 +30,8 @@
       tvKb = new TreeView();
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
-      toolStripSeparator1 = new ToolStripSeparator();
+      miSepRefreshBottom = new ToolStripSeparator();
+      miAddGithubToken = new ToolStripMenuItem();
       miAddDigitalOperator = new ToolStripMenuItem();
       miAddOrgRole = new ToolStripMenuItem();
       miAddWorkGroup = new ToolStripMenuItem();
@@ -42,8 +43,13 @@
       miAddOrgRssFolder = new ToolStripMenuItem();
       miAddRssChannel = new ToolStripMenuItem();
       miResyncChannel = new ToolStripMenuItem();
+      miResolveLink = new ToolStripMenuItem();
+      miExtractLinks = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
+      miAddGitHubRepo = new ToolStripMenuItem();
+      miDoGitClone = new ToolStripMenuItem();
+      miDoGitRefStatus = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
       miAddSolutionImport = new ToolStripMenuItem();
       miAddFile = new ToolStripMenuItem();
@@ -57,9 +63,9 @@
       miAddClassMethodParam = new ToolStripMenuItem();
       miAddEntity = new ToolStripMenuItem();
       miAddEntityProperty = new ToolStripMenuItem();
-      toolStripSeparator3 = new ToolStripSeparator();
+      miSepAddBottom = new ToolStripSeparator();
       miGenerate = new ToolStripMenuItem();
-      toolStripSeparator2 = new ToolStripSeparator();
+      miSepGenBottom = new ToolStripSeparator();
       miDeleteItem = new ToolStripMenuItem();
       ilTreeImages = new ImageList(components);
       splitContainer3 = new SplitContainer();
@@ -132,8 +138,7 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miResolveLink = new ToolStripMenuItem();
-      miExtractLinks = new ToolStripMenuItem();
+      miDoCheckout = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -219,9 +224,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, toolStripSeparator1, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, toolStripSeparator3, miGenerate, toolStripSeparator2, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 726);
+      cmsTreeMenus.Size = new Size(209, 836);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -231,10 +236,17 @@
       miReloadTree.Text = "Reload Projects";
       miReloadTree.Click += miReloadTree_Click;
       // 
-      // toolStripSeparator1
+      // miSepRefreshBottom
       // 
-      toolStripSeparator1.Name = "toolStripSeparator1";
-      toolStripSeparator1.Size = new Size(205, 6);
+      miSepRefreshBottom.Name = "miSepRefreshBottom";
+      miSepRefreshBottom.Size = new Size(205, 6);
+      // 
+      // miAddGithubToken
+      // 
+      miAddGithubToken.Name = "miAddGithubToken";
+      miAddGithubToken.Size = new Size(208, 22);
+      miAddGithubToken.Text = "Add GitHub Token";
+      miAddGithubToken.Click += miAddGithubToken_Click;
       // 
       // miAddDigitalOperator
       // 
@@ -313,6 +325,20 @@
       miResyncChannel.Text = "Resync Channel";
       miResyncChannel.Click += miResyncChannel_Click;
       // 
+      // miResolveLink
+      // 
+      miResolveLink.Name = "miResolveLink";
+      miResolveLink.Size = new Size(208, 22);
+      miResolveLink.Text = "Resolve Link";
+      miResolveLink.Click += miResolveLink_Click;
+      // 
+      // miExtractLinks
+      // 
+      miExtractLinks.Name = "miExtractLinks";
+      miExtractLinks.Size = new Size(208, 22);
+      miExtractLinks.Text = "Extract Links";
+      miExtractLinks.Click += miExtractLinks_Click;
+      // 
       // miAddProjectRoot
       // 
       miAddProjectRoot.Name = "miAddProjectRoot";
@@ -326,6 +352,27 @@
       miAddSubProject.Size = new Size(208, 22);
       miAddSubProject.Text = "Add Folder";
       miAddSubProject.Click += miAddSubProject_Click;
+      // 
+      // miAddGitHubRepo
+      // 
+      miAddGitHubRepo.Name = "miAddGitHubRepo";
+      miAddGitHubRepo.Size = new Size(208, 22);
+      miAddGitHubRepo.Text = "Add GitHub Repo";
+      miAddGitHubRepo.Click += miAddGitHubRepo_Click;
+      // 
+      // miDoGitClone
+      // 
+      miDoGitClone.Name = "miDoGitClone";
+      miDoGitClone.Size = new Size(208, 22);
+      miDoGitClone.Text = "Do Git Clone Repo";
+      miDoGitClone.Click += miDoGitClone_Click;
+      // 
+      // miDoGitRefStatus
+      // 
+      miDoGitRefStatus.Name = "miDoGitRefStatus";
+      miDoGitRefStatus.Size = new Size(208, 22);
+      miDoGitRefStatus.Text = "Do Git Status Refresh";
+      miDoGitRefStatus.Click += miDoGitRefStatus_Click;
       // 
       // miAddSolution
       // 
@@ -418,10 +465,10 @@
       miAddEntityProperty.Text = "Add Entity Property";
       miAddEntityProperty.Click += miAddEntityProperty_Click;
       // 
-      // toolStripSeparator3
+      // miSepAddBottom
       // 
-      toolStripSeparator3.Name = "toolStripSeparator3";
-      toolStripSeparator3.Size = new Size(205, 6);
+      miSepAddBottom.Name = "miSepAddBottom";
+      miSepAddBottom.Size = new Size(205, 6);
       // 
       // miGenerate
       // 
@@ -430,10 +477,10 @@
       miGenerate.Text = "Generate";
       miGenerate.Click += miGenerate_Click;
       // 
-      // toolStripSeparator2
+      // miSepGenBottom
       // 
-      toolStripSeparator2.Name = "toolStripSeparator2";
-      toolStripSeparator2.Size = new Size(205, 6);
+      miSepGenBottom.Name = "miSepGenBottom";
+      miSepGenBottom.Size = new Size(205, 6);
       // 
       // miDeleteItem
       // 
@@ -1310,19 +1357,12 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miResolveLink
+      // miDoCheckout
       // 
-      miResolveLink.Name = "miResolveLink";
-      miResolveLink.Size = new Size(208, 22);
-      miResolveLink.Text = "Resolve Link";
-      miResolveLink.Click += miResolveLink_Click;
-      // 
-      // miExtractLinks
-      // 
-      miExtractLinks.Name = "miExtractLinks";
-      miExtractLinks.Size = new Size(208, 22);
-      miExtractLinks.Text = "Extract Links";
-      miExtractLinks.Click += miExtractLinks_Click;
+      miDoCheckout.Name = "miDoCheckout";
+      miDoCheckout.Size = new Size(208, 22);
+      miDoCheckout.Text = "Do Git Checkout";
+      miDoCheckout.Click += miDoCheckout_Click;
       // 
       // Form1
       // 
@@ -1387,7 +1427,7 @@
     private ToolStripMenuItem miAddProjectRoot;
     private ImageList ilTreeImages;
     private ToolStripMenuItem miAddSubProject;
-    private ToolStripSeparator toolStripSeparator1;
+    private ToolStripSeparator miSepRefreshBottom;
     private ToolStrip tsErrorPopup;
     private ToolStripLabel toolStripLabel1;
     private ToolStripButton tsBtnDismiss;
@@ -1407,14 +1447,14 @@
     private TextBox edItemData;
     private Label label2;
     private TextBox edAppDefaultFolder;
-    private ToolStripSeparator toolStripSeparator2;
+    private ToolStripSeparator miSepGenBottom;
     private ToolStripMenuItem miDeleteItem;
     private Button btnAppDefaultFolderBrowse;
     private Button btnCancelAppDefaultF;
     private Button btnSaveDefaultFolder;
     private Button btnShowErrors;
     private ToolStripMenuItem miAddFile;
-    private ToolStripSeparator toolStripSeparator3;
+    private ToolStripSeparator miSepAddBottom;
     private ToolStripMenuItem miGenerate;
     private ToolStripMenuItem miAddLibrary;
     private ToolStripMenuItem miAddDiModel;
@@ -1483,5 +1523,11 @@
     private ToolStripMenuItem miResyncChannel;
     private ToolStripMenuItem miResolveLink;
     private ToolStripMenuItem miExtractLinks;
+    private ToolStripMenuItem miAddGithubToken;
+    private ToolStripMenuItem miAddGitHubRepo;
+    private ToolStripSeparator toolStripSeparator3;
+    private ToolStripMenuItem miDoGitClone;
+    private ToolStripMenuItem miDoGitRefStatus;
+    private ToolStripMenuItem miDoCheckout;
   }
 }

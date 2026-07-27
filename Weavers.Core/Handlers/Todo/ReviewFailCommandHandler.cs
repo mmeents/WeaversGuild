@@ -3,10 +3,11 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record ReviewFailCommand(int TodoId, string ReviewNotes, string ChangeRequest) : IRequest<ReviewFailCmdResult>;
+  public record ReviewFailCommand(int TodoId, string ReviewNotes, string ChangeRequest) : IMcpRequest, IRequest<ReviewFailCmdResult>;
 
   public class ReviewFailCmdResult {
     public bool Success { get; set; }

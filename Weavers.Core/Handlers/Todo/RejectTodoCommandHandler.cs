@@ -3,10 +3,11 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record RejectTodoCommand(int TodoId, string Reason) : IRequest<RejectTodoCmdResult>;
+  public record RejectTodoCommand(int TodoId, string Reason) : IMcpRequest, IRequest<RejectTodoCmdResult>;
 
   public class RejectTodoCmdResult {
     public bool Success { get; set; }

@@ -142,19 +142,25 @@ namespace Weavers.Core.Enums {
 
       CmdAddProjectRoot = 158,  // in AppGraphFileTools
       CmdAddSubFolder = 159,
-      CmdAddSolution = 160,
-      CmdAddSolutionImport = 161,
 
-      CmdAddMdFile = 162,
-      CmdAddHtmlFile = 163,
-      CmdAddConfigFile = 164,
+      CmdAddGithubRepo = 160,
+      CmdDoGitClone = 161,
+      CmdDoGitRefreshStatus = 162,
+      CmdDoGitCheckout = 163,
 
-      CmdAddLibrary = 165,  // in AppGraphLibraryTools
-      CmdAddNamespace = 166,
+      CmdAddSolution = 164,
+      CmdAddSolutionImport = 165,
 
-      CmdAddClass = 168,  // in AppGraphClassTools
-      CmdAddClassImport = 170,
-      CmdAddClassProperty = 172,
+      CmdAddMdFile = 166,
+      CmdAddHtmlFile = 167,
+      CmdAddConfigFile = 168,
+
+      CmdAddLibrary = 169,  // in AppGraphLibraryTools
+      CmdAddNamespace = 170,
+
+      CmdAddClass = 171,  // in AppGraphClassTools
+      CmdAddClassImport = 172,
+      CmdAddClassProperty = 173,
       CmdAddClassMethod = 174,
       CmdAddClassMethodParam = 176,
 
@@ -198,7 +204,9 @@ namespace Weavers.Core.Enums {
           PresenceClaudeGatewayModel = 1016,   // Claude instance details. enough to query the models.
             PresModelClaudeModel = 1017,     // Claude model for each model found.
 
-         
+      CredentialStoreModel = 1025, // folder for credentials of the organization.
+        GitHubCredentialModel = 1026,    // credential details.
+
       DigitalOperatorPoolModel  = 1030, // folder or pool 
         DigitalOperatorModel = 1035, //(Id, name, Presence, Rating)  // digital worker.
                                      //
@@ -233,6 +241,11 @@ namespace Weavers.Core.Enums {
 
       RelativeFolderModel = 1110,  // a regulear project folder
         RelativeFolderDocs = 1111,
+        GithubRepoModel = 1112,
+          GithubRepoBranchModel = 1114,
+        GitFolderModel = 1115,
+          GitFileModel = 1116,
+     
 
       FileMdModel = 1120,
         FileMdDocs = 1121,

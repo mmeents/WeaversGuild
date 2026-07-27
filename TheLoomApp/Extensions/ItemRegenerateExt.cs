@@ -19,7 +19,24 @@ namespace TheLoomApp.Extensions {
       return log;
     }
 
-    
+    public static bool IsGenerateType(this ItemNode node) {
+      if (node?.Item == null) return false;
+      switch (node.Item.ItemTypeId) {
+        case (int)WeItemType.ProjectFolderModel:
+        case (int)WeItemType.RelativeFolderModel:
+        case (int)WeItemType.NamespaceModel:
+        case (int)WeItemType.LibraryModel:
+        case (int)WeItemType.DependencyInjectionModel:
+        case (int)WeItemType.HandlerModel:
+        case (int)WeItemType.FileMdModel:
+        case (int)WeItemType.InterfaceModel:
+        case (int)WeItemType.ClassModel:
+        case (int)WeItemType.RecordModel:
+        case (int)WeItemType.StructModel:
+          return true;
+        default: return false;
+      }
+    }
 
     private static async Task DispatchRegenerateAsync(this ItemNode node, List<string> log) {
       if (node?.Item == null) return;

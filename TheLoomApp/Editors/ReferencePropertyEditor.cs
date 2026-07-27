@@ -111,7 +111,7 @@ namespace TheLoomApp.Editors {
         int? typeId = SelectedId(cbType);
         var values = (typeId is null or 0)
             ? Enumerable.Empty<ItemLookup>()
-            : await _dataProvider.GetValuesAsync(typeId);
+            : await _dataProvider.GetValuesAsync(typeId, Field?.ItemId);
         RunOnUi(() => FillCombo(cbValues, values, _originalValue));
       } catch (Exception ex) {
         RunOnUi(() => ShowComboError(cbValues, ex.Message));
@@ -182,7 +182,7 @@ namespace TheLoomApp.Editors {
 
         var values = (typeId is null or 0)
             ? Enumerable.Empty<ItemLookup>()
-            : await _dataProvider.GetValuesAsync(typeId);
+            : await _dataProvider.GetValuesAsync(typeId, Field?.ItemId);
 
         // originalValue is intentionally NULL here: the old value belonged to the
         // old type and is no longer valid, so default to (None).

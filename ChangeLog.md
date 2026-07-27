@@ -1,5 +1,12 @@
 
 ## Update History
+- Db Version 145, 146, 147, 148 (7/(22,27)/2026)  The Loom can Clone and Checkout Github Repositories.  
+  - Adds LibGit2Sharp component to add Repositories to the mix.
+  - Adds CredentialStore folder with GithubToken items for username Pat style access models. (utilizing site crypto to save away in cipher, redacted for mcp layer.)
+  - Adds GithubRepoModel, GithubRepoBranchModel typed nodes.  Support Clone, RefreshStatus, Checkout to start. 
+  - Adds db ver 148 brings TheLoomMCP 4 new commands, CmdAddGithubRepo CmdDoGitClone CmdDoGitRefreshStatus CmdDoGitCheckout
+  - Adds GitFolderModel and GitFileModel, Adds Sync to bring models into graph from within RefreshStatus call which is in both clone and checkout.
+  
 - Db Version 143, 144 (7/19/2026)
   - Adds SetTodoReady and updates CompleteTodo, PushbackTodo, ReviewPass, ReviewFail to return forward todo id in result.
   - Adds GuildNote property to Rss items for agents to keep notes as they process items.

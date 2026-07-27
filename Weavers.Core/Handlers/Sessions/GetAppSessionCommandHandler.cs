@@ -101,6 +101,14 @@ namespace Weavers.Core.Handlers.Sessions {
         throw new Exception("Failed to create harnesses sessions folder item");
       }
 
+      // CredentialStore folder
+      var CredentialStoreRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.CredentialStoreModel);
+      if (CredentialStoreRelation == null) { 
+        ItemDto? itemDto = await _mediator.Send(
+          new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
+            (int)WeItemType.CredentialStoreModel, Cx.AppCredentialStoreFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
+      }
+
       // digital Operators
       var DigitalOperatorPoolRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DigitalOperatorPoolModel);
       if (DigitalOperatorPoolRelation == null) {

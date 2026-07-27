@@ -8,10 +8,11 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record ReviewPassCommand(int TodoId, string ReviewNotes) : IRequest<ReviewPassCmdResult>;
+  public record ReviewPassCommand(int TodoId, string ReviewNotes) : IMcpRequest, IRequest<ReviewPassCmdResult>;
 
   public class ReviewPassCmdResult {
     public bool Success { get; set; }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;  
 using Weavers.Core.Entities;
-using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Handlers.Rss;
+using Weavers.Core.Handlers.Todo;
+using Weavers.Core.Models;
 
 namespace Weavers.Core {
   public class FabricDbContext : DbContext {
@@ -29,6 +30,7 @@ namespace Weavers.Core {
       modelBuilder.ApplyConfigurationsFromAssembly(typeof(FabricDbContext).Assembly);
       modelBuilder.Entity<ReadyTodoRow>().HasNoKey().ToView(null);
       modelBuilder.Entity<IdOnlyRow>().HasNoKey().ToView(null);
+      modelBuilder.Entity<DbGitEntryItem>().HasNoKey().ToView(null);
     }
   }
 }

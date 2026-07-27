@@ -19,6 +19,7 @@ namespace Weavers.Core.Constants {
     public static string AppHarnessAppName => "TheLoom";
     public static string AppSessionsFolder => "Sessions";
     public static string AppGatewayFolder => "Gateways";
+    public static string AppCredentialStoreFolder => "Credentials";
     public static string AppTeamFolder => "Team";
     public static string AppDeskRolesFolder => "DeskRoles";
     public static string AppWorkGroupFolder => "WorkGroups";
@@ -37,6 +38,7 @@ namespace Weavers.Core.Constants {
     public const int DefaultLmStudioContextLength = 120000;
     public const int intPropertyLabelLeft = 116;
     public const int NameFieldMaxLength = 500;
+    public const long MaxImportFileSize = 512 * 1024; // 512 KB
 
     public const string DaemonsMcpToolName = "mcp/daemonsmcp";
     public const string WeaversMcpToolName = "mcp/theloommcp";
@@ -88,6 +90,12 @@ namespace Weavers.Core.Constants {
 
     public const string CmdAddProjectRoot = "addProjectRoot";
     public const string CmdAddSubFolder = "addSubFolder";
+
+    public const string CmdAddGithubRepo = "addGithubRepo";
+    public const string CmdDoGitClone = "doGitClone";
+    public const string CmdDoGitRefreshStatus = "doGitRefreshStatus";
+    public const string CmdDoGitCheckout = "doGitCheckout";
+
     public const string CmdAddSolution = "addSolution";
     public const string CmdAddSolutionImport = "addSolutionImport";    
 
@@ -131,28 +139,42 @@ namespace Weavers.Core.Constants {
     public const string ItAccessModifier = "AccessModifier";   
     public const string ItApiToken = "ApiToken";
     public const string ItBaseType = "BaseType";
+    public const string ItBranchName = "BranchName";
     public const string ItCharter = "Charter";
     public const string ItChannelUrl = "ChannelUrl";
     public const string ItClassType = "ClassType";
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
+    
+    
+
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
     public const string ItContextLength = "ContextLength";    
     public const string ItCloseReason = "CloseReason";
     public const string ItCurrentTodo = "CurrentTodo";
+    public const string ItCurrentBranch = "CurrentBranch";
     public const string ItDataType = "DataType";
     public const string ItDeleteBehavior = "DeleteBehavior";
     public const string ItDeskPreAsserts = "PreAsserts";
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
-    public const string ItDbTableName = "DbTableName";
+    public const string ItDbTableName = "DbTableName";    
     public const string ItEnabled = "Enabled";
+    public const string ItEntrySha = "EntrySha";
+    public const string ItExpires = "Expires";
     public const string ItFilePath = "FilePath";
     public const string ItFileExt = "FileExt";
+    public const string ItFileSize = "FileSize";
     public const string ItFloorStatus = "FloorStatus";
     public const string ItForeignKey = "ForeignKey";
     public const string ItFromTodo = "FromTodo";
+    public const string ItFriendlyName = "FriendlyName";
     public const string ItGenerateInterface = "GenInterface";
+    public const string ItGithubUser = "GithubUser";
+    public const string ItGithubPAT = "GithubPAT";
+    public const string ItGitPath = "GitPath";
+    public const string ItGithubCreds = "GithubCreds";
+    public const string ItGuildNotes = "GuildNotes";
     public const string ItHarnessId = "HarnessId";
     public const string ItHasDbContext = "HasDbContext";
     public const string ItHasLmStudioPresence = "HasLmStudio";
@@ -168,8 +190,9 @@ namespace Weavers.Core.Constants {
     public const string ItIPAddress = "IPAddress";
     public const string ItIsAbstract = "IsAbstract";
     public const string ItIsAsync = "IsAsync";
-    public const string ItIsCollection = "IsCollection";
-    public const string ItReSync = "DoReSync";
+    public const string ItIsBinary = "IsBinary";
+    public const string ItIsCollection = "IsCollection";    
+    public const string ItIsDirty = "IsDirty";
     public const string ItIsTestLibrary = "IsTestLib";
     public const string ItIsNullable = "IsNullable";
     public const string ItIsPrimaryKey = "IsPrimaryKey";
@@ -178,9 +201,17 @@ namespace Weavers.Core.Constants {
     public const string ItIsSealed = "IsSealed";
     public const string ItIsStatic = "IsStatic";
     public const string ItIsVirtual = "IsVirtual";
+    public const string ItIsRemote = "IsRemote";
     //public const string ItJobCounter = "JobCounter";
     //public const string ItJobSuccess = "JobSuccess";
     //public const string ItJobFailure = "JobFailure";
+    public const string ItLastStatusChk = "LastStatusChk";
+
+    public const string ItLastCommitSha = "LastCommitSha";
+    public const string ItLastCommitDate = "LastCommitDate";
+    public const string ItLastCommitMessage = "LastCommitMsg";
+    public const string ItLastCommitAuthor = "LastCommitAuthor";
+
     public const string ItLifetimeScope = "LifetimeScope";
     public const string ItLibraryInclude = "LibInclude";
     public const string ItLmStudioConfig = "LmStudioCfg";
@@ -189,6 +220,7 @@ namespace Weavers.Core.Constants {
     public const string ItMaxLinks = "MaxLinks";
     public const string ItMachineName = "MachineName";
     public const string ItModelName = "ModelName";
+    public const string ItModifiedCount = "ModifiedCount";
     public const string ItNamespace = "Namespace";
     public const string ItNamespaceRoot = "NamespaceRoot";
     public const string ItNotes = "Notes";
@@ -196,10 +228,11 @@ namespace Weavers.Core.Constants {
     public const string ItOnFailSendTo = "OnFailTo";
     public const string ItOnPushbackSendTo = "OnPushbackTo";
     public const string ItOperator = "Operator";
-    public const string ItGuildNotes = "GuildNotes";
+
 
     public const string ItParameterDataType = "ParamType";
     public const string ItParameterClassType = "ParamClass";
+    public const string ItParsedOn = "ParsedOn";
     public const string ItPresence = "Presence";
     public const string ItProcessId = "ProcessId";
     public const string ItPortAddress = "Port";
@@ -212,7 +245,9 @@ namespace Weavers.Core.Constants {
     public const string ItExtractLink = "ExtractLink";
     public const string ItStructContent = "StructContent";
     public const string ItRating = "Rating";
+    public const string ItRepoItemId = "RepoItemId";
     public const string ItReferenceItem = "RefItem";
+    public const string ItReSync = "DoReSync";
     public const string ItReturnDataType = "ReturnType";
     public const string ItReturnClassType = "ReturnClass";
     public const string ItReturnNullable = "ReturnNullable";
@@ -229,21 +264,25 @@ namespace Weavers.Core.Constants {
     public const string ItRole = "Role";
     public const string ItRoleCommands = "RoleCmds";
     public const string ItRootFolder = "RootFolder";
+    public const string ItRemoteName = "RemoteName";
     public const string ItRepoUrl = "RepoUrl";
     public const string ItSkipPermissions = "SkipPerms";
     public const string ItSolutionGuid = "SlnGuid";
     public const string ItStatus = "Status";
     public const string ItSystemPrompt = "SysPrompt";
     public const string ItSystemPromptTemplate = "SysPrompt";
+
     public const string ItUserPrompt = "UserPrompt";
     public const string ItUserPromptTemplate = "UserPrompt";
     public const string ItTodoItem = "TodoItem";
     public const string ItTodoDepth = "TodoDepth";
     public const string ItTestClassAttribute = "TestClass";
     public const string ItTestMethodAttribute = "TestMethod";
+    public const string ItTrackedBranchName = "TrackedBranch";
     public const string ItUrlBase = "UrlBase";
     public const string ItUseThis = "UseThis";
     public const string ItUserName = "UserName";
+    public const string ItUntrackedFiles = "UntrackedFiles";
     public const string ItVote = "Votes";
     public const string ItValidate = "Validate";
 

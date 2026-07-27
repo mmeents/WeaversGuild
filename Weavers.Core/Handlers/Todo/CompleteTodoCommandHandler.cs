@@ -3,11 +3,12 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record CompleteTodoCommand(int TodoId, string TodoNote, int? ProducedItemId) : IRequest<CompleteTodoCmdResult?>;
+  public record CompleteTodoCommand(int TodoId, string TodoNote, int? ProducedItemId) : IMcpRequest, IRequest<CompleteTodoCmdResult?>;
 
   public class CompleteTodoCmdResult {
     public bool Success { get; set; }

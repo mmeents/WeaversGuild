@@ -19,6 +19,7 @@ namespace Weavers.Core.Handlers.Items {
     private readonly FabricDbContext _context;
     private readonly ISessionItemCacheService _sessionCache;
     private static readonly HashSet<int> ArchivableTypes = new() { 
+      (int)WeItemType.GithubRepoBranchModel,
       (int)WeItemType.TodoModel,
       (int)WeItemType.TodoAttemptModel,
       (int)WeItemType.RssItemModel, 

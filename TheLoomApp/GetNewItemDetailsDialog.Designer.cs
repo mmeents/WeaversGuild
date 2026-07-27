@@ -193,7 +193,6 @@
       StartPosition = FormStartPosition.CenterParent;
       Text = "Adding";
       TopMost = true;
-      Load += GetNewItemDetailsDialog_Load;
       Shown += GetNewItemDetailsDialog_Shown;
       ResumeLayout(false);
       PerformLayout();

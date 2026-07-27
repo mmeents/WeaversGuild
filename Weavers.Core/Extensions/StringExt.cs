@@ -58,6 +58,12 @@ namespace Weavers.Core.Extensions {
       return content.Split(delims.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
     }
 
+    public static string ParseLast(this string content, string delims)
+    => string.IsNullOrEmpty(content) ? string.Empty
+      : content.Split(delims.ToCharArray(), StringSplitOptions.RemoveEmptyEntries 
+        | StringSplitOptions.TrimEntries).LastOrDefault() ?? string.Empty;
+
+
     public static int AsInt32(this string? value) {
       if (value == null) return 0;
       if (int.TryParse(value, out int result)) return result;

@@ -1,4 +1,5 @@
-﻿using Weavers.Core.Enums;
+﻿using Weavers.Core.Constants;
+using Weavers.Core.Enums;
 
 namespace Weavers.Core.Extensions {
   public static class ItemTypeSeedsExt {
@@ -138,6 +139,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddProjectRoot => WeItemType.LoomMcpCommands,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => WeItemType.LoomMcpCommands,
+
+        WeItemType.CmdAddGithubRepo => WeItemType.LoomMcpCommands,
+        WeItemType.CmdDoGitClone => WeItemType.LoomMcpCommands,
+        WeItemType.CmdDoGitRefreshStatus => WeItemType.LoomMcpCommands,
+        WeItemType.CmdDoGitCheckout => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddSolution => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddSolutionImport => WeItemType.LoomMcpCommands,
 
@@ -191,6 +198,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceClaudeGatewayModel => WeItemType.HarnessGatewaysModel,   // Claude instance details for 1 Harness.
         WeItemType.PresModelClaudeModel => WeItemType.PresenceClaudeGatewayModel,     // Claude instance details for 1 model. 
 
+        WeItemType.CredentialStoreModel => WeItemType.OrganizationModel,
+        WeItemType.GitHubCredentialModel => WeItemType.CredentialStoreModel,
+
         WeItemType.DigitalOperatorPoolModel => WeItemType.OrganizationModel,
         WeItemType.DigitalOperatorModel => WeItemType.DigitalOperatorPoolModel,   
         
@@ -215,6 +225,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
         WeItemType.RelativeFolderModel => WeItemType.ProjectFolderModel,
         WeItemType.RelativeFolderDocs => WeItemType.RelativeFolderModel,
+        WeItemType.GithubRepoModel => WeItemType.RelativeFolderModel,
+        WeItemType.GithubRepoBranchModel => WeItemType.GithubRepoModel,
+
+        WeItemType.GitFolderModel => WeItemType.RelativeFolderModel,
+        WeItemType.GitFileModel => WeItemType.GitFolderModel,
 
         WeItemType.FileMdModel => WeItemType.RelativeFolderModel,
         WeItemType.FileMdDocs => WeItemType.FileMdModel,
@@ -317,6 +332,8 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.ProjectFolderModel => true,
         WeItemType.RelativeFolderModel => true,
+        WeItemType.GitFolderModel => true,
+        WeItemType.GitFileModel => true,
         WeItemType.FileMdModel => true,
         WeItemType.FileHtmlModel => true,
         WeItemType.FileConfigModel => true,
@@ -363,6 +380,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.ProjectFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel },
         WeItemType.RelativeFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.GithubRepoModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.GithubRepoBranchModel => new HashSet<WeItemType> { WeItemType.GithubRepoModel },
+
+        WeItemType.GitFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.GitFolderModel },
+        WeItemType.GitFileModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.GitFolderModel },
+
         WeItemType.FileMdModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.FileHtmlModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.FileConfigModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
@@ -511,6 +534,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddProjectRoot => (int)WeEditorType.String,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => (int)WeEditorType.String,
+
+        WeItemType.CmdAddGithubRepo => (int)WeEditorType.String,
+        WeItemType.CmdDoGitClone => (int)WeEditorType.String,
+        WeItemType.CmdDoGitRefreshStatus => (int)WeEditorType.String,
+        WeItemType.CmdDoGitCheckout => (int)WeEditorType.String,
+
         WeItemType.CmdAddSolution => (int)WeEditorType.String,
         WeItemType.CmdAddSolutionImport => (int)WeEditorType.String,
         WeItemType.CmdAddMdFile => (int)WeEditorType.String,
@@ -558,6 +587,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.ProjectDocs => (int)WeEditorType.String,
         WeItemType.RelativeFolderModel => (int)WeEditorType.String,
         WeItemType.RelativeFolderDocs => (int)WeEditorType.String,
+        WeItemType.GithubRepoModel => (int)WeEditorType.String,
+        WeItemType.GithubRepoBranchModel => (int)WeEditorType.String,
+        WeItemType.GitFolderModel => (int)WeEditorType.String,
+        WeItemType.GitFileModel => (int)WeEditorType.String,
 
         WeItemType.FileMdModel => (int)WeEditorType.String,
         WeItemType.FileMdDocs => (int)WeEditorType.String,
@@ -763,21 +796,27 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddProjectRoot => 30,  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => 31,
-        WeItemType.CmdAddSolution => 32,
-        WeItemType.CmdAddSolutionImport => 33,
-        WeItemType.CmdAddMdFile => 34,
-        WeItemType.CmdAddHtmlFile => 35,
-        WeItemType.CmdAddConfigFile => 36,
-        WeItemType.CmdAddLibrary => 37,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 38,
-        WeItemType.CmdAddClass => 39,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 40,
-        WeItemType.CmdAddClassProperty => 41,
-        WeItemType.CmdAddClassMethod => 42,
-        WeItemType.CmdAddClassMethodParam => 43,
-        WeItemType.CmdAddEntityClass => 44,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 45,
-        WeItemType.CmdAddEntityProperty => 46,
+
+        WeItemType.CmdAddGithubRepo => 32,
+        WeItemType.CmdDoGitClone => 33,
+        WeItemType.CmdDoGitRefreshStatus => 34,
+        WeItemType.CmdDoGitCheckout => 35,
+
+        WeItemType.CmdAddSolution => 36,
+        WeItemType.CmdAddSolutionImport => 37,
+        WeItemType.CmdAddMdFile => 38,
+        WeItemType.CmdAddHtmlFile => 39,
+        WeItemType.CmdAddConfigFile => 40,
+        WeItemType.CmdAddLibrary => 41,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 42,
+        WeItemType.CmdAddClass => 43,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 44,
+        WeItemType.CmdAddClassProperty => 45,
+        WeItemType.CmdAddClassMethod => 46,
+        WeItemType.CmdAddClassMethodParam => 47,
+        WeItemType.CmdAddEntityClass => 48,  // in AppGraphEntityTools
+        WeItemType.CmdAddEntityClassImport => 49,
+        WeItemType.CmdAddEntityProperty => 50,
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -810,6 +849,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceClaudeGatewayModel => (int)WeItemType.PresenceClaudeGatewayModel,
         WeItemType.PresModelClaudeModel => (int)WeItemType.PresModelClaudeModel,
 
+        WeItemType.CredentialStoreModel => (int)WeItemType.CredentialStoreModel,
+        WeItemType.GitHubCredentialModel => (int)WeItemType.GitHubCredentialModel,
+
         WeItemType.DigitalOperatorPoolModel => (int)WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel => (int)WeItemType.DigitalOperatorModel,
 
@@ -831,7 +873,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.ProjectDocs => (int)WeItemType.ProjectDocs,
         WeItemType.RelativeFolderModel => (int)WeItemType.RelativeFolderModel,
         WeItemType.RelativeFolderDocs => (int)WeItemType.RelativeFolderDocs,
+        WeItemType.GithubRepoModel => (int)WeItemType.GithubRepoModel,
+        WeItemType.GithubRepoBranchModel => (int)WeItemType.GithubRepoBranchModel,
 
+        WeItemType.GitFolderModel => (int)WeItemType.GitFolderModel,
+        WeItemType.GitFileModel => (int)WeItemType.GitFileModel,
         WeItemType.FileMdModel => (int)WeItemType.FileMdModel,
         WeItemType.FileMdDocs => (int)WeItemType.FileMdDocs,
         WeItemType.FileHtmlModel => (int)WeItemType.FileHtmlModel,
@@ -1040,6 +1086,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddProjectRoot => "Add Project Root Command",  // in AppGraphFileTools
         WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
+
+        WeItemType.CmdAddGithubRepo => "Add Github Repo Command",
+        WeItemType.CmdDoGitClone => "Do Git Clone Command",
+        WeItemType.CmdDoGitRefreshStatus => "Do Git Refresh Status Command",
+        WeItemType.CmdDoGitCheckout => "Do Git Checkout Command",
+
         WeItemType.CmdAddSolution => "Add Solution Command",
         WeItemType.CmdAddSolutionImport => "Add Solution Import Command",
 
@@ -1091,6 +1143,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceClaudeGatewayModel => "Claude Gateway",
         WeItemType.PresModelClaudeModel => "Claude Model",
 
+        WeItemType.CredentialStoreModel => "Org Credential Store",
+        WeItemType.GitHubCredentialModel => "GitHub Credential",
+
         WeItemType.DigitalOperatorPoolModel => "Digital Operator Pool",
         WeItemType.DigitalOperatorModel => "Digital Operator",
 
@@ -1116,7 +1171,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.RelativeFolderModel => "Relative Folder",
         WeItemType.RelativeFolderDocs => "Relative Folder Documentation",
+        WeItemType.GithubRepoModel => "GitHub Repo",        
+        WeItemType.GithubRepoBranchModel => "GitHub Repo Branch",
 
+        WeItemType.GitFolderModel => "Git Folder",
+        WeItemType.GitFileModel => "Git File",
         WeItemType.FileMdModel => "Md File",
         WeItemType.FileMdDocs => "Md File Documentation",
         WeItemType.FileHtmlModel => "Html File",

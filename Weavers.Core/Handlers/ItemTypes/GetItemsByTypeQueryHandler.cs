@@ -12,9 +12,9 @@ namespace Weavers.Core.Handlers.ItemTypes {
 
 
   public record GetItemsByItemTypeQuery(
-    int ItemTypeId
-  ) : IMcpRequest, IRequest<List<ItemLookup>>;
-  
+    int ItemTypeId, 
+    int? propertyItemId = null
+  ) : IMcpRequest, IRequest<List<ItemLookup>>;  
 
   public class GetItemsByTypeQueryHandler : IRequestHandler<GetItemsByItemTypeQuery, List<ItemLookup>> {
     private readonly FabricDbContext _context;
@@ -63,7 +63,22 @@ namespace Weavers.Core.Handlers.ItemTypes {
       } else { 
         if (rt >= WeItemType.OrganizationModel) {
 
-          if (rt == WeItemType.ClassModel) {
+          if (rt == WeItemType.GithubRepoBranchModel) {
+            if (request.propertyItemId.HasValue) {
+              var items = await _context.Relations
+                .Where(r => r.ItemId == request.propertyItemId.Value && r.RelatedItem.ItemTypeId == (int)WeItemType.GithubRepoBranchModel)
+                .Select(i => new ItemLookup(i.RelatedItemId, i.RelatedItem.Name, i.RelatedItem.Name))
+                .ToListAsync(cancellationToken);
+              return items;
+            } else {
+              var items = await _context.Items
+                .Where(i => i.ItemTypeId == (int)WeItemType.GithubRepoBranchModel)
+                .Select(i => new ItemLookup(i.Id, i.Name, i.Name))
+                .ToListAsync(cancellationToken);
+              return items;
+            }
+
+          } else if (rt == WeItemType.ClassModel) {
             var items = await _context.Items
               .Where(i => i.ItemTypeId == (int)WeItemType.ClassModel || i.ItemTypeId == (int)WeItemType.EntityClassModel)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))

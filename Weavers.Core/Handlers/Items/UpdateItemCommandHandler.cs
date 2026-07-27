@@ -217,6 +217,7 @@ namespace Weavers.Core.Handlers.Items {
     private async Task UpdateFolderPathIfNeededAsync(ItemDto item, string basePath) {
       string propKey = item.ItemTypeId.GetFolderPropertyName();
       if (propKey == "") return;
+      if (item.ItemTypeId == (int)WeItemType.GitFolderModel || item.ItemTypeId == (int)WeItemType.GitFileModel) return;
 
       var folderProp = item.Properties.FirstOrDefault(p => p.Name == propKey);
       if (folderProp == null) return;

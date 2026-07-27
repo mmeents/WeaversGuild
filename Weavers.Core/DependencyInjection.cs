@@ -35,6 +35,7 @@ namespace Weavers.Core {
       services.AddSingleton<IGatewayRunRegistry, GatewayRunRegistry>();
 
       services.AddScoped<IAppSettingService, AppSettingService>();
+      services.AddScoped<IFileSystemValidationService, FileSystemValidationService>();
       services.AddScoped<IAppDataService, AppDataService>();
       services.AddScoped<IAppGraphOrgService, AppGraphOrgService>();
       services.AddScoped<IAppGraphFileService, AppGraphFileService>();

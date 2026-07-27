@@ -5,6 +5,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Repos;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Service {
@@ -13,6 +14,13 @@ namespace Weavers.Core.Service {
 
     Task<ItemDto?> AddProjectRoot(string? projectName, string projectPath);
     Task<ItemDto?> AddSubFolder(ItemDto parentItem, string? subFolderName);
+
+    Task<ItemDto?> AddGithubRepo(ItemDto parentItem, string repoUrl);
+
+    Task<ItemDto?> DoCloneGithubRepoItem(ItemDto repoItem);
+    Task<ItemDto?> DoGitRefreshStatus(ItemDto repoItem);
+    Task<ItemDto?> DoCheckoutBranch(ItemDto branchItem);
+
     Task<ItemDto?> AddSolution(ItemDto projectFolderItem, string? solutionName);
     Task<ItemDto?> AddSolutionImport(ItemDto slnItem, string? importName);
     Task<ItemDto?> AddMdFile(ItemDto folderItem, string? fileName, string? fileContent);
@@ -31,6 +39,11 @@ namespace Weavers.Core.Service {
     private IMediator GetMediator() {
       var scope = _scopeFactory.CreateScope();
       return scope.ServiceProvider.GetRequiredService<IMediator>(); 
+    }
+
+    private IAppGraphOrgService GetAppGraphOrgService() {
+      var scope = _scopeFactory.CreateScope();
+      return scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
     }
     private FabricDbContext GetDbContext() {
       var scope = _scopeFactory.CreateScope();
@@ -87,6 +100,33 @@ namespace Weavers.Core.Service {
         await rootFolderProperty.SaveProp(newSubItem, mediator);        
       }
       return newSubItem;
+    }
+
+    public async Task<ItemDto?> AddGithubRepo(ItemDto parentItem, string repoUrl) { 
+      var orgService = GetAppGraphOrgService();
+      var addRepoCommand = await orgService.AddGithubRepo(parentItem, ".git", null, repoUrl);
+      return addRepoCommand;
+    }
+
+    public async Task<ItemDto?> DoCloneGithubRepoItem(ItemDto repoItem) {             
+      repoItem.ValidateRepoItemExists(repoItem.Id);
+      var mediator = GetMediator();
+      var result = await mediator.Send(new CloneGithubRepoCommand(repoItem.Id));
+      return result;
+    }
+    public async Task<ItemDto?> DoGitRefreshStatus(ItemDto repoItem) { 
+      repoItem.ValidateRepoItemExists(repoItem.Id);
+      var mediator = GetMediator();
+      var result = await mediator.Send(new RefreshGitStatusCommand(repoItem.Id));
+      return result;
+    }
+
+    // return a repo with the branch checked out.  will except if fails.
+    public async Task<ItemDto?> DoCheckoutBranch(ItemDto branchItem) {
+      branchItem.ValidateBranchItemExists(branchItem.Id);
+      var mediator = GetMediator();
+      var result = await mediator.Send(new CheckoutBranchCommand(branchItem.Id));
+      return result;
     }
 
     public async Task<ItemDto?> AddSolution(ItemDto projectFolderItem, string? solutionName) {

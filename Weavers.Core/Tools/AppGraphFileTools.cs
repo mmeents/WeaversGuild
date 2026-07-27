@@ -19,6 +19,30 @@ namespace Weavers.Core.Tools {
       [Description("The name of the new subfolder.")] string subFolderName)
       => GetTools().AddSubFolder(folderItemId, subFolderName);
 
+        
+    [McpTool(Cx.CmdAddGithubRepo, "Adds a new GitHub repository item to the specified folder.")]
+    public static Task<string> AddGithubRepo(
+      [Description("The Item Id of the folder to add the GitHub repository item to.")] int folderItemId,
+      [Description("The URL of the GitHub repository.")] string repoUrl)
+      => GetTools().AddGithubRepo(folderItemId, repoUrl);
+
+    [McpTool(Cx.CmdDoGitClone, "Clones the GitHub repository item to the local file system, calls RefreshStatus")]
+    public static Task<string> DoGitClone(
+      [Description("The Item Id of the GitHub repository item to clone.")] int repoItemId)
+      => GetTools().DoCloneGithubRepoItem(repoItemId);
+
+    [McpTool(Cx.CmdDoGitRefreshStatus, "Refreshes the Git status of the specified repository item. Syncs the child branches to graph.")]
+    public static Task<string> DoGitRefreshStatus(
+      [Description("The Item Id of the GitHub repository item to refresh the status for.")] int repoItemId)
+      => GetTools().DoGitRefreshStatus(repoItemId);
+
+    [McpTool(Cx.CmdDoGitCheckout, "Checks out the specified branch item. Returns the repository item.")]
+    public static Task<string> DoGitCheckout(
+      [Description("The Item Id of the repository branch item to checkout.")] int branchItemId)
+      => GetTools().DoCheckoutBranch(branchItemId);
+
+
+
     [McpTool(Cx.CmdAddSolution, "Adds a new solution item under the specified folder.")]
     public static Task<string> AddSolution(
       [Description("The Item Id of the folder to add the solution under.")] int folderItemId,

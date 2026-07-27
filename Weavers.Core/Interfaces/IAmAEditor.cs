@@ -38,7 +38,7 @@ namespace Weavers.Core.Interfaces {
     /// Get the list of items for the combo box
     /// </summary>
     Task<IEnumerable<ItemLookup>> GetTypesAsync();
-    Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId);
+    Task<IEnumerable<ItemLookup>> GetValuesAsync(int? itemTypeId, int? propertyItemId = null);
 
     Task<ItemDto?> GetItemByIdAsync(int id);
 

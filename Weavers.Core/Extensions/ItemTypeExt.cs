@@ -67,7 +67,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceLmStudioGatewayModel => 25,
         WeItemType.PresModelLmStudioModel => 19,
         WeItemType.PresenceClaudeGatewayModel => 25,
-        WeItemType.PresModelClaudeModel => 19,        
+        WeItemType.PresModelClaudeModel => 19,   
+        
+        WeItemType.CredentialStoreModel => 13,
+        WeItemType.GitHubCredentialModel => 15,
 
         WeItemType.DigitalOperatorPoolModel => 19,
         WeItemType.DigitalOperatorModel => 19,
@@ -91,6 +94,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
+
+        WeItemType.GithubRepoModel => 21,
+        WeItemType.GithubRepoBranchModel => 13,
+        WeItemType.GitFolderModel => 1,
+        WeItemType.GitFileModel => 17,
+
         WeItemType.FileMdModel => 2,
         WeItemType.FileHtmlModel => 16,
         WeItemType.FileConfigModel => 17,
@@ -133,6 +142,8 @@ namespace Weavers.Core.Extensions {
       HashSet<WeItemType> fileNodeTypes = new HashSet<WeItemType>(){
  //       WeItemType.OrganizationModel,  removed because root is different than folder of leaf, no parent dependency.
         WeItemType.OrgDeskRolesModel,
+        WeItemType.CredentialStoreModel,
+        WeItemType.GitHubCredentialModel,
         WeItemType.DeskRoleModel,
         WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel,
@@ -146,7 +157,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssItemModel,
         WeItemType.RssLinkedHtmlModel,
         WeItemType.ProjectFolderModel, 
-        WeItemType.RelativeFolderModel,        
+        WeItemType.RelativeFolderModel,  
+        WeItemType.GitFolderModel,
+        WeItemType.GitFileModel,
         WeItemType.FileMdModel,
         WeItemType.FileHtmlModel,
         WeItemType.FileConfigModel,
@@ -234,6 +247,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.OrgDocModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
+        (int)WeItemType.GitFileModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
@@ -296,6 +310,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.OrgDocModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
+        (int)WeItemType.GitFileModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
@@ -343,6 +358,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.OrgDocModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
+        (int)WeItemType.GitFolderModel => true,
+        (int)WeItemType.GitFileModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
@@ -372,6 +389,9 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.RssLinkedHtmlModel => Cx.ItFilePath,
         (int)WeItemType.ProjectFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.RelativeFolderModel => Cx.ItRelativeFolder,
+        (int)WeItemType.GithubRepoModel => Cx.ItRelativeFolder,
+        (int)WeItemType.GitFolderModel => Cx.ItRelativeFolder,
+        (int)WeItemType.GitFileModel => Cx.ItFilePath,
         (int)WeItemType.FileMdModel => Cx.ItFilePath,
         (int)WeItemType.FileHtmlModel => Cx.ItFilePath,
         (int)WeItemType.FileConfigModel => Cx.ItFilePath,
@@ -490,6 +510,14 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsValidGitFolderParent(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.GitFolderModel => true,
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,
+        _ => false
+      };
+    }
 
     public static string? GetMcpCommandString(this WeItemType loomCommand) {
       return loomCommand switch {
@@ -530,6 +558,12 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,
         WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,
+
+        WeItemType.CmdAddGithubRepo => Cx.CmdAddGithubRepo,
+        WeItemType.CmdDoGitClone => Cx.CmdDoGitClone,
+        WeItemType.CmdDoGitRefreshStatus => Cx.CmdDoGitRefreshStatus,
+        WeItemType.CmdDoGitCheckout => Cx.CmdDoGitCheckout,
+
         WeItemType.CmdAddSolution => Cx.CmdAddSolution,
         WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
 

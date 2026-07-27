@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -37,6 +38,7 @@ namespace TheLoomApp {
     public string? DbTableName => edDbTableName.Text;
 
     public string? RssUrl => edDbTableName.Text;
+    public string? RemoteUrl => edDbTableName.Text;
 
     public GetNewItemDetailsDialog(IServiceScopeFactory serviceScopeFactory, WeItemType targetTypeToCreate) {
       _serviceScopeFactory = serviceScopeFactory;
@@ -52,7 +54,7 @@ namespace TheLoomApp {
       cbItemLookup.Visible = false;
       edDbTableName.Visible = false;
       lbDbTableName.Visible = false;
-      
+
       if (_targetTypeToCreate == WeItemType.FileMdModel) {
         cbNewFileType.Top = edName.Top + edName.Height + 10;
         cbNewFileType.Left = edName.Left;
@@ -125,12 +127,37 @@ namespace TheLoomApp {
         edDbTableName.Top = edName.Top + edName.Height + 10;
         edDbTableName.Left = edName.Left;
         lbDbTableName.Top = edDbTableName.Top;
-        lbDbTableName.Left = lbNewItemName.Left + lbNewItemName.Width - lbDbTableName.Width;
         lbDbTableName.Text = "Rss Url:";
+        lbDbTableName.Left = edName.Left - lbDbTableName.Width - 6;
         edDbTableName.Visible = true;
         lbDbTableName.Visible = true;
       }
 
+      if (_targetTypeToCreate == WeItemType.GithubRepoModel) {
+
+        cbItemLookup.Top = edName.Top + edName.Height + 10;
+        cbItemLookup.Left = edName.Left;
+        lbWhich.Top = cbItemLookup.Top;
+        lbWhich.Text = "Access Creds:";
+        lbWhich.Left = edName.Left - lbWhich.Width - 6;
+
+        edDbTableName.Top = cbItemLookup.Top + cbItemLookup.Height + 10;
+        lbDbTableName.Top = edDbTableName.Top;
+        edDbTableName.Left = edName.Left;
+        lbDbTableName.Text = "Repo Url:";
+        edName.Text = ".git -- not used, set Creds and Url";
+        cbItemLookup.Visible = true;
+        lbWhich.Visible = true;
+        edDbTableName.Visible = true;
+        lbDbTableName.Visible = true;
+      }
+
+    }
+
+    private async void GetNewItemDetailsDialog_Shown(object sender, EventArgs e) {
+      if (_targetTypeToCreate == WeItemType.GithubRepoModel) {
+        LoadCbItemLookup((int)WeItemType.GitHubCredentialModel);
+      }
     }
 
     private ConcurrentDictionary<int, WeItemType> _dataTypeMap = new ConcurrentDictionary<int, WeItemType>();
@@ -191,12 +218,20 @@ namespace TheLoomApp {
       }
     }
 
-    private void GetNewItemDetailsDialog_Load(object sender, EventArgs e) {
-
-    }
-
-    private void GetNewItemDetailsDialog_Shown(object sender, EventArgs e) {
-
+    private async void LoadCbItemLookup(int selectedDataType) {
+      using var scope = _serviceScopeFactory.CreateScope();
+      var _mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var items = await _mediator.Send(new GetItemsByItemTypeQuery(selectedDataType), CancellationToken.None);
+      cbItemLookup.Items.Clear();
+      foreach (var item in items) {
+        if (item != null && item.Description != null) {
+          var index = cbItemLookup.Items.Add(item.DisplayText);
+          _lookupMap[index] = item.Value.AsInt();
+        }
+      }
+      if (cbItemLookup.Items.Count > 0) {
+        cbItemLookup.SelectedIndex = 0;
+      }
     }
 
     private void cbNewFileType_SelectedIndexChanged(object sender, EventArgs e) {
@@ -242,5 +277,7 @@ namespace TheLoomApp {
         }
       }
     }
+
+
   }
 }

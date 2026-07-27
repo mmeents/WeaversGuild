@@ -3,16 +3,22 @@ using CodeHollow.FeedReader;
 using Ganss.Xss;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Scriban.Parsing;
 using SmartReader;
 using Weavers.Core.Constants;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Handlers.Rss;
+using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Models;
 
 namespace Weavers.Core.Service {
   public interface IAppGraphOrgService {
+        
+    Task<ItemDto?> AddGithubRepo(ItemDto item, string? name, int? credItemId = null, string? remoteUrl = null);
+    Task<ItemDto?> AddGithubToken(ItemDto item, string? name);
     Task<ItemDto?> AddOrgWorkGroup(ItemDto orgChart, string? workGroupName);
     Task<ItemDto?> AddOrgDeskRole(ItemDto orgDeskRoles, string? roleName);
     Task<ItemDto?> AddOrgDesk(ItemDto OrgChart, string? deskName);
@@ -45,14 +51,66 @@ namespace Weavers.Core.Service {
       return scope.ServiceProvider.GetRequiredService<IMediator>();
     }
 
+    public async Task<ItemDto?> AddGithubRepo(ItemDto item, string? name, int? credItemId = null, string? remoteUrl = null) { 
+      var mediator = GetMediator();
+      var newItem = await mediator.Send(
+        new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
+          (int)WeItemType.GithubRepoModel, name ?? ".git", "", "{}"));
+      if (newItem != null) {
+
+        var itsFilePathProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder);
+        if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {
+          string parentFolderPath = item.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+          var fullPath = Path.Combine(parentFolderPath, ".git"+Path.DirectorySeparatorChar);
+          itsFilePathProp.Value = fullPath;
+          await itsFilePathProp.SaveProp(newItem, mediator);
+        }
+
+        if (credItemId == null) {
+          var candidates = await mediator.Send(new GetItemsByItemTypeQuery((int)WeItemType.GitHubCredentialModel));
+          credItemId = candidates.FirstOrDefault()?.Value.AsInt();
+        }
+
+        if (credItemId != null && credItemId != 0) {
+          var credIdProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGithubCreds);
+          if (credIdProp != null) {
+            credIdProp.Value = credItemId.ToString();
+            await credIdProp.SaveProp(newItem, mediator);
+          }
+        } 
+
+        if (!string.IsNullOrEmpty(remoteUrl)) {
+          var repoUrlProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRepoUrl);
+          if (repoUrlProp != null) {
+            repoUrlProp.Value = remoteUrl;
+            await repoUrlProp.SaveProp(newItem, mediator);
+          }
+        }
+
+      }
+      return newItem;
+    }
+
+    public async Task<ItemDto?> AddGithubToken(ItemDto item, string? name) {
+      var mediator = GetMediator();
+      var newItem = await mediator.Send(
+        new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
+          (int)WeItemType.GitHubCredentialModel, name ?? "GitHub Token", "", "{}"));
+      if (newItem != null) { }
+      return newItem;
+    }
 
     public async Task<ItemDto?> AddOrgWorkGroup(ItemDto orgChart, string? workGroupName) {
       var mediator = GetMediator();
-      var nextRank = await mediator.Send(new GetNextItemRankQuery(orgChart.Id)) + 1;
-      var name = workGroupName == null ? $"Work Group {nextRank}" : workGroupName;
+      var name = workGroupName ?? "";
+      if (workGroupName == null) {
+        var nextRank = await mediator.Send(new GetNextItemRankQuery(orgChart.Id)) + 1;
+        name = $"Work Group {nextRank}";
+      }      
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(orgChart.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.WorkGroupModel, name, "", "{}"));
+
       if (newItem != null) {
         var itsFilePathProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder);
         if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {

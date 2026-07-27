@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
@@ -561,8 +562,8 @@ namespace TheLoomApp {
                 SetupPropertiesTabForItem(_selectedNode.Item);
               }
             }
-          } else if (selectedItemTypeId == (int)WeItemType.RssItemModel 
-            || selectedItemTypeId == (int)WeItemType.RssLinkedHtmlModel) { 
+          } else if (selectedItemTypeId == (int)WeItemType.RssItemModel
+            || selectedItemTypeId == (int)WeItemType.RssLinkedHtmlModel) {
             var isCheckedResolveLink = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink)?.Value.AsBoolean();
             var isCheckedExtractLinks = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItExtractLink)?.Value.AsBoolean();
             if (isCheckedResolveLink == true) {
@@ -738,6 +739,8 @@ namespace TheLoomApp {
     #region Context Menu Events
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
+        miSepRefreshBottom.Visible = false;
+        miAddGithubToken.Visible = false;
         miAddWorkGroup.Visible = false;
         miAddOrgRole.Visible = false;
         miAddOrgDesk.Visible = false;
@@ -753,6 +756,10 @@ namespace TheLoomApp {
         miExtractLinks.Visible = false;
         miAddProjectRoot.Visible = true;
         miAddSubProject.Visible = false;
+        miAddGitHubRepo.Visible = false;
+        miDoGitClone.Visible = false;
+        miDoGitRefStatus.Visible = false;
+        miDoCheckout.Visible = false;
         miAddSolution.Visible = false;
         miAddSolutionImport.Visible = false;
         miAddFile.Visible = false;
@@ -766,32 +773,61 @@ namespace TheLoomApp {
         miAddClassMethodParam.Visible = false;
         miAddEntity.Visible = false;
         miAddEntityProperty.Visible = false;
+        miSepAddBottom.Visible = false;
 
         miGenerate.Visible = false;
-        toolStripSeparator2.Visible = false;
+        miSepGenBottom.Visible = false;
         miDeleteItem.Enabled = false;
+
       } else {
         var itemType = (WeItemType)_selectedNode.Item.ItemTypeId;
         var hasDiModel = false;
+        var isGeneratable = _selectedNode.IsGenerateType();
         if (itemType == WeItemType.LibraryModel) {
           hasDiModel = _selectedNode.Item.Relations.Any(r => r.RelationTypeId == (int)WeRelationTypes.Contains
             && r.RelatedItemId != null && r.RelatedItemTypeId == (int)WeItemType.DependencyInjectionModel);
         }
+        bool isRepoItem = itemType == WeItemType.GithubRepoModel;
+        bool isRepoCloned = isRepoItem
+          && _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItLastCommitSha && !string.IsNullOrEmpty(p.Value))
+          && (_selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value?.GitRepoFolderExists() ?? false) == true;
+        bool isBranchItem = itemType == WeItemType.GithubRepoBranchModel;
+        bool isBranchCurrentBranch = false;
+        if (isBranchItem) {
+          var parentNode = _selectedNode.Parent as ItemNode;
+          if (parentNode != null && parentNode.Item != null && parentNode.Item.ItemTypeId == (int)WeItemType.GithubRepoModel) {
+            var currentBranchId = parentNode.Item.GetRepoCurrentBranchId(parentNode.Item.Id);
+            isBranchCurrentBranch = currentBranchId == _selectedNode.Item.Id;
+          }
+        }
+        miSepRefreshBottom.Visible = true;
+
+        miAddGithubToken.Visible = itemType == WeItemType.CredentialStoreModel;
+
         miAddWorkGroup.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.WorkGroupModel;
         miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
         miAddOrgDesk.Visible = itemType == WeItemType.WorkGroupModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
         miAddForeachTodo.Visible = itemType == WeItemType.DeskModel;
+
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
+
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
         miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel || itemType == WeItemType.OrganizationModel;
+
         miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.RssFolderModel;
         miAddRssChannel.Visible = itemType == WeItemType.RssFolderModel;
         miResyncChannel.Visible = itemType == WeItemType.RssChannelModel;
         miResolveLink.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miExtractLinks.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
+
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddGitHubRepo.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miDoGitClone.Visible = itemType == WeItemType.GithubRepoModel && !isRepoCloned;
+        miDoGitRefStatus.Visible = itemType == WeItemType.GithubRepoModel && isRepoCloned;
+        miDoCheckout.Visible = itemType == WeItemType.GithubRepoBranchModel && isRepoCloned && !isBranchCurrentBranch;
+
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolutionImport.Visible = itemType == WeItemType.SolutionModel;
         miAddFile.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -805,8 +841,12 @@ namespace TheLoomApp {
         miAddClassMethodParam.Visible = itemType == WeItemType.ClassMethodModel;
         miAddEntity.Visible = itemType == WeItemType.LibraryModel || itemType == WeItemType.NamespaceModel;
         miAddEntityProperty.Visible = itemType == WeItemType.EntityClassModel;
-        miGenerate.Visible = true;
-        toolStripSeparator2.Visible = true;
+
+        miSepAddBottom.Visible = true;
+
+        miGenerate.Visible = isGeneratable;
+        miSepGenBottom.Visible = isGeneratable;
+
         miDeleteItem.Enabled = true;
 
       }
@@ -815,6 +855,24 @@ namespace TheLoomApp {
     private async void miReloadTree_Click(object sender, EventArgs e) {
       _appDataService.ClearCache();
       await LoadRootProjects();
+    }
+
+
+
+
+    private async void miAddGithubToken_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.GitHubCredentialModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddGithubToken(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add github token - error:" + ex.Message);
+        MessageBox.Show($"Error adding github token: {ex.Message}", "Add Github Token Failed");
+      }
     }
 
 
@@ -1052,6 +1110,103 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
       }
     }
+
+    private async void miAddGitHubRepo_Click(object sender, EventArgs e) {
+      var selectedNode = tvKb.SelectedNode as ItemNode;
+      if (selectedNode != null && selectedNode.Item != null) {
+        var result = await _appDataService.CheckHasRepoInHeirarcy(selectedNode.Item.Id);
+        if (result) {
+          MessageBox.Show("A GitHub repository already exists in the hierarchy. Cannot add another one.", "Add GitHub Repository", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.GithubRepoModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var remoteUrl = dlg.DbTableName;
+          var credentialId = dlg.LookupItemId;
+          await tvKb.AddGithubRepo(_appGraphOrgService, ".git", credentialId, remoteUrl);
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects();
+        }
+      }
+    }
+    private async void miDoGitClone_Click(object sender, EventArgs e) {
+      try {
+        if (tvKb.SelectedNode != null && tvKb.SelectedNode is ItemNode selectedNode && selectedNode.Item != null) {
+          _selectedNode = selectedNode;
+        } else {
+          MessageBox.Show("Please select a GitHub repository node to clone.", "Git Clone", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        ItemDto repoItem = _selectedNode.Item;
+        var updatedRepoItem = await _appGraphService.DoCloneGithubRepoItem(_selectedNode.Item);
+        // await tvKb.UpdateRepoItem(updatedRepoItem);
+        await Task.Delay(100);
+        _appDataService.ClearCache();
+        await LoadRootProjects(_selectedNode.Item.Id);
+        DoLogMessage($"GitHub repository '{repoItem.Name}' cloned successfully.");
+      } catch (Exception ex) {
+        var errorMsg = ex.Message;
+        MessageBox.Show($"Error cloning GitHub repository: {errorMsg}", "Git Clone Failed");
+        DoLogMessage($"Error cloning GitHub repository: {errorMsg}");
+      }
+      return;
+    }
+
+    private async void miDoGitRefStatus_Click(object sender, EventArgs e) {
+      try {
+        if (tvKb.SelectedNode != null && tvKb.SelectedNode is ItemNode selectedNode && selectedNode.Item != null) {
+          _selectedNode = selectedNode;
+        } else {
+          MessageBox.Show("Please select a GitHub repository node to clone.", "Git Clone", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        ItemDto repoItem = _selectedNode.Item;
+        var updatedRepoItem = await _appGraphService.DoGitRefreshStatus(_selectedNode.Item);
+        //await tvKb.UpdateRepoItem(updatedRepoItem);
+        //TreeViewEventArgs ee = new TreeViewEventArgs(_selectedNode);
+        //tvKb_AfterSelect(this, ee);
+        await Task.Delay(100);
+        _appDataService.ClearCache();
+        await LoadRootProjects(_selectedNode.Item.Id);
+        DoLogMessage($"GitHub repository '{repoItem.Name}' status refreshed successfully.");
+      } catch (Exception ex) {
+        var errorMsg = ex.Message;
+        MessageBox.Show($"Error refreshing GitHub repository status: {errorMsg}", "Git Refresh Status Failed");
+        DoLogMessage($"Error refreshing GitHub repository status: {errorMsg}");
+      }
+      return;
+    }
+
+    private async void miDoCheckout_Click(object sender, EventArgs e) {
+      try {
+        if (tvKb.SelectedNode != null && tvKb.SelectedNode is ItemNode selectedNode && selectedNode.Item != null) {
+          _selectedNode = selectedNode;
+        } else {
+          MessageBox.Show("Please select a GitHub repository node to clone.", "Git Clone", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        ItemDto branchItem = _selectedNode.Item;
+        var updatedRepoItem = await _appGraphService.DoCheckoutBranch(branchItem);        
+        tvKb.SelectedNode = _selectedNode.Parent; // reset selected to the parent repo node
+        //await tvKb.UpdateRepoItem(updatedRepoItem);
+        //TreeViewEventArgs ee = new TreeViewEventArgs(_selectedNode);
+        //tvKb_AfterSelect(this, ee);
+        await Task.Delay(100);
+        _appDataService.ClearCache();
+        await LoadRootProjects();
+        DoLogMessage($"Checkout branch '{branchItem.Name}' completed successfully.");
+      } catch (Exception ex) {
+        var errorMsg = ex.Message;
+        MessageBox.Show($"Error checking out branch: {errorMsg}", "Git Checkout Failed");
+        DoLogMessage($"Error checking out branch: {errorMsg}");
+      }
+      return;
+    }
+
+
+
     private async void miAddSolution_Click(object sender, EventArgs e) {
       try {
 
@@ -1816,10 +1971,10 @@ namespace TheLoomApp {
             await ReloadReadyTabAsync();
             _workingTodo = null;
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose ) {
+          } else if (result.Status == RunTodoAttemptOutcome.RanWithoutClose) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt did not complete. retrying next. Response: {result.ResponseText}");
             shouldContinue = true;
-          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured||
+          } else if (result.Status == RunTodoAttemptOutcome.NotConfigured ||
             result.Status == RunTodoAttemptOutcome.InvocationFailed) {
             DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Attempt Failed, Status: {result.Status}, Error: {result.ErrorMessage}");
             _workingTodo = null;
@@ -2183,6 +2338,7 @@ namespace TheLoomApp {
         }
       }
     }
+
 
   }
 
