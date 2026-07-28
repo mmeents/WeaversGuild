@@ -15,6 +15,9 @@ namespace Weavers.Core.Constants {
     // will just go with what they said below lol... 
     public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, documentation, and data to enhance software development. Our mission is to empower developers with innovative solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";
 
+    //
+    public static string CdnUrlPrismJs = "https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js";
+
     // Org folder names
     public static string AppHarnessAppName => "TheLoom";
     public static string AppSessionsFolder => "Sessions";

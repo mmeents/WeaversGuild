@@ -10,8 +10,8 @@ namespace Weavers.Core.Models {
   #region SHARED / COMMON 
   /// <summary>Base class for polymorphic chat input items.</summary>
   [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
-  [JsonDerivedType(typeof(TextInputItem), "message")]
-  [JsonDerivedType(typeof(ImageInputItem), "image")]
+  [JsonDerivedType(typeof(TextInputItem), "text")]
+  [JsonDerivedType(typeof(ImageInputItem), "image_url")]
   public abstract class InputItem {
     [JsonPropertyName("type")]
     public abstract string Type { get; }
@@ -19,18 +19,24 @@ namespace Weavers.Core.Models {
 
   public class TextInputItem : InputItem {
     [JsonIgnore]
-    public override string Type => "message";
+    public override string Type => "text";
 
-    [JsonPropertyName("content")]
+    [JsonPropertyName("text")]
     public required string Content { get; set; }
   }
 
   public class ImageInputItem : InputItem {
     [JsonIgnore]
-    public override string Type => "image";
+    public override string Type => "image_url";
 
-    [JsonPropertyName("data_url")]
-    public required string DataUrl { get; set; }
+    [JsonPropertyName("image_url")]
+    public required ImageUrlContainer ImageUrl { get; set; }
+  }
+
+  // Inner container required to host the base64 string or remote link
+  public class ImageUrlContainer {
+    [JsonPropertyName("url")]
+    public required string Url { get; set; } // Expects "data:image/jpeg;base64,..." or a web URL
   }
   #endregion
 
