@@ -84,7 +84,15 @@ namespace Weavers.Core.Handlers.ItemSummaries {
           TypeId = i.ItemTypeId,
           TypeName = i.ItemType.Name,
           Name = i.Name,
-          NodesUp = false,                    
+          NodesUp = false,
+          Props = i.Properties.Select(p => new PropSummaryDto {
+            Id = p.Id,
+            Name = p.Name,
+            Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
+            DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
+            EditorType = p.Editor == null ? null : p.Editor.Name,
+            ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name
+          }).ToList()
         })
         .ToListAsync(cancellationToken); // Execute database query here
       

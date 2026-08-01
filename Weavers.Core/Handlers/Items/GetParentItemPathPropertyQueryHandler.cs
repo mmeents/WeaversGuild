@@ -17,6 +17,7 @@ namespace Weavers.Core.Handlers.Items {
       var parentRelation = item.IncomingRelations.FirstOrDefault(r => r.RelationTypeId == (int)WeRelationTypes.Contains);
       if (parentRelation == null) { return null; }
       var parentId = parentRelation.ItemId;
+
       var parentItem = await _context.GetItemDtoById(parentId, cancellationToken);
       if (parentItem == null) { return null; }
       var propKey = parentItem.ItemTypeId.GetFolderPropertyName();

@@ -227,7 +227,7 @@ namespace Weavers.Core.Models {
 
   public class InvalidToolCallMetadata {
     /// <summary>"invalid_name" | "invalid_arguments"</summary>
-    [JsonIgnore]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("tool_name")]
@@ -283,7 +283,7 @@ namespace Weavers.Core.Models {
 
   public class LmModel {
     /// <summary>"llm" | "embedding"</summary>
-    [JsonIgnore]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("publisher")]

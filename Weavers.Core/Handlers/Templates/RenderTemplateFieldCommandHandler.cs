@@ -39,9 +39,8 @@ namespace Weavers.Core.Handlers.Templates {
           if (int.TryParse(roleIdStr, out int roleId)) { 
             var roleItem = await _context.GetItemDtoById(roleId);
             if (roleItem != null) {           
-              var model = roleItem.AsRoleModel(deskName, operatorName);
               var scriptObject1 = new ScriptObject();
-              scriptObject1["model"] = model;
+              scriptObject1["model"] = roleItem.AsRoleModel(deskName, operatorName);
               return DoRendering(templateText, scriptObject1);             
             }
           }           

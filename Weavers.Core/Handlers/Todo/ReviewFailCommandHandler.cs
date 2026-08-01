@@ -54,6 +54,7 @@ namespace Weavers.Core.Handlers.Todo {
 
       var onPushbackDesk = await _context.GetItemDtoById(onPushbackDeskId.Value, cancellationToken);
       if (onPushbackDesk == null) return result.CreateFailure("OnPushbackSendTo desk not found.");
+      var isDeskActive = onPushbackDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItEnabled)?.Value.AsBoolean();
 
       // update the todo item save the note, status at end.
       var todoCloseReasonProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItCloseReason);
@@ -95,6 +96,7 @@ namespace Weavers.Core.Handlers.Todo {
         }
       }
 
+      bool newTodoPromptSet = false;
       if (inProgressTodoAttempt != null) {
         var itContinueTodoProp = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
         if (itContinueTodoProp != null) {
@@ -111,6 +113,7 @@ namespace Weavers.Core.Handlers.Todo {
             "Review Notes: " + request.ReviewNotes+Environment.NewLine+
             "Change Request: " + request.ChangeRequest;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
       } else {
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
@@ -122,9 +125,11 @@ namespace Weavers.Core.Handlers.Todo {
             "Review Notes: " + request.ReviewNotes + Environment.NewLine +
             "Change Request: " + request.ChangeRequest;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
       }
 
+      bool newTodoRefItemSet = false;
       // finish filling out properties on new todo item.
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
       if (newTodoRefItemIdProp != null) {
@@ -137,6 +142,7 @@ namespace Weavers.Core.Handlers.Todo {
           newTodoRefItemIdProp.Value = todoItem.Id.ToString();
         }
         await newTodoRefItemIdProp.SaveProp(newTodoItem, _mediator);
+        newTodoRefItemSet = true;
       }
 
       var itFromTodoProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFromTodo);
@@ -160,6 +166,14 @@ namespace Weavers.Core.Handlers.Todo {
       if (todoStatusProp != null) {
         todoStatusProp.Value = ((int)WeItemType.TodoAbortedPushBack).ToString();
         await todoStatusProp.SaveProp(todoItem, _mediator);
+      }
+
+      if (isDeskActive.HasValue && isDeskActive.Value && newTodoPromptSet && newTodoRefItemSet) {
+        var isReadyProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+        if (isReadyProp != null) {
+          isReadyProp.Value = "1";
+          await isReadyProp.SaveProp(newTodoItem, _mediator);
+        }
       }
 
       var currentDeskTodoProp = parentDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItCurrentTodo && p.Value == todoItem.Id.ToString());

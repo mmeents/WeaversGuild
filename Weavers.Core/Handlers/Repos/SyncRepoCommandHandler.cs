@@ -142,8 +142,7 @@ namespace Weavers.Core.Handlers.Repos {
 
 
       // Process level by level so parents always exist before children
-      foreach (var level in nodesByDepth) {
-        List<DbGitEntryItem> addedNodes = new List<DbGitEntryItem>();
+      foreach (var level in nodesByDepth) {        
         foreach (var node in level) {
           try {
             // Resolve parent ID by finding parent directory path
@@ -153,17 +152,16 @@ namespace Weavers.Core.Handlers.Repos {
               // Check if parent exists in DB (including nodes we just added)
               if (existingByPath.TryGetValue(parentPath, out var parentNode)) {
                 var addedNode = await AddGitNode(node, RepoItemId, parentNode.Id, callResult, ct);
-                if (addedNode != null) {
-                  addedNodes.Add(addedNode);
+                if (addedNode != null) {                  
                   existingByPath[node.GitPath] = addedNode;
+                  callResult.AddedNodes.Add(addedNode);
                 }
               }
-            } else {
-              // Root level item, use the repo item as parent
+            } else { // Root level item, use the repo item as parent
               var addedNode = await AddGitNode(node, RepoItemId, callResult.ParentItem!.Id, callResult, ct);
-              if (addedNode != null) {
-                addedNodes.Add(addedNode);
+              if (addedNode != null) {                
                 existingByPath[node.GitPath] = addedNode;
+                callResult.AddedNodes.Add(addedNode);
               }
             }
 
@@ -171,25 +169,15 @@ namespace Weavers.Core.Handlers.Repos {
             callResult.Errors.Add($"Error adding FileSystemNode: {node.GitPath}. Exception: {ex.Message}");            
           }
         }
-
-        // Update lookup with newly added nodes
-        foreach (var node in addedNodes) {          
-          callResult.AddedNodes.Add(node);
-          //TODO: Implement parsing and a queue. If it's a code file (.cs or tbd), queue it for parsing
-        }
+        
       }
     }
 
     private async Task<DbGitEntryItem> AddGitNode(GitEntryItem node,
       int RepoItemId, int ParentId, SyncRepoCmdResult callResult, CancellationToken ct) {
 
-      var parentItem = await _context.GetItemDtoById(ParentId, ct) 
-        ?? throw new Exception($"Parent item with ID {ParentId} not found.");
-      if (!parentItem.ItemTypeId.IsValidGitFolderParent()) 
-        throw new Exception($"Parent item with ID {ParentId} is not a folder.");
-
+      var newType = node.IsDir ? WeItemType.GitFolderModel : WeItemType.GitFileModel;
       var gitPath = node.GitPath.TrimEnd('/');
-
       string name;
       string ext = "";
 
@@ -211,17 +199,14 @@ namespace Weavers.Core.Handlers.Repos {
           ext = Path.GetExtension(fileName);
         }
       }
-
-      // Final safety net
-      if (string.IsNullOrEmpty(name))
-        name = gitPath.ParseLast("/");
-
+      
+      if (string.IsNullOrEmpty(name)) name = gitPath.ParseLast("/");  // Final safety net
 
       var repoRoot = callResult.ParentItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value;
       if (repoRoot == null) throw new Exception($"Parent item with ID {ParentId} does not have a valid relative folder property.");
-      var newType =  node.IsDir ? WeItemType.GitFolderModel : WeItemType.GitFileModel;      
+            
 
-      var addedNode = await _mediator.Send( new CreateRelatedItemCommand(ParentId, 
+      var addedNode = await _mediator.Send( new CreateRelatedItemCommand(ParentId,    // this is create under the parent folder
         (int)WeRelationTypes.Contains, (int)newType, name, "", "{}"), ct);
 
       if (addedNode == null) throw new Exception($"Failed to create item for {node.GitPath}");

@@ -60,6 +60,7 @@ namespace Weavers.Core.Handlers.Todo {
 
       var onSuccessDesk = await _context.GetItemDtoById(onSuccessDeskId.Value, cancellationToken);
       if (onSuccessDesk == null) return result.CreateFailure("OnSuccessSendTo desk not found.");
+      var isDeskActive = onSuccessDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItEnabled)?.Value.AsBoolean();
 
       // update the todo item save the note, status at end.
       var todoCloseReasonProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItCloseReason);
@@ -101,6 +102,7 @@ namespace Weavers.Core.Handlers.Todo {
         }
       }
 
+      bool newTodoPromptSet = false;
       if (inProgressTodoAttempt != null) {
         var itContinueTodoProp = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
         if (itContinueTodoProp != null) {
@@ -116,6 +118,7 @@ namespace Weavers.Core.Handlers.Todo {
             "Original request: " + originalPrompt + Environment.NewLine +            
             "Review Notes: " + request.ReviewNotes;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
       } else {
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
@@ -126,16 +129,11 @@ namespace Weavers.Core.Handlers.Todo {
             "Original request: " + originalPrompt + Environment.NewLine +            
             "Review Notes: " + request.ReviewNotes;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
       }
 
-      // finish filling out properties on new todo item.
-      var newTodoStatusProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
-      if (newTodoStatusProp != null) {
-        newTodoStatusProp.Value = ((int)WeItemType.TodoNotStarted).ToString();
-        await newTodoStatusProp.SaveProp(newTodoItem, _mediator);
-      }
-
+      bool newTodoRefItemSet = false;      
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
       if (newTodoRefItemIdProp != null) {       
         var todoRefItemProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
@@ -147,6 +145,7 @@ namespace Weavers.Core.Handlers.Todo {
           newTodoRefItemIdProp.Value = todoItem.Id.ToString();
         }        
         await newTodoRefItemIdProp.SaveProp(newTodoItem, _mediator);
+        newTodoRefItemSet = true;
       }
 
       var itFromTodoProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFromTodo);
@@ -164,6 +163,21 @@ namespace Weavers.Core.Handlers.Todo {
         }
         itTodoDepthProp.Value = newDepth.ToString();
         await itTodoDepthProp.SaveProp(newTodoItem, _mediator);
+      }
+
+      // finish filling out properties on new todo item.
+      var newTodoStatusProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
+      if (newTodoStatusProp != null) {
+        newTodoStatusProp.Value = ((int)WeItemType.TodoNotStarted).ToString();
+        await newTodoStatusProp.SaveProp(newTodoItem, _mediator);
+      }
+
+      if (isDeskActive.HasValue && isDeskActive.Value && newTodoPromptSet && newTodoRefItemSet) {
+        var isReadyProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+        if (isReadyProp != null) {
+          isReadyProp.Value = "1";
+          await isReadyProp.SaveProp(newTodoItem, _mediator);
+        }
       }
 
       // finally, update the original todo item status to completed.      

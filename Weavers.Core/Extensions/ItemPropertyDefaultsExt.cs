@@ -67,6 +67,7 @@ namespace Weavers.Core.Extensions {
         }
       },
       #endregion
+      #region Workgroups start
       { WeItemType.DigitalOperatorPoolModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
         }
@@ -79,7 +80,6 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName }
         }
       },
-      #region Org Chart start
       { WeItemType.OrgDeskRolesModel, new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
         }
@@ -144,6 +144,7 @@ namespace Weavers.Core.Extensions {
         }
       },
       #endregion
+      #region Org Docs Defaults
       {
         WeItemType.OrgDocFolderModel,  new List<ItemPropertyDefault>(){
           new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder }
@@ -154,7 +155,7 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName }
         }
       },
-
+      #endregion
       #endregion
       #region Rss Feed Defaults
       {

@@ -59,6 +59,7 @@ namespace Weavers.Core.Handlers.Todo {
 
       var onSuccessDesk = await _context.GetItemDtoById(onSuccessDeskId.Value, cancellationToken);
       if (onSuccessDesk == null) return result.CreateFailure("OnSuccessSendTo desk not found.");
+      var isDeskActive = onSuccessDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItEnabled)?.Value.AsBoolean();
 
       int producedItemTypeId = 0;
       if (request.ProducedItemId != null && request.ProducedItemId != 0) {
@@ -88,7 +89,7 @@ namespace Weavers.Core.Handlers.Todo {
           (int)WeItemType.TodoModel, name, "", "{}"));
       if (newTodoItem == null) {
         return result.CreateFailure("Failed to create new todo item on the OnSuccessSendTo desk.");
-      }
+      }      
 
       // find inprogress TodoAttempt relation and update it's ItContinueTodo property.
       string runInProgressType = WeItemType.RunInProgress.AsIntString();
@@ -107,6 +108,7 @@ namespace Weavers.Core.Handlers.Todo {
         }        
       }
 
+      bool newTodoPromptSet = false;
       if (inProgressTodoAttempt != null) {
         var itContinueTodoProp = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItContinueTodo);
         if (itContinueTodoProp != null) {
@@ -122,8 +124,9 @@ namespace Weavers.Core.Handlers.Todo {
             "Original request: " + originalPrompt + Environment.NewLine +
             ((request.ProducedItemId != null && request.ProducedItemId != 0) ? 
             "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
-            "Notes taken: " + request.TodoNote;
+            "Notes taken: " + request.TodoNote;          
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
       } else {
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
@@ -136,16 +139,11 @@ namespace Weavers.Core.Handlers.Todo {
               "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
             "Notes taken: " + request.TodoNote;
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+          newTodoPromptSet = true;
         }
-      }
+      }      
 
-      // finish filling out properties on new todo item.
-      var newTodoStatusProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
-      if (newTodoStatusProp != null) {
-        newTodoStatusProp.Value = ((int)WeItemType.TodoNotStarted).ToString();
-        await newTodoStatusProp.SaveProp(newTodoItem, _mediator);
-      }
-
+      bool newTodoRefItemSet = false;
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
       if (newTodoRefItemIdProp != null) {
         if (request.ProducedItemId != null && request.ProducedItemId != 0) {
@@ -162,6 +160,7 @@ namespace Weavers.Core.Handlers.Todo {
           }          
         }
         await newTodoRefItemIdProp.SaveProp(newTodoItem, _mediator);
+        newTodoRefItemSet = true;
       }
 
       var itFromTodoProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFromTodo);
@@ -179,6 +178,21 @@ namespace Weavers.Core.Handlers.Todo {
         }
         itTodoDepthProp.Value = newDepth.ToString();
         await itTodoDepthProp.SaveProp(newTodoItem, _mediator);
+      }
+
+      // finish filling out properties on new todo item.
+      var newTodoStatusProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
+      if (newTodoStatusProp != null) {
+        newTodoStatusProp.Value = ((int)WeItemType.TodoNotStarted).ToString();
+        await newTodoStatusProp.SaveProp(newTodoItem, _mediator);
+      }
+
+      if (isDeskActive.HasValue && isDeskActive.Value && newTodoPromptSet && newTodoRefItemSet) {
+        var isReadyProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+        if (isReadyProp != null) {
+          isReadyProp.Value = "1";
+          await isReadyProp.SaveProp(newTodoItem, _mediator);
+        }
       }
 
       // finally, update the original todo item status to completed.      
