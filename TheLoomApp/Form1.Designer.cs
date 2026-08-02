@@ -50,6 +50,7 @@
       miAddGitHubRepo = new ToolStripMenuItem();
       miDoGitClone = new ToolStripMenuItem();
       miDoGitRefStatus = new ToolStripMenuItem();
+      miDoCheckout = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
       miAddSolutionImport = new ToolStripMenuItem();
       miAddFile = new ToolStripMenuItem();
@@ -132,13 +133,21 @@
       cbTodoResultType = new ComboBox();
       label1 = new Label();
       lbTodoResults = new ListBox();
+      tpSearch = new TabPage();
+      label4 = new Label();
+      label3 = new Label();
+      edSearchMaxResults = new NumericUpDown();
+      cbSearchTypeFilter = new ComboBox();
+      tbSearchResults = new TextBox();
+      btnSearchText = new Button();
+      lbSearchText = new Label();
+      tbSearchText = new TextBox();
       tbErrorOut = new TextBox();
       tsErrorPopup = new ToolStrip();
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miDoCheckout = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -163,6 +172,8 @@
       tpReview.SuspendLayout();
       tpSchedule.SuspendLayout();
       tpResults.SuspendLayout();
+      tpSearch.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)edSearchMaxResults).BeginInit();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -226,7 +237,7 @@
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 836);
+      cmsTreeMenus.Size = new Size(209, 814);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -373,6 +384,13 @@
       miDoGitRefStatus.Size = new Size(208, 22);
       miDoGitRefStatus.Text = "Do Git Status Refresh";
       miDoGitRefStatus.Click += miDoGitRefStatus_Click;
+      // 
+      // miDoCheckout
+      // 
+      miDoCheckout.Name = "miDoCheckout";
+      miDoCheckout.Size = new Size(208, 22);
+      miDoCheckout.Text = "Do Git Checkout";
+      miDoCheckout.Click += miDoCheckout_Click;
       // 
       // miAddSolution
       // 
@@ -550,6 +568,7 @@
       tabControl1.Controls.Add(tpReview);
       tabControl1.Controls.Add(tpSchedule);
       tabControl1.Controls.Add(tpResults);
+      tabControl1.Controls.Add(tpSearch);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Margin = new Padding(3, 2, 3, 2);
@@ -805,6 +824,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1306,6 +1326,98 @@
       lbTodoResults.TabIndex = 4;
       lbTodoResults.SelectedIndexChanged += lbTodoResults_SelectedIndexChanged;
       // 
+      // tpSearch
+      // 
+      tpSearch.Controls.Add(label4);
+      tpSearch.Controls.Add(label3);
+      tpSearch.Controls.Add(edSearchMaxResults);
+      tpSearch.Controls.Add(cbSearchTypeFilter);
+      tpSearch.Controls.Add(tbSearchResults);
+      tpSearch.Controls.Add(btnSearchText);
+      tpSearch.Controls.Add(lbSearchText);
+      tpSearch.Controls.Add(tbSearchText);
+      tpSearch.Location = new Point(4, 24);
+      tpSearch.Name = "tpSearch";
+      tpSearch.Padding = new Padding(3);
+      tpSearch.Size = new Size(580, 485);
+      tpSearch.TabIndex = 5;
+      tpSearch.Text = "Search";
+      tpSearch.UseVisualStyleBackColor = true;
+      // 
+      // label4
+      // 
+      label4.AutoSize = true;
+      label4.Location = new Point(55, 70);
+      label4.Name = "label4";
+      label4.Size = new Size(99, 15);
+      label4.TabIndex = 25;
+      label4.Text = "Return Max items";
+      // 
+      // label3
+      // 
+      label3.AutoSize = true;
+      label3.Location = new Point(73, 42);
+      label3.Name = "label3";
+      label3.Size = new Size(81, 15);
+      label3.TabIndex = 24;
+      label3.Text = "Filter on Type:";
+      // 
+      // edSearchMaxResults
+      // 
+      edSearchMaxResults.Location = new Point(169, 68);
+      edSearchMaxResults.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+      edSearchMaxResults.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+      edSearchMaxResults.Name = "edSearchMaxResults";
+      edSearchMaxResults.Size = new Size(96, 23);
+      edSearchMaxResults.TabIndex = 23;
+      edSearchMaxResults.Value = new decimal(new int[] { 10, 0, 0, 0 });
+      // 
+      // cbSearchTypeFilter
+      // 
+      cbSearchTypeFilter.FormattingEnabled = true;
+      cbSearchTypeFilter.Location = new Point(169, 39);
+      cbSearchTypeFilter.Name = "cbSearchTypeFilter";
+      cbSearchTypeFilter.Size = new Size(121, 23);
+      cbSearchTypeFilter.TabIndex = 22;
+      // 
+      // tbSearchResults
+      // 
+      tbSearchResults.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      tbSearchResults.Location = new Point(16, 113);
+      tbSearchResults.Multiline = true;
+      tbSearchResults.Name = "tbSearchResults";
+      tbSearchResults.ScrollBars = ScrollBars.Vertical;
+      tbSearchResults.Size = new Size(541, 355);
+      tbSearchResults.TabIndex = 21;
+      // 
+      // btnSearchText
+      // 
+      btnSearchText.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnSearchText.Location = new Point(482, 62);
+      btnSearchText.Name = "btnSearchText";
+      btnSearchText.Size = new Size(75, 23);
+      btnSearchText.TabIndex = 4;
+      btnSearchText.Text = "Search";
+      btnSearchText.UseVisualStyleBackColor = true;
+      btnSearchText.Click += btnSearchText_Click;
+      // 
+      // lbSearchText
+      // 
+      lbSearchText.AutoSize = true;
+      lbSearchText.Location = new Point(7, 9);
+      lbSearchText.Name = "lbSearchText";
+      lbSearchText.Size = new Size(147, 15);
+      lbSearchText.TabIndex = 2;
+      lbSearchText.Text = "Search Item Name by Text:";
+      // 
+      // tbSearchText
+      // 
+      tbSearchText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      tbSearchText.Location = new Point(169, 6);
+      tbSearchText.Name = "tbSearchText";
+      tbSearchText.Size = new Size(388, 23);
+      tbSearchText.TabIndex = 0;
+      // 
       // tbErrorOut
       // 
       tbErrorOut.Dock = DockStyle.Fill;
@@ -1357,13 +1469,6 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miDoCheckout
-      // 
-      miDoCheckout.Name = "miDoCheckout";
-      miDoCheckout.Size = new Size(208, 22);
-      miDoCheckout.Text = "Do Git Checkout";
-      miDoCheckout.Click += miDoCheckout_Click;
-      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1407,6 +1512,9 @@
       tpSchedule.PerformLayout();
       tpResults.ResumeLayout(false);
       tpResults.PerformLayout();
+      tpSearch.ResumeLayout(false);
+      tpSearch.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)edSearchMaxResults).EndInit();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -1529,5 +1637,14 @@
     private ToolStripMenuItem miDoGitClone;
     private ToolStripMenuItem miDoGitRefStatus;
     private ToolStripMenuItem miDoCheckout;
+    private TabPage tpSearch;
+    private Label lbSearchText;
+    private TextBox tbSearchText;
+    private TextBox tbSearchResults;
+    private Button btnSearchText;
+    private Label label4;
+    private Label label3;
+    private NumericUpDown edSearchMaxResults;
+    private ComboBox cbSearchTypeFilter;
   }
 }

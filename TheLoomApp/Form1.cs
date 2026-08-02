@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,11 +13,13 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
+using Weavers.Core.Tools;
 
 
 namespace TheLoomApp {
@@ -30,6 +33,7 @@ namespace TheLoomApp {
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
     private readonly IGraphItemUpdateService _graphItemUpdateService;
+    private readonly ISummaryToolsHandler _summaryToolsHandler;
 
     private ItemNode? _selectedNode = null;
     private ItemDto? _CurrentItemBackup = null;
@@ -77,6 +81,7 @@ namespace TheLoomApp {
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
+      _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
 
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -498,7 +503,16 @@ namespace TheLoomApp {
       }
     }
 
-    private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
+    private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e) {
+      if (tabControl1.SelectedTab == tpSearch) {
+        splitContainer1.Panel1Collapsed = true;
+        int selectedTypeId = edItemType.SelectedValue is int id ? id : 0;
+        var items = await _appDataService.GetItemsByItemType((int)WeItemType.ActiveItemTypes);
+        RunOnUi(() => FillCombo(cbSearchTypeFilter, items, selectedTypeId.ToString()));
+      } else {
+        splitContainer1.Panel1Collapsed = false;
+      }
+
       if (tabControl1.SelectedTab == tpSchedule) {
         ReloadSchedules();
       } else if (tabControl1.SelectedTab == tpReview) {
@@ -506,6 +520,21 @@ namespace TheLoomApp {
       } else if (tabControl1.SelectedTab == tpResults) {
         ReloadResultsTab();
       }
+    }
+
+    private void FillCombo(ComboBox box, IEnumerable<ItemLookup> items, string? restoreId) {
+      box.Items.Clear();
+      box.Items.Add(new ItemLookup("", "(None)")); // index 0
+
+      int restoreIndex = 0; // default to (None)
+      foreach (var item in items) {
+        int idx = box.Items.Add(item);
+        if (!string.IsNullOrEmpty(restoreId) &&
+            Equals(item.Value?.ToString(), restoreId)) {
+          restoreIndex = idx;
+        }
+      }
+      box.SelectedIndex = restoreIndex;
     }
     #endregion
 
@@ -1188,7 +1217,7 @@ namespace TheLoomApp {
           return;
         }
         ItemDto branchItem = _selectedNode.Item;
-        var updatedRepoItem = await _appGraphService.DoCheckoutBranch(branchItem);        
+        var updatedRepoItem = await _appGraphService.DoCheckoutBranch(branchItem);
         tvKb.SelectedNode = _selectedNode.Parent; // reset selected to the parent repo node
         //await tvKb.UpdateRepoItem(updatedRepoItem);
         //TreeViewEventArgs ee = new TreeViewEventArgs(_selectedNode);
@@ -2339,7 +2368,21 @@ namespace TheLoomApp {
       }
     }
 
-
+    private async void btnSearchText_Click(object sender, EventArgs e) {
+      if (!string.IsNullOrWhiteSpace(tbSearchText.Text)) {
+        try {
+          var searchText = tbSearchText.Text.Trim();
+          var searchType = (cbSearchTypeFilter.SelectedItem as ItemLookup)?.Value is { } v
+             && int.TryParse(v.ToString(), out var id) ? id : 0;
+          var searchMaxResults = edSearchMaxResults.Value.AsInt();
+          var searchResults = await _summaryToolsHandler.Search(searchText, searchType, searchMaxResults);
+          tbSearchResults.Text = searchResults;
+        } catch (Exception ex) {
+          DoLogMessage("Error during search: " + ex.Message);
+          MessageBox.Show($"An error occurred during the search operation: {ex.Message}", "Search Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+      }
+    }
   }
 
   #endregion
