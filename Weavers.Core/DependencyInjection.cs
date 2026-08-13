@@ -44,6 +44,7 @@ namespace Weavers.Core {
       services.AddScoped<IItemTypeLookupComboProvider, ItemTypeLookupComboProvider>();
       services.AddScoped<ILmStudioService, LmStudioService>();  
       services.AddScoped<IClaudeCodeService, ClaudeCodeService>();
+      services.AddScoped<IStorytimeService, StorytimeService>();
 
       services.AddSingleton<IBaseToolsHandler, BaseToolsHandler>();
       services.AddSingleton<ISummaryToolsHandler, SummaryToolsHandler>();
@@ -53,6 +54,7 @@ namespace Weavers.Core {
       services.AddSingleton<IAppGraphClassToolsHandler, AppGraphClassToolsHandler>();
       services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();      
       services.AddSingleton<ITodoToolsHandler, TodoToolsHandler>();
+      services.AddSingleton<IStorytimeToolsHandler, StorytimeToolsHandler>();
 
       services.AddHttpClient("RssResolver", c => {
         c.Timeout = TimeSpan.FromSeconds(30);

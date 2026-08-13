@@ -99,6 +99,23 @@ namespace Weavers.Core.Constants {
     public const string CmdDoGitRefreshStatus = "doGitRefreshStatus";
     public const string CmdDoGitCheckout = "doGitCheckout";
 
+    public const string CmdAddRealm = "addRealm";
+    public const string CmdAddStory = "addStory";
+    public const string CmdAddScene = "addScene";
+    public const string CmdScheduleActorPerformances = "scheduleActorPerformances";
+    public const string CmdScheduleBeatWriters = "scheduleBeatWriters";
+    public const string CmdScheduleBeatDirectors = "scheduleBeatDirectors";
+    public const string CmdAddCharacter = "addCharacter";
+    public const string CmdAddBeat = "addBeat";
+    public const string CmdAddCallSheet = "addCallSheet";
+    public const string CmdAddCallSheetNarration = "addCallSheetNarration";  // director
+    public const string CmdAddCallSheetRole = "addCallSheetRole";
+    public const string CmdAddPerformance = "addPerformance";
+    public const string CmdAddPerformanceAction = "addPerformanceAction";    // performance
+    public const string CmdAddPerformanceLine = "addPerformanceLine";    
+    public const string CmdGetPerformanceRollup = "getPerformanceRollup";
+    public const string CmdAddObservation = "addObservation";
+
     public const string CmdAddSolution = "addSolution";
     public const string CmdAddSolutionImport = "addSolutionImport";    
 
@@ -134,21 +151,28 @@ namespace Weavers.Core.Constants {
     public const string DefaultTestSDK = "MSTest.Sdk/3.6.4";
 
     // AppSettings keys
-    public const string ApsDefaultFolder = "AppDefaultFolder";
-        
+    public const string ApsDefaultFolder = "AppDefaultFolder";        
     public const string OrgDocsFolder = "Documents";
+
+    // json CharacterPrompt list types
+    public const string RoleType = "Role";
+    public const string NarrationType = "Narration";
+    public const string ActionType = "Action";
+    public const string LineType = "Line";
 
     // itemProperty names constants 
     public const string ItAccessModifier = "AccessModifier";   
     public const string ItApiToken = "ApiToken";
     public const string ItBaseType = "BaseType";
-    public const string ItBranchName = "BranchName";
+    public const string ItBranchName = "BranchName";    
+    public const string ItBeatsRequested = "BeatsRequested";
+    public const string ItCallSheetRequested = "CallSheetRequested";
+    public const string ItFromCallSheet = "FromCallSheet";
     public const string ItCharter = "Charter";
     public const string ItChannelUrl = "ChannelUrl";
     public const string ItClassType = "ClassType";
-    public const string ItClaudeLaunchPath = "ClaudeLaunchPath";
-    
-    
+    public const string ItClaudeLaunchPath = "ClaudeLaunchPath";    
+    public const string ItCharacter = "Character";
 
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
@@ -164,6 +188,8 @@ namespace Weavers.Core.Constants {
     public const string ItDbTableName = "DbTableName";    
     public const string ItEnabled = "Enabled";
     public const string ItEntrySha = "EntrySha";
+    public const string ItEntryState = "EntryState";
+    public const string ItExitState = "ExitState";
     public const string ItExpires = "Expires";
     public const string ItFilePath = "FilePath";
     public const string ItFileExt = "FileExt";
@@ -190,6 +216,7 @@ namespace Weavers.Core.Constants {
     public const string ItImportUseInterface = "UseIntf";
     public const string ItInverseNavigation = "InverseNav";
     public const string ItInterface = "Interface";
+    public const string ItInstructions = "Instructions";
     public const string ItIPAddress = "IPAddress";
     public const string ItIsAbstract = "IsAbstract";
     public const string ItIsAsync = "IsAsync";
@@ -239,6 +266,8 @@ namespace Weavers.Core.Constants {
     public const string ItPresence = "Presence";
     public const string ItProcessId = "ProcessId";
     public const string ItPortAddress = "Port";
+    public const string ItPovDefault = "PovDefault";
+    public const string ItPov = "POV";
     public const string ItPropertyDataType = "PropType";
     public const string ItPropertyClassType = "PropClass";    
     public const string ItProjectGuid = "ProjectGuid";
@@ -247,6 +276,8 @@ namespace Weavers.Core.Constants {
     public const string ItResolveLink = "ResolveLink";
     public const string ItExtractLink = "ExtractLink";
     public const string ItStructContent = "StructContent";
+    //public const string ItLineNumber = "LineNumber";
+    public const string ItRank = "Rank";
     public const string ItRating = "Rating";
     public const string ItRepoItemId = "RepoItemId";
     public const string ItReferenceItem = "RefItem";
@@ -269,18 +300,21 @@ namespace Weavers.Core.Constants {
     public const string ItRootFolder = "RootFolder";
     public const string ItRemoteName = "RemoteName";
     public const string ItRepoUrl = "RepoUrl";
+    public const string ItSceneStatus = "SceneStatus";
     public const string ItSkipPermissions = "SkipPerms";
     public const string ItSolutionGuid = "SlnGuid";
     public const string ItStatus = "Status";
+    public const string ItStoryStatus = "StoryStatus";
     public const string ItSystemPrompt = "SysPrompt";
     public const string ItSystemPromptTemplate = "SysPrompt";
-
     public const string ItUserPrompt = "UserPrompt";
     public const string ItUserPromptTemplate = "UserPrompt";
-    public const string ItTodoItem = "TodoItem";
-    public const string ItTodoDepth = "TodoDepth";
+    public const string ItTargetSceneCount = "TargetSceneCount";
     public const string ItTestClassAttribute = "TestClass";
     public const string ItTestMethodAttribute = "TestMethod";
+    public const string ItTodoItem = "TodoItem";
+    public const string ItTodoDepth = "TodoDepth";
+    public const string ItTone = "Tone";    
     public const string ItTrackedBranchName = "TrackedBranch";
     public const string ItUrlBase = "UrlBase";
     public const string ItUseThis = "UseThis";

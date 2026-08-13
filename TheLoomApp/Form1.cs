@@ -1,3 +1,4 @@
+using AngleSharp.Dom;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -33,6 +34,7 @@ namespace TheLoomApp {
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
     private readonly IGraphItemUpdateService _graphItemUpdateService;
+    private readonly IStorytimeService _storytimeService;
     private readonly ISummaryToolsHandler _summaryToolsHandler;
 
     private ItemNode? _selectedNode = null;
@@ -82,6 +84,7 @@ namespace TheLoomApp {
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
       _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
+      _storytimeService = scope.ServiceProvider.GetRequiredService<IStorytimeService>();
 
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -107,7 +110,6 @@ namespace TheLoomApp {
         edAppDefaultFolder.Text = WeaverExt.AppProjectsPath;
       }
       SettingDefaultFolderDirty = false;
-
 
     }
 
@@ -789,6 +791,16 @@ namespace TheLoomApp {
         miDoGitClone.Visible = false;
         miDoGitRefStatus.Visible = false;
         miDoCheckout.Visible = false;
+
+        miAddRealm.Visible = false;
+        miAddStory.Visible = false;
+        miAddScene.Visible = false;
+        miAddBeat.Visible = false;
+        miAddCallSheet.Visible = false;
+        miAddCharacter.Visible = false;
+        miAddPerformance.Visible = false;
+        miAddObserved.Visible = false;
+
         miAddSolution.Visible = false;
         miAddSolutionImport.Visible = false;
         miAddFile.Visible = false;
@@ -804,6 +816,7 @@ namespace TheLoomApp {
         miAddEntityProperty.Visible = false;
         miSepAddBottom.Visible = false;
 
+        miMoveItemUp.Visible = false;
         miGenerate.Visible = false;
         miSepGenBottom.Visible = false;
         miDeleteItem.Enabled = false;
@@ -841,8 +854,8 @@ namespace TheLoomApp {
 
         miAddDigitalOperator.Visible = itemType == WeItemType.DigitalOperatorPoolModel;
 
-        miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgDocFolderModel;
-        miAddOrgFile.Visible = itemType == WeItemType.OrgDocFolderModel || itemType == WeItemType.OrganizationModel;
+        miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel;
+        miAddOrgFile.Visible = itemType == WeItemType.OrgFolderModel || itemType == WeItemType.OrganizationModel;
 
         miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.RssFolderModel;
         miAddRssChannel.Visible = itemType == WeItemType.RssFolderModel;
@@ -856,6 +869,15 @@ namespace TheLoomApp {
         miDoGitClone.Visible = itemType == WeItemType.GithubRepoModel && !isRepoCloned;
         miDoGitRefStatus.Visible = itemType == WeItemType.GithubRepoModel && isRepoCloned;
         miDoCheckout.Visible = itemType == WeItemType.GithubRepoBranchModel && isRepoCloned && !isBranchCurrentBranch;
+
+        miAddRealm.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddStory.Visible = itemType == WeItemType.RealmModel;
+        miAddScene.Visible = itemType == WeItemType.StoryModel;
+        miAddBeat.Visible = itemType == WeItemType.SceneModel;
+        miAddCallSheet.Visible = itemType == WeItemType.BeatModel;
+        miAddCharacter.Visible = itemType == WeItemType.SceneModel || itemType == WeItemType.CallSheetModel || itemType == WeItemType.PerformanceModel;
+        miAddPerformance.Visible = itemType == WeItemType.SceneModel;
+        miAddObserved.Visible = itemType == WeItemType.PerformanceModel;
 
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolutionImport.Visible = itemType == WeItemType.SolutionModel;
@@ -873,6 +895,7 @@ namespace TheLoomApp {
 
         miSepAddBottom.Visible = true;
 
+        miMoveItemUp.Visible = _selectedNode.CanSwitchUp();
         miGenerate.Visible = isGeneratable;
         miSepGenBottom.Visible = isGeneratable;
 
@@ -1018,7 +1041,7 @@ namespace TheLoomApp {
     private async void miAddOrgFolder_Click(object sender, EventArgs e) {
       try {
 
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocFolderModel);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFolderModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           await tvKb.AddOrgFolder(_appGraphOrgService, newItemName);
@@ -1033,7 +1056,7 @@ namespace TheLoomApp {
     private async void miAddOrgFile_Click(object sender, EventArgs e) {
       try {
 
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgDocModel);
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFileModel);
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           await tvKb.AddOrgFile(_appGraphOrgService, newItemName);
@@ -1234,7 +1257,140 @@ namespace TheLoomApp {
       return;
     }
 
+    #region Storytime handlers
+    private async void miAddRealm_Click(object sender, EventArgs e) {
+      try {
 
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.RealmModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          var tone = dlg.Tone ?? "";
+          await tvKb.AddRealm(_storytimeService, newItemName, newItemDesc, tone);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add realm - error: " + ex.Message);
+        MessageBox.Show($"Error adding realm: {ex.Message}", "Add Realm failed");
+      }
+    }
+
+    private async void miAddStory_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.StoryModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
+          await tvKb.AddStory(_storytimeService, newItemName, newItemDesc, povId, dlg.TargetSceneCount);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add story - error: " + ex.Message);
+        MessageBox.Show($"Error adding story: {ex.Message}", "Add Story failed");
+      }
+    }
+
+    private async void miAddScene_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.SceneModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
+          var entryState = dlg.EntryState ?? "";
+          var exitState = dlg.ExitState ?? "";
+          await tvKb.AddScene(_storytimeService, newItemName, newItemDesc, povId, entryState, exitState);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add scene - error: " + ex.Message);
+        MessageBox.Show($"Error adding scene: {ex.Message}", "Add Scene failed");
+      }
+    }
+
+    private async void miAddBeat_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.BeatModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          await tvKb.AddBeat(_storytimeService, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add beat - error: " + ex.Message);
+        MessageBox.Show($"Error adding beat: {ex.Message}", "Add Beat failed");
+      }
+    }
+
+    private async void miAddCallSheet_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.CallSheetModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          await tvKb.AddCallSheet(_storytimeService, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add call sheet - error: " + ex.Message);
+        MessageBox.Show($"Error adding call sheet: {ex.Message}", "Add Call Sheet failed");
+      }
+    }
+
+    private async void miAddCharacter_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.CharacterModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          await tvKb.AddCharacter(_storytimeService, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add character - error: " + ex.Message);
+        MessageBox.Show($"Error adding character: {ex.Message}", "Add Character failed");
+      }
+    }
+
+    private async void miAddPerformance_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.PerformanceModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          await tvKb.AddPerformance(_storytimeService, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add performance - error: " + ex.Message);
+        MessageBox.Show($"Error adding performance: {ex.Message}", "Add Performance failed");
+      }
+    }
+
+    private async void miAddObserved_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.ObservationModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          await tvKb.AddObserved(_storytimeService, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add observed - error: " + ex.Message);
+        MessageBox.Show($"Error adding observed: {ex.Message}", "Add Observed failed");
+      }
+    }
+    #endregion
 
     private async void miAddSolution_Click(object sender, EventArgs e) {
       try {
@@ -1424,6 +1580,31 @@ namespace TheLoomApp {
       }
     }
 
+
+    private void miMoveItemUp_Click(object sender, EventArgs e) {
+      if (_selectedNode == null || _selectedNode.Parent == null) { return; }
+      var parentNode = _selectedNode.Parent as ItemNode;
+      if (parentNode == null) { return; }
+      var siblings = parentNode.Nodes.OfType<ItemNode>().ToList();
+      var index = siblings.IndexOf(_selectedNode);
+      var index2 = index - 1;
+      if (index2 < 0) { return; }
+      var siblingNode = siblings[index2];
+
+      var item1 = _selectedNode.Relation.Rank;
+      var item2 = siblingNode.Relation.Rank;
+      if (item1 == item2) {
+        item2++;
+      }
+
+      _selectedNode.Relation.Rank = item2;
+      _appDataService.UpdateRelationAsync(_selectedNode.Relation);
+
+      siblingNode.Relation.Rank = item1;
+      _appDataService.UpdateRelationAsync(siblingNode.Relation);      
+      TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(parentNode, false, TreeViewAction.Expand));
+
+    }
 
     private void miDeleteItem_Click(object sender, EventArgs e) {
       var itemNode = _selectedNode;
@@ -2288,7 +2469,23 @@ namespace TheLoomApp {
     }
 
     #endregion
-
+    #region Search Tab
+    private async void btnSearchText_Click(object sender, EventArgs e) {
+      if (!string.IsNullOrWhiteSpace(tbSearchText.Text)) {
+        try {
+          var searchText = tbSearchText.Text.Trim();
+          var searchType = (cbSearchTypeFilter.SelectedItem as ItemLookup)?.Value is { } v
+             && int.TryParse(v.ToString(), out var id) ? id : 0;
+          var searchMaxResults = edSearchMaxResults.Value.AsInt();
+          var searchResults = await _summaryToolsHandler.Search(searchText, searchType, searchMaxResults);
+          tbSearchResults.Text = searchResults;
+        } catch (Exception ex) {
+          DoLogMessage("Error during search: " + ex.Message);
+          MessageBox.Show($"An error occurred during the search operation: {ex.Message}", "Search Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+      }
+    }
+    #endregion
     #region Drag Drop on Tree
     private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
       // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
@@ -2367,24 +2564,9 @@ namespace TheLoomApp {
         }
       }
     }
+    #endregion
 
-    private async void btnSearchText_Click(object sender, EventArgs e) {
-      if (!string.IsNullOrWhiteSpace(tbSearchText.Text)) {
-        try {
-          var searchText = tbSearchText.Text.Trim();
-          var searchType = (cbSearchTypeFilter.SelectedItem as ItemLookup)?.Value is { } v
-             && int.TryParse(v.ToString(), out var id) ? id : 0;
-          var searchMaxResults = edSearchMaxResults.Value.AsInt();
-          var searchResults = await _summaryToolsHandler.Search(searchText, searchType, searchMaxResults);
-          tbSearchResults.Text = searchResults;
-        } catch (Exception ex) {
-          DoLogMessage("Error during search: " + ex.Message);
-          MessageBox.Show($"An error occurred during the search operation: {ex.Message}", "Search Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-      }
-    }
+
   }
-
-  #endregion
 
 }

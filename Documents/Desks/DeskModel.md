@@ -21,6 +21,20 @@ Invoking a weaver requires a System Prompt and a User Prompt.
 
 Propose a next prompt preview method that would run the templates and report back what the two prompts would be given the next todo and desk, to verify.
 
+## Desk Prompt is a sciban transformation 
+
+when rendering the desk prompt the following model tree is available to reference using double bracket escapes.  (ex {{model.desk}} )
+- model  - root object
+  - desk  - string desk name
+  - operator  -string name of agent wired to desk.
+  - role  - string name of the desk role 
+  - role_commands  - list of RoleCommand items.
+ 
+RoleCommand is
+- command_type  - enum
+- command  - string
+
+
 ## Desk carries a nullable string RequestTemplate
 
 When not null it uses scriban template to generate the SystemPrompt from it. 

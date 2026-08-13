@@ -126,7 +126,7 @@ namespace Weavers.Core.Enums {
       CmdAddOrgDesk = 143,  // in AppGraphOrgTools
       CmdAddDeskTodo = 144,
 
-      CmdAddDigitalOperatior =145,
+      CmdAddDigitalOperator =145,
       CmdAddOrgFolder = 146,
       CmdAddOrgFile = 148,
 
@@ -148,25 +148,42 @@ namespace Weavers.Core.Enums {
       CmdDoGitRefreshStatus = 162,
       CmdDoGitCheckout = 163,
 
-      CmdAddSolution = 164,
-      CmdAddSolutionImport = 165,
+      CmdAddRealm = 164,
+      CmdAddStory = 165,
+      CmdAddScene = 166,
+      CmdAddCharacter = 167,
+      CmdAddBeat = 168,
+      CmdScheduleBeatWriters = 169,  
+      CmdScheduleBeatDirectors = 170,
+      CmdAddCallSheet = 171,
+      CmdAddCallSheetNarration = 172,  // director
+      CmdAddCallSheetRole = 173,
+      CmdAddPerformance = 174,
+      CmdScheduleActors = 175,  
+      CmdAddPerformanceAction = 176,    // performance
+      CmdAddPerformanceLine = 177,
+      CmdGetPerformanceRollup = 178,  // rollup of all performance lines and cross ref with ActorPerformace.
+      CmdAddObservation = 179,
 
-      CmdAddMdFile = 166,
-      CmdAddHtmlFile = 167,
-      CmdAddConfigFile = 168,
+      CmdAddSolution = 180,
+      CmdAddSolutionImport = 181,
 
-      CmdAddLibrary = 169,  // in AppGraphLibraryTools
-      CmdAddNamespace = 170,
+      CmdAddMdFile = 182,
+      CmdAddHtmlFile = 183,
+      CmdAddConfigFile = 184,
 
-      CmdAddClass = 171,  // in AppGraphClassTools
-      CmdAddClassImport = 172,
-      CmdAddClassProperty = 173,
-      CmdAddClassMethod = 174,
-      CmdAddClassMethodParam = 176,
+      CmdAddLibrary = 185,  // in AppGraphLibraryTools
+      CmdAddNamespace = 186,
 
-      CmdAddEntityClass = 178,  // in AppGraphEntityTools
-      CmdAddEntityClassImport = 180,
-      CmdAddEntityProperty = 182,
+      CmdAddClass = 187,  // in AppGraphClassTools
+      CmdAddClassImport = 188,
+      CmdAddClassProperty = 189,
+      CmdAddClassMethod = 190,
+      CmdAddClassMethodParam = 191,
+
+      CmdAddEntityClass = 192,  // in AppGraphEntityTools
+      //CmdAddEntityClassImport = 193,
+      CmdAddEntityProperty = 194,
 
 
     TodoStatuses = 220,
@@ -189,6 +206,24 @@ namespace Weavers.Core.Enums {
     LinkResolutionTypes = 260,
       LinkNotResolved = 261,
       LinkResolved = 262,
+
+    StoryStatus = 270,
+      StoryProposed = 271,
+      StoryInReview = 272,
+      StoryApproved = 273,
+      StoryRejected = 274,
+
+    SceneStatus = 280,
+      ScenePlanned = 281,
+      SceneDrafting = 282,
+      SceneInReview = 283,
+      SceneFinal = 284,
+
+    PovTypes = 290,
+      PovUndefined = 291,
+      PovFirstPerson = 292,
+      PovThirdPersonLimited = 294,
+      PovThirdPersonOmniscient = 295,
 
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
@@ -219,8 +254,8 @@ namespace Weavers.Core.Enums {
           TodoModel = 1050,     // desk has a stack of todos to complete its work.
             TodoAttemptModel = 1055,  // work attempts add as attempts.
 
-      OrgDocFolderModel = 1060,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
-        OrgDocModel = 1065,       // doc for Skill details.
+      OrgFolderModel = 1060,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
+        OrgFileModel = 1065,       // doc for Skill details.
         
       RssFolderModel = 1070,
       RssChannelModel = 1075,
@@ -256,9 +291,20 @@ namespace Weavers.Core.Enums {
       FileImageModel = 1150,     // placeholder for SlideSketch hook
         FileImageDocs = 1151,
 
-      SolutionModel = 1160, 
-        SolutionDocs = 1161,
-        SolutionImportModel = 1162, // import Libraries, apps, apis, mcps into a solution.
+        
+      RealmModel = 1160,  // universe of the story.
+       StoryModel = 1163, //ItStoryStatus ItTargetSceneCount ItPovDefault  
+        SceneModel = 1166, //itEntryState itExitState ItPOV ItSceneStatus                 
+         CharacterModel = 1168,
+         BeatModel = 1170,
+           CallSheetModel = 1172,  // json maintains the call sheet for the scene.                    
+         PerformanceModel = 1177,  // json maintains the performance of the scene. (dialog, narration, action, etc.)
+           ActorPerformanceModel = 1178,  // json maintains the performance of the scene. (dialog, narration, action, etc.)
+           ObservationModel = 1179, // description holds final prose 
+
+      SolutionModel = 1190, 
+        SolutionDocs = 1191,
+        SolutionImportModel = 1192, // import Libraries, apps, apis, mcps into a solution.
 
       LibraryModel = 1200,     // name of project is root namespace.         
         LibraryDocs = 1201,

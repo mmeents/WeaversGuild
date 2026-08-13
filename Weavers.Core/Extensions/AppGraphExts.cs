@@ -32,7 +32,7 @@ namespace Weavers.Core.Extensions {
 
     public static string ToOpResult(this Exception ex, ILogger _logger, string commandName, int id, string message) {
       _logger.LogError(ex, $"{commandName} Exception on itemId: {id} with message: {message}");
-      var opResult = McpOpResult.CreateFailure(commandName, $"yea sorry, {commandName} excepted on itemid:{id} with an internal error.", ex);
+      var opResult = McpOpResult.CreateFailure(commandName, $"yea sorry, {commandName} excepted on itemid:{id} with error: {message}", ex);
       return JsonSerializer.Serialize(opResult);
     }
   }

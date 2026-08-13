@@ -352,7 +352,7 @@ namespace Weavers.Core.Handlers.Builds {
         var docIdList = bldContext.LibItems.Keys.ToList();
         foreach (var docId in docIdList) { 
           if (bldContext.LibItems.TryGetValue(docId, out var docItem)) {
-            if (docItem.ItemTypeId == (int)WeItemType.OrgDocModel) {
+            if (docItem.ItemTypeId == (int)WeItemType.OrgFileModel) {
               var fPath = docItem.Properties.FirstOrDefault(p => p.Name == docItem.ItemTypeId.GetFolderPropertyName())?.Value ?? "";
               if (fPath != "") {
                 var relPath = Path.GetRelativePath(orgRootFolder, fPath);
@@ -397,7 +397,7 @@ namespace Weavers.Core.Handlers.Builds {
         }
         if (isGoForWrite) {
           foreach (var relation in folderItem.Relations.Where(r => r.RelatedItemId.HasValue
-            && r.RelatedItemTypeId == (int)WeItemType.OrgDocModel)) {
+            && r.RelatedItemTypeId == (int)WeItemType.OrgFileModel)) {
             var docItem = await _context.GetItemDtoById(relation.RelatedItemId!.Value, cancellationToken);
             if (docItem == null) {
               bldContext.Errors.Add($"Related document with id {relation.RelatedItemId.Value} not found.");
@@ -407,7 +407,7 @@ namespace Weavers.Core.Handlers.Builds {
             await WriteDocument(docItem, bldContext, cancellationToken);
           }
 
-          foreach (var relation in folderItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.OrgDocFolderModel)) {
+          foreach (var relation in folderItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.OrgFolderModel)) {
             var childFolderItem = await _context.GetItemDtoById(relation.RelatedItemId!.Value, cancellationToken);
             if (childFolderItem == null) {
               bldContext.Errors.Add($"Related folder with id {relation.RelatedItemId.Value} not found.");

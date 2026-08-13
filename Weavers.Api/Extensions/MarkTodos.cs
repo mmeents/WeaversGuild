@@ -49,6 +49,46 @@ namespace Weavers.Api.Extensions {
         }
       }).WithName("ReviewFailTodo").WithDescription("Marks a todo item as review fail.");
 
+      group.MapPost("/scheduleBeatWriters", async(IStorytimeToolsHandler handler, int storyId, int handlerDeskId, int? fromTodoId) => {
+        try {
+          var result = await handler.ScheduleBeatWriters(storyId, handlerDeskId, fromTodoId);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error scheduling beat writers: {ex.Message}");
+          return Results.BadRequest("Failed to schedule beat writers.");
+        }
+      }).WithName("ScheduleBeatWriters").WithDescription("Schedules beat writers.");
+
+      group.MapPost("/scheduleBeatDirectors", async (IStorytimeToolsHandler handler, int sceneId, int handlerDeskId, int? fromTodoId) => {
+        try {
+          var result = await handler.ScheduleBeatDirectors(sceneId, handlerDeskId, fromTodoId);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error scheduling beat directors: {ex.Message}");
+          return Results.BadRequest("Failed to schedule beat directors.");
+        }
+      }).WithName("ScheduleBeatDirectors").WithDescription("Schedules beat directors.");
+
+      group.MapPost("/scheduleActorPerformances", async (IStorytimeToolsHandler handler, int performanceId, int handlerDeskId, int? fromTodoId) => {
+        try {
+          var result = await handler.ScheduleActorPerformances(performanceId, handlerDeskId, fromTodoId);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error scheduling actor performances: {ex.Message}");
+          return Results.BadRequest("Failed to schedule actor performances.");
+        }
+      }).WithName("ScheduleActorPerformances").WithDescription("Schedules actor performances.");
+
+      group.MapGet("/getPerformanceRollup", async (IStorytimeToolsHandler handler, int performanceItemId) => {
+        try {
+          var result = await handler.GetPerformanceRollup(performanceItemId);
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error getting performance rollup: {ex.Message}");
+          return Results.BadRequest("Failed to get performance rollup.");
+        }
+      }).WithName("GetPerformanceRollup").WithDescription("Gets the performance rollup for a given performance item.");
+
       return app;
     }
   }

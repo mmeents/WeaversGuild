@@ -1,1 +1,1 @@
-{"MaxAttempts":3,"DeskId":33,"DeskName":"DeskOfFails","OperatorId":42,"Operator":"Nemo","DeskRoleEnumInt":0,"SysPromptTemplate":"","PushDeskName":"TheLoomAppSyncDesk","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"TheLoomAppSyncDesk"}
+{"MaxAttempts":3,"DeskId":37,"DeskName":"DeskOfFails","OperatorId":40,"Operator":"Magnus","DeskRoleEnumInt":0,"SysPromptTemplate":"Desk of Fails.","PushDeskName":"TheLoomAppSyncDesk","FailDeskName":"TheLoomAppSyncDesk","SuccessDeskName":"TheLoomAppSyncDesk"}

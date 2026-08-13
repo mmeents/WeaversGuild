@@ -34,6 +34,7 @@ namespace Weavers.Core.Service {
       MCPServer.Register<AppGraphClassTools>();
       MCPServer.Register<AppGraphEntityTools>();
       MCPServer.Register<TodoTools>();
+      MCPServer.Register<StorytimeTools>();
 
       var mcpDriver = _configuration[Cx.Provider] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();

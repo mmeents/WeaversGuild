@@ -49,6 +49,7 @@ namespace Weavers.Core.Handlers.Presence {
           .ToHashSet();
 
         var lmStudioModels = await _lmStudioService.GetLlmModelsAsync(request.GatewayPresenceId, cancellationToken);
+        lmStudioModels = lmStudioModels.DistinctBy(m => m.DisplayName).ToList(); // Ensure unique models by DisplayName
         Dictionary<string, LmModel> modelDictionary = lmStudioModels.ToDictionary(m => m.DisplayName, m => m);
 
         foreach (var model in lmStudioModels) {          
@@ -83,7 +84,7 @@ namespace Weavers.Core.Handlers.Presence {
         gateway = await _fabricDbContext.GetItemDtoById(request.GatewayPresenceId, cancellationToken);
         return gateway;
 
-      } catch (Exception ex) {
+      } catch (Exception ex) {        
         _logger.LogError(ex, "Error syncing LM Studio models for GatewayPresenceId: {GatewayPresenceId}", request.GatewayPresenceId);
         return null;
       }

@@ -27,7 +27,7 @@ namespace TheLoomApp.Extensions {
         } else {
           webView.NavigateToMdString(item.ToMdString());
         }        
-      } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgDocModel) {        
+      } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgFileModel) {        
         if (!string.IsNullOrEmpty(item.Description)) {
           webView.NavigateToMdString(item.Description);
         } else {
@@ -39,6 +39,12 @@ namespace TheLoomApp.Extensions {
           webView.NavigateToMdString(item.Description);          
         } else {
           webView.NavigateToGitFile(item);
+        }
+      } else if (item.ItemTypeId >= (int)WeItemType.RealmModel && item.ItemTypeId <= (int)WeItemType.ObservationModel) {
+        if (string.IsNullOrEmpty(item.Description)) {
+          webView.NavigateToMdString(item.ToMdString());
+        } else {
+          webView.NavigateToMdString(item.Description);
         }
       } else {
         webView.NavigateToMdString(item.ToMdString());

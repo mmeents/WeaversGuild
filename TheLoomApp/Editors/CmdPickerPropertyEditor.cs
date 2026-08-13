@@ -126,7 +126,7 @@ namespace TheLoomApp.Editors {
           ListViewItem dd = new ListViewItem(item.DisplayText);
 
           // Store the actual integer ID in the Tag property for later retrieval
-          dd.Tag = itemId;
+          dd.Tag = itemId;          
 
           // Determine checked state before adding to avoid multiple UI triggers
           if (selected.Contains(itemId)) {

@@ -53,7 +53,7 @@ namespace Weavers.Core.Handlers.Import {
             string nameWithoutExt = Path.GetFileNameWithoutExtension(pathPart);
             string fileContent = await File.ReadAllTextAsync(request.OrgDocFullPath, cancellationToken).ConfigureAwait(false);
 
-            var childItemId = lastFolderItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDocModel
+            var childItemId = lastFolderItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgFileModel
               && r.RelatedItemName == nameWithoutExt)?.RelatedItemId ?? 0;
             if (childItemId != 0) {
               if (request.OverwriteExisting) {
@@ -71,7 +71,7 @@ namespace Weavers.Core.Handlers.Import {
             } else {
               var docItem = await _mediator.Send(
                 new CreateRelatedItemCommand(lastFolderItem.Id, (int)WeRelationTypes.Contains,
-                  (int)WeItemType.OrgDocModel, nameWithoutExt, fileContent, "{}")).ConfigureAwait(false);
+                  (int)WeItemType.OrgFileModel, nameWithoutExt, fileContent, "{}")).ConfigureAwait(false);
               if (docItem != null) {
                 var docPath = Path.Combine(newFolderPath, pathPart);
                 await _mediator.SetProperty(docItem, Cx.ItFilePath, docPath).ConfigureAwait(false);
@@ -81,12 +81,12 @@ namespace Weavers.Core.Handlers.Import {
 
           } else {
 
-            var childItemId = lastFolderItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDocFolderModel
+            var childItemId = lastFolderItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgFolderModel
               && r.RelatedItemName == pathPart)?.RelatedItemId ?? 0;
             if (childItemId == 0) {
               ItemDto? DocsFolderItem = await _mediator.Send(
                 new CreateRelatedItemCommand(lastFolderItem.Id, (int)WeRelationTypes.Contains,
-                  (int)WeItemType.OrgDocFolderModel, pathPart, "", "{}")).ConfigureAwait(false);
+                  (int)WeItemType.OrgFolderModel, pathPart, "", "{}")).ConfigureAwait(false);
 
               if (DocsFolderItem != null) {
                 var folderPath = Path.Combine(newFolderPath, pathPart);

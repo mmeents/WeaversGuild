@@ -30,7 +30,7 @@ namespace Weavers.Core.Handlers.Documentation {
       sb.AppendLine($"  {WeItemType.OrgDeskRolesModel} {WeItemType.OrgDeskRolesModel.AsIntString()} is a folder for Desk Roles used to assign commands to roles for a Desk.");
       sb.AppendLine($"  {WeItemType.DigitalOperatorPoolModel} {WeItemType.DigitalOperatorPoolModel.AsIntString()} is a folder for Digital Operators used for desk assignment to presence models.");
       sb.AppendLine($"  {WeItemType.WorkGroupModel} {WeItemType.WorkGroupModel.AsIntString()} is a folder for the desks of the organization.");
-      sb.AppendLine($"  {WeItemType.OrgDocFolderModel} {WeItemType.OrgDocFolderModel.AsIntString()} is a root folder for non-project-related organization documents.");
+      sb.AppendLine($"  {WeItemType.OrgFolderModel} {WeItemType.OrgFolderModel.AsIntString()} is a root folder for non-project-related organization documents.");
       sb.AppendLine($"Apps have 2 gateway models( {WeItemType.PresenceLmStudioGatewayModel} and {WeItemType.PresenceClaudeGatewayModel}). They are enabled via setting Has<setting> property, the {WeItemType.HarnessAppModel} typed item. Presence LLM models are children of the specific gateway.");
       sb.AppendLine($"Org can have any number of projects.  Project: use {Cx.CmdListProjects} for a list of root project folders.");
       sb.AppendLine("All tools starting with Add take the id of the Item we want to add to as the first parameter, and the Name of the new part we're adding as the second. They populate default ItemProperties for each new item added.");

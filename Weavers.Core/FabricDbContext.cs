@@ -31,6 +31,7 @@ namespace Weavers.Core {
       modelBuilder.Entity<ReadyTodoRow>().HasNoKey().ToView(null);
       modelBuilder.Entity<IdOnlyRow>().HasNoKey().ToView(null);
       modelBuilder.Entity<DbGitEntryItem>().HasNoKey().ToView(null);
+      modelBuilder.Entity<ItemSummaryDto>().HasNoKey().ToView(null);
     }
   }
 }

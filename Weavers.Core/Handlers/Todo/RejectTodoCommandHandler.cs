@@ -63,10 +63,21 @@ namespace Weavers.Core.Handlers.Todo {
         await todoCloseReasonProp.SaveProp(todoItem, _mediator);
       }
 
+      ItemDto? producedItem = null;
+      var refProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);
+      if (refProp != null) {
+        int refId = refProp.Value.AsInt();
+        if (refId > 0) {
+          producedItem = await _context.GetItemDtoById(refId, cancellationToken);
+        }
+      }
+
       // create new todo on the onPushbackDesk with the same note and link it to the rejected todo item.
       var nextRank = await _mediator.Send(new GetNextItemRankQuery(onPushbackDesk.Id)) + 1;      
       var name = "";
-      if (todoItem.Name != null) {
+      if (producedItem?.Id != null) {
+        name = $"Rejected: {producedItem.ItemTypeName} item Id:{producedItem.Id} {producedItem.Name} from previous todo id {todoItem.Id}.";
+      } else if (todoItem.Name != null) {
         var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
         name = $"{baseName} fromId:{todoItem.Id}";
       } else {        
@@ -104,32 +115,17 @@ namespace Weavers.Core.Handlers.Todo {
           itContinueTodoProp.Value = newTodoItem.Id.ToString();
           await itContinueTodoProp.SaveProp(inProgressTodoAttempt, _mediator);
         }
-
-        var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
-        if (newTodoPromptProp != null) {
-          var originalPrompt = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt)?.Value ?? "";
-          newTodoPromptProp.Value = 
-            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine+
-            "Original request: " + originalPrompt + Environment.NewLine +
-            "Reason: " + request.Reason;
-          await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
-          newTodoPromptSet = true;
-        }
-      } else {
-        var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
-        if (newTodoPromptProp != null) {
-          var originalPrompt = await todoItem.UserPrompt(_mediator, CancellationToken.None);
-          newTodoPromptProp.Value =
-            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
-            "Original request: " + originalPrompt + Environment.NewLine +
-            "Reason: " + request.Reason;
-          await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
-          newTodoPromptSet = true;
-        }
       }
 
-     
-     
+      var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
+      if (newTodoPromptProp != null) {        
+        newTodoPromptProp.Value = 
+          "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine+
+          (producedItem?.Id != null ? $"Rejected on {producedItem.ItemTypeName} item Id:{producedItem.Id} {producedItem.Name} from previous todo id {todoItem.Id}." : "") +
+          "Reason: " + request.Reason;
+        await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+        newTodoPromptSet = true;
+      }     
 
       bool newTodoRefItemSet = false;
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);

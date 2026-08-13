@@ -51,6 +51,14 @@
       miDoGitClone = new ToolStripMenuItem();
       miDoGitRefStatus = new ToolStripMenuItem();
       miDoCheckout = new ToolStripMenuItem();
+      miAddRealm = new ToolStripMenuItem();
+      miAddStory = new ToolStripMenuItem();
+      miAddScene = new ToolStripMenuItem();
+      miAddBeat = new ToolStripMenuItem();
+      miAddCallSheet = new ToolStripMenuItem();
+      miAddCharacter = new ToolStripMenuItem();
+      miAddPerformance = new ToolStripMenuItem();
+      miAddObserved = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
       miAddSolutionImport = new ToolStripMenuItem();
       miAddFile = new ToolStripMenuItem();
@@ -65,6 +73,7 @@
       miAddEntity = new ToolStripMenuItem();
       miAddEntityProperty = new ToolStripMenuItem();
       miSepAddBottom = new ToolStripSeparator();
+      miMoveItemUp = new ToolStripMenuItem();
       miGenerate = new ToolStripMenuItem();
       miSepGenBottom = new ToolStripSeparator();
       miDeleteItem = new ToolStripMenuItem();
@@ -235,9 +244,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 814);
+      cmsTreeMenus.Size = new Size(209, 1034);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -392,6 +401,62 @@
       miDoCheckout.Text = "Do Git Checkout";
       miDoCheckout.Click += miDoCheckout_Click;
       // 
+      // miAddRealm
+      // 
+      miAddRealm.Name = "miAddRealm";
+      miAddRealm.Size = new Size(208, 22);
+      miAddRealm.Text = "Add Story Realm";
+      miAddRealm.Click += miAddRealm_Click;
+      // 
+      // miAddStory
+      // 
+      miAddStory.Name = "miAddStory";
+      miAddStory.Size = new Size(208, 22);
+      miAddStory.Text = "Add Story";
+      miAddStory.Click += miAddStory_Click;
+      // 
+      // miAddScene
+      // 
+      miAddScene.Name = "miAddScene";
+      miAddScene.Size = new Size(208, 22);
+      miAddScene.Text = "Add Scene";
+      miAddScene.Click += miAddScene_Click;
+      // 
+      // miAddBeat
+      // 
+      miAddBeat.Name = "miAddBeat";
+      miAddBeat.Size = new Size(208, 22);
+      miAddBeat.Text = "Add Beat";
+      miAddBeat.Click += miAddBeat_Click;
+      // 
+      // miAddCallSheet
+      // 
+      miAddCallSheet.Name = "miAddCallSheet";
+      miAddCallSheet.Size = new Size(208, 22);
+      miAddCallSheet.Text = "Add Call Sheet";
+      miAddCallSheet.Click += miAddCallSheet_Click;
+      // 
+      // miAddCharacter
+      // 
+      miAddCharacter.Name = "miAddCharacter";
+      miAddCharacter.Size = new Size(208, 22);
+      miAddCharacter.Text = "Add Character";
+      miAddCharacter.Click += miAddCharacter_Click;
+      // 
+      // miAddPerformance
+      // 
+      miAddPerformance.Name = "miAddPerformance";
+      miAddPerformance.Size = new Size(208, 22);
+      miAddPerformance.Text = "Add Performance";
+      miAddPerformance.Click += miAddPerformance_Click;
+      // 
+      // miAddObserved
+      // 
+      miAddObserved.Name = "miAddObserved";
+      miAddObserved.Size = new Size(208, 22);
+      miAddObserved.Text = "Add Observed";
+      miAddObserved.Click += miAddObserved_Click;
+      // 
       // miAddSolution
       // 
       miAddSolution.Name = "miAddSolution";
@@ -488,6 +553,13 @@
       miSepAddBottom.Name = "miSepAddBottom";
       miSepAddBottom.Size = new Size(205, 6);
       // 
+      // miMoveItemUp
+      // 
+      miMoveItemUp.Name = "miMoveItemUp";
+      miMoveItemUp.Size = new Size(208, 22);
+      miMoveItemUp.Text = "Move Item Up";
+      miMoveItemUp.Click += miMoveItemUp_Click;
+      // 
       // miGenerate
       // 
       miGenerate.Name = "miGenerate";
@@ -538,6 +610,8 @@
       ilTreeImages.Images.SetKeyName(23, "Inbox-Open--Streamline-Micro.png");
       ilTreeImages.Images.SetKeyName(24, "narration.png");
       ilTreeImages.Images.SetKeyName(25, "GatwayWeave.png");
+      ilTreeImages.Images.SetKeyName(26, "beat.png");
+      ilTreeImages.Images.SetKeyName(27, "performance.png");
       // 
       // splitContainer3
       // 
@@ -824,7 +898,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1646,5 +1719,14 @@
     private Label label3;
     private NumericUpDown edSearchMaxResults;
     private ComboBox cbSearchTypeFilter;
+    private ToolStripMenuItem miAddRealm;
+    private ToolStripMenuItem miAddStory;
+    private ToolStripMenuItem miAddScene;
+    private ToolStripMenuItem miAddBeat;
+    private ToolStripMenuItem miAddCallSheet;
+    private ToolStripMenuItem miAddCharacter;
+    private ToolStripMenuItem miAddPerformance;
+    private ToolStripMenuItem miAddObserved;
+    private ToolStripMenuItem miMoveItemUp;
   }
 }

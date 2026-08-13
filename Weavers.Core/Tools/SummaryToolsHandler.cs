@@ -73,6 +73,10 @@ namespace Weavers.Core.Tools {
 
     public async Task<string> Search(string searchTerms, int byType = 0, int maxResults = 10) {
       try {
+        if (string.IsNullOrWhiteSpace(searchTerms)) {
+          var invalidResult = McpOpResult.CreateFailure("Search", "searchTerms cannot be empty.");
+          return JsonSerializer.Serialize(invalidResult);
+        }
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var query = new SearchSummaryQuery(searchTerms, byType, maxResults);

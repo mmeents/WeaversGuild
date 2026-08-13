@@ -1,5 +1,12 @@
 
 ## Update History
+- Db Verdion 149 - 152, 8/13/2026
+  - Adds Storytime types and tools to the guild.
+  - Adds MoveUp menu command to sort the tree.
+  - Adds Storytime Desks to Org library for import
+  - Adds Documentation of a working chain to produce stories.
+  - [Storytime Described](Documents/Storytime/StorytimeDescribed.md)
+  
 - Db Version 145, 146, 147, 148 (7/(22,27)/2026)  The Loom can Clone and Checkout Github Repositories.  
   - Adds LibGit2Sharp component to add Repositories to the mix.
   - Adds CredentialStore folder with GithubToken items for username Pat style access models. (utilizing site crypto to save away in cipher, redacted for mcp layer.)

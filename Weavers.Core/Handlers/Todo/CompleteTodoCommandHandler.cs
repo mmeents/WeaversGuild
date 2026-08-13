@@ -62,8 +62,9 @@ namespace Weavers.Core.Handlers.Todo {
       var isDeskActive = onSuccessDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItEnabled)?.Value.AsBoolean();
 
       int producedItemTypeId = 0;
+      ItemDto? producedItem = null;
       if (request.ProducedItemId != null && request.ProducedItemId != 0) {
-        var producedItem = await _context.GetItemDtoById(request.ProducedItemId.Value, cancellationToken);
+        producedItem = await _context.GetItemDtoById(request.ProducedItemId.Value, cancellationToken);
         if (producedItem == null) return result.CreateFailure("Produced item not found.");
         producedItemTypeId = producedItem.ItemTypeId;
       }
@@ -77,7 +78,9 @@ namespace Weavers.Core.Handlers.Todo {
 
       // create new todo on the onSuccessDesk with the same note and link it to the completed todo item.
       var name = "";
-      if (todoItem.Name != null) {        
+      if (producedItem?.Id != null ) {
+        name = $"{producedItem.ItemTypeName} item Id:{producedItem.Id} {producedItem.Name} from previous todo id {todoItem.Id}.";
+      } else if (todoItem.Name != null) {        
         var baseName = todoItem.Name.Split(" fromId:", StringSplitOptions.None)[0];
         name = $"{baseName} fromId:{todoItem.Id}";
       } else {
@@ -115,33 +118,17 @@ namespace Weavers.Core.Handlers.Todo {
           itContinueTodoProp.Value = newTodoItem.Id.ToString();
           await itContinueTodoProp.SaveProp(inProgressTodoAttempt, _mediator);
         }
+      }
 
-        var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
-        if (newTodoPromptProp != null) {
-          var originalPrompt = inProgressTodoAttempt.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPrompt)?.Value ?? "";
-          newTodoPromptProp.Value =
-            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
-            "Original request: " + originalPrompt + Environment.NewLine +
-            ((request.ProducedItemId != null && request.ProducedItemId != 0) ? 
-            "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
-            "Notes taken: " + request.TodoNote;          
-          await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
-          newTodoPromptSet = true;
-        }
-      } else {
-        var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
-        if (newTodoPromptProp != null) {
-          var originalPrompt = await todoItem.UserPrompt(_mediator, CancellationToken.None);
-          newTodoPromptProp.Value =
-            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
-            "Original request: " + originalPrompt + Environment.NewLine +
-            ((request.ProducedItemId != null && request.ProducedItemId != 0) ? 
-              "Produced item Id: " + request.ProducedItemId + Environment.NewLine : "") +
-            "Notes taken: " + request.TodoNote;
-          await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
-          newTodoPromptSet = true;
-        }
-      }      
+      var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
+      if (newTodoPromptProp != null) {        
+        newTodoPromptProp.Value =
+          "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine +
+          (producedItem?.Id != null ? $"Working on {producedItem.ItemTypeName} item Id:{producedItem.Id} {producedItem.Name} from previous todo id {todoItem.Id}." : "")+
+          "Previous todo Notes given: " + request.TodoNote;          
+        await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
+        newTodoPromptSet = true;
+      }           
 
       bool newTodoRefItemSet = false;
       var newTodoRefItemIdProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReferenceItem);

@@ -84,8 +84,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.TodoModel => 23,     
         WeItemType.TodoAttemptModel => 24,
 
-        WeItemType.OrgDocFolderModel => 1,
-        WeItemType.OrgDocModel => 17,
+        WeItemType.OrgFolderModel => 1,
+        WeItemType.OrgFileModel => 17,
 
         WeItemType.RssFolderModel => 21,
         WeItemType.RssChannelModel => 6,
@@ -103,6 +103,17 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileMdModel => 2,
         WeItemType.FileHtmlModel => 16,
         WeItemType.FileConfigModel => 17,
+
+        WeItemType.RealmModel => 1,
+        WeItemType.StoryModel => 13,
+        WeItemType.SceneModel => 18,
+        WeItemType.BeatModel => 26,
+        WeItemType.CallSheetModel => 2,
+        WeItemType.CharacterModel => 19,        
+        WeItemType.PerformanceModel => 27,
+        WeItemType.ActorPerformanceModel => 27,
+        WeItemType.ObservationModel => 12,
+
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
         WeItemType.LibraryModel => 12,        
@@ -150,8 +161,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.WorkGroupModel,
         WeItemType.DeskLogModel,
         WeItemType.DeskModel,
-        WeItemType.OrgDocFolderModel, 
-        WeItemType.OrgDocModel,
+        WeItemType.OrgFolderModel, 
+        WeItemType.OrgFileModel,
         WeItemType.RssFolderModel,
         WeItemType.RssChannelModel,
         WeItemType.RssItemModel,
@@ -223,7 +234,10 @@ namespace Weavers.Core.Extensions {
           WeItemType.TodoStatuses,          
           WeItemType.RunStatus,
           WeItemType.DeskPreAssertCheckTypes,
-          WeItemType.LinkResolutionTypes
+          WeItemType.LinkResolutionTypes,
+          WeItemType.StoryStatus,
+          WeItemType.SceneStatus,
+          WeItemType.PovTypes
       };
       return lookupTypes;
     }
@@ -244,7 +258,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.DeskModel => true,        
-        (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.OrgFileModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.GitFileModel => true,
@@ -271,7 +285,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,
-        (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.OrgFolderModel => true,
         (int)WeItemType.RssFolderModel => true,
         (int)WeItemType.RssChannelModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
@@ -287,7 +301,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,        
-        (int)WeItemType.OrgDocFolderModel => true,
+        (int)WeItemType.OrgFolderModel => true,
         (int)WeItemType.RssFolderModel => true,
         (int)WeItemType.RssChannelModel => true,
         (int)WeItemType.ProjectFolderModel => true,
@@ -307,13 +321,28 @@ namespace Weavers.Core.Extensions {
 
     public static bool IsContentType(this int itemTypeId) {
       return itemTypeId switch {
-        (int)WeItemType.OrgDocModel => true,
+        (int)WeItemType.OrgFileModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.GitFileModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
+        (int)WeItemType.RealmModel => true,
+        (int)WeItemType.StoryModel => true,
+        (int)WeItemType.SceneModel => true,
+        (int)WeItemType.BeatModel => true,        
+        (int)WeItemType.CharacterModel => true,                
+        (int)WeItemType.ObservationModel => true,
+        _ => false
+      };
+    }
+
+    public static bool IsDataType(this int itemTypeID) {
+      return itemTypeID switch {
+        (int)WeItemType.CallSheetModel => true,
+        (int)WeItemType.PerformanceModel => true,
+        (int)WeItemType.ActorPerformanceModel => true,
         _ => false
       };
     }
@@ -354,8 +383,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.WorkGroupModel => true,
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.DeskModel => true,
-        (int)WeItemType.OrgDocFolderModel => true,
-        (int)WeItemType.OrgDocModel => true,        
+        (int)WeItemType.OrgFolderModel => true,
+        (int)WeItemType.OrgFileModel => true,        
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.GitFolderModel => true,
@@ -381,8 +410,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.WorkGroupModel => Cx.ItRelativeFolder,
         (int)WeItemType.DeskLogModel => Cx.ItRelativeFolder,
         (int)WeItemType.DeskModel => Cx.ItFilePath,
-        (int)WeItemType.OrgDocFolderModel => Cx.ItRelativeFolder,
-        (int)WeItemType.OrgDocModel => Cx.ItFilePath,
+        (int)WeItemType.OrgFolderModel => Cx.ItRelativeFolder,
+        (int)WeItemType.OrgFileModel => Cx.ItFilePath,
         (int)WeItemType.RssFolderModel => Cx.ItRelativeFolder,
         (int)WeItemType.RssChannelModel => Cx.ItRelativeFolder,
         (int)WeItemType.RssItemModel => Cx.ItFilePath,
@@ -519,6 +548,16 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static string GetPOVString(this string? povType) {
+      int povInt = int.TryParse(povType, out int povVal) ? povVal : (int)WeItemType.PovUndefined;      
+      return povInt switch {        
+        (int)WeItemType.PovFirstPerson => "1st Person",        
+        (int)WeItemType.PovThirdPersonLimited => "3rd Person Limited",
+        (int)WeItemType.PovThirdPersonOmniscient => "3rd Person Omniscient",
+        _ => "Not set, use 3rd Person Limited"
+      };
+    }
+
     public static string? GetMcpCommandString(this WeItemType loomCommand) {
       return loomCommand switch {
         WeItemType.CmdHelp => Cx.CmdHelp,
@@ -542,7 +581,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddOrgDeskRole => Cx.CmdAddOrgDeskRole,
         WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
         WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
-        WeItemType.CmdAddDigitalOperatior => Cx.CmdAddDigitalOperator,
+        WeItemType.CmdAddDigitalOperator => Cx.CmdAddDigitalOperator,
         WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
         WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
 
@@ -564,6 +603,23 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdDoGitRefreshStatus => Cx.CmdDoGitRefreshStatus,
         WeItemType.CmdDoGitCheckout => Cx.CmdDoGitCheckout,
 
+        WeItemType.CmdAddRealm => Cx.CmdAddRealm,
+        WeItemType.CmdAddStory => Cx.CmdAddStory,
+        WeItemType.CmdAddScene => Cx.CmdAddScene,
+        WeItemType.CmdAddCharacter => Cx.CmdAddCharacter,
+        WeItemType.CmdAddBeat => Cx.CmdAddBeat,
+        WeItemType.CmdScheduleBeatWriters => Cx.CmdScheduleBeatWriters,
+        WeItemType.CmdScheduleBeatDirectors => Cx.CmdScheduleBeatDirectors,
+        WeItemType.CmdAddCallSheet => Cx.CmdAddCallSheet,
+        WeItemType.CmdAddCallSheetNarration => Cx.CmdAddCallSheetNarration,  // director
+        WeItemType.CmdAddCallSheetRole => Cx.CmdAddCallSheetRole,
+        WeItemType.CmdAddPerformance => Cx.CmdAddPerformance,
+        WeItemType.CmdScheduleActors => Cx.CmdScheduleActorPerformances,
+        WeItemType.CmdAddPerformanceAction => Cx.CmdAddPerformanceAction,    // performance
+        WeItemType.CmdAddPerformanceLine => Cx.CmdAddPerformanceLine,
+        WeItemType.CmdGetPerformanceRollup => Cx.CmdGetPerformanceRollup,
+        WeItemType.CmdAddObservation => Cx.CmdAddObservation,
+
         WeItemType.CmdAddSolution => Cx.CmdAddSolution,
         WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
 
@@ -581,7 +637,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddClassMethodParam => Cx.CmdAddClassMethodParam,
 
         WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,
-        WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
+        //WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
         WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
         _ => null
       };

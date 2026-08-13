@@ -123,7 +123,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddOrgDesk => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddDeskTodo => WeItemType.LoomMcpCommands,
 
-        WeItemType.CmdAddDigitalOperatior => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddDigitalOperator => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgFolder => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddOrgFile => WeItemType.LoomMcpCommands,
 
@@ -145,6 +145,23 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdDoGitRefreshStatus => WeItemType.LoomMcpCommands,
         WeItemType.CmdDoGitCheckout => WeItemType.LoomMcpCommands,
 
+        WeItemType.CmdAddRealm => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddStory => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddScene => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddCharacter => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddBeat => WeItemType.LoomMcpCommands,
+        WeItemType.CmdScheduleBeatWriters => WeItemType.LoomMcpCommands,
+        WeItemType.CmdScheduleBeatDirectors => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddCallSheet => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddCallSheetNarration => WeItemType.LoomMcpCommands,  // director
+        WeItemType.CmdAddCallSheetRole => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddPerformance => WeItemType.LoomMcpCommands,
+        WeItemType.CmdScheduleActors => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddPerformanceAction => WeItemType.LoomMcpCommands,    // performance
+        WeItemType.CmdAddPerformanceLine => WeItemType.LoomMcpCommands,
+        WeItemType.CmdGetPerformanceRollup => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddObservation => WeItemType.LoomMcpCommands,
+
         WeItemType.CmdAddSolution => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddSolutionImport => WeItemType.LoomMcpCommands,
 
@@ -162,7 +179,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddClassMethodParam => WeItemType.LoomMcpCommands,
 
         WeItemType.CmdAddEntityClass => WeItemType.LoomMcpCommands,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => WeItemType.LoomMcpCommands,
+     //   WeItemType.CmdAddEntityClassImport => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddEntityProperty => WeItemType.LoomMcpCommands,
 
         WeItemType.TodoStatuses => null,
@@ -185,6 +202,24 @@ namespace Weavers.Core.Extensions {
         WeItemType.LinkResolutionTypes => null,
         WeItemType.LinkNotResolved => WeItemType.LinkResolutionTypes,
         WeItemType.LinkResolved => WeItemType.LinkResolutionTypes,
+
+        WeItemType.StoryStatus => null,
+        WeItemType.StoryProposed => WeItemType.StoryStatus,
+        WeItemType.StoryInReview => WeItemType.StoryStatus,
+        WeItemType.StoryApproved => WeItemType.StoryStatus,
+        WeItemType.StoryRejected => WeItemType.StoryStatus,
+
+        WeItemType.SceneStatus => null,
+        WeItemType.ScenePlanned => WeItemType.SceneStatus,
+        WeItemType.SceneDrafting => WeItemType.SceneStatus,
+        WeItemType.SceneInReview => WeItemType.SceneStatus,
+        WeItemType.SceneFinal => WeItemType.SceneStatus,
+
+        WeItemType.PovTypes => null,
+        WeItemType.PovUndefined => WeItemType.PovTypes,
+        WeItemType.PovFirstPerson => WeItemType.PovTypes,
+        WeItemType.PovThirdPersonLimited => WeItemType.PovTypes,
+        WeItemType.PovThirdPersonOmniscient => WeItemType.PovTypes,
 
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
@@ -213,8 +248,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.TodoModel => WeItemType.DeskModel,
         WeItemType.TodoAttemptModel => WeItemType.TodoModel,
 
-        WeItemType.OrgDocFolderModel => WeItemType.OrganizationModel,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
-        WeItemType.OrgDocModel => WeItemType.OrgDocFolderModel,       // doc for Skill details.
+        WeItemType.OrgFolderModel => WeItemType.OrganizationModel,   // folder for path like namespace for grouping skills. (Approvals, Design, Build, Test, QA)
+        WeItemType.OrgFileModel => WeItemType.OrgFolderModel,       // doc for Skill details.
 
         WeItemType.RssFolderModel => WeItemType.OrganizationModel,
         WeItemType.RssChannelModel => WeItemType.RssFolderModel,
@@ -324,8 +359,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.DeskModel => true,
         WeItemType.TodoModel => true,
 
-        WeItemType.OrgDocFolderModel => true,
-        WeItemType.OrgDocModel => true,
+        WeItemType.OrgFolderModel => true,
+        WeItemType.OrgFileModel => true,
 
         WeItemType.RssFolderModel => true,
         WeItemType.RssChannelModel => true,
@@ -337,6 +372,17 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileMdModel => true,
         WeItemType.FileHtmlModel => true,
         WeItemType.FileConfigModel => true,
+
+        WeItemType.RealmModel => true,
+        WeItemType.StoryModel => true,
+        WeItemType.SceneModel => true,
+        WeItemType.BeatModel => true,
+        WeItemType.CallSheetModel => true,
+        WeItemType.CharacterModel => true,        
+        WeItemType.PerformanceModel => false,
+        WeItemType.ActorPerformanceModel => false,
+        WeItemType.ObservationModel => true,
+
         WeItemType.SolutionModel => true,        
         WeItemType.LibraryModel => true,                        
         WeItemType.NamespaceModel => true,
@@ -368,10 +414,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.WorkGroupModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.WorkGroupModel },        
         WeItemType.DeskModel => new HashSet<WeItemType> { WeItemType.WorkGroupModel },
 
-        WeItemType.TodoModel => new HashSet<WeItemType> { WeItemType.DeskModel },
+        WeItemType.TodoModel => new HashSet<WeItemType> { WeItemType.DeskLogModel, WeItemType.DeskModel },
 
-        WeItemType.OrgDocFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDocFolderModel },
-        WeItemType.OrgDocModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDocFolderModel },
+        WeItemType.OrgFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgFolderModel },
+        WeItemType.OrgFileModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgFolderModel },
 
         WeItemType.RssFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.RssFolderModel },
         WeItemType.RssChannelModel => new HashSet<WeItemType> { WeItemType.RssFolderModel },
@@ -389,6 +435,17 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileMdModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.FileHtmlModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.FileConfigModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+
+        WeItemType.RealmModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
+        WeItemType.StoryModel => new HashSet<WeItemType> { WeItemType.RealmModel },
+        WeItemType.SceneModel => new HashSet<WeItemType> { WeItemType.StoryModel },
+        WeItemType.BeatModel => new HashSet<WeItemType> { WeItemType.SceneModel },
+        WeItemType.CallSheetModel => new HashSet<WeItemType> { WeItemType.SceneModel },
+        WeItemType.CharacterModel => new HashSet<WeItemType> { WeItemType.SceneModel, WeItemType.CallSheetModel, WeItemType.PerformanceModel},
+        WeItemType.PerformanceModel => new HashSet<WeItemType> { WeItemType.SceneModel },
+        WeItemType.ActorPerformanceModel => new HashSet<WeItemType> { WeItemType.PerformanceModel },
+        WeItemType.ObservationModel => new HashSet<WeItemType> { WeItemType.PerformanceModel },
+
         WeItemType.SolutionModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.SolutionImportModel => new HashSet<WeItemType> { WeItemType.SolutionModel },
 
@@ -553,7 +610,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddClassMethod => (int)WeEditorType.String,
         WeItemType.CmdAddClassMethodParam => (int)WeEditorType.String,
         WeItemType.CmdAddEntityClass => (int)WeEditorType.String,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => (int)WeEditorType.String,
+     //   WeItemType.CmdAddEntityClassImport => (int)WeEditorType.String,
         WeItemType.CmdAddEntityProperty => (int)WeEditorType.String,
 
         WeItemType.TodoStatuses => (int)WeEditorType.LookupTypeEditor,
@@ -580,8 +637,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.TodoModel => (int)WeEditorType.String,
         WeItemType.TodoAttemptModel => (int)WeEditorType.String,
 
-        WeItemType.OrgDocFolderModel => (int)WeEditorType.String, 
-        WeItemType.OrgDocModel => (int)WeEditorType.String,
+        WeItemType.OrgFolderModel => (int)WeEditorType.String, 
+        WeItemType.OrgFileModel => (int)WeEditorType.String,
 
         WeItemType.ProjectFolderModel => (int)WeEditorType.String,
         WeItemType.ProjectDocs => (int)WeEditorType.String,
@@ -723,11 +780,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpFloatType => 13,
         WeItemType.CSharpByteType => 14,
         WeItemType.CSharpDateTimeType => 15,
-        WeItemType.CSharpDateType => 17,
-        WeItemType.CSharpTimeType => 18,
-        WeItemType.CSharpDateTimeOffsetType => 19,
-        WeItemType.CSharpByteArrayType => 20,
-        WeItemType.CSharpGuidType => 21,
+        WeItemType.CSharpDateType => 16,
+        WeItemType.CSharpTimeType => 17,
+        WeItemType.CSharpDateTimeOffsetType => 18,
+        WeItemType.CSharpByteArrayType => 19,
+        WeItemType.CSharpGuidType => 20,
 
         WeItemType.EntityDeleteBehaviors => 1,
         WeItemType.EntityDeleteClientSetNull => 1,
@@ -780,7 +837,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddOrgDeskRole => 15, // in AppGraphOrgTools
         WeItemType.CmdAddOrgDesk => 16,  
         WeItemType.CmdAddDeskTodo => 17,
-        WeItemType.CmdAddDigitalOperatior => 18,
+        WeItemType.CmdAddDigitalOperator => 18,
         WeItemType.CmdAddOrgFolder => 19,
         WeItemType.CmdAddOrgFile => 20,
 
@@ -802,21 +859,39 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdDoGitRefreshStatus => 34,
         WeItemType.CmdDoGitCheckout => 35,
 
-        WeItemType.CmdAddSolution => 36,
-        WeItemType.CmdAddSolutionImport => 37,
-        WeItemType.CmdAddMdFile => 38,
-        WeItemType.CmdAddHtmlFile => 39,
-        WeItemType.CmdAddConfigFile => 40,
-        WeItemType.CmdAddLibrary => 41,  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => 42,
-        WeItemType.CmdAddClass => 43,  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => 44,
-        WeItemType.CmdAddClassProperty => 45,
-        WeItemType.CmdAddClassMethod => 46,
-        WeItemType.CmdAddClassMethodParam => 47,
-        WeItemType.CmdAddEntityClass => 48,  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => 49,
-        WeItemType.CmdAddEntityProperty => 50,
+        WeItemType.CmdAddRealm => 36,
+        WeItemType.CmdAddStory => 37,
+        WeItemType.CmdAddScene => 38,
+        WeItemType.CmdAddCharacter => 39,
+        WeItemType.CmdAddBeat => 40,
+        WeItemType.CmdScheduleBeatWriters => 41,
+        WeItemType.CmdScheduleBeatDirectors => 42,
+        WeItemType.CmdAddCallSheet => 43,
+        WeItemType.CmdAddCallSheetNarration => 44,  // director
+        WeItemType.CmdAddCallSheetRole => 45,
+        WeItemType.CmdAddPerformance => 46,
+        WeItemType.CmdScheduleActors => 47,
+        WeItemType.CmdAddPerformanceAction => 48,    // performance
+        WeItemType.CmdAddPerformanceLine => 49,
+        WeItemType.CmdGetPerformanceRollup => 50,  // rollup of all performance lines and cross ref with ActorPerformace.
+        WeItemType.CmdAddObservation => 51,
+
+        WeItemType.CmdAddSolution => 52,
+        WeItemType.CmdAddSolutionImport => 53,
+        WeItemType.CmdAddMdFile => 54,
+        WeItemType.CmdAddHtmlFile => 55,
+        WeItemType.CmdAddConfigFile => 56,
+        WeItemType.CmdAddLibrary => 57,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => 58,
+        WeItemType.CmdAddClass => 59,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => 60,
+        WeItemType.CmdAddClassProperty => 61,
+        WeItemType.CmdAddClassMethod => 62,
+        WeItemType.CmdAddClassMethodParam => 63,
+        WeItemType.CmdAddEntityClass => 64,  // in AppGraphEntityTools
+       // WeItemType.CmdAddEntityClassImport => 65,
+        WeItemType.CmdAddEntityProperty => 66,
+
        
         WeItemType.TodoStatuses => 1,
         WeItemType.TodoNotStarted => 1,
@@ -838,6 +913,24 @@ namespace Weavers.Core.Extensions {
         WeItemType.LinkResolutionTypes => 1,
         WeItemType.LinkNotResolved => 1,
         WeItemType.LinkResolved => 2,
+
+        WeItemType.StoryStatus => 1,
+        WeItemType.StoryProposed => 2,
+        WeItemType.StoryInReview => 3,
+        WeItemType.StoryApproved => 4,
+        WeItemType.StoryRejected => 5,
+
+        WeItemType.SceneStatus => 1,
+        WeItemType.ScenePlanned => 2,
+        WeItemType.SceneDrafting => 3,
+        WeItemType.SceneInReview => 4,
+        WeItemType.SceneFinal => 5,
+
+        WeItemType.PovTypes => 1,
+        WeItemType.PovUndefined => 2,
+        WeItemType.PovFirstPerson => 3,
+        WeItemType.PovThirdPersonLimited => 4,
+        WeItemType.PovThirdPersonOmniscient => 5,
 
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
@@ -861,8 +954,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.TodoModel => 1050,    
         WeItemType.TodoAttemptModel => 1055,
 
-        WeItemType.OrgDocFolderModel => (int)WeItemType.OrgDocFolderModel,
-        WeItemType.OrgDocModel => (int)WeItemType.OrgDocModel,
+        WeItemType.OrgFolderModel => (int)WeItemType.OrgFolderModel,
+        WeItemType.OrgFileModel => (int)WeItemType.OrgFileModel,
 
         WeItemType.RssFolderModel => (int)WeItemType.RssFolderModel,
         WeItemType.RssChannelModel => (int)WeItemType.RssChannelModel,
@@ -884,6 +977,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileHtmlDocs => (int)WeItemType.FileHtmlDocs,
         WeItemType.FileConfigModel => (int)WeItemType.FileConfigModel,
         WeItemType.FileConfigDocs => (int)WeItemType.FileConfigDocs,
+
+        WeItemType.RealmModel => (int)WeItemType.RealmModel,
+        WeItemType.StoryModel => (int)WeItemType.StoryModel,
+        WeItemType.SceneModel => (int)WeItemType.SceneModel,
+        WeItemType.BeatModel => (int)WeItemType.BeatModel,
+        WeItemType.CallSheetModel => (int)WeItemType.CallSheetModel,
+        WeItemType.CharacterModel => (int)WeItemType.CharacterModel,
+        WeItemType.PerformanceModel => (int)WeItemType.PerformanceModel,
+        WeItemType.ActorPerformanceModel => (int)WeItemType.ActorPerformanceModel,
+        WeItemType.ObservationModel => (int)WeItemType.ObservationModel,
 
         WeItemType.SolutionModel => (int)WeItemType.SolutionModel,
         WeItemType.SolutionDocs => (int)WeItemType.SolutionDocs,
@@ -1049,68 +1152,85 @@ namespace Weavers.Core.Extensions {
         WeItemType.FloorStopping => "Stopping",
 
         WeItemType.LoomMcpCommands => "Loom Mcp Commands",
-        WeItemType.CmdHelp => "Help Command",  // in SummaryTools
-        WeItemType.CmdListProjects => "List Projects Command",
-        WeItemType.CmdSearch => "Search Command",
-        WeItemType.CmdGetSummaryById => "Get Summary By Id Command",
-        WeItemType.CmdGetTypeDetails => "Get Type Details Command",
+        WeItemType.CmdHelp => Cx.CmdHelp,  // in SummaryTools
+        WeItemType.CmdListProjects => Cx.CmdListProjects,
+        WeItemType.CmdSearch => Cx.CmdSearch,
+        WeItemType.CmdGetSummaryById => Cx.CmdGetSummaryById,
+        WeItemType.CmdGetTypeDetails => Cx.CmdGetTypeDetails,
 
-        WeItemType.CmdUpdateItemName => "Update Item Name Command",
-        WeItemType.CmdUpdateItemContent => "Update Item Content Command",
-        WeItemType.CmdAppendItemContent => "Append Item Content Command",
-        WeItemType.CmdUpdateItemProperty => "Update Item Property Command",
+        WeItemType.CmdUpdateItemName => Cx.CmdUpdateItemName,
+        WeItemType.CmdUpdateItemContent => Cx.CmdUpdateItemContent,
+        WeItemType.CmdAppendItemContent => Cx.CmdAppendItemContent,
+        WeItemType.CmdUpdateItemProperty => Cx.CmdUpdateItemProperty,
 
-        WeItemType.CmdCompleteTodo => "Complete Todo Command",
-        WeItemType.CmdSetTodoReady => "Set Todo Ready Command",
-        WeItemType.CmdRejectTodo => "Reject Todo Command",
-        WeItemType.CmdReviewPass => "Review Pass Command",
-        WeItemType.CmdReviewFail => "Review Fail Command",
+        WeItemType.CmdCompleteTodo => Cx.CmdCompleteTodo,
+        WeItemType.CmdSetTodoReady => Cx.CmdSetTodoReady,
+        WeItemType.CmdRejectTodo => Cx.CmdRejectTodo,
+        WeItemType.CmdReviewPass => Cx.CmdReviewPass,
+        WeItemType.CmdReviewFail => Cx.CmdReviewFail,
 
-        WeItemType.CmdAddOrgDeskRole => "Add Org Desk Role Command",
-        WeItemType.CmdAddOrgDesk => "Add Org Desk Command",
-        WeItemType.CmdAddDeskTodo => "Add Desk Todo Command",
+        WeItemType.CmdAddOrgDeskRole => Cx.CmdAddOrgDeskRole,
+        WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
+        WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
 
-        WeItemType.CmdAddDigitalOperatior => "Add Digital Operator Command",
-        WeItemType.CmdAddOrgFolder => "Add Org Folder Command",
-        WeItemType.CmdAddOrgFile => "Add Org File Command",
+        WeItemType.CmdAddDigitalOperator => Cx.CmdAddDigitalOperator,
+        WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
+        WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
 
-        WeItemType.CmdAddRssFolder => "Add Rss Folder Command",
-        WeItemType.CmdAddRssChannel => "Add Rss Channel Command",
-        WeItemType.CmdRssResyncChannel => "Resync Rss Channel Command",
-        WeItemType.CmdRssResolveLink => "Resolve Rss Link Command",
-        WeItemType.CmdRssExtractLinks => "Extract Rss Links Command",
-        WeItemType.CmdAppendGuildNote => "Append Guild Note Command",
-        WeItemType.CmdUpdateGuildNote => "Update Guild Note Command",
-        WeItemType.CmdArchiveItem => "Archive Item Command",
-        WeItemType.CmdUnarchiveItem => "Unarchive Item Command",
+        WeItemType.CmdAddRssFolder => Cx.CmdAddRssFolder,
+        WeItemType.CmdAddRssChannel => Cx.CmdAddRssChannel,
+        WeItemType.CmdRssResyncChannel => Cx.CmdRssResyncChannel,
+        WeItemType.CmdRssResolveLink => Cx.CmdRssResolveLink,
+        WeItemType.CmdRssExtractLinks => Cx.CmdRssExtractLinks,
+        WeItemType.CmdAppendGuildNote => Cx.CmdAppendGuildNote,
+        WeItemType.CmdUpdateGuildNote => Cx.CmdUpdateGuildNote,
+        WeItemType.CmdArchiveItem => Cx.CmdArchiveItem,
+        WeItemType.CmdUnarchiveItem => Cx.CmdUnarchiveItem,
 
-        WeItemType.CmdAddProjectRoot => "Add Project Root Command",  // in AppGraphFileTools
-        WeItemType.CmdAddSubFolder => "Add Sub Folder Command",
+        WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,  // in AppGraphFileTools
+        WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,
 
-        WeItemType.CmdAddGithubRepo => "Add Github Repo Command",
-        WeItemType.CmdDoGitClone => "Do Git Clone Command",
-        WeItemType.CmdDoGitRefreshStatus => "Do Git Refresh Status Command",
-        WeItemType.CmdDoGitCheckout => "Do Git Checkout Command",
+        WeItemType.CmdAddGithubRepo => Cx.CmdAddGithubRepo,
+        WeItemType.CmdDoGitClone => Cx.CmdDoGitClone,
+        WeItemType.CmdDoGitRefreshStatus => Cx.CmdDoGitRefreshStatus,
+        WeItemType.CmdDoGitCheckout => Cx.CmdDoGitCheckout,
 
-        WeItemType.CmdAddSolution => "Add Solution Command",
-        WeItemType.CmdAddSolutionImport => "Add Solution Import Command",
+        WeItemType.CmdAddRealm => Cx.CmdAddRealm,
+        WeItemType.CmdAddStory => Cx.CmdAddStory,
+        WeItemType.CmdAddScene => Cx.CmdAddScene,
+        WeItemType.CmdAddCharacter => Cx.CmdAddCharacter,
+        WeItemType.CmdAddBeat => Cx.CmdAddBeat,
+        WeItemType.CmdScheduleBeatWriters => Cx.CmdScheduleBeatWriters,
+        WeItemType.CmdScheduleBeatDirectors => Cx.CmdScheduleBeatDirectors,
+        WeItemType.CmdAddCallSheet => Cx.CmdAddCallSheet,
+        WeItemType.CmdAddCallSheetNarration => Cx.CmdAddCallSheetNarration,  // director
+        WeItemType.CmdAddCallSheetRole => Cx.CmdAddCallSheetRole,
+        WeItemType.CmdAddPerformance => Cx.CmdAddPerformance,
+        WeItemType.CmdScheduleActors => Cx.CmdScheduleActorPerformances,
+        WeItemType.CmdAddPerformanceAction => Cx.CmdAddPerformanceAction,    // performance
+        WeItemType.CmdAddPerformanceLine => Cx.CmdAddPerformanceLine,
+        WeItemType.CmdGetPerformanceRollup => Cx.CmdGetPerformanceRollup,  
+        WeItemType.CmdAddObservation => Cx.CmdAddObservation,
 
-        WeItemType.CmdAddMdFile => "Add Md File Command",
-        WeItemType.CmdAddHtmlFile => "Add Html File Command",
-        WeItemType.CmdAddConfigFile => "Add Config File Command",
+        WeItemType.CmdAddSolution => Cx.CmdAddSolution,
+        WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
 
-        WeItemType.CmdAddLibrary => "Add Library Command",  // in AppGraphLibraryTools
-        WeItemType.CmdAddNamespace => "Add Namespace Command",
+        WeItemType.CmdAddMdFile => Cx.CmdAddMdFile,
+        WeItemType.CmdAddHtmlFile => Cx.CmdAddHtmlFile,
+        WeItemType.CmdAddConfigFile => Cx.CmdAddConfigFile,
 
-        WeItemType.CmdAddClass => "Add Class Command",  // in AppGraphClassTools
-        WeItemType.CmdAddClassImport => "Add Class Import Command",
-        WeItemType.CmdAddClassProperty => "Add Class Property Command",
-        WeItemType.CmdAddClassMethod => "Add Class Method Command",
-        WeItemType.CmdAddClassMethodParam => "Add Class Method Param Command",
+        WeItemType.CmdAddLibrary => Cx.CmdAddLibrary,  // in AppGraphLibraryTools
+        WeItemType.CmdAddNamespace => Cx.CmdAddNamespace,
 
-        WeItemType.CmdAddEntityClass => "Add Entity Class Command",  // in AppGraphEntityTools
-        WeItemType.CmdAddEntityClassImport => "Add Entity Class Import Command",
-        WeItemType.CmdAddEntityProperty => "Add Entity Property Command",
+        WeItemType.CmdAddClass => Cx.CmdAddClass,  // in AppGraphClassTools
+        WeItemType.CmdAddClassImport => Cx.CmdAddClassImport,
+        WeItemType.CmdAddClassProperty => Cx.CmdAddClassProperty,
+        WeItemType.CmdAddClassMethod => Cx.CmdAddClassMethod,
+        WeItemType.CmdAddClassMethodParam => Cx.CmdAddClassMethodParam,
+
+        WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,  // in AppGraphEntityTools
+        //WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
+        WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
         
         WeItemType.TodoStatuses => "Todo Statuses",
         WeItemType.TodoNotStarted => "Not Started",
@@ -1132,6 +1252,24 @@ namespace Weavers.Core.Extensions {
         WeItemType.LinkResolutionTypes => "Link Resolution Types",
         WeItemType.LinkNotResolved => "Not Resolved",
         WeItemType.LinkResolved => "Resolved",
+
+        WeItemType.StoryStatus => "Story Status",
+        WeItemType.StoryProposed => "Proposed",
+        WeItemType.StoryInReview => "In Review",
+        WeItemType.StoryApproved => "Approved",
+        WeItemType.StoryRejected => "Rejected",
+
+        WeItemType.SceneStatus => "Scene Status",
+        WeItemType.ScenePlanned => "Planned",
+        WeItemType.SceneDrafting => "Drafting",
+        WeItemType.SceneInReview => "In Review",
+        WeItemType.SceneFinal => "Final",
+
+        WeItemType.PovTypes => "Point of View Types",
+        WeItemType.PovUndefined => "Undefined",
+        WeItemType.PovFirstPerson => "First Person",
+        WeItemType.PovThirdPersonLimited => "Third Person Limited",
+        WeItemType.PovThirdPersonOmniscient => "Third Person Omniscient",
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",
@@ -1158,13 +1296,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.TodoModel => "Todo",
         WeItemType.TodoAttemptModel => "Todo Attempt",
 
-        WeItemType.OrgDocFolderModel => "Org Doc Folder",
-        WeItemType.OrgDocModel => "Org Doc",
+        WeItemType.OrgFolderModel => "Org Folder",
+        WeItemType.OrgFileModel => "Org File",
 
-        WeItemType.RssFolderModel => "RssFolder",
-        WeItemType.RssChannelModel => "RssChannel",
-        WeItemType.RssItemModel => "RssItem",
-        WeItemType.RssLinkedHtmlModel => "LinkedHtml",
+        WeItemType.RssFolderModel => "Rss Folder",
+        WeItemType.RssChannelModel => "Rss Channel",
+        WeItemType.RssItemModel => "Rss Item",
+        WeItemType.RssLinkedHtmlModel => "Linked Html",
 
         WeItemType.ProjectFolderModel => "Project Folder",
         WeItemType.ProjectDocs => "Project Documentation",
@@ -1184,6 +1322,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileConfigDocs => "Config File Documentation",
         WeItemType.FileImageModel => "Image File",
         WeItemType.FileImageDocs => "Image File Documentation",
+
+        WeItemType.RealmModel => "Realm",
+        WeItemType.StoryModel => "Story",
+        WeItemType.SceneModel => "Scene",
+        WeItemType.BeatModel => "Beat",
+        WeItemType.CharacterModel => "Character",
+        WeItemType.CallSheetModel => "Call Sheet",        
+        WeItemType.PerformanceModel => "Performance",
+        WeItemType.ActorPerformanceModel => "Actor Performance",
+        WeItemType.ObservationModel => "Observed",
 
         WeItemType.SolutionModel => "Solution",
         WeItemType.SolutionDocs => "Solution Documentation",

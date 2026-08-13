@@ -34,9 +34,7 @@ namespace Weavers.Core.Tools {
     public AppGraphFileToolsHandler(IServiceScopeFactory serviceScopeFactory, ILogger<AppGraphFileToolsHandler> logger) {
       _serviceScopeFactory = serviceScopeFactory;
       _logger = logger;
-    }
-
- 
+    } 
 
     public async Task<string> AddProjectRoot(string projectRootName) { 
         try {

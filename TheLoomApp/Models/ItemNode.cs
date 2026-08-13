@@ -41,6 +41,15 @@ namespace TheLoomApp.Models {
       return node;
     }
 
+    public static bool CanSwitchUp(this ItemNode node) {
+      if (node.Parent == null) { return false; }
+      var parentNode = node.Parent as ItemNode;
+      if (parentNode == null) { return false; }
+      var siblings = parentNode.Nodes.OfType<ItemNode>().ToList();
+      var index = siblings.IndexOf(node);
+      return index > 0;
+    }
+
     // general case 
     public static ItemNode ToItemNode(this RelationDto relation, ItemDto item) {
       var type = (WeItemType)item.ItemTypeId;

@@ -30,7 +30,7 @@ namespace Weavers.Core.Extensions {
 
     public static bool IsValidFolderParent(this ItemDto item) =>
       item.ItemTypeId == (int)WeItemType.OrganizationModel ||
-      item.ItemTypeId == (int)WeItemType.OrgDocFolderModel ||
+      item.ItemTypeId == (int)WeItemType.OrgFolderModel ||
       item.ItemTypeId == (int)WeItemType.ProjectFolderModel ||
       item.ItemTypeId == (int)WeItemType.RelativeFolderModel;
 
@@ -48,7 +48,7 @@ namespace Weavers.Core.Extensions {
         var result = item.ItemTypeId switch {
           (int)WeItemType.DigitalOperatorModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.DeskModel => item.Name.UrlSafe() + ".json",
-          (int)WeItemType.OrgDocModel => item.Name.UrlSafe() + ".md",
+          (int)WeItemType.OrgFileModel => item.Name.UrlSafe() + ".md",
           (int)WeItemType.RssFolderModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.RssChannelModel => item.Name.UrlSafe() + ".json",
           (int)WeItemType.RssItemModel => item.Name.UrlSafe() + ".json",

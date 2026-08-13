@@ -16,11 +16,14 @@ namespace Weavers.Core.Extensions {
         .Where(i => i.Id == id && i.IsActive == true)
         .Select(i => new ItemSummaryDto {
           Id = i.Id,
-          ParentId = i.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != id),
+          ParentId = i.IncomingRelations.Where(r => r.ItemId != id && r.RelationTypeId == (int)WeRelationTypes.Contains)
+            .OrderBy(r => r.Id).Select(r => r.ItemId).FirstOrDefault(),
+          Rank = i.IncomingRelations.Where(r => r.ItemId != id).Select(r => (int?)r.Rank).FirstOrDefault() ?? 0,
           TypeId = i.ItemTypeId,
           TypeName = i.ItemType.Name,
           Name = i.Name,
           Content = i.ItemTypeId.IsContentType() ? i.Description : null,
+          Data = i.ItemTypeId.IsDataType() && i.Data != null && i.Data != "{}" ? i.Data : null,
           NodesUp = nodesUp,
           Nodes = !nodesUp ? null : i.Relations
             .Where(r => r.RelatedItem != null 
@@ -86,10 +89,11 @@ namespace Weavers.Core.Extensions {
         {
           Id = r.RelatedItemId ?? 0,
           ParentId = r.ItemId,
+          Rank = r.Rank != null ? r.Rank.Value : 0,
           Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
           TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
           TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
-          Content = null,//r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
+          Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
           Props = !includeProps ? null : r.RelatedItem != null
             ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,
@@ -115,10 +119,10 @@ namespace Weavers.Core.Extensions {
           itemSummary.Content = code;
         }        
       }
-
-      foreach (var child in itemSummary.Nodes) {
-        await context.LoadSummaryRecursively(child, includeProps, cancellationToken);
-      }
+      // thinking only show 1 layer of grand kids per nodes up.
+     // foreach (var child in itemSummary.Nodes) {
+     //   await context.LoadSummaryRecursively(child, includeProps, cancellationToken);
+     // }
 
       return itemSummary;
     }
@@ -146,10 +150,12 @@ namespace Weavers.Core.Extensions {
         TypeId = item.ItemTypeId,
         TypeName = item.ItemTypeName ?? "",
         ParentId = item.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(parentId => parentId != item.Id),
+        Rank = item.IncomingRelations.FirstOrDefault( r => r.ItemId != item.Id )?.Rank ?? 1,
         Content = includeContent
             ? (item.ItemTypeId.IsContentType() ? item.Description
                : item.ItemTypeId.IsMethodCodeType() ? code : null)
             : null,
+        Data = item.ItemTypeId.IsDataType() && (!string.IsNullOrEmpty(item.Data)) && (item.Data != "{}") ? item.Data : null,
         Props = item.Properties.Select(p => new PropSummaryDto {
           Id = p.Id,
           Name = p.Name,

@@ -47,7 +47,7 @@ namespace Weavers.Core.Models {
         IsRequired = itemProperty.IsRequired,
         IsReadOnly = itemProperty.IsReadOnly,
         IsVisible = itemProperty.IsVisible,
-        Item =  (itemProperty.Item!=null)? itemProperty.Item.ToDto() : null,
+        //Item =  (itemProperty.Item!=null)? itemProperty.Item.ToDto() : null,
         ValueType = itemProperty.ValueType?.ToDto() ?? null!,
         Editor = itemProperty.Editor?.ToDto(),
         ReferenceItemType = itemProperty.ReferenceItemType?.ToDto()

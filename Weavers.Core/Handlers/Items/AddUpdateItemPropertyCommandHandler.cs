@@ -64,7 +64,7 @@ namespace Weavers.Core.Handlers.Items {
         await _context.SaveChangesAsync(cancellationToken);
       }
 
-      property = await _context.ItemProperties.FindAsync(new object[] { id }, cancellationToken);      
+      property = await _context.ItemProperties.FindAsync(new object[] { property.Id }, cancellationToken);      
       var response = property?.ToDto() ?? throw new Exception("Property not found after update");      
       _sessionCache.RemoveCacheItem(property.ItemId);  
       return response;

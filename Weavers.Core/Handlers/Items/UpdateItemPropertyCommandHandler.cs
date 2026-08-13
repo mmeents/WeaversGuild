@@ -51,7 +51,7 @@ namespace Weavers.Core.Handlers.Items {
           }
           break;
         case WeItemType.ProjectFolderModel:
-        case WeItemType.OrgDocFolderModel:
+        case WeItemType.OrgFolderModel:
         case WeItemType.RelativeFolderModel:
           if (itemPropertyName == Cx.ItRelativeFolder && hasParent) {
             var newPath = parentItem == null ? "MissingPath" : parentItem.ResolveParentFolderPath("MissingPath");

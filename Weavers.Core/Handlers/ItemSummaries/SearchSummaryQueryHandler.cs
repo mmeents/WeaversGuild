@@ -22,7 +22,7 @@ namespace Weavers.Core.Handlers.ItemSummaries {
     public async Task<List<ItemSummaryDto>> Handle(SearchSummaryQuery request, CancellationToken cancellationToken) {
       var searchTerm = request.SearchTerm;
       var itemTypeId = request.ItemTypeId;
-      var maxResults = request.MaxResults;
+      var maxResults = request.MaxResults > 0 & request.MaxResults < 100 ? request.MaxResults : 10;
 
       IQueryable<Item> query = _context.Items.AsQueryable();
       if (itemTypeId > 0) { 
@@ -77,7 +77,7 @@ namespace Weavers.Core.Handlers.ItemSummaries {
 
       var dbResults = await query
         .OrderBy(f => f.Name)        
-        .Take(request.MaxResults)
+        .Take(maxResults)
         .Select(i => new ItemSummaryDto {
           Id = i.Id,
           ParentId = i.IncomingRelations.Select(r => r.ItemId).FirstOrDefault(),

@@ -216,7 +216,7 @@ namespace Weavers.Core.Service {
       var name = subFolderName == null ? $"Folder {nextRank}" : subFolderName;
       var newSubItem = await mediator.Send(
         new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.OrgDocFolderModel, name, "", "{}"));
+          (int)WeItemType.OrgFolderModel, name, "", "{}"));
 
       if (newSubItem == null) {
         // add error logging.
@@ -240,7 +240,7 @@ namespace Weavers.Core.Service {
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
       var name = fileName == null ? $"File {nextRank}" : fileName;
       var newSubItem = await mediator.Send(
-        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.OrgDocModel, name, fileContent ?? "", "{}"));
+        new CreateRelatedItemCommand(folderItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.OrgFileModel, name, fileContent ?? "", "{}"));
       if (newSubItem == null) {
         // add error logging.
         return null;

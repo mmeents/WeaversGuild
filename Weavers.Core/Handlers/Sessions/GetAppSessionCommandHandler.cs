@@ -153,11 +153,11 @@ namespace Weavers.Core.Handlers.Sessions {
       }
 
       // docs folder
-      var DocsRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDocFolderModel);
+      var DocsRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgFolderModel);
       if (DocsRelation == null) {
         ItemDto? DocsItem = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
-            (int)WeItemType.OrgDocFolderModel, Cx.OrgDocsFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
+            (int)WeItemType.OrgFolderModel, Cx.OrgDocsFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
 
         if (DocsItem != null) {
           var folderPath = Path.Combine(orgRootFolder, Cx.OrgDocsFolder);
