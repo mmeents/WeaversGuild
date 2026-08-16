@@ -31,6 +31,8 @@ The database is named `FabricCoreV{version}` (currently `FabricCoreV136`). When 
 ![previewtodoattempt](https://mmeents.github.io/files/PreviewTodoAttempt.png)    
 
 ## Documents folder for documentation.
+see [Desk Model](Documents/Desks/DeskModel.md) for details around the desks.
+see [Storytime Described](Documents/Storytime/StorytimeDescribed.md) for working 9 desk production chain writeup. 
 
 ## Update History
-see ChangeLog.md 
+see [ChangeLog.md](ChangeLog.md) 

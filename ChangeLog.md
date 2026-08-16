@@ -1,6 +1,17 @@
 
 ## Update History
-- Db Verdion 149 - 152, 8/13/2026
+- Db Version 153 8/13/2026
+  - Adds StoryRollup type off the story items. 
+  - addStoryRollup mcp call where agent is to customize the realm on the call.
+  - Adds Credits and Observation rollups to serve as base for deployments to built from.
+  - Adds Attribution to the default types so credits auto rolled up.
+  - On startup, added the app as a gateway and the user as a presence.  
+    - then adds theLoomApp user to the default sync desk and adds a todo. 
+      - this enables additions done by the app to register in the attribution.  
+      - The credits are all new the AddedBy properites.
+  - Adds new ResolveAttributionQueryHandler. 
+  
+- Db Version 149 - 152, 8/13/2026
   - Adds Storytime types and tools to the guild.
   - Adds MoveUp menu command to sort the tree.
   - Adds Storytime Desks to Org library for import

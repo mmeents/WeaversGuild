@@ -56,3 +56,6 @@ When weaver is invoked, their todo item has been marked InProgress and they are 
 ## Resource Sharing 
 
 When Active and Todo count is greater than 0 then it's ready, OrgChartModel will invode the desk.   
+
+## See also 
+- [Todo Item](TodoItemModel.md)

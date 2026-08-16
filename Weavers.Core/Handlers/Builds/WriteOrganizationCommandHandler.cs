@@ -356,7 +356,7 @@ namespace Weavers.Core.Handlers.Builds {
               var fPath = docItem.Properties.FirstOrDefault(p => p.Name == docItem.ItemTypeId.GetFolderPropertyName())?.Value ?? "";
               if (fPath != "") {
                 var relPath = Path.GetRelativePath(orgRootFolder, fPath);
-                sbOrg.AppendLine($"- [{docItem.Name}]({relPath})");
+                sbOrg.AppendLine($"- [{docItem.Name}]({relPath.Replace("\\", "/")})");
               }
             }
           }
