@@ -11,6 +11,7 @@ using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Weavers.Core.Handlers.Presence {
   public record SyncLmStudioModelsCommand(int GatewayPresenceId) : IRequest<ItemDto?>;
@@ -43,28 +44,41 @@ namespace Weavers.Core.Handlers.Presence {
           throw new InvalidOperationException($"bad API token or LM Studio URL for Gateway ID {request.GatewayPresenceId}.");
         }
         
-        var existingModels = gateway.Relations
+        var existingModelIds = gateway.Relations
           .Where(r => r.RelatedItemTypeId == (int)WeItemType.PresModelLmStudioModel)
-          .Select(r => r.RelatedItemName)
+          .Select(r => r.RelatedItemId)
           .ToHashSet();
-
-        var lmStudioModels = await _lmStudioService.GetLlmModelsAsync(request.GatewayPresenceId, cancellationToken);
-        lmStudioModels = lmStudioModels.DistinctBy(m => m.DisplayName).ToList(); // Ensure unique models by DisplayName
-        Dictionary<string, LmModel> modelDictionary = lmStudioModels.ToDictionary(m => m.DisplayName, m => m);
-
-        foreach (var model in lmStudioModels) {          
-          var modelName = model.DisplayName;
-          if (!existingModels.Contains(modelName)) {
-            var modelItem = await _mediator.Send(
-              new CreateRelatedItemCommand(gateway.Id, (int)WeRelationTypes.Contains,
-                (int)WeItemType.PresModelLmStudioModel, modelName, "", "{}")).ConfigureAwait(false);
-            if (modelItem != null) {
-              await _mediator.SetProperty(modelItem, Cx.ItModelName, model.Key); // store the model name as property.
+        var existingKeys = new HashSet<string>();        
+        foreach (var existingModelId in existingModelIds) { 
+          var model = await _fabricDbContext.GetItemDtoById(existingModelId!.Value, cancellationToken);
+          if (model != null) {
+            var modelKey = model.Properties.FirstOrDefault(p => p.Name == Cx.ItModelKey)?.Value;
+            if (modelKey != null) {
+              existingKeys.Add(modelKey);
             }
           }
         }
 
-        foreach (string existingModel in existingModels) {
+        var lmStudioModels = await _lmStudioService.GetLlmModelsAsync(request.GatewayPresenceId, cancellationToken);
+        lmStudioModels = lmStudioModels.DistinctBy(m => m.Key).ToList(); // Ensure unique models by Key
+        Dictionary<string, LmModel> modelDictionary = lmStudioModels.ToDictionary(m => m.Key, m => m);
+
+        foreach (var model in lmStudioModels) {          
+          var modelKey = model.Key;
+          if (!existingKeys.Contains(modelKey)) {
+            var modelItem = await _mediator.Send(
+              new CreateRelatedItemCommand(gateway.Id, (int)WeRelationTypes.Contains,
+                (int)WeItemType.PresModelLmStudioModel, model.DisplayName, "", "{}")).ConfigureAwait(false);
+            if (modelItem != null) {
+              await _mediator.SetProperty(modelItem, Cx.ItModelKey, model.Key); // store the model ID as property.
+              await _mediator.SetProperty(modelItem, Cx.ItModelName, model.DisplayName); // store the model name as property.
+              var modelDetails = JsonSerializer.Serialize(model, new JsonSerializerOptions { WriteIndented = true });
+              await _mediator.SetProperty(modelItem, Cx.ItModelDetails, modelDetails); // store the model type as property.
+            }
+          }
+        }
+
+        foreach (string existingModel in existingKeys) {
           if (!modelDictionary.ContainsKey(existingModel)) {
             // Handle the case where the existing model is no longer present in LM Studio
             var missingModelRelation = gateway.Relations.FirstOrDefault(r => r.RelatedItemName == existingModel && r.RelatedItemTypeId == (int)WeItemType.PresModelLmStudioModel);

@@ -132,7 +132,7 @@ namespace Weavers.Core.Handlers.Presence {
           return result.CreateFailure($"Presence with ID {presId.Value} not found.");
         }
         
-        presenceModel = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItModelName)?.Value ?? string.Empty;
+        presenceModel = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItModelKey)?.Value ?? string.Empty;
         bool skipPermissions = false;
         if (presenceItem.ItemTypeId == (int)WeItemType.PresModelClaudeModel) {
           skipPermissions = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSkipPermissions)?.Value.AsBoolean() ?? false;

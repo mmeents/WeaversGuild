@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Cryptography;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
@@ -8,6 +9,7 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Weavers.Core.Handlers.Sessions {
 
@@ -24,12 +26,14 @@ namespace Weavers.Core.Handlers.Sessions {
     FabricDbContext fabricDbContext,
     IMediator mediator,
     IAppSettingService settingService,    
-    IAppSessionService session
+    IAppSessionService session,
+    IAppGraphOrgService appGraphOrgService
     ) : IRequestHandler<GetAppSessionCommand, AppSessionResponse?> {
     private readonly FabricDbContext _dbContext = fabricDbContext;
     private readonly IMediator _mediator = mediator;
     private readonly IAppSettingService _settingService = settingService;    
     private readonly IAppSessionService _session = session;
+    private readonly IAppGraphOrgService _appGraphOrgService = appGraphOrgService;
 
     public async Task<AppSessionResponse?> Handle(GetAppSessionCommand request, CancellationToken cancellationToken) {
 
@@ -65,6 +69,7 @@ namespace Weavers.Core.Handlers.Sessions {
       
       
       // harness exist?
+      int humanPresenceId = 0;
       var harnessName = $"{Cx.AppHarnessAppName}On{machineName}";
       var aHarnessTypeId = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.HarnessAppModel && r.RelatedItemName == harnessName)?.RelatedItemId ?? 0;
       ItemDto? harnessSessionsItem = null;
@@ -73,6 +78,7 @@ namespace Weavers.Core.Handlers.Sessions {
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessAppModel, 
             harnessName, $"{Cx.AppHarnessAppName}", "{}"), cancellationToken).ConfigureAwait(false);
         result.HarnessId = harnessItem?.Id ?? 0;
+        _session.Initialize(userName, result.OrganizationId, result.HarnessId, result.SessionId);
         if (harnessItem == null || result.HarnessId == 0) {
           throw new Exception("Failed to create harness item");
         }
@@ -87,8 +93,31 @@ namespace Weavers.Core.Handlers.Sessions {
           new CreateRelatedItemCommand(harnessItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.HarnessGatewaysModel,
           Cx.AppGatewayFolder, $"{Cx.AppGatewayFolder}", "{}"), cancellationToken).ConfigureAwait(false);
 
+        if (gatewayItem != null) {
+          var aooGatewayItem = await _mediator.Send(
+           new CreateRelatedItemCommand(gatewayItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.PresenceTheLoomAppGatewayModel,
+           Cx.AppLoomPresenceFolder, $"", "{}"), cancellationToken).ConfigureAwait(false);
+          if (aooGatewayItem != null) {
+            var aoPresItem = await _mediator.Send(
+              new CreateRelatedItemCommand(aooGatewayItem.Id, (int)WeRelationTypes.Contains, (int)WeItemType.PresModelHumanModel,
+              userName, $"", "{}"), cancellationToken).ConfigureAwait(false);
+            if (aoPresItem != null) {
+              humanPresenceId = aoPresItem.Id;
+              var key = _session.GetHumanHarnessKey();
+              var setting = _settingService[key];
+              if (setting == null) {
+                setting = new AppSetting { Key = key, Value = aoPresItem.Id.ToString() };
+              } else {
+                setting.Value = aoPresItem.Id.ToString();                
+              }
+              _settingService[key] = setting;
+            }
+          }
+        }
+
       } else {
         result.HarnessId = aHarnessTypeId;
+        _session.Initialize(userName, result.OrganizationId, result.HarnessId, result.SessionId);
         var harnessItem = await _dbContext.GetItemDtoById(result.HarnessId, cancellationToken).ConfigureAwait(false);
         if (harnessItem == null) { throw new Exception("Failed to get the harness item"); }
         var harnessSessionsItemId = harnessItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.HarnessSessionsModel)?.RelatedItemId ?? 0;
@@ -101,6 +130,8 @@ namespace Weavers.Core.Handlers.Sessions {
         throw new Exception("Failed to create harnesses sessions folder item");
       }
 
+      
+
       // CredentialStore folder
       var CredentialStoreRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.CredentialStoreModel);
       if (CredentialStoreRelation == null) { 
@@ -110,6 +141,7 @@ namespace Weavers.Core.Handlers.Sessions {
       }
 
       // digital Operators
+      int humanOperatorId = 0;
       var DigitalOperatorPoolRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DigitalOperatorPoolModel);
       if (DigitalOperatorPoolRelation == null) {
         ItemDto? DoPoolDto = await _mediator.Send(
@@ -118,6 +150,37 @@ namespace Weavers.Core.Handlers.Sessions {
         if (DoPoolDto != null) {
           var folderPath = Path.Combine(orgRootFolder, Cx.AppTeamFolder);
           await _mediator.SetProperty(DoPoolDto, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+
+          // add a digital operator model for the current user.
+          var name = userName;
+          var newItem = await _mediator.Send(
+            new CreateRelatedItemCommand(DoPoolDto.Id, (int)WeRelationTypes.Contains,
+              (int)WeItemType.DigitalOperatorModel, name, "", "{}"));
+          if (newItem != null) {
+            humanOperatorId = newItem.Id;
+            var itsFilePathProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
+            if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {
+              string parentFolderPath = DoPoolDto.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+              var fullPath = Path.Combine(parentFolderPath, newItem.Name.UrlSafe() + ".json");
+              itsFilePathProp.Value = fullPath;
+              await itsFilePathProp.SaveProp(newItem, mediator);
+            }
+            var itPresenceProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPresence);
+            if (itPresenceProp != null) {
+              
+              itPresenceProp.Value = humanPresenceId.ToString();              
+              await itPresenceProp.SaveProp(newItem, _mediator);
+
+              var key = _session.GetHumanOperatorKey();
+              var opSetting = _settingService[key];
+              if (opSetting == null) {                
+                opSetting = new AppSetting { Key = key, Value = newItem.Id.ToString() };
+              } else {
+                opSetting.Value = newItem.Id.ToString();
+              }
+              _settingService[key] = opSetting;              
+            }
+          }
         }
       }
 
@@ -148,6 +211,24 @@ namespace Weavers.Core.Handlers.Sessions {
           if (defaultLogDesk != null) {
             var folderPath2 = Path.Combine(folderPath, "TheLoomAppSyncDesk");
             await _mediator.SetProperty(defaultLogDesk, Cx.ItFilePath, folderPath2).ConfigureAwait(false);
+                       
+            
+            await _mediator.SetProperty(defaultLogDesk, Cx.ItOperator, humanOperatorId.ToString()).ConfigureAwait(false);
+
+            var defaultTodo = await _appGraphOrgService.AddDeskTodo(defaultLogDesk, "TheLoomApp into Team Member", humanOperatorId, 
+              "Default todo logs all actions by theLoomApp Human to the team member for attribution. Saves in settings.");
+
+            if (defaultTodo != null) {
+              var key = _session.GetHumanTodoKey();
+              var todoSetting = _settingService[key];
+              if (todoSetting == null) {
+                todoSetting = new AppSetting { Key = key, Value = defaultTodo.Id.ToString() };
+              } else {
+                todoSetting.Value = defaultTodo.Id.ToString();
+              }
+              _settingService[key] = todoSetting;
+            }
+            
           }
         }
       }

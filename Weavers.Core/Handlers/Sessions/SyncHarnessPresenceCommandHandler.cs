@@ -78,7 +78,7 @@ namespace Weavers.Core.Handlers.Sessions {
                     new CreateRelatedItemCommand(presenceItem.Id, (int)WeRelationTypes.Contains,
                       (int)WeItemType.PresModelClaudeModel, model.DisplayName, "", "{}"), cancellationToken).ConfigureAwait(false);
                   if (modelItem != null) {
-                    await _mediator.SetProperty(modelItem, Cx.ItModelName, model.Key); // store the model name as property.                   
+                    await _mediator.SetProperty(modelItem, Cx.ItModelKey, model.Key); // store the model name as property.                   
                   }
                 }
               }

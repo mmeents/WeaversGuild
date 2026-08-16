@@ -40,7 +40,7 @@ namespace TheLoomApp.Extensions {
         } else {
           webView.NavigateToGitFile(item);
         }
-      } else if (item.ItemTypeId >= (int)WeItemType.RealmModel && item.ItemTypeId <= (int)WeItemType.ObservationModel) {
+      } else if (item.ItemTypeId >= (int)WeItemType.RealmModel && item.ItemTypeId <= (int)WeItemType.StoryRollupModel ){
         if (string.IsNullOrEmpty(item.Description)) {
           webView.NavigateToMdString(item.ToMdString());
         } else {

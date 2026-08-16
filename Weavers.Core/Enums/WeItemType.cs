@@ -164,26 +164,27 @@ namespace Weavers.Core.Enums {
       CmdAddPerformanceLine = 177,
       CmdGetPerformanceRollup = 178,  // rollup of all performance lines and cross ref with ActorPerformace.
       CmdAddObservation = 179,
+      CmdAddStoryRollupModel = 180,
 
-      CmdAddSolution = 180,
-      CmdAddSolutionImport = 181,
+      CmdAddSolution = 181,
+      CmdAddSolutionImport = 182,
 
-      CmdAddMdFile = 182,
-      CmdAddHtmlFile = 183,
-      CmdAddConfigFile = 184,
+      CmdAddMdFile = 183,
+      CmdAddHtmlFile = 184,
+      CmdAddConfigFile = 185,
 
-      CmdAddLibrary = 185,  // in AppGraphLibraryTools
-      CmdAddNamespace = 186,
+      CmdAddLibrary = 186,  // in AppGraphLibraryTools
+      CmdAddNamespace = 187,
 
-      CmdAddClass = 187,  // in AppGraphClassTools
-      CmdAddClassImport = 188,
-      CmdAddClassProperty = 189,
-      CmdAddClassMethod = 190,
-      CmdAddClassMethodParam = 191,
+      CmdAddClass = 188,  // in AppGraphClassTools
+      CmdAddClassImport = 189,
+      CmdAddClassProperty = 190,
+      CmdAddClassMethod = 191,
+      CmdAddClassMethodParam = 192,
 
-      CmdAddEntityClass = 192,  // in AppGraphEntityTools
-      //CmdAddEntityClassImport = 193,
-      CmdAddEntityProperty = 194,
+      CmdAddEntityClass = 193,  // in AppGraphEntityTools
+      //CmdAddEntityClassImport = 194,
+      CmdAddEntityProperty = 195,
 
 
     TodoStatuses = 220,
@@ -233,11 +234,13 @@ namespace Weavers.Core.Enums {
           HarnessAppSessionModel = 1012, // each run makes a session for tacking. 
 
         HarnessGatewaysModel = 1013,  // folder for gateways of the harness.
-          PresenceLmStudioGatewayModel = 1014,   // LM Studio instance details. enough to query the models.
-            PresModelLmStudioModel = 1015,     // LmStudio model for each model found.
+          PresenceTheLoomAppGatewayModel = 1014,  // The Loom app gateway is representing App As the Gateway for Human operators to be named.  
+            PresModelHumanModel = 1015,  // The Loom app gateway is representing App As the Gateway for Human operators to be named.
+          PresenceLmStudioGatewayModel = 1016,   // LM Studio instance details. enough to query the models.
+            PresModelLmStudioModel = 1017,     // LmStudio model for each model found.
 
-          PresenceClaudeGatewayModel = 1016,   // Claude instance details. enough to query the models.
-            PresModelClaudeModel = 1017,     // Claude model for each model found.
+          PresenceClaudeGatewayModel = 1018,   // Claude instance details. enough to query the models.
+            PresModelClaudeModel = 1019,     // Claude model for each model found.
 
       CredentialStoreModel = 1025, // folder for credentials of the organization.
         GitHubCredentialModel = 1026,    // credential details.
@@ -301,6 +304,7 @@ namespace Weavers.Core.Enums {
          PerformanceModel = 1177,  // json maintains the performance of the scene. (dialog, narration, action, etc.)
            ActorPerformanceModel = 1178,  // json maintains the performance of the scene. (dialog, narration, action, etc.)
            ObservationModel = 1179, // description holds final prose 
+       StoryRollupModel = 1180, // rollup of all a story from the Scene Observations
 
       SolutionModel = 1190, 
         SolutionDocs = 1191,

@@ -31,8 +31,11 @@ namespace Weavers.Core.Tools {
       [Description("Default Point of view type id for the story and scenes. (PovUndefined = 291,PovFirstPerson = 292,PovThirdPersonLimited = 294,PovThirdPersonOmniscient = 295)")]
       int povTypeId,
       [Description("Target number of scenes for the story")]
-      int targetSceneCount
-    ) => await GetTools().AddStory(realmId, name, details, povTypeId, targetSceneCount);
+      int targetSceneCount,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId 
+    ) => await GetTools().AddStory(realmId, name, details, povTypeId, targetSceneCount, todoId);
+
 
     [McpTool(Cx.CmdAddScene, "Adds a new scene to a story")]
     public static async Task<string> AddScene(
@@ -43,8 +46,10 @@ namespace Weavers.Core.Tools {
       [Description("Entry state of the new scene")]
       string entryState,
       [Description("Exit state of the new scene")]
-      string exitState
-    ) => await GetTools().AddScene(storyId, name, "", entryState, exitState);
+      string exitState,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddScene(storyId, name, "", entryState, exitState, todoId);
 
     
     [McpTool(Cx.CmdScheduleBeatWriters, "Adds todo for each scene in story to write the beats on the handler desk. Skips scenes that have been requested or if it has beats. Details in results")]
@@ -55,7 +60,8 @@ namespace Weavers.Core.Tools {
       int handlerDeskId,
       [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
       int fromTodoId 
-    ) => await GetTools().ScheduleBeatWriters(storyId, handlerDeskId, fromTodoId);     
+    ) => await GetTools().ScheduleBeatWriters(storyId, handlerDeskId, fromTodoId);
+    
 
     [McpTool(Cx.CmdAddBeat, "Adds a new beat to a scene, requires: sceneId, name, details parameters.")]
     public static async Task<string> AddBeat(
@@ -64,8 +70,11 @@ namespace Weavers.Core.Tools {
       [Description("Name of the new beat")]
       string name,
       [Description("Details of the new beat")]
-      string details
-    ) => await GetTools().AddBeat(sceneId, name, details);
+      string details,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddBeat(sceneId, name, details, todoId);
+
 
     [McpTool(Cx.CmdAddCharacter, "Adds a new character to a scene.")]
     public static async Task<string> AddCharacter(
@@ -76,6 +85,7 @@ namespace Weavers.Core.Tools {
       [Description("Details of the new character")]
       string details
     ) => await GetTools().AddCharacter(sceneId, name, details);
+
 
     [McpTool(Cx.CmdScheduleBeatDirectors, "Adds todo for each beat in scene to direct the beat on the handler desk. Skips beats that have been requested or if it has a call sheet. Details in results")]
     public static async Task<string> ScheduleBeatDirectors(
@@ -93,8 +103,11 @@ namespace Weavers.Core.Tools {
       [Description("Id of the parent beat item")]
       int beatId,
       [Description("Name of the new call sheet")]
-      string name      
-    ) => await GetTools().AddCallSheet(beatId, name, "");
+      string name,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddCallSheet(beatId, name, "", todoId);
+
     
     [McpTool(Cx.CmdAddCallSheetNarration, "Adds a new narration to a call sheet.")]
     public static async Task<string> AddCallSheetNarration(
@@ -103,8 +116,11 @@ namespace Weavers.Core.Tools {
       [Description("Name of the new narration")]
       string name,
       [Description("The narration to add")]
-      string narration
-    ) => await GetTools().AddCallSheetNarration(callSheetId, name, narration);
+      string narration,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddCallSheetNarration(callSheetId, name, narration, todoId);
+
 
     [McpTool(Cx.CmdAddCallSheetRole, "Adds a character role to a call sheet. Adds Character to scene if not already present by character.")]
     public static async Task<string> AddCallSheetRole(
@@ -113,8 +129,10 @@ namespace Weavers.Core.Tools {
       [Description("Name of the character")]
       string character,
       [Description("Directions for the characters role")]
-      string directions 
-    ) => await GetTools().AddCallSheetRole(callSheetId, character, directions);
+      string directions,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddCallSheetRole(callSheetId, character, directions, todoId);
 
 
     [McpTool(Cx.CmdScheduleActorPerformances, "Adds todo for each role in performance to direct the acting performance on the handler desk. Skips Roles that have been requested or if it has a ActorPerformance. Details in results")]
@@ -142,24 +160,28 @@ namespace Weavers.Core.Tools {
       [Description("Id of the actor performance item")]
       int actorPerformanceId,      
       [Description("Describe the action performed by the character")]
-      string action
-    ) => await GetTools().AddPerformanceAction(actorPerformanceId, action);
+      string action,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddPerformanceAction(actorPerformanceId, action, todoId);
+
 
     [McpTool(Cx.CmdAddPerformanceLine, "Adds a new line of dialogue for a character in a performance.")]
     public static async Task<string> AddPerformanceLine(
       [Description("Id of the actor performance item")]
       int actorPerformanceId,
       [Description("Line spoken by the character")]
-      string line
-    ) => await GetTools().AddPerformanceLine(actorPerformanceId, line);
+      string line,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddPerformanceLine(actorPerformanceId, line, todoId);
 
     
-     [McpTool(Cx.CmdGetPerformanceRollup, "Gets a rollup of the performance actions and lines for a performance.")]
-     public static async Task<string> GetPerformanceRollup(
-      [Description("Id of the performance item")]
-      int performanceItemId
-     ) => await GetTools().GetPerformanceRollup(performanceItemId);
-
+    [McpTool(Cx.CmdGetPerformanceRollup, "Gets a rollup of the performance actions and lines for a performance.")]
+    public static async Task<string> GetPerformanceRollup(
+    [Description("Id of the performance item")]
+    int performanceItemId
+    ) => await GetTools().GetPerformanceRollup(performanceItemId);
 
 
     [McpTool(Cx.CmdAddObservation, "Adds a new observation to a performance.")]
@@ -169,8 +191,21 @@ namespace Weavers.Core.Tools {
       [Description("Name of the new observation")]
       string name,
       [Description("Contents of the new observation")]
-      string contents
-    ) => await GetTools().AddObservation(performanceId, name, contents);
+      string contents,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddObservation(performanceId, name, contents, todoId);
+
+
+    [McpTool(Cx.CmdAddStoryRollup, "Adds a new story rollup to a story.")]
+    public static async Task<string> AddStoryRollup(
+      [Description("Id story item id to add rollup for. Note: new item is added to story parent, result is a sibling of target story.")]
+      int storyId,
+      [Description("Realm property of the new story rollup. target production prose for realm with respect to story.")]
+      string realm,
+      [Description("Id of the todo item the agent is working from. For tracking and chaining, if no todo use zero.")]
+      int todoId
+    ) => await GetTools().AddStoryRollup(storyId, realm, todoId);
 
   }
 }

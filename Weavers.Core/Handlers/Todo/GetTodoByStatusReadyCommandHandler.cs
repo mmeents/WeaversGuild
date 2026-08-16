@@ -39,7 +39,8 @@ namespace Weavers.Core.Handlers.Todo {
             inner join dbo.Relations rel on rel.ItemId = itHarness.Id
             inner join dbo.Items itGateways on itGateways.Id = rel.RelatedItemId
             inner join dbo.Relations rel2 on rel2.ItemId = itGateways.Id
-            inner join dbo.Items itGateWay on itGateWay.Id = rel2.RelatedItemId and (itGateWay.ItemTypeId = {PresenceLmStudioGatewayModel} or itGateWay.ItemTypeId = {PresenceClaudeGatewayModel})
+            inner join dbo.Items itGateWay on itGateWay.Id = rel2.RelatedItemId 
+              and (itGateWay.ItemTypeId = {PresenceLmStudioGatewayModel} or itGateWay.ItemTypeId = {PresenceClaudeGatewayModel})
           {gwlWhereClause}
         )
         SELECT distinct it.Id, 

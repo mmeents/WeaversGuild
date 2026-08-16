@@ -90,10 +90,10 @@ namespace Weavers.Core.Handlers.ItemTypes {
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
-          } else if (rt == WeItemType.PresenceLmStudioGatewayModel || rt == WeItemType.PresenceClaudeGatewayModel) {
+          } else if (rt == WeItemType.PresenceLmStudioGatewayModel || rt == WeItemType.PresenceClaudeGatewayModel || rt == WeItemType.PresenceTheLoomAppGatewayModel) {
 
             var items = await _context.Items
-              .Where(i => i.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel)
+              .Where(i => i.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceTheLoomAppGatewayModel)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
@@ -101,7 +101,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
           } else if (rt == WeItemType.PresModelLmStudioModel || rt == WeItemType.PresModelClaudeModel) {
 
             var items = await _context.Items
-              .Where(i => i.ItemTypeId == (int)WeItemType.PresModelLmStudioModel || i.ItemTypeId == (int)WeItemType.PresModelClaudeModel)
+              .Where(i => i.ItemTypeId == (int)WeItemType.PresModelLmStudioModel || i.ItemTypeId == (int)WeItemType.PresModelClaudeModel || i.ItemTypeId == (int)WeItemType.PresModelHumanModel)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;

@@ -50,6 +50,7 @@ namespace TheLoomApp {
     private bool _RelationTabDirty = false;
     private bool _inSetupTpItems = false;
     private bool _isExpanding = false;
+    private int _defaultAppTodoId = 0;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool ItemTabDirty {
@@ -175,6 +176,11 @@ namespace TheLoomApp {
     #region Tree View Loading and Events
     private async void Form1_Shown(object sender, EventArgs e) {
       _sessionDetails = await _appDataService.GetAppSession(); // create session.
+      var key = $"{_sessionDetails!.HarnessId}-HumanUserTodo";
+      var defTodoSetting = _settings[key];
+      if (defTodoSetting != null) {
+        _defaultAppTodoId = defTodoSetting.Value.AsInt();
+      }
 
       await wvDescription.EnsureCoreWebView2Async();
       wvDescription.CoreWebView2.NavigationStarting += (s, ev) => {
@@ -1283,7 +1289,7 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
           int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
-          await tvKb.AddStory(_storytimeService, newItemName, newItemDesc, povId, dlg.TargetSceneCount);
+          await tvKb.AddStory(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc, povId, dlg.TargetSceneCount);
         }
 
       } catch (Exception ex) {
@@ -1302,7 +1308,7 @@ namespace TheLoomApp {
           int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
           var entryState = dlg.EntryState ?? "";
           var exitState = dlg.ExitState ?? "";
-          await tvKb.AddScene(_storytimeService, newItemName, newItemDesc, povId, entryState, exitState);
+          await tvKb.AddScene(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc, povId, entryState, exitState);
         }
 
       } catch (Exception ex) {
@@ -1318,7 +1324,7 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddBeat(_storytimeService, newItemName, newItemDesc);
+          await tvKb.AddBeat(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1334,7 +1340,7 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddCallSheet(_storytimeService, newItemName, newItemDesc);
+          await tvKb.AddCallSheet(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1382,7 +1388,7 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddObserved(_storytimeService, newItemName, newItemDesc);
+          await tvKb.AddObserved(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {

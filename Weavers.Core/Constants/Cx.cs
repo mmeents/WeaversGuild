@@ -22,6 +22,8 @@ namespace Weavers.Core.Constants {
     public static string AppHarnessAppName => "TheLoom";
     public static string AppSessionsFolder => "Sessions";
     public static string AppGatewayFolder => "Gateways";
+    public static string AppLoomPresenceFolder => "LoomApp Gateway";
+    public static string AppLoomPresUserName => "JoeSmow";
     public static string AppCredentialStoreFolder => "Credentials";
     public static string AppTeamFolder => "Team";
     public static string AppDeskRolesFolder => "DeskRoles";
@@ -115,6 +117,7 @@ namespace Weavers.Core.Constants {
     public const string CmdAddPerformanceLine = "addPerformanceLine";    
     public const string CmdGetPerformanceRollup = "getPerformanceRollup";
     public const string CmdAddObservation = "addObservation";
+    public const string CmdAddStoryRollup = "addStoryRollup";
 
     public const string CmdAddSolution = "addSolution";
     public const string CmdAddSolutionImport = "addSolutionImport";    
@@ -163,6 +166,7 @@ namespace Weavers.Core.Constants {
     // itemProperty names constants 
     public const string ItAccessModifier = "AccessModifier";   
     public const string ItApiToken = "ApiToken";
+    public const string ItAddedBy = "AddedBy";
     public const string ItBaseType = "BaseType";
     public const string ItBranchName = "BranchName";    
     public const string ItBeatsRequested = "BeatsRequested";
@@ -178,11 +182,12 @@ namespace Weavers.Core.Constants {
     public const string ItContinueTodo = "NextTodo";
     public const string ItContextLength = "ContextLength";    
     public const string ItCloseReason = "CloseReason";
+    public const string ItCredits = "Credits";
     public const string ItCurrentTodo = "CurrentTodo";
-    public const string ItCurrentBranch = "CurrentBranch";
+    public const string ItCurrentBranch = "CurrentBranch";    
     public const string ItDataType = "DataType";
     public const string ItDeleteBehavior = "DeleteBehavior";
-    public const string ItDeskPreAsserts = "PreAsserts";
+    public const string ItDeskPreAsserts = "PreAsserts";    
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
     public const string ItDbTableName = "DbTableName";    
@@ -250,6 +255,8 @@ namespace Weavers.Core.Constants {
     public const string ItMaxLinks = "MaxLinks";
     public const string ItMachineName = "MachineName";
     public const string ItModelName = "ModelName";
+    public const string ItModelKey = "ModelKey";
+    public const string ItModelDetails = "ModelDetails";
     public const string ItModifiedCount = "ModifiedCount";
     public const string ItNamespace = "Namespace";
     public const string ItNamespaceRoot = "NamespaceRoot";
@@ -279,6 +286,7 @@ namespace Weavers.Core.Constants {
     //public const string ItLineNumber = "LineNumber";
     public const string ItRank = "Rank";
     public const string ItRating = "Rating";
+    public const string ItRealm = "Realm";
     public const string ItRepoItemId = "RepoItemId";
     public const string ItReferenceItem = "RefItem";
     public const string ItReSync = "DoReSync";
@@ -306,7 +314,7 @@ namespace Weavers.Core.Constants {
     public const string ItStatus = "Status";
     public const string ItStoryStatus = "StoryStatus";
     public const string ItSystemPrompt = "SysPrompt";
-    public const string ItSystemPromptTemplate = "SysPrompt";
+    public const string ItSystemPromptTemplate = "SysPrompt";    
     public const string ItUserPrompt = "UserPrompt";
     public const string ItUserPromptTemplate = "UserPrompt";
     public const string ItTargetSceneCount = "TargetSceneCount";

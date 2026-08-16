@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Weavers.Core.Constants;
@@ -13,6 +14,7 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
+using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 using static System.Collections.Specialized.BitVector32;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -20,31 +22,35 @@ namespace Weavers.Core.Service {
 
   public interface IStorytimeService {
     Task<ItemDto?> AddRealm(ItemDto parentItem, string name, string description, string tone);
-    Task<ItemDto?> AddStory(ItemDto parentItem, string name, string description, int povTypeId, int sceneCount);
-    Task<ItemDto?> AddScene(ItemDto parentItem, string name, string description, int povTypeId, string entryState, string exitState);
+    Task<ItemDto?> AddStory(ItemDto parentItem, string name, string description, int povTypeId, int sceneCount, int todoId);
+    Task<ItemDto?> AddScene(ItemDto parentItem, string name, string description, int povTypeId, string entryState, string exitState, int todoId);
 
     Task<ScheduleBeatWriterResult> ScheduleBeatWriters(ItemDto storyItem, ItemDto handlerDesk, int? fromTodoId);
 
-    Task<ItemDto?> AddBeat(ItemDto parentItem, string name, string description);
+    Task<ItemDto?> AddBeat(ItemDto parentItem, string name, string description, int todoId);
     Task<ItemDto?> AddCharacter(ItemDto parentItem, string name, string description);
 
     Task<ScheduleBeatDirectorResults> ScheduleBeatDirectors(ItemDto sceneItem, ItemDto handlerDesk, int? fromTodoId);
 
-    Task<ItemDto?> AddCallSheet(ItemDto parentItem, string name, string description);
-    Task<ItemDto?> AddCallSheetRole(ItemDto callSheetItem, string name, string instruction);
-    Task<ItemDto?> AddCallSheetNarration(ItemDto callSheetItem, string name, string narration);
+    Task<ItemDto?> AddCallSheet(ItemDto parentItem, string name, string description, int todoId);
+    Task<ItemDto?> AddCallSheetRole(ItemDto callSheetItem, string name, string instruction, int todoId);
+    Task<ItemDto?> AddCallSheetNarration(ItemDto callSheetItem, string name, string narration, int todoId);
 
     Task<ScheduleActorPerformanceResults> ScheduleActorPerformances(ItemDto performanceItem, ItemDto handlerDesk, int? fromTodoId);
 
     Task<ItemDto?> AddPerformance(ItemDto parentItem, string name, string description);
-    Task<ItemDto?> AddPerformanceAction(ItemDto actorPerformanceItem, string action);
-    Task<ItemDto?> AddPerformanceLine(ItemDto actorPerformanceItem, string line);
+    Task<ItemDto?> AddPerformanceAction(ItemDto actorPerformanceItem, string action, int todoId);
+    Task<ItemDto?> AddPerformanceLine(ItemDto actorPerformanceItem, string line, int todoId);
 
     Task<GetPerformanceRollupResult> GetPerformanceRollup(ItemDto performanceItem);
 
-    Task<ItemDto?> AddObservation(ItemDto parentItem, string name, string description);
+    Task<ItemDto?> AddObservation(ItemDto parentItem, string name, string description, int todoId);
+    Task<ItemDto?> AddStoryRollup(ItemDto storyItem, string realm, int todoId);
 
   }
+
+
+
   public class StorytimeService : IStorytimeService {
     private readonly IServiceScopeFactory _scopeFactory;
     public StorytimeService(IServiceScopeFactory scopeFactory) {
@@ -52,7 +58,7 @@ namespace Weavers.Core.Service {
     }
     public async Task<ItemDto?> AddRealm(ItemDto parentItem, string name, string description, string tone) {
       using var scope = _scopeFactory.CreateScope();
-      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();      
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.RealmModel, name, description, "{}"));
@@ -65,13 +71,15 @@ namespace Weavers.Core.Service {
       }
       return newItem;
     }
-    public async Task<ItemDto?> AddStory(ItemDto parentItem, string name, string description, int povTypeId, int sceneCount) {
+    public async Task<ItemDto?> AddStory(ItemDto parentItem, string name, string description, int povTypeId, int sceneCount, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.StoryModel, name, description, "{}"));
       if (newItem != null) {
+
         if (povTypeId >= (int)WeItemType.PovUndefined && povTypeId <= (int)WeItemType.PovThirdPersonOmniscient) {
           var povDefaultProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPovDefault);
           if (povDefaultProp != null) {
@@ -89,12 +97,20 @@ namespace Weavers.Core.Service {
           }
           await sceneCountProp.SaveProp(newItem, mediator);
         }
+
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
+        }
       }
       return newItem;
     }
-    public async Task<ItemDto?> AddScene(ItemDto parentItem, string name, string description, int povTypeId, string entryState, string exitState) {
+    public async Task<ItemDto?> AddScene(ItemDto parentItem, string name, string description, int povTypeId, string entryState, string exitState, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.SceneModel, name, description, "{}"));
@@ -117,6 +133,13 @@ namespace Weavers.Core.Service {
         if (exitStateProp != null) {
           exitStateProp.Value = exitState;
           await exitStateProp.SaveProp(newItem, mediator);
+        }
+
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
         }
 
       }
@@ -224,19 +247,7 @@ namespace Weavers.Core.Service {
               if (beatWrittenProp != null) {
                 beatWrittenProp.Value = "1";
                 await beatWrittenProp.SaveProp(sceneDto, mediator);
-              } else {
-                ItemPropertyDto newBeatWrittenProp = new ItemPropertyDto {
-                  ItemId = sceneDto.Id,
-                  Name = Cx.ItBeatsRequested,
-                  Value = "1",
-                  IsRequired = false,
-                  IsReadOnly = false,
-                  IsVisible = true,
-                  ValueDataTypeId = (int)WeDataType.Boolean,
-                  EditorTypeId = (int)WeEditorType.Boolean
-                };
-                await newBeatWrittenProp.SaveProp(sceneDto, mediator);
-              }
+              } 
 
             } else {
               result.Errors.Add($"Add Desk Todo returned a null added item. target desk {handlerDesk.Id} for scene:{sceneId}");
@@ -253,12 +264,22 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<ItemDto?> AddBeat(ItemDto parentItem, string name, string description) {
+    public async Task<ItemDto?> AddBeat(ItemDto parentItem, string name, string description, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.BeatModel, name, description, "{}"));
+
+      if (newItem != null) {
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
+        }
+      }
+
       return newItem;
     }
     public async Task<ItemDto?> AddCharacter(ItemDto parentItem, string name, string description) {
@@ -409,15 +430,25 @@ namespace Weavers.Core.Service {
 
       return result;
     }
-    public async Task<ItemDto?> AddCallSheet(ItemDto parentItem, string name, string description) {
+    public async Task<ItemDto?> AddCallSheet(ItemDto parentItem, string name, string description, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.CallSheetModel, name, description, "{}"));
+
+      if (newItem != null) {
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
+        }
+      }
+
       return newItem;
     }
-    public async Task<ItemDto?> AddCallSheetNarration(ItemDto callSheetItem, string section, string narration) {
+    public async Task<ItemDto?> AddCallSheetNarration(ItemDto callSheetItem, string section, string narration, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -432,10 +463,18 @@ namespace Weavers.Core.Service {
         Instruction = narration
       });
       callSheetItem.Data = JsonSerializer.Serialize(script);
+      if (callSheetItem != null) {
+        var addedByProp = callSheetItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(callSheetItem, mediator);          
+        }
+      }
       var updated = await mediator.Send(callSheetItem.ToUpdateCmd());
       return updated;
     }
-    public async Task<ItemDto?> AddCallSheetRole(ItemDto callSheetItem, string name, string instruction) {
+    public async Task<ItemDto?> AddCallSheetRole(ItemDto callSheetItem, string name, string instruction, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
@@ -472,6 +511,14 @@ namespace Weavers.Core.Service {
       });
 
       callSheetItem.Data = JsonSerializer.Serialize(script);
+      if (callSheetItem != null) {
+        var addedByProp = callSheetItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(callSheetItem, mediator);          
+        }
+      }
       var updated = await mediator.Send(callSheetItem.ToUpdateCmd());
 
       return updated;
@@ -695,17 +742,17 @@ namespace Weavers.Core.Service {
       return newItem;
     }
 
-    public Task<ItemDto?> AddPerformanceAction(ItemDto actorPerformanceItem, string action)
-      => AppendEntry(actorPerformanceItem, action, Cx.ActionType);
+    public Task<ItemDto?> AddPerformanceAction(ItemDto actorPerformanceItem, string action, int todoId)
+      => AppendEntry(actorPerformanceItem, action, Cx.ActionType, todoId);
 
-    public Task<ItemDto?> AddPerformanceLine(ItemDto actorPerformanceItem, string line)
-      => AppendEntry(actorPerformanceItem, line, Cx.LineType);
+    public Task<ItemDto?> AddPerformanceLine(ItemDto actorPerformanceItem, string line, int todoId)
+      => AppendEntry(actorPerformanceItem, line, Cx.LineType, todoId);
 
-    private async Task<ItemDto?> AppendEntry(ItemDto actorPerformanceItem, string text, string type) {
+    private async Task<ItemDto?> AppendEntry(ItemDto actorPerformanceItem, string text, string type, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-      
+
       var script = string.IsNullOrWhiteSpace(actorPerformanceItem.Data) || actorPerformanceItem.Data == "{}"
         ? new PerformanceScript()
         : JsonSerializer.Deserialize<PerformanceScript>(actorPerformanceItem.Data) ?? new PerformanceScript();
@@ -725,9 +772,16 @@ namespace Weavers.Core.Service {
         CharacterName = charItem.Name,
         Text = text
       });
-
       actorPerformanceItem.Data = JsonSerializer.Serialize(script);
-      return await mediator.Send(actorPerformanceItem.ToUpdateCmd());
+
+      var addedByProp = actorPerformanceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+      if (addedByProp != null && todoId > 0) {
+        var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));        
+        addedByProp.Value = attribution.PresenceModelKey;
+        await addedByProp.SaveProp(actorPerformanceItem, mediator);        
+      }
+
+      return await mediator.Send(actorPerformanceItem!.ToUpdateCmd());
     }
 
     
@@ -823,13 +877,215 @@ namespace Weavers.Core.Service {
 
       return result;
     }
-    public async Task<ItemDto?> AddObservation(ItemDto parentItem, string name, string description) {
+    public async Task<ItemDto?> AddObservation(ItemDto parentItem, string name, string description, int todoId) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.ObservationModel, name, description, "{}"));
+
+      if (newItem != null) {
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && todoId > 0) {
+          var attribution = await mediator.Send(new ResolveAttributionQuery(todoId));          
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
+        }
+      }
       return newItem;
+    }
+
+    public async Task<ItemDto?> AddStoryRollup(ItemDto storyItem, string realm, int todoId) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+      var parentItem = storyItem.GetParentId() > 0 
+        ? await mediator.Send(new GetItemByIdQuery(storyItem.GetParentId())) : null;
+
+      if (parentItem == null || parentItem.ItemTypeId != (int)WeItemType.RealmModel) { 
+        throw new Exception($"Parent realm for story {storyItem.Id} not found.");
+      }
+
+      ResolveAttributionQueryResult? attribution = null;
+      if (todoId > 0) {
+        attribution = await mediator.Send(new ResolveAttributionQuery(todoId));
+      }
+
+      var nextRollupCount = parentItem.Relations.Count(r => r.RelatedItemTypeId == (int)WeItemType.StoryRollupModel && r.RelatedItemId.HasValue) + 1;
+      var rollupName = $"{storyItem.Name}";      
+      var credits = "";
+
+      var sb = new StringBuilder();
+      var cr = new StringBuilder();
+      var beatCredits = new HashSet<string>();
+      var directorCredits = new HashSet<string>();
+      var characterNames = new Dictionary<int, string>();
+      var actorCredits = new Dictionary<string, string>();
+      var observerCredits = new HashSet<string>();
+      
+      var storyAddedByProp = storyItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+      if (storyAddedByProp != null) {
+        cr.Append($"{storyItem.Name} Credits\n\n");
+        cr.Append($"Story by {storyAddedByProp.Value}\n\n");
+      }
+
+      var scenes = storyItem.Relations
+        .Where(r => r.RelatedItemTypeId == (int)WeItemType.SceneModel && r.RelatedItemId.HasValue)
+        .OrderBy(r => r.Rank);
+
+      foreach (var sceneRel in scenes) {
+        var scene = await context.GetItemDtoById(sceneRel.RelatedItemId!.Value);
+        if (scene == null) continue;
+
+        var sceneAddedByProp = scene.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (sceneAddedByProp != null) {
+          cr.Append($"Scene {scene.Name} by {sceneAddedByProp.Value}\n");
+        }
+
+        // table of names for cast below.
+        var sceneCharacterRels = scene.Relations
+          .Where(r => r.RelatedItemTypeId == (int)WeItemType.CharacterModel)
+          .ToDictionary(r => r.RelatedItemId!.Value, v => v.RelatedItemName);
+        foreach (int id in sceneCharacterRels.Keys) {
+          characterNames[id] = sceneCharacterRels[id];
+        }            
+
+        var beats = scene.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.BeatModel).OrderBy(r => r.Rank);
+        foreach (var beatRel in beats) {
+          var beat = await context.GetItemDtoById(beatRel.RelatedItemId!.Value);
+          if (beat == null) continue;
+          var addedBy = beat.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+          if (addedBy != null) {
+            var beatCredit = addedBy?.Value ?? "";
+            if(beatCredit != "" && !beatCredits.Contains(beatCredit)){
+              beatCredits.Add(beatCredit);
+            }
+          }
+          var callSheetRel = beat.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.CallSheetModel)
+            .OrderByDescending(r => r.RelatedItemId!.Value).FirstOrDefault();
+          if (callSheetRel != null) {
+            var callSheet = await context.GetItemDtoById(callSheetRel.RelatedItemId!.Value);
+            if (callSheet != null) {
+              var dirAddedBy = callSheet.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+              if (dirAddedBy != null) {
+                var dirCredit = dirAddedBy?.Value ?? "";
+                if (dirCredit != "" && !directorCredits.Contains(dirCredit)) {
+                  directorCredits.Add(dirCredit);
+                }
+              }
+            }
+          }
+        }
+
+
+        // latest performance wins — a re-run supersedes
+        var perfRel = scene.Relations
+          .Where(r => r.RelatedItemTypeId == (int)WeItemType.PerformanceModel && r.RelatedItemId.HasValue)
+          .OrderByDescending(r => r.RelatedItemId!.Value)
+          .FirstOrDefault();
+        if (perfRel == null) continue;
+
+        var perf = await context.GetItemDtoById(perfRel.RelatedItemId!.Value);
+        var obsRel = perf?.Relations
+          .Where(r => r.RelatedItemTypeId == (int)WeItemType.ObservationModel && r.RelatedItemId.HasValue)
+          .OrderByDescending(r => r.RelatedItemId!.Value)
+          .FirstOrDefault();
+
+        var actorPerformancesRelations = perf.Relations
+          .Where(r => r.RelatedItemTypeId == (int)WeItemType.ActorPerformanceModel && r.RelatedItemId.HasValue)
+          .OrderByDescending(r => r.RelatedItemId!.Value);
+        foreach (var actorPerfRel in actorPerformancesRelations) {
+          var actorPerf = await context.GetItemDtoById(actorPerfRel.RelatedItemId!.Value);
+          if (actorPerf == null) continue;
+          var actorCharId = actorPerf.Properties.FirstOrDefault(p => p.Name == Cx.ItCharacter)?.Value ?? "";
+          var actorModel = actorPerf.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy)?.Value ?? "";
+          if (!string.IsNullOrEmpty(actorCharId) && !string.IsNullOrEmpty(actorModel) && !actorCredits.ContainsKey(actorCharId)) {
+            var id = actorCharId.AsInt();
+            var charName = characterNames.ContainsKey(id) ? characterNames[id] : "";
+            if (charName != "" ) {
+              actorCredits[charName] = actorModel;
+            }
+          }
+        }
+
+        if (obsRel == null) continue;
+
+        var obs = await context.GetItemDtoById(obsRel.RelatedItemId!.Value);
+        if (obs == null) continue;
+
+        var obsWriter = obs.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy)?.Value ?? "";
+        if (!string.IsNullOrEmpty(obsWriter) && !observerCredits.Contains(obsWriter)) {
+          observerCredits.Add(obsWriter);
+        }        
+
+        sb.Append($"\n## {scene.Name}\n\n");
+        sb.Append(obs.Description+ "\n");
+      }
+
+      var sceneRollup = sb.ToString();
+
+      if (beatCredits.Count > 0) {
+        cr.Append("\nScene Beats By\n");
+        foreach (var beatcr in beatCredits) {
+          cr.Append(beatcr+ "\n");
+        }
+      }
+
+      if (directorCredits.Count > 0) {
+        cr.Append("\nBeats Directed By\n");
+        foreach (var dirCr in directorCredits) {
+          cr.Append(dirCr+ "\n");
+        }
+      }
+
+      if (actorCredits.Count > 0) {
+        cr.Append("\nCast\n");
+        foreach (var kv in actorCredits) {
+          var charName = characterNames.TryGetValue(kv.Key.AsInt(), out var n) ? n : $"{kv.Key}";
+          cr.Append($"{charName} performed by {kv.Value}\n");
+        }
+      }
+
+      if (observerCredits.Count > 0) {
+        cr.Append("\nFinal Story Prose\n");
+        foreach (var obCr in observerCredits) {
+          cr.Append(obCr+ "\n");
+        }
+      }
+
+      if (attribution != null) {
+        cr.Append($"\nPost production {attribution.PresenceModelKey}\n");
+      }
+      credits = cr.ToString();
+
+      var newItem = await mediator.Send(
+        new CreateRelatedItemCommand(parentItem.Id, (int)WeRelationTypes.Contains,
+          (int)WeItemType.StoryRollupModel, rollupName, sceneRollup, "{}"));
+
+      if (newItem != null) { 
+        var creditsProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItCredits);
+        if (creditsProp != null) {
+          creditsProp.Value = credits;
+          await creditsProp.SaveProp(newItem, mediator);
+        }
+
+        var realmProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRealm);
+        if (realmProp != null) {
+          realmProp.Value = realm;
+          await realmProp.SaveProp(newItem, mediator);
+        }
+
+        var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
+        if (addedByProp != null && attribution != null) {
+          addedByProp.Value = attribution.PresenceModelKey;
+          await addedByProp.SaveProp(newItem, mediator);          
+        }
+
+        newItem = await context.GetItemDtoById(newItem.Id);
+      }
+      
+      return newItem;    
+      
     }
 
   }

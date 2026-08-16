@@ -33,7 +33,7 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 3, Key = Cx.ItHasLmStudioPresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
           new() {Rank = 2, Key = Cx.ItHasClaudePresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
         }
-      },
+      },      
       {
         WeItemType.PresenceLmStudioGatewayModel, new List<ItemPropertyDefault>(){
           new() {Rank = 4, Key = Cx.ItReSync, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
@@ -43,8 +43,10 @@ namespace Weavers.Core.Extensions {
       },
       {
         WeItemType.PresModelLmStudioModel, new List<ItemPropertyDefault>(){
-          new() {Rank = 1, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
-          new() {Rank = 2, Key = Cx.ItContextLength, DefaultValue = "24000", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 10, Key = Cx.ItModelKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 9, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 8, Key = Cx.ItContextLength, DefaultValue = "100000", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 7, Key = Cx.ItModelDetails, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
         }
       },
   //    {  // no properties yet.
@@ -52,7 +54,7 @@ namespace Weavers.Core.Extensions {
   //    },
       {
         WeItemType.PresModelClaudeModel, new List<ItemPropertyDefault>(){
-          new() {Rank = 1, Key = Cx.ItModelName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 1, Key = Cx.ItModelKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
           new() {Rank = 2, Key = Cx.ItSkipPermissions, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
         }
       },
@@ -102,7 +104,8 @@ namespace Weavers.Core.Extensions {
        {
         WeItemType.DeskLogModel,  new List<ItemPropertyDefault>(){
           new() {Rank = 11, Key = Cx.ItEnabled, DefaultValue = "1", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
-          new() {Rank = 1, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
+          new() {Rank = 9, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.RelativeFolder },
+          new() {Rank = 5, Key = Cx.ItOperator, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DigitalOperatorModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
         }
       },
       {
@@ -319,6 +322,7 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 10, Key = Cx.ItTargetSceneCount, DefaultValue = "5", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
           new() {Rank = 9, Key = Cx.ItStoryStatus, DefaultValue = WeItemType.StoryProposed.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.StoryStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() {Rank = 8, Key = Cx.ItPovDefault, DefaultValue = WeItemType.PovUndefined.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PovTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
         }
       },
       { WeItemType.SceneModel, new List<ItemPropertyDefault>() {
@@ -328,16 +332,33 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 8, Key = Cx.ItExitState, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 7, Key = Cx.ItPov, DefaultValue = WeItemType.PovUndefined.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PovTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
           new() {Rank = 5, Key = Cx.ItBeatsRequested, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 3, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
         }
       },
       { WeItemType.BeatModel, new List<ItemPropertyDefault>() {
           new() {Rank = 10, Key = Cx.ItCallSheetRequested, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        }
+      },
+      { WeItemType.CallSheetModel, new List<ItemPropertyDefault>() {      
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
         }
       },
       { WeItemType.ActorPerformanceModel, new List<ItemPropertyDefault>() {
           new() {Rank = 15, Key = Cx.ItCharacter, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.CharacterModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },          
           new() {Rank = 10, Key = Cx.ItInstructions, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 8, Key = Cx.ItRank, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        }
+      },
+      { WeItemType.ObservationModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        }
+      },
+      { WeItemType.StoryRollupModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 10, Key = Cx.ItRealm, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 9, Key = Cx.ItCredits, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
         }
       },
       #endregion

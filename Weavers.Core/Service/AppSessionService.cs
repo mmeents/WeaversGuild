@@ -12,6 +12,9 @@ namespace Weavers.Core.Service {
     int HarnessId { get; }
     int SessionId { get; }
     void Initialize(string nameOnSession, int orgId, int harnessId, int sessionId);
+    string GetHumanHarnessKey();
+    string GetHumanOperatorKey();
+    string GetHumanTodoKey();
   }
 
   public class AppSessionService : IAppSessionService {
@@ -25,6 +28,16 @@ namespace Weavers.Core.Service {
       OrganizationId = orgId;
       HarnessId = harnessId;
       SessionId = sessionId;
+    }
+
+    public string GetHumanHarnessKey() {
+      return $"{HarnessId}-HumanUserPresence";
+    }
+    public string GetHumanOperatorKey() {
+      return $"{HarnessId}-HumanUserOperator";
+    }
+    public string GetHumanTodoKey() { 
+      return $"{HarnessId}-HumanUserTodo";
     }
   }
 

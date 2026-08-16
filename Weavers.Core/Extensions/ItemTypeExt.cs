@@ -64,6 +64,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.HarnessAppSessionModel => 15,
 
         WeItemType.HarnessGatewaysModel => 13,
+        WeItemType.PresenceTheLoomAppGatewayModel => 25,
+        WeItemType.PresModelHumanModel => 19,
         WeItemType.PresenceLmStudioGatewayModel => 25,
         WeItemType.PresModelLmStudioModel => 19,
         WeItemType.PresenceClaudeGatewayModel => 25,
@@ -113,6 +115,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.PerformanceModel => 27,
         WeItemType.ActorPerformanceModel => 27,
         WeItemType.ObservationModel => 12,
+        WeItemType.StoryRollupModel => 12,
 
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
@@ -334,6 +337,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.BeatModel => true,        
         (int)WeItemType.CharacterModel => true,                
         (int)WeItemType.ObservationModel => true,
+        (int)WeItemType.StoryRollupModel => true,
         _ => false
       };
     }
@@ -619,6 +623,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddPerformanceLine => Cx.CmdAddPerformanceLine,
         WeItemType.CmdGetPerformanceRollup => Cx.CmdGetPerformanceRollup,
         WeItemType.CmdAddObservation => Cx.CmdAddObservation,
+        WeItemType.CmdAddStoryRollupModel => Cx.CmdAddStoryRollup,
 
         WeItemType.CmdAddSolution => Cx.CmdAddSolution,
         WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
