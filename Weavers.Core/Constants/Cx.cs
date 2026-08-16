@@ -40,7 +40,7 @@ namespace Weavers.Core.Constants {
     public const int KeyLifetimeDays = 90;
 
     public const double DefaultTemperature = 0.76;
-    public const int DefaultLmStudioContextLength = 120000;
+    public const int DefaultLmStudioContextLength = 60000;
     public const int intPropertyLabelLeft = 116;
     public const int NameFieldMaxLength = 500;
     public const long MaxImportFileSize = 512 * 1024; // 512 KB

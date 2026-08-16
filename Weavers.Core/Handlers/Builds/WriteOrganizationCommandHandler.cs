@@ -15,6 +15,7 @@ namespace Weavers.Core.Handlers.Builds {
   public class WriteOrganizationCommandHandler : IRequestHandler<WriteOrganizationCommand, BuildContext> {
     private readonly IMediator _mediator;
     private readonly FabricDbContext _context;
+
     public WriteOrganizationCommandHandler(IMediator mediator, FabricDbContext context) {
       _mediator = mediator;
       _context = context;
@@ -208,8 +209,6 @@ namespace Weavers.Core.Handlers.Builds {
       return bldContext;
     }
 
-
-
     public async Task<BuildContext> WriteOrgDeskRoles(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {
       var OrgDeskRolesModelId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgDeskRolesModel)?.RelatedItemId;
       if (OrgDeskRolesModelId == null) {
@@ -265,7 +264,6 @@ namespace Weavers.Core.Handlers.Builds {
       return bldContext;
     }
 
-
     public async Task<BuildContext> WriteOrgChart(ItemDto organizationItem, BuildContext bldContext, CancellationToken cancellationToken) {
       var OrgChartItemId = organizationItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)?.RelatedItemId;
       if (OrgChartItemId == null) {
@@ -281,8 +279,6 @@ namespace Weavers.Core.Handlers.Builds {
 
       return bldContext;
     }
-
-
 
     private async Task<BuildContext> RecWriteWorkGroup(ItemDto workGrp, BuildContext bldContext, CancellationToken cancellationToken) {
       
@@ -302,9 +298,9 @@ namespace Weavers.Core.Handlers.Builds {
         return bldContext.Fail($"Error accessing Operator Pool file path: {ex.Message}");
       }
 
-      var recursiveCharts = workGrp.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)
+      var recursiveWorkgroups = workGrp.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel)
        .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
-      foreach (var wg in recursiveCharts) { 
+      foreach (var wg in recursiveWorkgroups) { 
         var wgItem = await _context.GetItemDtoById(wg, cancellationToken);
         if (wgItem != null) {
           await RecWriteWorkGroup(wgItem, bldContext, cancellationToken);
@@ -313,6 +309,7 @@ namespace Weavers.Core.Handlers.Builds {
 
       var DeskIds = workGrp.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.DeskModel)
         .Select(r => r.RelatedItemId).Where(id => id.HasValue).Select(id => id!.Value);
+
       foreach (var itemId in DeskIds) {
         var deskItem = await _context.GetItemDtoById(itemId, cancellationToken);
         if (deskItem != null) {

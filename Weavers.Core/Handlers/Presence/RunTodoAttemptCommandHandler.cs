@@ -138,6 +138,8 @@ namespace Weavers.Core.Handlers.Presence {
           skipPermissions = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItSkipPermissions)?.Value.AsBoolean() ?? false;
         }
 
+        var presenceContextLen = presenceItem.Properties.FirstOrDefault(p => p.Name == Cx.ItContextLength)?.Value.AsInt() ?? Cx.DefaultLmStudioContextLength;
+
         var presenceGatewayId = presenceItem.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel || r.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel)?.ItemId;
         if (presenceGatewayId == null || presenceGatewayId == 0) {
           return result.CreateFailure($"Presence gateway not found for Presence with ID {presId.Value}.");
@@ -219,7 +221,7 @@ namespace Weavers.Core.Handlers.Presence {
           Input = result.UserPrompt,
           SystemPrompt = result.SystemPrompt,
           Temperature = Cx.DefaultTemperature,
-          ContextLength = Cx.DefaultLmStudioContextLength,
+          ContextLength = presenceContextLen,
           Integrations = Cx.availableToolsList.ToIntegrations()
         };
 
