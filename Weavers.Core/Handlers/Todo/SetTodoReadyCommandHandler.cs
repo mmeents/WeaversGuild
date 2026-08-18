@@ -13,7 +13,7 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Todo {
-  public record SetTodoReadyCommand(int Id) : IMcpRequest, IRequest<ItemDto?>;
+  public record SetTodoReadyCommand(int Id) : IRequest<ItemDto?>;
 
   public class SetTodoReadyCommandHandler : IRequestHandler<SetTodoReadyCommand, ItemDto?> {
     private readonly IMediator _mediator;

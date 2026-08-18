@@ -565,6 +565,7 @@ namespace Weavers.Core.Service {
         .OrderBy(r => r.Rank)
         .ToList();
 
+      var actorNames = new Dictionary<int, string>();
       foreach (var scriptNode in script.Entries.OrderBy(e => e.Rank)) { // add missing actor performances for each script node. if it already exists, skip it.
         ItemDto? newPerf = null;
         if (scriptNode != null && scriptNode.Type == Cx.ActionType) {   // got to here 
@@ -582,6 +583,7 @@ namespace Weavers.Core.Service {
 
             if (newPerf != null) {
               result.ActorPerformanceIds.Add(newPerf.Id);
+              actorNames[newPerf.Id] = actorPerfName;
 
               var characterProp = newPerf.Properties.FirstOrDefault(p => p.Name == Cx.ItCharacter);
               if (characterProp != null) {
@@ -629,17 +631,12 @@ namespace Weavers.Core.Service {
       foreach (var actorPerfId in result.ActorPerformanceIds) { 
         try {          
           if (actorPerfId > 0) {
-
-            var actorPerfDto = await context.GetItemDtoById(actorPerfId);
-            if (actorPerfDto == null) {
-              result.Errors.Add($"Failed to find actor performance by id {actorPerfId}.");
-              continue;
-            }
-            if (actorPerfDto != null && result.Skipped.Contains(actorPerfId)) {
+                        
+            if (result.Skipped.Contains(actorPerfId)) {
               continue;  // was called skipped above.
             }
 
-            var todoName = $"Act for actorPerformanceId: {actorPerfId}; {actorPerfDto!.Name}";
+            var todoName = $"Act for actorPerformanceId: {actorPerfId}; {actorNames[actorPerfId]}";
             var promptTemplate = $"TodoId: {{{{model.todo.id}}}}:" + Environment.NewLine +              
               $"{todoName}" + Environment.NewLine +
               $"Note: This is a component of the parent performanceId: {perfItem.Id};";

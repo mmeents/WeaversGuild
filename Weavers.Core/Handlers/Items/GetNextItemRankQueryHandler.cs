@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Weavers.Core.Handlers.Pipeline;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetNextItemRankQuery(int? ItemId) : IMcpRequest, IRequest<int>;
+  public record GetNextItemRankQuery(int? ItemId) : IRequest<int>;
   public class GetNextItemRankQueryHandler : IRequestHandler<GetNextItemRankQuery, int> {
     private readonly FabricDbContext _context;
     public GetNextItemRankQueryHandler(FabricDbContext context) {

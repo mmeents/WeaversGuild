@@ -30,6 +30,7 @@
       tvKb = new TreeView();
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
+      miMoveItemUp = new ToolStripMenuItem();
       miSepRefreshBottom = new ToolStripSeparator();
       miAddGithubToken = new ToolStripMenuItem();
       miAddDigitalOperator = new ToolStripMenuItem();
@@ -73,14 +74,16 @@
       miAddEntity = new ToolStripMenuItem();
       miAddEntityProperty = new ToolStripMenuItem();
       miSepAddBottom = new ToolStripSeparator();
-      miMoveItemUp = new ToolStripMenuItem();
       miGenerate = new ToolStripMenuItem();
       miSepGenBottom = new ToolStripSeparator();
+      miRemoveCompletedTodo = new ToolStripMenuItem();
       miDeleteItem = new ToolStripMenuItem();
       ilTreeImages = new ImageList(components);
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      edCoolDownMs = new NumericUpDown();
+      cbCoolDown = new CheckBox();
       lbClaudeLaunch = new LinkLabel();
       btnImportOrgDocs = new Button();
       cbShowSessions = new CheckBox();
@@ -171,6 +174,7 @@
       splitContainer3.SuspendLayout();
       tabControl1.SuspendLayout();
       tpSettings.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)edCoolDownMs).BeginInit();
       tpItem.SuspendLayout();
       tabControl2.SuspendLayout();
       tpItemDesc.SuspendLayout();
@@ -244,7 +248,7 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
       cmsTreeMenus.Size = new Size(209, 1034);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
@@ -255,6 +259,13 @@
       miReloadTree.Size = new Size(208, 22);
       miReloadTree.Text = "Reload Projects";
       miReloadTree.Click += miReloadTree_Click;
+      // 
+      // miMoveItemUp
+      // 
+      miMoveItemUp.Name = "miMoveItemUp";
+      miMoveItemUp.Size = new Size(208, 22);
+      miMoveItemUp.Text = "Move Item Up";
+      miMoveItemUp.Click += miMoveItemUp_Click;
       // 
       // miSepRefreshBottom
       // 
@@ -553,13 +564,6 @@
       miSepAddBottom.Name = "miSepAddBottom";
       miSepAddBottom.Size = new Size(205, 6);
       // 
-      // miMoveItemUp
-      // 
-      miMoveItemUp.Name = "miMoveItemUp";
-      miMoveItemUp.Size = new Size(208, 22);
-      miMoveItemUp.Text = "Move Item Up";
-      miMoveItemUp.Click += miMoveItemUp_Click;
-      // 
       // miGenerate
       // 
       miGenerate.Name = "miGenerate";
@@ -571,6 +575,13 @@
       // 
       miSepGenBottom.Name = "miSepGenBottom";
       miSepGenBottom.Size = new Size(205, 6);
+      // 
+      // miRemoveCompletedTodo
+      // 
+      miRemoveCompletedTodo.Name = "miRemoveCompletedTodo";
+      miRemoveCompletedTodo.Size = new Size(208, 22);
+      miRemoveCompletedTodo.Text = "Delete Completed Todos";
+      miRemoveCompletedTodo.Click += miRemoveCompletedTodo_Click;
       // 
       // miDeleteItem
       // 
@@ -654,6 +665,8 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(edCoolDownMs);
+      tpSettings.Controls.Add(cbCoolDown);
       tpSettings.Controls.Add(lbClaudeLaunch);
       tpSettings.Controls.Add(btnImportOrgDocs);
       tpSettings.Controls.Add(cbShowSessions);
@@ -673,6 +686,27 @@
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
+      // 
+      // edCoolDownMs
+      // 
+      edCoolDownMs.Increment = new decimal(new int[] { 15, 0, 0, 0 });
+      edCoolDownMs.Location = new Point(304, 210);
+      edCoolDownMs.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
+      edCoolDownMs.Minimum = new decimal(new int[] { 15, 0, 0, 0 });
+      edCoolDownMs.Name = "edCoolDownMs";
+      edCoolDownMs.Size = new Size(90, 23);
+      edCoolDownMs.TabIndex = 13;
+      edCoolDownMs.Value = new decimal(new int[] { 30, 0, 0, 0 });
+      // 
+      // cbCoolDown
+      // 
+      cbCoolDown.AutoSize = true;
+      cbCoolDown.Location = new Point(22, 211);
+      cbCoolDown.Name = "cbCoolDown";
+      cbCoolDown.Size = new Size(260, 19);
+      cbCoolDown.TabIndex = 12;
+      cbCoolDown.Text = "Cool down? inbetween runs wait in seconds:";
+      cbCoolDown.UseVisualStyleBackColor = true;
       // 
       // lbClaudeLaunch
       // 
@@ -1570,6 +1604,7 @@
       tabControl1.ResumeLayout(false);
       tpSettings.ResumeLayout(false);
       tpSettings.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)edCoolDownMs).EndInit();
       tpItem.ResumeLayout(false);
       tpItem.PerformLayout();
       tabControl2.ResumeLayout(false);
@@ -1728,5 +1763,8 @@
     private ToolStripMenuItem miAddPerformance;
     private ToolStripMenuItem miAddObserved;
     private ToolStripMenuItem miMoveItemUp;
+    private ToolStripMenuItem miRemoveCompletedTodo;
+    private NumericUpDown edCoolDownMs;
+    private CheckBox cbCoolDown;
   }
 }
