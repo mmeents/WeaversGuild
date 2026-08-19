@@ -76,6 +76,7 @@
       miSepAddBottom = new ToolStripSeparator();
       miGenerate = new ToolStripMenuItem();
       miSepGenBottom = new ToolStripSeparator();
+      miEmptyDesk = new ToolStripMenuItem();
       miRemoveCompletedTodo = new ToolStripMenuItem();
       miDeleteItem = new ToolStripMenuItem();
       ilTreeImages = new ImageList(components);
@@ -248,9 +249,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1034);
+      cmsTreeMenus.Size = new Size(209, 1056);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -575,6 +576,13 @@
       // 
       miSepGenBottom.Name = "miSepGenBottom";
       miSepGenBottom.Size = new Size(205, 6);
+      // 
+      // miEmptyDesk
+      // 
+      miEmptyDesk.Name = "miEmptyDesk";
+      miEmptyDesk.Size = new Size(208, 22);
+      miEmptyDesk.Text = "Empy Desk";
+      miEmptyDesk.Click += miEmptyDesk_Click;
       // 
       // miRemoveCompletedTodo
       // 
@@ -1766,5 +1774,6 @@
     private ToolStripMenuItem miRemoveCompletedTodo;
     private NumericUpDown edCoolDownMs;
     private CheckBox cbCoolDown;
+    private ToolStripMenuItem miEmptyDesk;
   }
 }

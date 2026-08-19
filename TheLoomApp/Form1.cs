@@ -826,6 +826,7 @@ namespace TheLoomApp {
         miGenerate.Visible = false;
         miSepGenBottom.Visible = false;
         miRemoveCompletedTodo.Visible = false;
+        miEmptyDesk.Visible = false;
         miDeleteItem.Enabled = false;
 
       } else {
@@ -906,7 +907,7 @@ namespace TheLoomApp {
         miMoveItemUp.Visible = _selectedNode.CanSwitchUp();
         miGenerate.Visible = isGeneratable;
         miSepGenBottom.Visible = isGeneratable;
-
+        miEmptyDesk.Visible = (itemType == WeItemType.DeskModel) || (itemType == WeItemType.DeskLogModel);
         miDeleteItem.Enabled = true;
 
       }
@@ -1633,17 +1634,17 @@ namespace TheLoomApp {
       var itemNode = _selectedNode;
       if (itemNode == null || itemNode.Item == null) return;
 
-      if (itemNode.Item.ItemTypeId != (int)WeItemType.DeskModel) { 
-       var dlgError = MessageBox.Show("Selected item is not a Desk. Please select a Desk item to remove its completed todos.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+      if (itemNode.Item.ItemTypeId != (int)WeItemType.DeskModel) {
+        var dlgError = MessageBox.Show("Selected item is not a Desk. Please select a Desk item to remove its completed todos.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
-      
+
       var needsRefresh = false;
-      var item = itemNode.Item; 
-      foreach(var relation in item.Relations.ToList()) {
+      var item = itemNode.Item;
+      foreach (var relation in item.Relations.ToList()) {
         if (relation.RelatedItemTypeId == (int)WeItemType.TodoModel && relation.RelatedItemId.HasValue) {
           var todoItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);
-          if (todoItem != null) { 
+          if (todoItem != null) {
             var statusProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
             if (statusProp != null) {
               int completeStatusId = (int)WeItemType.TodoCompleteForward;
@@ -1652,7 +1653,7 @@ namespace TheLoomApp {
                 needsRefresh = true;
               }
             }
-          }          
+          }
         }
       }
 
@@ -1663,6 +1664,35 @@ namespace TheLoomApp {
 
     }
 
+
+    private async void miEmptyDesk_Click(object sender, EventArgs e) {
+      var itemNode = _selectedNode;
+      if (itemNode == null || itemNode.Item == null) return;
+
+      if (itemNode.Item.ItemTypeId != (int)WeItemType.DeskModel && itemNode.Item.ItemTypeId != (int)WeItemType.DeskLogModel) {
+        var dlgError = MessageBox.Show("Selected item is not a Desk. Please select a Desk item to remove its completed todos.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+
+      var humanTodoKey = _sessionDetails.HarnessId.GetHumanTodoKey();
+      var skipTodo = _settings[humanTodoKey].Value.AsInt();
+
+      var needsRefresh = false;
+      var item = itemNode.Item;
+      foreach (var relation in item.Relations.ToList()) {
+        if (relation.RelatedItemTypeId == (int)WeItemType.TodoModel && relation.RelatedItemId.HasValue && skipTodo != relation.RelatedItemId.Value) {
+          var todoItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);
+          if (todoItem != null ) {
+            await _appDataService.DeleteItemAsync(todoItem.Id);
+            needsRefresh = true;            
+          }
+        }
+      }
+
+      if (needsRefresh) {
+        TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand));
+      }
+    }
 
     #endregion
 
@@ -2183,7 +2213,7 @@ namespace TheLoomApp {
           if (cbCoolDown.Checked) {
             var delayMs = edCoolDownMs.Value.AsInt();
             DoLogMessage($"Cooling down for {delayMs} ms before next scheduled todo.");
-            Thread.Sleep(delayMs * 1000);            
+            Thread.Sleep(delayMs * 1000);
           }
           tRun.Enabled = true;
         }

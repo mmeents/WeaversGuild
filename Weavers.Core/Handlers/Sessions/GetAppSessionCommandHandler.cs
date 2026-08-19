@@ -22,18 +22,25 @@ namespace Weavers.Core.Handlers.Sessions {
     public DateTime CreatedAt { get; set; } = DateTime.Now;
   }
 
-  internal class GetAppSessionCommandHandler(
-    FabricDbContext fabricDbContext,
-    IMediator mediator,
-    IAppSettingService settingService,    
-    IAppSessionService session,
-    IAppGraphOrgService appGraphOrgService
-    ) : IRequestHandler<GetAppSessionCommand, AppSessionResponse?> {
-    private readonly FabricDbContext _dbContext = fabricDbContext;
-    private readonly IMediator _mediator = mediator;
-    private readonly IAppSettingService _settingService = settingService;    
-    private readonly IAppSessionService _session = session;
-    private readonly IAppGraphOrgService _appGraphOrgService = appGraphOrgService;
+  public class GetAppSessionCommandHandler : IRequestHandler<GetAppSessionCommand, AppSessionResponse?> {
+    private readonly FabricDbContext _dbContext;
+    private readonly IMediator _mediator;
+    private readonly IAppSettingService _settingService;    
+    private readonly IAppSessionService _session;
+    private readonly IAppGraphOrgService _appGraphOrgService;
+
+    public GetAppSessionCommandHandler(FabricDbContext dbContext, 
+      IMediator mediator, 
+      IAppSettingService settingService, 
+      IAppSessionService session, 
+      IAppGraphOrgService appGraphOrgService
+    ) {
+      _dbContext = dbContext;
+      _mediator = mediator;
+      _settingService = settingService;
+      _session = session;
+      _appGraphOrgService = appGraphOrgService;
+    }
 
     public async Task<AppSessionResponse?> Handle(GetAppSessionCommand request, CancellationToken cancellationToken) {
 
@@ -163,7 +170,7 @@ namespace Weavers.Core.Handlers.Sessions {
               string parentFolderPath = DoPoolDto.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
               var fullPath = Path.Combine(parentFolderPath, newItem.Name.UrlSafe() + ".json");
               itsFilePathProp.Value = fullPath;
-              await itsFilePathProp.SaveProp(newItem, mediator);
+              await itsFilePathProp.SaveProp(newItem, _mediator);
             }
             var itPresenceProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPresence);
             if (itPresenceProp != null) {

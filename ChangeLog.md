@@ -1,5 +1,8 @@
 
 ## Update History
+- Db Version 153 8/18/2026 
+  - Adds Empty Desk method to clean up the sync desk. added Deleted Todo's for Desks to clean up done work all via delete.
+  
 - Db Version 153 8/13/2026
   - Adds StoryRollup type off the story items. 
   - addStoryRollup mcp call where agent is to customize the realm on the call.
