@@ -1022,14 +1022,14 @@ namespace Weavers.Core.Service {
       var sceneRollup = sb.ToString();
 
       if (beatCredits.Count > 0) {
-        cr.Append("\nScene Beats By\n");
+        cr.Append("\nScene Beats by\n");
         foreach (var beatcr in beatCredits) {
           cr.Append(beatcr+ "\n");
         }
       }
 
       if (directorCredits.Count > 0) {
-        cr.Append("\nBeats Directed By\n");
+        cr.Append("\nBeats Directed by\n");
         foreach (var dirCr in directorCredits) {
           cr.Append(dirCr+ "\n");
         }
@@ -1053,6 +1053,7 @@ namespace Weavers.Core.Service {
       if (attribution != null) {
         cr.Append($"\nPost production {attribution.PresenceModelKey}\n");
       }
+      cr.Append($"\n\nA <a href='https://github.com/mmeents/WeaversGuild'>WeaversGuild</a> production.");
       credits = cr.ToString();
 
       var newItem = await mediator.Send(

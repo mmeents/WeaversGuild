@@ -1977,10 +1977,13 @@ namespace TheLoomApp {
         DoLogMessage($"Removed: {result.FilesRemoved}");
       }
       if (_selectedNode.Item.ItemTypeId.IsContentType()) {
-        var result = await _appDataService.WriteDocument(_selectedNode.Item.Id);
-        DoLogMessage($"Success: {result.Success} {result.Message}");
+        try {
+          var result = await _appDataService.WriteDocument(_selectedNode.Item.Id);
+          DoLogMessage($"Success: {result.Success} {result.Message}");
+        } catch (Exception ex) { 
+          DoLogMessage($"Error writing document: {ex.Message}");
+        }        
       }
-
     }
 
 
@@ -2211,11 +2214,17 @@ namespace TheLoomApp {
           EngineRunning = false;
         } else {
           if (cbCoolDown.Checked) {
-            var delayMs = edCoolDownMs.Value.AsInt();
-            DoLogMessage($"Cooling down for {delayMs} ms before next scheduled todo.");
-            Thread.Sleep(delayMs * 1000);
+            var delaySec = edCoolDownMs.Value.AsInt();
+            DoLogMessage($"Cooling down for {delaySec} seconds before next scheduled todo.");
+            await Task.Delay(delaySec * 1000);
+            if (_isStopping || !_engineRunning) {
+              _isStopping = true;
+              EngineRunning = false;
+            }
           }
-          tRun.Enabled = true;
+          if (EngineRunning) {
+            tRun.Enabled = true;
+          }          
         }
 
       }

@@ -18,7 +18,7 @@ namespace Weavers.Core.Handlers.Documentation {
     public async Task<string> Handle(HelpQuery request, CancellationToken cancellationToken) {
       var sb = new StringBuilder();
       sb.AppendLine($"WeaversGuild presents, TheLoomMcp Operators Guide: now is {DateTime.Now}");
-      sb.AppendLine("A virtual Software Development Factory, specializing in C# EF Core development.");
+      sb.AppendLine("A virtual Development Org, Factory, specializing in stories and C# EF Core development.");
       sb.AppendLine("Core Strategy: build models and generate code, letting infrastructure do the work when it can.");
       sb.AppendLine("The loom's database nodes are Items but you only ever get served SummaryDtos.");
       sb.AppendLine("All Items have Properties, Relations, and InboundRelations. (Summaries simplify; InboundRelations is the parent in the Summary.)");
@@ -31,7 +31,7 @@ namespace Weavers.Core.Handlers.Documentation {
       sb.AppendLine($"  {WeItemType.DigitalOperatorPoolModel} {WeItemType.DigitalOperatorPoolModel.AsIntString()} is a folder for Digital Operators used for desk assignment to presence models.");
       sb.AppendLine($"  {WeItemType.WorkGroupModel} {WeItemType.WorkGroupModel.AsIntString()} is a folder for the desks of the organization.");
       sb.AppendLine($"  {WeItemType.OrgFolderModel} {WeItemType.OrgFolderModel.AsIntString()} is a root folder for non-project-related organization documents.");
-      sb.AppendLine($"Apps have 2 gateway models( {WeItemType.PresenceLmStudioGatewayModel} and {WeItemType.PresenceClaudeGatewayModel}). They are enabled via setting Has<setting> property, the {WeItemType.HarnessAppModel} typed item. Presence LLM models are children of the specific gateway.");
+      sb.AppendLine($"Apps have 3 gateway models({WeItemType.PresenceTheLoomAppGatewayModel}, {WeItemType.PresenceLmStudioGatewayModel} and {WeItemType.PresenceClaudeGatewayModel}). They are enabled via setting Has<setting> property, the {WeItemType.HarnessAppModel} typed item. Presence LLM models are children of the specific gateway.");
       sb.AppendLine($"Org can have any number of projects.  Project: use {Cx.CmdListProjects} for a list of root project folders.");
       sb.AppendLine("All tools starting with Add take the id of the Item we want to add to as the first parameter, and the Name of the new part we're adding as the second. They populate default ItemProperties for each new item added.");
       sb.AppendLine($"Use {Cx.CmdUpdateItemName} to change an item's name and the changes will ripple through related items.");

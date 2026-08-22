@@ -225,5 +225,30 @@ namespace Weavers.Core.Extensions {
       }
     }
 
+    public static string Normalize(string s) =>
+       s.Replace("\r\n", "\n").Replace("\r", "\n").Trim();
+
+    public static int WordCount(string s) {
+      var t = Normalize(s);
+      return t.Length == 0
+          ? 0
+          : t.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+    /// <summary>First sentence or two of the rollup, for the shelf.</summary>
+    public static string Blurb(string description, int max = 200) {
+      var storyBlurb = description;
+      var storylines = description.Parse("\n");
+      var storylinesCount = storylines.Count();
+      if (storylines != null && storylinesCount > 3) {
+        storyBlurb = storylines[2];
+      }
+
+      var first = Normalize(storyBlurb).Split("\n\n", 2)[0].Replace("\n", " ");
+      if (first.Length <= max) return first;
+      var cut = first.LastIndexOf(' ', max);
+      return first[..(cut > 0 ? cut : max)].TrimEnd(',', ';', ':') + "…";
+    }
+
   }
 }
