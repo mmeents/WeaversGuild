@@ -33,5 +33,8 @@ namespace Weavers.Core {
       modelBuilder.Entity<DbGitEntryItem>().HasNoKey().ToView(null);
       modelBuilder.Entity<ItemSummaryDto>().HasNoKey().ToView(null);
     }
+    protected override void OnConfiguring(DbContextOptionsBuilder options) {
+      options.UseSqlServer(o => o.UseCompatibilityLevel(120));
+    }
   }
 }

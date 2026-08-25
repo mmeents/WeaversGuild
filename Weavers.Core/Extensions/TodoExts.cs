@@ -41,7 +41,8 @@ namespace Weavers.Core.Extensions {
     }
 
     public static async Task<ItemDto?> TryGetParentDesk(this FabricDbContext _context, ItemDto todo, CancellationToken ct) {
-      var parentId = todo.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.DeskModel)?.ItemId;   
+      var parentId = todo.IncomingRelations
+        .FirstOrDefault(r => (r.ItemTypeId == (int)WeItemType.DeskModel)|| (r.ItemTypeId == (int)WeItemType.DeskLogModel))?.ItemId;   
       return parentId == null ? null : await _context.GetItemDtoById(parentId.Value, ct);
     }
 

@@ -6,7 +6,7 @@ using Weavers.Core.Models;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetItemByIdQuery(int Id) : IMcpRequest, IRequest<ItemDto?>;
+  public record GetItemByIdQuery(int Id) : IRequest<ItemDto?>;
 
   public class GetItemByIdQueryHandler(    
     ISessionItemCacheService sessionCache

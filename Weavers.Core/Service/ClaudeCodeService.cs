@@ -18,9 +18,9 @@ namespace Weavers.Core.Service {
     // Hardcoded model list. Add Fable here as a one-liner when it's back.
     // NOTE: confirm whether installed CLI wants short alias ("opus"/"sonnet") or full API string.
     private static readonly List<LmModel> _models = new() {
-      new LmModel { Key = "claude-fable-5", DisplayName = "Fable" },
-      new LmModel { Key = "claude-opus-4-8", DisplayName = "Opus" },
-      new LmModel { Key = "claude-sonnet-5", DisplayName = "Sonnet" },
+      new LmModel { Key = "claude-opus-5", DisplayName = "Opus 5" },
+      new LmModel { Key = "claude-opus-4-8", DisplayName = "Opus 4.8" },
+      new LmModel { Key = "claude-sonnet-5", DisplayName = "Sonnet 5" },
     };
 
     public ClaudeCodeService(FabricDbContext fabricDbContext, ILogger<ClaudeCodeService> logger) {
@@ -47,7 +47,7 @@ namespace Weavers.Core.Service {
         RedirectStandardOutput = true,
         RedirectStandardError = true,
         UseShellExecute = false,
-        CreateNoWindow = true,                         // harness runs headless
+        //CreateNoWindow = true,                         // harness runs headless lets see the window for testing
         StandardOutputEncoding = System.Text.Encoding.UTF8,
         StandardErrorEncoding = System.Text.Encoding.UTF8,
       };

@@ -1,5 +1,12 @@
 
 ## Update History
+- Db 153 8/25/2026
+  - rework storytime and completeTodo handlers to reduce trips to sql server with new getItemsByIds to grab multiple items at one time. 
+  - Adds to Write button for on Realm to write a Index.json and all the children StoryRollup type items.  if on a StoryRollup it makes the Story.json file at location of last folder before the realm.
+  - Adds a cleanup desk for use on the sync desk. human is attributed to first todo on that desk. so if on another machine and attempt to empty the sync desk it fails because the setting isn't in settings table for it.  
+    - there is only one sync desk per org so they are machine independent. Attribution is gathered from the todoId passing it in on the creates.  When humans do it with app they pass in value of todo created and attributed to them on the sync desk.
+  - Adds the new ItemProject static class with static expressions to standardize the transformation.
+  
 - Db Version 153 8/18/2026 
   - Adds Empty Desk method to clean up the sync desk. added Deleted Todo's for Desks to clean up done work all via delete.
   

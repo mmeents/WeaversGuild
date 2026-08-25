@@ -36,3 +36,6 @@ see [Storytime Described](Documents/Storytime/StorytimeDescribed.md) for working
 
 ## Update History
 see [ChangeLog.md](ChangeLog.md) 
+
+## My multi machine config
+![TheLoomLooksLike](https://mmeents.github.io/files/TheLoomLooksLike.png)

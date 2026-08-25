@@ -1,5 +1,6 @@
 ﻿
 using MediatR;
+using Weavers.Core.Handlers.Items;
 using Weavers.Core.Handlers.ItemSummaries;
 using Weavers.Core.Tools;
 
@@ -94,6 +95,27 @@ namespace Weavers.Api.Extensions {
           return Results.BadRequest("yea, no. excepted, check logs...");
         }
       }).WithName("UpdateItemProperty").WithDescription("Update the value of an item property by its ID.");
+
+      group.MapGet("/items", async (IMediator mediator, string itemIds) => {
+        try {
+          var ids = itemIds.Split(',').Select(int.Parse).ToList();
+          var result = await mediator.Send(new GetItemsByIdsQuery(ids));
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error mapping summary endpoints: {ex.Message}");
+          return Results.BadRequest($"yea, no. excepted, {ex.Message}");
+        }
+      }).WithName("GetSummariesByIds").WithDescription("Get summaries of items by their IDs.");
+
+      group.MapGet("/descendants", async (IMediator mediator, int itemId, int itemTypeId) => {
+        try {
+          var result = await mediator.Send(new GetKidsByTypeRecQuery(itemId, itemTypeId));
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error mapping summary endpoints: {ex.Message}");
+          return Results.BadRequest($"yea, no. excepted, {ex.Message}");
+        }
+      }).WithName("GetDescendantsByIds").WithDescription("Get descendants of item Id by their TypeId.");
 
       return app;
     }

@@ -89,6 +89,16 @@ namespace Weavers.Api.Extensions {
         }
       }).WithName("GetPerformanceRollup").WithDescription("Gets the performance rollup for a given performance item.");
 
+      group.MapGet("/getStoryRollup", async (IStorytimeToolsHandler handler, int storyId, string realm) => {
+        try {
+          var result = await handler.AddStoryRollup(storyId, realm, 0); // Assuming 0 for todoId as it's not provided
+          return Results.Ok(result);
+        } catch (Exception ex) {
+          Console.WriteLine($"Error getting story rollup: {ex.Message}");
+          return Results.BadRequest("Failed to get story rollup.");
+        }
+      }).WithName("GetStoryRollup").WithDescription("Gets the story rollup for a given story and realm.");
+
       return app;
     }
   }

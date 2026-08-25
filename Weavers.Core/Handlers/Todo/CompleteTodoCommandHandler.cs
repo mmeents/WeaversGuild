@@ -27,8 +27,26 @@ namespace Weavers.Core.Handlers.Todo {
     public async Task<CompleteTodoCmdResult?> Handle(CompleteTodoCommand request, CancellationToken cancellationToken) {
       var result = new CompleteTodoCmdResult();
 
-      // 1 load verify the todo item, ensure it's in progress, and get the parent desk and onSuccessDesk.
-      var todoItem = await _context.GetItemDtoById(request.TodoId, cancellationToken);
+      List<int> q1 = new List<int>();
+      if (request.TodoId <= 0) {
+        return result.CreateFailure("Invalid TodoId provided.");
+      }
+      q1.Add(request.TodoId);
+      if (request.ProducedItemId != null && request.ProducedItemId != 0) {
+        q1.Add(request.ProducedItemId.Value);
+      }
+      var q1r = await _mediator.Send(new GetItemsByIdsQuery(q1), cancellationToken);      
+
+      int producedItemTypeId = 0;
+      ItemDto? producedItem = null;
+      if (request.ProducedItemId != null && request.ProducedItemId != 0) {
+        producedItem = q1r.FirstOrDefault(i => i.Id == request.ProducedItemId.Value);
+        if (producedItem == null) return result.CreateFailure("Produced item not found.");
+        producedItemTypeId = producedItem.ItemTypeId;
+      }
+
+      // 1 load verify the todo item, ensure it's in progress, and get the parent desk and onSuccessDesk.      
+      var todoItem = q1r.FirstOrDefault(i => i.Id == request.TodoId);
       if (todoItem == null) return result.CreateFailure("Todo item not found.");
 
       // verify status is in progress.
@@ -60,15 +78,7 @@ namespace Weavers.Core.Handlers.Todo {
       var onSuccessDesk = await _context.GetItemDtoById(onSuccessDeskId.Value, cancellationToken);
       if (onSuccessDesk == null) return result.CreateFailure("OnSuccessSendTo desk not found.");
       var isDeskActive = onSuccessDesk.Properties.FirstOrDefault(p => p.Name == Cx.ItEnabled)?.Value.AsBoolean();
-
-      int producedItemTypeId = 0;
-      ItemDto? producedItem = null;
-      if (request.ProducedItemId != null && request.ProducedItemId != 0) {
-        producedItem = await _context.GetItemDtoById(request.ProducedItemId.Value, cancellationToken);
-        if (producedItem == null) return result.CreateFailure("Produced item not found.");
-        producedItemTypeId = producedItem.ItemTypeId;
-      }
-
+      
       // update the todo item save the note, status at end.
       var todoCloseReasonProp = todoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItCloseReason);
       if (todoCloseReasonProp != null) {
@@ -97,18 +107,25 @@ namespace Weavers.Core.Handlers.Todo {
       // find inprogress TodoAttempt relation and update it's ItContinueTodo property.
       string runInProgressType = WeItemType.RunInProgress.AsIntString();
       ItemDto? inProgressTodoAttempt = null;
+      List<int> attemptIds = new List<int>();
       foreach (var rel in todoItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.TodoAttemptModel)) {
         var attemptId = rel?.RelatedItemId ?? 0;
         if (attemptId > 0) {
-          var attemptItem = await _context.GetItemDtoById(attemptId, cancellationToken);
-          if (attemptItem != null) {
-            var attemptStatusStr = attemptItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus)?.Value;
-            if (attemptStatusStr != null && attemptStatusStr == runInProgressType) {
-              inProgressTodoAttempt = attemptItem; // found.
-              break; 
-            }
-          }
+          attemptIds.Add(attemptId);
         }        
+      }
+      List<ItemDto> attemptItems = new List<ItemDto>();
+      if (attemptIds.Count != 0) {
+        attemptItems = await _mediator.Send(new GetItemsByIdsQuery(attemptIds), cancellationToken);
+      }
+      foreach (var attemptItem in attemptItems) {
+        if (attemptItem != null) {
+          var attemptStatusStr = attemptItem.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus)?.Value;
+          if (attemptStatusStr != null && attemptStatusStr == runInProgressType) {
+            inProgressTodoAttempt = attemptItem; // found.
+            break;
+          }
+        }
       }
 
       bool newTodoPromptSet = false;

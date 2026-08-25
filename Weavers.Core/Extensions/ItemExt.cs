@@ -18,19 +18,7 @@ namespace Weavers.Core.Extensions {
       var result = await context.Relations
         .AsNoTracking()
         .Where(r => r.Id == relationId)
-        .Select(r => new RelationDto {
-          Id = r.Id,
-          ItemId = r.ItemId,
-          ItemName = r.Item.Name,
-          RelatedItemId = r.RelatedItemId,
-          RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
-          RelatedItemName = r.RelatedItem != null ? r.RelatedItem.Name : "",
-          RelationTypeId = r.RelationTypeId,
-          RelationTypeName = r.RelationType.Name ?? string.Empty,
-          Rank = r.Rank,
-          Established = r.Established,
-          RelatedItemHasChildren = r.RelatedItem != null && r.RelatedItem.Relations.Any(cr => cr.RelationTypeId == (int)WeRelationTypes.Contains)
-        })
+        .Select(ItemProjections.ToRelationDto)
         .FirstOrDefaultAsync(cancellationToken);
       return result ?? throw new Exception($"Relation with Id {relationId} not found");
     }
@@ -39,83 +27,10 @@ namespace Weavers.Core.Extensions {
       var result = await context.Items
         .AsNoTracking()
         .Where(i => i.Id == Id && i.IsActive)
-        .Select(i => new ItemDto {
-          Id = i.Id,
-          ItemTypeId = i.ItemTypeId,
-          ItemTypeName = i.ItemType.Name,
-          Name = i.Name,
-          Description = i.Description,
-          Data = i.Data,
-          Established = i.Established,
-          WrittenAt = i.WrittenAt,
-          IsActive = i.IsActive,
-          Relations = i.Relations.Select(r => new RelationDto {
-            Id = r.Id,
-            ItemId = r.ItemId,
-            ItemTypeId = r.Item.ItemTypeId,
-            ItemName = r.Item.Name,
-            RelatedItemId = r.RelatedItemId,
-            RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
-            RelatedItemName = r.RelatedItem != null ? r.RelatedItem.Name : "",
-            RelationTypeId = r.RelationTypeId,
-            RelationTypeName = r.RelationType.Name ?? string.Empty,
-            Rank = r.Rank,
-            Established = r.Established,
-            RelatedItemHasChildren = r.RelatedItem != null && r.RelatedItem.Relations.Any(cr => cr.RelationTypeId == (int)WeRelationTypes.Contains)
-          }).ToList(),
-          IncomingRelations = i.IncomingRelations.Select(r => new RelationDto {
-            Id = r.Id,
-            ItemId = r.ItemId,
-            ItemTypeId = r.Item.ItemTypeId,
-            ItemName = r.Item.Name ?? string.Empty,
-            RelatedItemId = r.RelatedItemId,
-            RelatedItemTypeId = r.RelatedItem != null ?  r.RelatedItem.ItemTypeId : (int?)null,
-            RelatedItemName = (r.RelatedItem == null) ? "" : r.RelatedItem.Name ,
-            RelationTypeId = r.RelationTypeId,
-            RelationTypeName = r.RelationType.Name ?? string.Empty,
-            Rank = r.Rank,
-            Established = r.Established,
-            RelatedItemHasChildren = r.RelatedItem !=null && r.RelatedItem.Relations != null && r.RelatedItem.Relations.Any()          
-          }).ToList(),
-          Properties = i.Properties.Select(p => new ItemPropertyDto {
-            Id = p.Id,
-            ItemId = p.ItemId,
-            Name = p.Name,
-            Value = p.Value, 
-            ValueHash = p.ValueHash,
-            ValueDataTypeId = p.ValueDataTypeId,
-            ReferenceItemTypeId = p.ReferenceItemTypeId,
-            EditorTypeId = p.EditorTypeId,
-            IsRequired = p.IsRequired,
-            IsReadOnly = p.IsReadOnly,
-            IsVisible = p.IsVisible,
-            ValueType = (p.ValueType == null) 
-              ? new DataTypeDto() { 
-                Id = (int)WeDataType.None,
-                Name = WeDataType.None.ToString()}                 
-              :  new DataTypeDto {
-                Id = p.ValueType.Id,
-                Name = p.ValueType.Name
-              },
-            Editor = (p.Editor == null) 
-              ? new EditorTypeDto{ Id = (int)WeEditorType.None, Name = WeEditorType.None.ToString() } 
-              : new EditorTypeDto{ Id = p.Editor.Id, Name = p.Editor.Name, Description = p.Editor.Description,
-                IsVisible = p.Editor.IsVisible, IsReadOnly = p.Editor.IsReadOnly, Rank=p.Editor.Rank},
-            ReferenceItemType = (p.ReferenceItemType == null) 
-              ? null : new ItemTypeDto { Id = p.ReferenceItemType.Id, Name = p.ReferenceItemType.Name }
-
-          }).ToList()
-         
-        })
+        .Select(ItemProjections.ToItemDto)
+        .AsSplitQuery()
         .FirstOrDefaultAsync(cancellationToken);
-
-      if (result != null) {       
-        foreach (var prop in result.Properties) {
-          prop.Item = result;          // ← now each property points to the outer ItemDto
-        }
-      }
-
-      return result;
+      return result?.LinkProperties();
     }
 
     public static async Task<bool> SyncDefaultsByModelIdAsync(this FabricDbContext context, int itemlId, int itemTypeId, CancellationToken cancellationToken = default) {
@@ -224,11 +139,6 @@ namespace Weavers.Core.Extensions {
       return "";
     }
 
-
-
-
-
-
-    // namespace and class below, no need to edit.
+    // namespace and class exit below, no need to edit.
   }
 }

@@ -33,8 +33,7 @@ namespace TheLoomApp {
     private readonly IAppGraphFileService _appGraphService;
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
-    private readonly IGraphItemUpdateService _graphItemUpdateService;
-    private readonly IStorytimeService _storytimeService;
+    private readonly IGraphItemUpdateService _graphItemUpdateService;    
     private readonly ISummaryToolsHandler _summaryToolsHandler;
 
     private ItemNode? _selectedNode = null;
@@ -84,8 +83,7 @@ namespace TheLoomApp {
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
-      _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
-      _storytimeService = scope.ServiceProvider.GetRequiredService<IStorytimeService>();
+      _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();      
 
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -1275,7 +1273,9 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
           var tone = dlg.Tone ?? "";
-          await tvKb.AddRealm(_storytimeService, newItemName, newItemDesc, tone);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddRealm(mediator, newItemName, newItemDesc, tone);
         }
 
       } catch (Exception ex) {
@@ -1292,7 +1292,9 @@ namespace TheLoomApp {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
           int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
-          await tvKb.AddStory(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc, povId, dlg.TargetSceneCount);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddStory(mediator, _defaultAppTodoId, newItemName, newItemDesc, povId, dlg.TargetSceneCount);
         }
 
       } catch (Exception ex) {
@@ -1311,7 +1313,9 @@ namespace TheLoomApp {
           int povId = dlg.PovTypeId ?? (int)WeItemType.PovUndefined;
           var entryState = dlg.EntryState ?? "";
           var exitState = dlg.ExitState ?? "";
-          await tvKb.AddScene(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc, povId, entryState, exitState);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddScene(mediator, _defaultAppTodoId, newItemName, newItemDesc, povId, entryState, exitState);
         }
 
       } catch (Exception ex) {
@@ -1327,7 +1331,9 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddBeat(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddBeat(mediator, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1343,7 +1349,9 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddCallSheet(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddCallSheet(mediator, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1359,7 +1367,9 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddCharacter(_storytimeService, newItemName, newItemDesc);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddCharacter(mediator, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1375,7 +1385,9 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddPerformance(_storytimeService, newItemName, newItemDesc);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPerformance(mediator, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {
@@ -1391,7 +1403,9 @@ namespace TheLoomApp {
         if (dlg.ShowDialog() == DialogResult.OK) {
           var newItemName = dlg.ItemName;
           var newItemDesc = dlg.Description;
-          await tvKb.AddObserved(_storytimeService, _defaultAppTodoId, newItemName, newItemDesc);
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddObserved(mediator, _defaultAppTodoId, newItemName, newItemDesc);
         }
 
       } catch (Exception ex) {

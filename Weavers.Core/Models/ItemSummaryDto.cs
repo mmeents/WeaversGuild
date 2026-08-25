@@ -36,6 +36,10 @@ namespace Weavers.Core.Models {
 
   public class PropSummaryDto {
     public int Id { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+    public int ItemId { get; set; } = 0;
+
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 

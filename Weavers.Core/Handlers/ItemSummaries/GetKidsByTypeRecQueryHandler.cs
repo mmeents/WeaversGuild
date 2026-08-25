@@ -2,14 +2,16 @@
 using Weavers.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Weavers.Core.Handlers.Items {
+namespace Weavers.Core.Handlers.ItemSummaries {
 
   public record GetKidsByTypeRecQuery(int ItemId, int ItemTypeId) : IRequest<List<ItemSummaryDto>> {
   }
   public class GetKidsByTypeRecQueryHandler : IRequestHandler<GetKidsByTypeRecQuery, List<ItemSummaryDto>> {
-    private readonly FabricDbContext _Context;
-    public GetKidsByTypeRecQueryHandler(FabricDbContext context) {
-      _Context = context;
+    private readonly FabricDbContext _context;
+    private readonly IMediator _mediator;
+    public GetKidsByTypeRecQueryHandler(FabricDbContext context, IMediator mediator) {
+      _context = context;
+      _mediator = mediator;
     }
 
     public async Task<List<ItemSummaryDto>> Handle(GetKidsByTypeRecQuery request, CancellationToken cancellationToken) {
@@ -74,8 +76,17 @@ where d.itemTypeID = {request.ItemTypeId}
 order by d.OrderKey
 OPTION (MAXRECURSION 256);";
 
-      var rows = await _Context.Set<ItemSummaryDto>().FromSqlRaw(sql)
+      var rows = await _context.Set<ItemSummaryDto>().FromSqlRaw(sql)
         .AsNoTracking().ToListAsync(cancellationToken);
+
+      var selectedIds = rows.Select(r => r.Id).ToList();
+      var theirProps = await _mediator.Send(new GetPropertiesByItemIdsQuery(selectedIds), cancellationToken);
+
+      foreach (var summary in rows) {
+        if (summary != null && theirProps.ContainsKey(summary.Id)) {          
+          summary.Props = theirProps[summary.Id];
+        }
+      }
 
       return rows;
 
