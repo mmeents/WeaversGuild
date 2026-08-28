@@ -93,7 +93,8 @@ namespace Weavers.Core.Extensions {
           Name = r.RelatedItem != null ? r.RelatedItem.Name : "",
           TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
           TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
-          Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() ? r.RelatedItem.Description  : null,
+          Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() 
+            && r.RelatedItem.Description.Length < Cx.DefaultSummaryMaxLength ? r.RelatedItem.Description  : null,
           Props = !includeProps ? null : r.RelatedItem != null
             ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
             Id = p.Id,

@@ -33,7 +33,7 @@ namespace TheLoomApp {
     private readonly IAppGraphFileService _appGraphService;
     private readonly IAppGraphClassService _appClassService;
     private readonly IAppItemTemplateService _itemTemplateService;
-    private readonly IGraphItemUpdateService _graphItemUpdateService;    
+    private readonly IGraphItemUpdateService _graphItemUpdateService;
     private readonly ISummaryToolsHandler _summaryToolsHandler;
 
     private ItemNode? _selectedNode = null;
@@ -83,7 +83,7 @@ namespace TheLoomApp {
       _appClassService = scope.ServiceProvider.GetRequiredService<IAppGraphClassService>();
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
-      _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();      
+      _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
 
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -775,6 +775,7 @@ namespace TheLoomApp {
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
         miSepRefreshBottom.Visible = false;
+        miDuplicateItem.Visible = false;
         miAddGithubToken.Visible = false;
         miAddWorkGroup.Visible = false;
         miAddOrgRole.Visible = false;
@@ -787,6 +788,7 @@ namespace TheLoomApp {
         miAddOrgRssFolder.Visible = false;
         miAddRssChannel.Visible = false;
         miResyncChannel.Visible = false;
+        miAddRssLinkedHtml.Visible = false;
         miResolveLink.Visible = false;
         miExtractLinks.Visible = false;
         miAddProjectRoot.Visible = true;
@@ -851,6 +853,7 @@ namespace TheLoomApp {
         miSepRefreshBottom.Visible = true;
 
         miAddGithubToken.Visible = itemType == WeItemType.CredentialStoreModel;
+        miDuplicateItem.Visible = ((int)itemType).CanDuplicate();
 
         miAddWorkGroup.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.WorkGroupModel;
         miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
@@ -867,6 +870,7 @@ namespace TheLoomApp {
         miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.RssFolderModel;
         miAddRssChannel.Visible = itemType == WeItemType.RssFolderModel;
         miResyncChannel.Visible = itemType == WeItemType.RssChannelModel;
+        miAddRssLinkedHtml.Visible = itemType == WeItemType.RssFolderModel || itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miResolveLink.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miExtractLinks.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
 
@@ -917,7 +921,21 @@ namespace TheLoomApp {
     }
 
 
+    private async void miDuplicateItem_Click(object sender, EventArgs e) {
+      try {
+        var itemName = _selectedNode?.Item?.Name ?? "";
+        if (MessageBox.Show($"Are you sure you want to duplicate the item '{itemName}'?", "Confirm Duplicate", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.DuplicateItem(mediator);
+
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to duplicate item - error:" + ex.Message);
+        MessageBox.Show($"Error duplicating item: {ex.Message}", "Duplicate Item Failed");
+      }
+    }
 
     private async void miAddGithubToken_Click(object sender, EventArgs e) {
       try {
@@ -1113,6 +1131,18 @@ namespace TheLoomApp {
       } catch (Exception ex) {
         DoLogMessage("Failed to resync RSS channel - error:" + ex.Message);
         MessageBox.Show($"Error resyncing RSS channel: {ex.Message}", "Resync RSS Channel Failed");
+      }
+    }
+
+    private async void miAddRssLinkedHtml_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.AddLinkedHtml(_appGraphOrgService, "New Linked HTML");
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add Linked HTML - error:" + ex.Message);
+        MessageBox.Show($"Error adding Linked HTML: {ex.Message}", "Add Linked HTML Failed");
       }
     }
 
@@ -1696,9 +1726,9 @@ namespace TheLoomApp {
       foreach (var relation in item.Relations.ToList()) {
         if (relation.RelatedItemTypeId == (int)WeItemType.TodoModel && relation.RelatedItemId.HasValue && skipTodo != relation.RelatedItemId.Value) {
           var todoItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);
-          if (todoItem != null ) {
+          if (todoItem != null) {
             await _appDataService.DeleteItemAsync(todoItem.Id);
-            needsRefresh = true;            
+            needsRefresh = true;
           }
         }
       }
@@ -1994,9 +2024,9 @@ namespace TheLoomApp {
         try {
           var result = await _appDataService.WriteDocument(_selectedNode.Item.Id);
           DoLogMessage($"Success: {result.Success} {result.Message}");
-        } catch (Exception ex) { 
+        } catch (Exception ex) {
           DoLogMessage($"Error writing document: {ex.Message}");
-        }        
+        }
       }
     }
 
@@ -2238,7 +2268,7 @@ namespace TheLoomApp {
           }
           if (EngineRunning) {
             tRun.Enabled = true;
-          }          
+          }
         }
 
       }
@@ -2663,6 +2693,8 @@ namespace TheLoomApp {
       }
     }
     #endregion
+
+
 
 
 

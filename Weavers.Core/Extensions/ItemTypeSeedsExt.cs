@@ -378,6 +378,8 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.RssFolderModel => true,
         WeItemType.RssChannelModel => true,
+        WeItemType.RssItemModel => true,
+        WeItemType.RssLinkedHtmlModel => true,
 
         WeItemType.ProjectFolderModel => true,
         WeItemType.RelativeFolderModel => true,
@@ -436,8 +438,8 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.RssFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.RssFolderModel },
         WeItemType.RssChannelModel => new HashSet<WeItemType> { WeItemType.RssFolderModel },
-        WeItemType.RssItemModel => new HashSet<WeItemType> { WeItemType.RssChannelModel },
-        WeItemType.RssLinkedHtmlModel => new HashSet<WeItemType> { WeItemType.RssItemModel },
+        WeItemType.RssItemModel => new HashSet<WeItemType> { WeItemType.RssFolderModel, WeItemType.RssChannelModel },
+        WeItemType.RssLinkedHtmlModel => new HashSet<WeItemType> { WeItemType.RssFolderModel, WeItemType.RssItemModel, WeItemType.RssLinkedHtmlModel },
 
         WeItemType.ProjectFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel },
         WeItemType.RelativeFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },

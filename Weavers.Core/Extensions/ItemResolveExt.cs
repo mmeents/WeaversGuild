@@ -41,7 +41,9 @@ namespace Weavers.Core.Extensions {
 
     public static bool IsValidRssFolderParent(this ItemDto item) =>
       item.ItemTypeId == (int)WeItemType.OrganizationModel ||
-      item.ItemTypeId == (int)WeItemType.RssFolderModel;
+      item.ItemTypeId == (int)WeItemType.RssFolderModel || 
+      item.ItemTypeId == (int)WeItemType.RssItemModel ||
+      item.ItemTypeId == (int)WeItemType.RssLinkedHtmlModel;
 
     public static string GetFileName(this ItemDto item) {
       if (item.ItemTypeId.IsFileNameType()) {

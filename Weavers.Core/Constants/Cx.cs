@@ -41,6 +41,7 @@ namespace Weavers.Core.Constants {
 
     public const double DefaultTemperature = 0.76;
     public const int DefaultLmStudioContextLength = 60000;
+    public const int DefaultSummaryMaxLength = 20000;
     public const int intPropertyLabelLeft = 116;
     public const int NameFieldMaxLength = 500;
     public const long MaxImportFileSize = 512 * 1024; // 512 KB
@@ -180,7 +181,8 @@ namespace Weavers.Core.Constants {
 
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
-    public const string ItContextLength = "ContextLength";    
+    public const string ItContextLength = "ContextLength";  
+    public const string ItContentLength = "ContentLength";
     public const string ItCloseReason = "CloseReason";
     public const string ItCredits = "Credits";
     public const string ItCurrentTodo = "CurrentTodo";
@@ -254,6 +256,7 @@ namespace Weavers.Core.Constants {
     public const string ItMaxAttempts = "MaxAttempts";
     public const string ItMaxLinks = "MaxLinks";
     public const string ItMachineName = "MachineName";
+    public const string ItMediaType = "MediaType";
     public const string ItModelName = "ModelName";
     public const string ItModelKey = "ModelKey";
     public const string ItModelDetails = "ModelDetails";

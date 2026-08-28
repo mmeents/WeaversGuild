@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
@@ -23,7 +24,13 @@ namespace TheLoomApp.Extensions {
         }
       } else if (item.ItemTypeId == (int) WeItemType.RssItemModel || item.ItemTypeId == (int) WeItemType.RssLinkedHtmlModel) {
         if (!string.IsNullOrEmpty(item.Description)) {
-          webView.NavigateToHtmlSnippet(item.Description);
+          var contenttypeProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItMediaType);
+          var contenttype = contenttypeProp?.Value ?? "text/html";
+          if (contenttype.Contains("html")) {
+            webView.NavigateToHtmlString(item.Description);
+          } else {
+            webView.NavigateToMdString(item.Description);
+          }          
         } else {
           webView.NavigateToMdString(item.ToMdString());
         }        

@@ -44,6 +44,7 @@
       miAddOrgRssFolder = new ToolStripMenuItem();
       miAddRssChannel = new ToolStripMenuItem();
       miResyncChannel = new ToolStripMenuItem();
+      miAddRssLinkedHtml = new ToolStripMenuItem();
       miResolveLink = new ToolStripMenuItem();
       miExtractLinks = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
@@ -161,6 +162,7 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
+      miDuplicateItem = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -249,9 +251,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1056);
+      cmsTreeMenus.Size = new Size(209, 1122);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -356,6 +358,13 @@
       miResyncChannel.Size = new Size(208, 22);
       miResyncChannel.Text = "Resync Channel";
       miResyncChannel.Click += miResyncChannel_Click;
+      // 
+      // miAddRssLinkedHtml
+      // 
+      miAddRssLinkedHtml.Name = "miAddRssLinkedHtml";
+      miAddRssLinkedHtml.Size = new Size(208, 22);
+      miAddRssLinkedHtml.Text = "Add Web Link";
+      miAddRssLinkedHtml.Click += miAddRssLinkedHtml_Click;
       // 
       // miResolveLink
       // 
@@ -631,6 +640,8 @@
       ilTreeImages.Images.SetKeyName(25, "GatwayWeave.png");
       ilTreeImages.Images.SetKeyName(26, "beat.png");
       ilTreeImages.Images.SetKeyName(27, "performance.png");
+      ilTreeImages.Images.SetKeyName(28, "icons8-castle-16.png");
+      ilTreeImages.Images.SetKeyName(29, "icons8-locked-16.png");
       // 
       // splitContainer3
       // 
@@ -1584,6 +1595,13 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
+      // miDuplicateItem
+      // 
+      miDuplicateItem.Name = "miDuplicateItem";
+      miDuplicateItem.Size = new Size(208, 22);
+      miDuplicateItem.Text = "Duplicate Item";
+      miDuplicateItem.Click += miDuplicateItem_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1775,5 +1793,7 @@
     private NumericUpDown edCoolDownMs;
     private CheckBox cbCoolDown;
     private ToolStripMenuItem miEmptyDesk;
+    private ToolStripMenuItem miAddRssLinkedHtml;
+    private ToolStripMenuItem miDuplicateItem;
   }
 }

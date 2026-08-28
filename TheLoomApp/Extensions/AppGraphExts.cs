@@ -11,6 +11,15 @@ using Weavers.Core.Service;
 namespace TheLoomApp.Extensions {
   public static class AppGraphExts {
 
+    public static async Task DuplicateItem(this TreeView _tv, IMediator _mediator) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null) { return; }
+      var newSubItem = await _mediator.Send(new DuplicateItemCommand(item.Id));
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
+
     public static async Task AddGithubRepo(this TreeView _tv, IAppGraphOrgService graphSrvs, string name, int? credItemId = null, string? remoteUrl = null) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
@@ -130,6 +139,15 @@ namespace TheLoomApp.Extensions {
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.RssChannelModel) { return; }
       var updatedChannelItem = await graphSrvs.RssResyncChannel(item);
+    }
+
+    public static async Task AddLinkedHtml(this TreeView _tv, IAppGraphOrgService graphSrvs, string name, string? channelUrl = null) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.RssFolderModel) { return; }
+      var newSubItem = await graphSrvs.AddLinkedHtml(item, name);
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
     }
 
     public static async Task RssResolveLink(this TreeView _tv, IAppGraphOrgService graphSrvs, CancellationToken ct = default) {

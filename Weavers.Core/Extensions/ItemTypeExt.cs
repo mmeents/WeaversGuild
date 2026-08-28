@@ -7,9 +7,9 @@ using Weavers.Core.Models;
 namespace Weavers.Core.Extensions {
 
   public static class WeItemTypeExtensions {
-    
+
     public static string AsCsCode(this WeItemType itemType) {
-      return itemType switch {        
+      return itemType switch {
         WeItemType.CSharpClassType => "class",
         WeItemType.CSharpRecordType => "record",
         WeItemType.CSharpStructType => "struct",
@@ -58,8 +58,8 @@ namespace Weavers.Core.Extensions {
 
     public static int ImageIndex(this WeItemType itemType) {
       return itemType switch {
-        WeItemType.OrganizationModel => 13,
-        WeItemType.HarnessAppModel => 18,
+        WeItemType.OrganizationModel => 20,
+        WeItemType.HarnessAppModel => 28,
         WeItemType.HarnessSessionsModel => 13,
         WeItemType.HarnessAppSessionModel => 15,
 
@@ -69,9 +69,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.PresenceLmStudioGatewayModel => 25,
         WeItemType.PresModelLmStudioModel => 19,
         WeItemType.PresenceClaudeGatewayModel => 25,
-        WeItemType.PresModelClaudeModel => 19,   
-        
-        WeItemType.CredentialStoreModel => 13,
+        WeItemType.PresModelClaudeModel => 19,
+
+        WeItemType.CredentialStoreModel => 29,
         WeItemType.GitHubCredentialModel => 15,
 
         WeItemType.DigitalOperatorPoolModel => 19,
@@ -80,10 +80,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.OrgDeskRolesModel => 21,
         WeItemType.DeskRoleModel => 17,
 
-        WeItemType.WorkGroupModel => 21,  
-        WeItemType.DeskLogModel => 22,   
-        WeItemType.DeskModel => 22,      
-        WeItemType.TodoModel => 23,     
+        WeItemType.WorkGroupModel => 21,
+        WeItemType.DeskLogModel => 22,
+        WeItemType.DeskModel => 22,
+        WeItemType.TodoModel => 23,
         WeItemType.TodoAttemptModel => 24,
 
         WeItemType.OrgFolderModel => 1,
@@ -111,7 +111,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SceneModel => 18,
         WeItemType.BeatModel => 26,
         WeItemType.CallSheetModel => 2,
-        WeItemType.CharacterModel => 19,        
+        WeItemType.CharacterModel => 19,
         WeItemType.PerformanceModel => 27,
         WeItemType.ActorPerformanceModel => 27,
         WeItemType.ObservationModel => 12,
@@ -119,10 +119,10 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
-        WeItemType.LibraryModel => 12,        
+        WeItemType.LibraryModel => 12,
         WeItemType.LibPackageRefModel => 15,
         WeItemType.LibLibraryRefModel => 15,
-        WeItemType.DependencyInjectionModel => 5,     
+        WeItemType.DependencyInjectionModel => 5,
         WeItemType.DiImportModel => 6,
         WeItemType.DbContextModel => 4,
         WeItemType.DbContextEntityImportModel => 15,
@@ -147,7 +147,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.HandlerCommandModel => 12,
         WeItemType.HandlerClassModel => 13,
         WeItemType.HandlerPropertyModel => 14,
-        WeItemType.HandlerMethodModel => 7,        
+        WeItemType.HandlerMethodModel => 7,
         _ => -1
       };
     }
@@ -164,14 +164,14 @@ namespace Weavers.Core.Extensions {
         WeItemType.WorkGroupModel,
         WeItemType.DeskLogModel,
         WeItemType.DeskModel,
-        WeItemType.OrgFolderModel, 
+        WeItemType.OrgFolderModel,
         WeItemType.OrgFileModel,
         WeItemType.RssFolderModel,
         WeItemType.RssChannelModel,
         WeItemType.RssItemModel,
         WeItemType.RssLinkedHtmlModel,
-        WeItemType.ProjectFolderModel, 
-        WeItemType.RelativeFolderModel,  
+        WeItemType.ProjectFolderModel,
+        WeItemType.RelativeFolderModel,
         WeItemType.GitFolderModel,
         WeItemType.GitFileModel,
         WeItemType.FileMdModel,
@@ -209,7 +209,7 @@ namespace Weavers.Core.Extensions {
     // These types have generated code in the descriptions.  generation depends on the
     // tree state. so when state changes, we need to update descriptions. but only for following:
     public static HashSet<WeItemType> GetGenerativeTypes() {
-      HashSet<WeItemType> nodeTypes = new HashSet<WeItemType>(){        
+      HashSet<WeItemType> nodeTypes = new HashSet<WeItemType>(){
         WeItemType.SolutionModel,
         WeItemType.LibraryModel,
         WeItemType.DependencyInjectionModel,
@@ -221,7 +221,7 @@ namespace Weavers.Core.Extensions {
     }
 
     // list needs to include the group types that have child lookups for the properties combos.
-    public static HashSet<WeItemType> GetLookupTypes() { 
+    public static HashSet<WeItemType> GetLookupTypes() {
       HashSet<WeItemType> lookupTypes = new HashSet<WeItemType>(){
           WeItemType.NavigationTypes,
           WeItemType.SqlTypes,
@@ -233,8 +233,8 @@ namespace Weavers.Core.Extensions {
           WeItemType.RatingStatus,
           WeItemType.Ratings,
           WeItemType.FloorStatus,
-          WeItemType.LoomMcpCommands,          
-          WeItemType.TodoStatuses,          
+          WeItemType.LoomMcpCommands,
+          WeItemType.TodoStatuses,
           WeItemType.RunStatus,
           WeItemType.DeskPreAssertCheckTypes,
           WeItemType.LinkResolutionTypes,
@@ -249,7 +249,7 @@ namespace Weavers.Core.Extensions {
       return itemTypeId switch {
         (int)WeItemType.CSharpClassType => true,
         (int)WeItemType.CSharpRecordType => true,
-        (int)WeItemType.CSharpStructType => true,                
+        (int)WeItemType.CSharpStructType => true,
         _ => false
       };
     }
@@ -260,7 +260,7 @@ namespace Weavers.Core.Extensions {
       return itemTypeId switch {
         (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
-        (int)WeItemType.DeskModel => true,        
+        (int)WeItemType.DeskModel => true,
         (int)WeItemType.OrgFileModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
@@ -271,7 +271,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.SolutionModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
-        (int)WeItemType.DbContextModel => true,        
+        (int)WeItemType.DbContextModel => true,
         (int)WeItemType.InterfaceModel => true,
         (int)WeItemType.RecordModel => true,
         (int)WeItemType.StructModel => true,
@@ -290,9 +290,9 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.OrgFolderModel => true,
         (int)WeItemType.RssFolderModel => true,
-        (int)WeItemType.RssChannelModel => true,        
+        (int)WeItemType.RssChannelModel => true,
         (int)WeItemType.ProjectFolderModel => true,
-        (int)WeItemType.RelativeFolderModel => true,        
+        (int)WeItemType.RelativeFolderModel => true,
         _ => false
       };
     }
@@ -303,7 +303,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DigitalOperatorPoolModel => true,
         (int)WeItemType.WorkGroupModel => true,
-        (int)WeItemType.DeskLogModel => true,        
+        (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.OrgFolderModel => true,
         (int)WeItemType.RssFolderModel => true,
         (int)WeItemType.RssChannelModel => true,
@@ -334,8 +334,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.RealmModel => true,
         (int)WeItemType.StoryModel => true,
         (int)WeItemType.SceneModel => true,
-        (int)WeItemType.BeatModel => true,        
-        (int)WeItemType.CharacterModel => true,                
+        (int)WeItemType.BeatModel => true,
+        (int)WeItemType.CharacterModel => true,
         (int)WeItemType.ObservationModel => true,
         (int)WeItemType.StoryRollupModel => true,
         _ => false
@@ -351,10 +351,10 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-    public static bool IsMethodCodeType(this int itemTypeId) {      
+    public static bool IsMethodCodeType(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.ClassMethodModel => true,
-        (int)WeItemType.HandlerHandlerMethodModel=> true,
+        (int)WeItemType.HandlerHandlerMethodModel => true,
         (int)WeItemType.HandlerMethodModel => true,
         _ => false
       };
@@ -363,7 +363,7 @@ namespace Weavers.Core.Extensions {
 
     public static bool IsLibraryType(this int? itemTypeId) {
       if (itemTypeId == null) return false;
-      return itemTypeId switch {        
+      return itemTypeId switch {
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
         (int)WeItemType.DbContextModel => true,
@@ -372,13 +372,13 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.RecordModel => true,
         (int)WeItemType.StructModel => true,
         (int)WeItemType.ClassModel => true,
-        (int)WeItemType.EntityClassModel => true,        
+        (int)WeItemType.EntityClassModel => true,
         _ => false
       };
     }
 
-    public static bool IsOnPostPathUpdate(this int itemTypeId) {      
-      return itemTypeId switch {        
+    public static bool IsOnPostPathUpdate(this int itemTypeId) {
+      return itemTypeId switch {
         (int)WeItemType.OrganizationModel => true,
         (int)WeItemType.OrgDeskRolesModel => true,
         (int)WeItemType.DeskRoleModel => true,
@@ -388,7 +388,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.DeskLogModel => true,
         (int)WeItemType.DeskModel => true,
         (int)WeItemType.OrgFolderModel => true,
-        (int)WeItemType.OrgFileModel => true,        
+        (int)WeItemType.OrgFileModel => true,
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.GitFolderModel => true,
@@ -396,7 +396,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
-        (int)WeItemType.LibraryModel => true,        
+        (int)WeItemType.LibraryModel => true,
         _ => false
       };
     }
@@ -436,20 +436,20 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.InterfaceModel => Cx.ItFilePath,
         (int)WeItemType.RecordModel => Cx.ItFilePath,
         (int)WeItemType.StructModel => Cx.ItFilePath,
-        (int)WeItemType.ClassModel => Cx.ItFilePath,        
+        (int)WeItemType.ClassModel => Cx.ItFilePath,
         (int)WeItemType.EntityClassModel => Cx.ItFilePath,
         _ => ""
       };
     }
-    
+
     public static bool IsParentFileWithFileLikeKids(this int itemTypeId) {
-      return itemTypeId switch {      
+      return itemTypeId switch {
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
-        (int)WeItemType.DbContextModel => true,                                
-        (int)WeItemType.EntityClassModel => true,        
+        (int)WeItemType.DbContextModel => true,
+        (int)WeItemType.EntityClassModel => true,
         _ => false
       };
     }
@@ -465,7 +465,7 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.InterfaceModel => Cx.ItNamespace,
         (int)WeItemType.RecordModel => Cx.ItNamespace,
         (int)WeItemType.StructModel => Cx.ItNamespace,
-        (int)WeItemType.ClassModel => Cx.ItNamespace,        
+        (int)WeItemType.ClassModel => Cx.ItNamespace,
         (int)WeItemType.EntityClassModel => Cx.ItNamespace,
         (int)WeItemType.EntityConfigurationModel => Cx.ItNamespace,
         (int)WeItemType.HandlerModel => Cx.ItNamespace,
@@ -492,13 +492,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpDateType => ".HasColumnType(\"date\")",
         WeItemType.CSharpTimeType => ".HasColumnType(\"time\")",
         WeItemType.CSharpDateTimeOffsetType => ".HasColumnType(\"datetimeoffset\")",
-        WeItemType.CSharpGuidType => ".HasColumnType(\"uniqueidentifier\")",        
+        WeItemType.CSharpGuidType => ".HasColumnType(\"uniqueidentifier\")",
         _ => ""
-      };    
+      };
     }
     private static string ValidateMaxSize(this string maxSize, WeItemType weItem) {
       var sizeParts = maxSize.Parse("(), ");
-      var firstpart = sizeParts.Length > 0 ? sizeParts[0] : "0"; 
+      var firstpart = sizeParts.Length > 0 ? sizeParts[0] : "0";
       var secondpart = sizeParts.Length >= 2 ? sizeParts[1] : "0";
       var aVal = weItem switch {
         WeItemType.CSharpStringType => firstpart.ValidateString(),
@@ -553,9 +553,9 @@ namespace Weavers.Core.Extensions {
     }
 
     public static string GetPOVString(this string? povType) {
-      int povInt = int.TryParse(povType, out int povVal) ? povVal : (int)WeItemType.PovUndefined;      
-      return povInt switch {        
-        (int)WeItemType.PovFirstPerson => "1st Person",        
+      int povInt = int.TryParse(povType, out int povVal) ? povVal : (int)WeItemType.PovUndefined;
+      return povInt switch {
+        (int)WeItemType.PovFirstPerson => "1st Person",
         (int)WeItemType.PovThirdPersonLimited => "3rd Person Limited",
         (int)WeItemType.PovThirdPersonOmniscient => "3rd Person Omniscient",
         _ => "Not set, use 3rd Person Limited"
@@ -648,5 +648,42 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool CanDuplicate(this int itemTypeId) {
+      return itemTypeId switch {        
+        (int)WeItemType.DigitalOperatorModel => true,
+        (int)WeItemType.DeskRoleModel => true,
+        (int)WeItemType.WorkGroupModel => true,
+        (int)WeItemType.DeskModel => true,
+        (int)WeItemType.TodoModel => true,
+        (int)WeItemType.OrgFolderModel => true,
+        (int)WeItemType.OrgFileModel => true,
+        (int)WeItemType.RssFolderModel => true,
+        (int)WeItemType.RssChannelModel => true,
+        (int)WeItemType.RssItemModel => true,
+        (int)WeItemType.RssLinkedHtmlModel => true,
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,
+        (int)WeItemType.GitFolderModel => true,
+        (int)WeItemType.GitFileModel => true,
+        (int)WeItemType.FileMdModel => true,
+        (int)WeItemType.FileHtmlModel => true,
+        (int)WeItemType.FileConfigModel => true,
+        (int)WeItemType.FileImageModel => true,
+        (int)WeItemType.RealmModel => true,
+        (int)WeItemType.StoryModel => true,
+        (int)WeItemType.SceneModel => true,
+        (int)WeItemType.CharacterModel => true,
+        (int)WeItemType.BeatModel => true,
+        (int)WeItemType.CallSheetModel => true,
+        (int)WeItemType.PerformanceModel => true,
+        (int)WeItemType.ObservationModel => true,
+        (int)WeItemType.StoryRollupModel => true,
+        (int)WeItemType.LibraryModel => true,
+        (int)WeItemType.DependencyInjectionModel => true,
+        (int)WeItemType.DbContextModel => true,
+        _ => false
+      };
+
+    }
   }
 }

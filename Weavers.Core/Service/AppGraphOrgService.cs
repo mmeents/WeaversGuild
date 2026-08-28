@@ -5,14 +5,18 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Scriban.Parsing;
 using SmartReader;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
-using Weavers.Core.Handlers.Rss;
 using Weavers.Core.Handlers.ItemTypes;
+using Weavers.Core.Handlers.Rss;
 using Weavers.Core.Models;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Weavers.Core.Service {
   public interface IAppGraphOrgService {
@@ -32,6 +36,7 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> AddRssChannel(ItemDto parentItem, string? channelName, string? channelUrl = null);
 
     Task<ItemDto?> RssResyncChannel(ItemDto rssChannelItem);
+    Task<ItemDto?> AddLinkedHtml(ItemDto parentItem, string? urlName);
     Task<ItemDto?> RssResolveLink(ItemDto rssLinkedHtmlItem, CancellationToken ct = default);
     Task<ItemDto?> RssExtractLinks(ItemDto rssLinkedHtmlItem, CancellationToken ct = default);
     Task<ItemDto?> AppendGuildNote(ItemDto rssItem, string noteContent);
@@ -284,6 +289,32 @@ namespace Weavers.Core.Service {
       return newSubItem;
     }
 
+    public async Task<ItemDto?> AddLinkedHtml(ItemDto parentItem, string? urlName) {
+      var mediator = GetMediator();
+      ItemDto item = parentItem;
+      if (!item.IsValidRssFolderParent()) return null;
+      var nextRank = 1;
+      if (string.IsNullOrEmpty(urlName)) nextRank = await mediator.Send(new GetNextItemRankQuery(item.Id)) + 1;
+      var name = urlName == null ? $"LinkedHtml {nextRank}" : urlName;
+      var newSubItem = await mediator.Send(
+        new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
+          (int)WeItemType.RssLinkedHtmlModel, name, "", "{}"));
+
+      if (newSubItem == null) {
+        // add error logging.
+        return null;
+      }
+
+      var rootFolderProperty = newSubItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
+      if (rootFolderProperty != null && string.IsNullOrEmpty(rootFolderProperty.Value)) {
+        string parentFolderPath = item.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
+        var fullPath = Path.Combine(parentFolderPath, newSubItem.Name.UrlSafe());
+        rootFolderProperty.Value = fullPath;
+        await rootFolderProperty.SaveProp(newSubItem, mediator);
+      }
+      return newSubItem;
+    }
+
     public async Task<ItemDto?> AddRssChannel(ItemDto parentItem, string? channelName, string? channelUrl = null) {
 
       var mediator = GetMediator();
@@ -381,55 +412,18 @@ namespace Weavers.Core.Service {
     private static readonly HtmlSanitizer Sanitizer = new();
 
     public async Task<ItemDto?> RssResolveLink(ItemDto rssLinkedHtmlItem, CancellationToken ct = default) {
-      var mediator = GetMediator();
-      var itsLinkItemProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasUrl);
-      if (itsLinkItemProp == null || string.IsNullOrEmpty(itsLinkItemProp.Value)) {
-        throw new Exception("Linked URL property is missing or empty.");
-      }
-      var url = itsLinkItemProp.Value;
-
-      var resolveLinkProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink);
-      if (resolveLinkProp != null && resolveLinkProp.Value.AsBoolean()) {
-        resolveLinkProp.Value = "0";
-        await resolveLinkProp.SaveProp(rssLinkedHtmlItem, mediator);
-      }
-
-      using var resp = await _httpClientFactory.CreateClient("RssResolver").GetAsync(url, HttpCompletionOption.ResponseHeadersRead, ct);
-      if (!resp.IsSuccessStatusCode) throw new Exception($"Failed to fetch URL: {url}, Status Code: {resp.StatusCode}");
-
-      var mediaType = resp.Content.Headers.ContentType?.MediaType ?? "";
-      if (!mediaType.Contains("html")) throw new Exception($"Content type is not HTML: {mediaType}");
-
-      var html = await resp.Content.ReadAsStringAsync(ct);
-      var article = await new Reader(url, html).GetArticleAsync();
-      var title = article.IsReadable ? article.Title : rssLinkedHtmlItem.Name;
-      var content = article.IsReadable
-           ? Sanitizer.Sanitize(article.Content)
-           : Sanitizer.Sanitize(html);            // degrade: whole page, defanged
-
-      content = content.Replace("<div></div>","").Replace("<div></div>", ""); 
-
-      var resolvedStateProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveState);
-      if (resolvedStateProp != null) {
-        resolvedStateProp.Value = $"{(int)WeItemType.LinkResolved}";
-        await resolvedStateProp.SaveProp(rssLinkedHtmlItem, mediator);
-      }
-
-      rssLinkedHtmlItem.Name = title;
-      rssLinkedHtmlItem.Description = content.Trim();
-      rssLinkedHtmlItem.WrittenAt = article.PublicationDate ?? DateTime.UtcNow;
-      var updateCmd = rssLinkedHtmlItem.ToUpdateCmd();
-      var updatedItem = await mediator.Send(updateCmd, ct);
-
+      var mediator = GetMediator();     
+      var updatedItem = await mediator.Send(new ResolveLinkCommand(rssLinkedHtmlItem.Id), ct);
       return updatedItem;
-
     }
 
     public async Task<ItemDto?> RssExtractLinks(ItemDto rssLinkedHtmlItem, CancellationToken ct = default) {
       var mediator = GetMediator();
       var sanitizedHtml = rssLinkedHtmlItem.Description ?? "";
       var baseUrl = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasUrl)?.Value ?? "";
-       
+      var results = new List<string>();
+      var mediaTypeProp = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItMediaType);
+      var mediaType = mediaTypeProp?.Value ?? "text/markdown";     
 
       var maxLinks = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItMaxLinks)?.Value.AsInt() ?? 20;
       var context = BrowsingContext.New(Configuration.Default);
@@ -443,16 +437,24 @@ namespace Weavers.Core.Service {
 
       var baseUri = new Uri(baseUrl);
       var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-      var results = new List<string>();
 
-      foreach (var href in doc.QuerySelectorAll("a[href]").Select(a => a.GetAttribute("href"))) {
-        if (string.IsNullOrWhiteSpace(href)) continue;
-        if (!Uri.TryCreate(baseUri, href, out var abs)) continue;
-        if (abs.Scheme is not ("http" or "https")) continue;        // mailto:, tel:, #frag
-        var clean = abs.GetLeftPart(UriPartial.Query);              // drop fragment
-        if (clean.Equals(baseUrl, StringComparison.OrdinalIgnoreCase)) continue; // self-link
-        if (seen.Add(clean)) results.Add(clean);
-      }
+      if (!mediaType.Contains("html")) {
+        string pattern = @"https?://[^\s""<>]+|www\.[^\s""<>]+";
+        MatchCollection matches = Regex.Matches(sanitizedHtml, pattern, RegexOptions.IgnoreCase);
+        foreach (Match match in matches) {
+          var clean = match.Value.TrimEnd('.').TrimEnd(':').TrimEnd(',').TrimEnd('`').TrimEnd(')');
+          if (seen.Add(clean)) results.Add(clean);
+        }
+      } else {
+        foreach (var href in doc.QuerySelectorAll("a[href]").Select(a => a.GetAttribute("href"))) {
+          if (string.IsNullOrWhiteSpace(href)) continue;
+          if (!Uri.TryCreate(baseUri, href, out var abs)) continue;
+          if (abs.Scheme is not ("http" or "https")) continue;        // mailto:, tel:, #frag
+          var clean = abs.GetLeftPart(UriPartial.Query);              // drop fragment
+          if (clean.Equals(baseUrl, StringComparison.OrdinalIgnoreCase)) continue; // self-link
+          if (seen.Add(clean)) results.Add(clean);
+        }
+      }     
             
       var linksAdded = 0;
       foreach (string link in results) {

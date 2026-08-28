@@ -56,9 +56,10 @@ namespace Weavers.Core {
       services.AddSingleton<IStorytimeToolsHandler, StorytimeToolsHandler>();
 
       services.AddHttpClient("RssResolver", c => {
-        c.Timeout = TimeSpan.FromSeconds(30);
+        c.Timeout = TimeSpan.FromSeconds(30);        
         c.DefaultRequestHeaders.UserAgent.ParseAdd("WeaversGuild/1.0 (+RSS capture)");
         c.MaxResponseContentBufferSize = 10 * 1024 * 1024; // 10 MB cap, free size guard
+        c.DefaultRequestHeaders.Accept.ParseAdd("text/markdown, text/html;q=0.9, text/plain;q=0.8");        
       });
 
       return services;
