@@ -1,5 +1,15 @@
 
 ## Update History
+- Db 154 9/2/2026  - Entertainment divisions forming in the guild!!!
+  - rework ItemProperty defaults to use hash instead of autoincrement to smothen out future versions and being able to continue a db without starting over.
+  - Adds Game Room as a folder and ChessGame objects so we can have them play chess.
+  - Adds Chess Tab with the game board and manual play override to the Loom App.
+  - Adds addGameRoom addChessGame chessStartGame chessMakeMove and getChessGame which is enough to create and start and play a game.
+    - note: one still needs to set up a chess desks with valid team members to play. 
+  - Rework Drag Drop and Duplicate methods to make node build out faster.
+  - Session creation bug on 2nd machine failed to find human user.  
+  - Chess is for fun and exploration purposes. 
+    
 - Db 153 8/25/2026
   - rework storytime and completeTodo handlers to reduce trips to sql server with new getItemsByIds to grab multiple items at one time. 
   - Adds to Write button for on Realm to write a Index.json and all the children StoryRollup type items.  if on a StoryRollup it makes the Story.json file at location of last folder before the realm.
