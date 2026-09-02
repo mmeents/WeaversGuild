@@ -8,7 +8,6 @@ using Weavers.Core.Models;
 namespace Weavers.Core.Extensions {
   public static class ItemPropsExt {
 
-
     public static void AddOrUpdateProperty(this ItemDto item, ItemPropertyDto property) {
       var existingProperty = item.Properties.FirstOrDefault(p => p.Name == property.Name);
       if (existingProperty != null) {

@@ -1,8 +1,16 @@
 ﻿using MediatR;
+using System;
+using System.IO;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
+using Rudzoft.ChessLib;
+using Rudzoft.ChessLib.Hash;
+using Rudzoft.ChessLib.MoveGeneration;
+using Rudzoft.ChessLib.Types;
+using Rudzoft.ChessLib.Validation;
 using Weavers.Core.Constants;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Pipeline;
@@ -54,12 +62,24 @@ namespace Weavers.Core {
       services.AddSingleton<IAppGraphEntityToolsHandler, AppGraphEntityToolsHandler>();      
       services.AddSingleton<ITodoToolsHandler, TodoToolsHandler>();
       services.AddSingleton<IStorytimeToolsHandler, StorytimeToolsHandler>();
+      services.AddSingleton<IChessToolsHandler, ChessToolsHandler>();
 
       services.AddHttpClient("RssResolver", c => {
         c.Timeout = TimeSpan.FromSeconds(30);        
         c.DefaultRequestHeaders.UserAgent.ParseAdd("WeaversGuild/1.0 (+RSS capture)");
         c.MaxResponseContentBufferSize = 10 * 1024 * 1024; // 10 MB cap, free size guard
         c.DefaultRequestHeaders.Accept.ParseAdd("text/markdown, text/html;q=0.9, text/plain;q=0.8");        
+      });      
+
+      services.AddTransient<IBoard, Board>()
+      .AddSingleton<IPieceValue, PieceValue>()
+      .AddSingleton<IBoard, Board>()
+      .AddScoped<IPosition, Position>()
+      .AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>()
+      .AddSingleton(static serviceProvider => {
+        var provider = serviceProvider.GetRequiredService<ObjectPoolProvider>();
+        var policy = new DefaultPooledObjectPolicy<MoveList>();
+        return provider.Create(policy);
       });
 
       return services;

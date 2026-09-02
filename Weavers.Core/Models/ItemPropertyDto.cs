@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Weavers.Core.Entities;
+using Weavers.Core.Extensions;
 
 namespace Weavers.Core.Models {
   public class ItemPropertyDto {
@@ -36,7 +37,7 @@ namespace Weavers.Core.Models {
     public static ItemPropertyDto ToDto(this ItemProperty itemProperty) {
       return new ItemPropertyDto {
         Id = itemProperty.Id,
-        ItemPropertyDefaultId = itemProperty.ItemPropertyDefaultId,
+        ItemPropertyDefaultId = Hx.StableId(itemProperty.ItemId, itemProperty.Name),
         ItemId = itemProperty.ItemId,
         Name = itemProperty.Name,
         Value = itemProperty.Value,

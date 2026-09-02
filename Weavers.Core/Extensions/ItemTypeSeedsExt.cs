@@ -183,6 +183,12 @@ namespace Weavers.Core.Extensions {
      //   WeItemType.CmdAddEntityClassImport => WeItemType.LoomMcpCommands,
         WeItemType.CmdAddEntityProperty => WeItemType.LoomMcpCommands,
 
+        WeItemType.CmdAddGameRoom => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddChessGame => WeItemType.LoomMcpCommands,
+        WeItemType.CmdGetChessGame => WeItemType.LoomMcpCommands,
+        WeItemType.CmdChessStartGame => WeItemType.LoomMcpCommands,
+        WeItemType.CmdChessMakeMove => WeItemType.LoomMcpCommands,
+
         WeItemType.TodoStatuses => null,
         WeItemType.TodoNotStarted => WeItemType.TodoStatuses,
         WeItemType.TodoInProgress => WeItemType.TodoStatuses,
@@ -222,6 +228,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.PovThirdPersonLimited => WeItemType.PovTypes,
         WeItemType.PovThirdPersonOmniscient => WeItemType.PovTypes,
 
+        WeItemType.GameStatus => null,
+        WeItemType.GameNotStarted => WeItemType.GameStatus,
+        WeItemType.GameInProgress => WeItemType.GameStatus,
+        WeItemType.GameCompleted => WeItemType.GameStatus,  
+        WeItemType.GameFailed => WeItemType.GameStatus,
+
+        WeItemType.GameTwoPlayerToggle => null,
+        WeItemType.PlayerWhite => WeItemType.GameTwoPlayerToggle,
+        WeItemType.PlayerBlack => WeItemType.GameTwoPlayerToggle,
+
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
         WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
@@ -258,6 +274,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel => WeItemType.RssFolderModel,
         WeItemType.RssItemModel => WeItemType.RssChannelModel,
         WeItemType.RssLinkedHtmlModel => WeItemType.RssItemModel,
+
+        WeItemType.GameRoomModel => WeItemType.OrganizationModel,
+        WeItemType.ChessGameModel => WeItemType.GameRoomModel,
 
         WeItemType.ProjectFolderModel => WeItemType.OrganizationModel,
         WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
@@ -381,6 +400,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssItemModel => true,
         WeItemType.RssLinkedHtmlModel => true,
 
+        WeItemType.GameRoomModel => true,
+        WeItemType.ChessGameModel => true,
+
         WeItemType.ProjectFolderModel => true,
         WeItemType.RelativeFolderModel => true,
         WeItemType.GitFolderModel => true,
@@ -440,6 +462,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel => new HashSet<WeItemType> { WeItemType.RssFolderModel },
         WeItemType.RssItemModel => new HashSet<WeItemType> { WeItemType.RssFolderModel, WeItemType.RssChannelModel },
         WeItemType.RssLinkedHtmlModel => new HashSet<WeItemType> { WeItemType.RssFolderModel, WeItemType.RssItemModel, WeItemType.RssLinkedHtmlModel },
+
+        WeItemType.GameRoomModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.GameRoomModel },
+        WeItemType.ChessGameModel => new HashSet<WeItemType> { WeItemType.GameRoomModel },
 
         WeItemType.ProjectFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel },
         WeItemType.RelativeFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
@@ -753,7 +778,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.NavHasManyToOne => 3,
         WeItemType.NavHasManyToMany => 4,
 
-        WeItemType.SqlTypes => 1,
+        WeItemType.SqlTypes => 2,
         WeItemType.SqlBitType => 2,
         WeItemType.SqlSmallIntType => 3,
         WeItemType.SqlIntType => 4,
@@ -769,7 +794,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.SqlDateTimeOffsetType => 14,
         WeItemType.SqlBinaryType => 15,
 
-        WeItemType.TestMethodTypes => 1,
+        WeItemType.TestMethodTypes => 3,
         WeItemType.NoTestAttribute => 1,
         WeItemType.TestIgnoreAttribute => 2,
         WeItemType.TestMethodAttribute => 3,
@@ -778,12 +803,12 @@ namespace Weavers.Core.Extensions {
         WeItemType.TestClassInitialize => 6,
         WeItemType.TestClassCleanup => 7,
 
-        WeItemType.CSharpLifetimes => 1,
+        WeItemType.CSharpLifetimes => 4,
         WeItemType.CSLifetimeSingleton => 1,
         WeItemType.CSLifetimeScoped => 2,
         WeItemType.CSLifetimeTransient => 3,
 
-        WeItemType.CSharpTypes => 1,
+        WeItemType.CSharpTypes => 5,
         WeItemType.CSharpClassType => 2,
         WeItemType.CSharpRecordType => 3,
         WeItemType.CSharpStructType => 4,
@@ -804,7 +829,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CSharpByteArrayType => 19,
         WeItemType.CSharpGuidType => 20,
 
-        WeItemType.EntityDeleteBehaviors => 1,
+        WeItemType.EntityDeleteBehaviors => 6,
         WeItemType.EntityDeleteClientSetNull => 1,
         WeItemType.EntityDeleteRestrict => 2,
         WeItemType.EntityDeleteSetNull => 3,
@@ -813,29 +838,29 @@ namespace Weavers.Core.Extensions {
         WeItemType.EntityDeleteNoAction => 6,
         WeItemType.EntityDeleteClientNoAction => 7,
 
-        WeItemType.AccessibilityLookups => 1,
+        WeItemType.AccessibilityLookups => 7,
         WeItemType.WePublic => 1,
         WeItemType.WeInternal => 2,
         WeItemType.WePrivate => 3,
         WeItemType.WeProtected => 4,
         WeItemType.WeProtectedInternal => 5,
 
-        WeItemType.RatingStatus => 1,
+        WeItemType.RatingStatus => 8,
         WeItemType.UnanimousYes => 1,
         WeItemType.MajorityYes => 2,
         WeItemType.MajorityNo => 3,
         WeItemType.Tie => 4,
 
-        WeItemType.Ratings => 1,
+        WeItemType.Ratings => 9,
         WeItemType.RatingYes => 1,
         WeItemType.RatingNo => 2,
 
-        WeItemType.FloorStatus => 1,
+        WeItemType.FloorStatus => 10,
         WeItemType.FloorDisabled => 1,
         WeItemType.FloorOperational => 2,
         WeItemType.FloorStopping => 3,
 
-        WeItemType.LoomMcpCommands => 1,
+        WeItemType.LoomMcpCommands => 11,
         WeItemType.CmdHelp => 1,  // in SummaryTools
         WeItemType.CmdListProjects => 2,
         WeItemType.CmdSearch => 3,
@@ -911,45 +936,60 @@ namespace Weavers.Core.Extensions {
        // WeItemType.CmdAddEntityClassImport => 66,
         WeItemType.CmdAddEntityProperty => 66,
 
-       
-        WeItemType.TodoStatuses => 1,
+        WeItemType.CmdAddGameRoom => 67,
+        WeItemType.CmdAddChessGame => 68,
+        WeItemType.CmdGetChessGame => 69,
+        WeItemType.CmdChessStartGame => 70,
+        WeItemType.CmdChessMakeMove => 71,
+
+        WeItemType.TodoStatuses => 12,
         WeItemType.TodoNotStarted => 1,
         WeItemType.TodoInProgress => 2,
         WeItemType.TodoCompleteForward => 3,
         WeItemType.TodoAbortedPushBack => 4,
         WeItemType.TodoFailedForward => 5,
 
-        WeItemType.RunStatus => 1,
+        WeItemType.RunStatus => 13,
         WeItemType.RunInProgress => 1,
         WeItemType.RunCompleted => 2,
         WeItemType.RunFailed => 3,
         WeItemType.RanWithoutClose => 4,
 
-        WeItemType.DeskPreAssertCheckTypes => 1,
+        WeItemType.DeskPreAssertCheckTypes => 14,
         WeItemType.AssertItemExists => 1,
         WeItemType.AssertItemIsType => 2,
 
-        WeItemType.LinkResolutionTypes => 1,
+        WeItemType.LinkResolutionTypes => 15,
         WeItemType.LinkNotResolved => 1,
         WeItemType.LinkResolved => 2,
 
-        WeItemType.StoryStatus => 1,
+        WeItemType.StoryStatus => 16,
         WeItemType.StoryProposed => 2,
         WeItemType.StoryInReview => 3,
         WeItemType.StoryApproved => 4,
         WeItemType.StoryRejected => 5,
 
-        WeItemType.SceneStatus => 1,
+        WeItemType.SceneStatus => 17,
         WeItemType.ScenePlanned => 2,
         WeItemType.SceneDrafting => 3,
         WeItemType.SceneInReview => 4,
         WeItemType.SceneFinal => 5,
 
-        WeItemType.PovTypes => 1,
+        WeItemType.PovTypes => 18,
         WeItemType.PovUndefined => 2,
         WeItemType.PovFirstPerson => 3,
         WeItemType.PovThirdPersonLimited => 4,
         WeItemType.PovThirdPersonOmniscient => 5,
+
+        WeItemType.GameStatus => 19,
+        WeItemType.GameNotStarted => 2,
+        WeItemType.GameInProgress => 3,
+        WeItemType.GameCompleted => 4,
+        WeItemType.GameFailed => 5,
+
+        WeItemType.GameTwoPlayerToggle => 20,
+        WeItemType.PlayerWhite => 7,
+        WeItemType.PlayerBlack => 8,
 
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
@@ -967,11 +1007,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.DigitalOperatorPoolModel => (int)WeItemType.DigitalOperatorPoolModel,
         WeItemType.DigitalOperatorModel => (int)WeItemType.DigitalOperatorModel,
 
-        WeItemType.WorkGroupModel => 1040,
-        WeItemType.DeskLogModel => 1043, 
-        WeItemType.DeskModel => 1045,    
-        WeItemType.TodoModel => 1050,    
-        WeItemType.TodoAttemptModel => 1055,
+        WeItemType.WorkGroupModel => (int)WeItemType.WorkGroupModel,
+        WeItemType.DeskLogModel => (int)WeItemType.DeskLogModel, 
+        WeItemType.DeskModel => (int)WeItemType.DeskModel,    
+        WeItemType.TodoModel => (int)WeItemType.TodoModel,    
+        WeItemType.TodoAttemptModel => (int)WeItemType.TodoAttemptModel,
 
         WeItemType.OrgFolderModel => (int)WeItemType.OrgFolderModel,
         WeItemType.OrgFileModel => (int)WeItemType.OrgFileModel,
@@ -1252,7 +1292,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,  // in AppGraphEntityTools
         //WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
         WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
-        
+
+        WeItemType.CmdAddGameRoom => Cx.CmdAddGameRoomModel,
+        WeItemType.CmdAddChessGame => Cx.CmdAddChessGameModel,
+        WeItemType.CmdGetChessGame => Cx.CmdChessGetGame,
+        WeItemType.CmdChessStartGame => Cx.CmdChessStartGame,
+        WeItemType.CmdChessMakeMove => Cx.CmdChessMakeMove,
+
         WeItemType.TodoStatuses => "Todo Statuses",
         WeItemType.TodoNotStarted => "Not Started",
         WeItemType.TodoInProgress => "In Progress",
@@ -1291,6 +1337,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.PovFirstPerson => "First Person",
         WeItemType.PovThirdPersonLimited => "Third Person Limited",
         WeItemType.PovThirdPersonOmniscient => "Third Person Omniscient",
+
+        WeItemType.GameStatus => "Game Status",
+        WeItemType.GameNotStarted => "Not Started",
+        WeItemType.GameInProgress => "In Progress",
+        WeItemType.GameCompleted => "Completed",
+        WeItemType.GameFailed => "Failed",
+
+        WeItemType.GameTwoPlayerToggle => "Two Player Toggle",
+        WeItemType.PlayerWhite => "Player White",
+        WeItemType.PlayerBlack => "Player Black",
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",

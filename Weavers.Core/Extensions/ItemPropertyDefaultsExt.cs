@@ -192,13 +192,30 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 10, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
           new() {Rank = 8, Key = Cx.ItHasUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
           new() {Rank = 7, Key = Cx.ItResolveState, DefaultValue = $"{(int)WeItemType.LinkNotResolved}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.LinkResolutionTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
-          new() {Rank = 5, Key = Cx.ItResolveLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
-          new() {Rank = 3, Key = Cx.ItExtractLink, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 5, Key = Cx.ItMediaType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
           new() {Rank = 2, Key = Cx.ItGuildNotes, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 1, Key = Cx.ItMaxLinks, DefaultValue = "20", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer }
         }
       },
       #endregion
+      #region Game Defaults
+      {
+        WeItemType.GameRoomModel,
+        new List<ItemPropertyDefault>(){
+            new() {Rank = 2, Key = Cx.ItRelativeFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder }            
+        }
+      },
+      { 
+        WeItemType.ChessGameModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 20, Key = Cx.ItWhiteDesk, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 19, Key = Cx.ItBlackDesk, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DeskModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 18, Key = Cx.ItGameStatus, DefaultValue = $"{(int)WeItemType.GameNotStarted}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GameStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor, IsReadOnly=true},
+          new() {Rank = 17, Key = Cx.ItGameResult, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 15, Key = Cx.ItSideToMove, DefaultValue = $"{(int)WeItemType.PlayerWhite}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.GameTwoPlayerToggle, EditorTypeId=(int)WeEditorType.LookupTypeEditor, IsReadOnly=true},
+        }
+      },
+      #endregion
+
       #region FileSystem Defaults
       {
         WeItemType.ProjectFolderModel,
@@ -315,7 +332,9 @@ namespace Weavers.Core.Extensions {
       #region Storytime Defaults
 
       { WeItemType.RealmModel, new List<ItemPropertyDefault>() {
-          new() {Rank = 1, Key = Cx.ItTone, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo }
+          new() {Rank = 11, Key = Cx.ItTone, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 8, Key = Cx.ItCoverImgPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 5, Key = Cx.ItCoverImgUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Url }
         }
       },
       { WeItemType.StoryModel, new List<ItemPropertyDefault>() {
@@ -359,6 +378,8 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 10, Key = Cx.ItRealm, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 9, Key = Cx.ItCredits, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
           new() {Rank = 5, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 3, Key = Cx.ItCoverImgPrompt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+          new() {Rank = 2, Key = Cx.ItCoverImgUrl, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Url }
         }
       },
       #endregion

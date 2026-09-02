@@ -33,7 +33,7 @@ namespace Weavers.Core.Handlers.Items {
       
       var newItem = await _mediator.Send(
         new CreateRelatedItemCommand(parentItemId,
-          ir.RelationTypeId, 
+          ir?.RelationTypeId ?? (int)WeRelationTypes.Contains, 
           item.ItemTypeId,       
           item.Name, 
           item.Description, 
@@ -48,7 +48,7 @@ namespace Weavers.Core.Handlers.Items {
         }
       }
 
-      return await _context.GetItemDtoById(newItem.Id, cancellationToken);
+      return await _context.GetItemDtoById(newItem!.Id, cancellationToken);
 
     }
   }

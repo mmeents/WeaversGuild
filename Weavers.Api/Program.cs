@@ -62,7 +62,8 @@ namespace Weavers.Api {
 
       app.MapSummaryEndpoints()
          .MapGraphFileEndpoints()
-         .MapMarkTodoEndpoint();
+         .MapMarkTodoEndpoint()
+         .MapChessGameEndpoints();
 
 
       await app.RunAsync();

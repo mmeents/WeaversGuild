@@ -31,6 +31,7 @@
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
       miMoveItemUp = new ToolStripMenuItem();
+      miDuplicateItem = new ToolStripMenuItem();
       miSepRefreshBottom = new ToolStripSeparator();
       miAddGithubToken = new ToolStripMenuItem();
       miAddDigitalOperator = new ToolStripMenuItem();
@@ -162,7 +163,8 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miDuplicateItem = new ToolStripMenuItem();
+      miAddGameRoom = new ToolStripMenuItem();
+      miAddChessGame = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -251,9 +253,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1122);
+      cmsTreeMenus.Size = new Size(209, 1166);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -269,6 +271,13 @@
       miMoveItemUp.Size = new Size(208, 22);
       miMoveItemUp.Text = "Move Item Up";
       miMoveItemUp.Click += miMoveItemUp_Click;
+      // 
+      // miDuplicateItem
+      // 
+      miDuplicateItem.Name = "miDuplicateItem";
+      miDuplicateItem.Size = new Size(208, 22);
+      miDuplicateItem.Text = "Duplicate Item";
+      miDuplicateItem.Click += miDuplicateItem_Click;
       // 
       // miSepRefreshBottom
       // 
@@ -951,6 +960,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1595,12 +1605,19 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miDuplicateItem
+      // miAddGameRoom
       // 
-      miDuplicateItem.Name = "miDuplicateItem";
-      miDuplicateItem.Size = new Size(208, 22);
-      miDuplicateItem.Text = "Duplicate Item";
-      miDuplicateItem.Click += miDuplicateItem_Click;
+      miAddGameRoom.Name = "miAddGameRoom";
+      miAddGameRoom.Size = new Size(208, 22);
+      miAddGameRoom.Text = "Add Game Room";
+      miAddGameRoom.Click += miAddGameRoom_Click;
+      // 
+      // miAddChessGame
+      // 
+      miAddChessGame.Name = "miAddChessGame";
+      miAddChessGame.Size = new Size(208, 22);
+      miAddChessGame.Text = "Add Chess Game";
+      miAddChessGame.Click += miAddChessGame_Click;
       // 
       // Form1
       // 
@@ -1795,5 +1812,7 @@
     private ToolStripMenuItem miEmptyDesk;
     private ToolStripMenuItem miAddRssLinkedHtml;
     private ToolStripMenuItem miDuplicateItem;
+    private ToolStripMenuItem miAddGameRoom;
+    private ToolStripMenuItem miAddChessGame;
   }
 }

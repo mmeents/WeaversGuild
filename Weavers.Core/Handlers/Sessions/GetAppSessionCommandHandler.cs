@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Security.Cryptography;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
@@ -9,7 +7,6 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Weavers.Core.Handlers.Sessions {
 
@@ -155,8 +152,8 @@ namespace Weavers.Core.Handlers.Sessions {
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
             (int)WeItemType.DigitalOperatorPoolModel, Cx.AppTeamFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
         if (DoPoolDto != null) {
-          var folderPath = Path.Combine(orgRootFolder, Cx.AppTeamFolder);
-          await _mediator.SetProperty(DoPoolDto, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+          var TeamPath = Path.Combine(orgRootFolder, Cx.AppTeamFolder);
+          await _mediator.SetProperty(DoPoolDto, Cx.ItRelativeFolder, TeamPath).ConfigureAwait(false);
 
           // add a digital operator model for the current user.
           var name = userName;
@@ -166,10 +163,9 @@ namespace Weavers.Core.Handlers.Sessions {
           if (newItem != null) {
             humanOperatorId = newItem.Id;
             var itsFilePathProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath);
-            if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {
-              string parentFolderPath = DoPoolDto.ResolveParentFolderPath(WeaverExt.AppProjectsPath);
-              var fullPath = Path.Combine(parentFolderPath, newItem.Name.UrlSafe() + ".json");
-              itsFilePathProp.Value = fullPath;
+            if (itsFilePathProp != null && string.IsNullOrEmpty(itsFilePathProp.Value)) {              
+              var TeamMemberPath = Path.Combine(TeamPath, newItem.Name.UrlSafe() + ".json");
+              itsFilePathProp.Value = TeamMemberPath;
               await itsFilePathProp.SaveProp(newItem, _mediator);
             }
             var itPresenceProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItPresence);
@@ -198,31 +194,44 @@ namespace Weavers.Core.Handlers.Sessions {
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
             (int)WeItemType.OrgDeskRolesModel, Cx.AppDeskRolesFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
         if (DeskRoles != null) {
-          var folderPath = Path.Combine(orgRootFolder, Cx.AppDeskRolesFolder);
-          await _mediator.SetProperty(DeskRoles, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+          var deskRolePath = Path.Combine(orgRootFolder, Cx.AppDeskRolesFolder);
+          await _mediator.SetProperty(DeskRoles, Cx.ItRelativeFolder, deskRolePath).ConfigureAwait(false);
         }
       }
 
-      // org chart
-      var OrgChartRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel);
-      if (OrgChartRelation == null) {
-        ItemDto? OrgChart = await _mediator.Send(
+      // work group folder
+      var WorkGroupRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.WorkGroupModel && r.RelatedItemId.HasValue);
+      ItemDto? WorkGroup = null;
+      string workGroupPath = "";
+      if (WorkGroupRelation == null) {
+        WorkGroup = await _mediator.Send(
           new CreateRelatedItemCommand(result.OrganizationId, (int)WeRelationTypes.Contains,
             (int)WeItemType.WorkGroupModel, Cx.AppWorkGroupFolder, "", "{}"), cancellationToken).ConfigureAwait(false);
-        if (OrgChart != null) {
-          var folderPath = Path.Combine(orgRootFolder, Cx.AppWorkGroupFolder);
-          await _mediator.SetProperty(OrgChart, Cx.ItRelativeFolder, folderPath).ConfigureAwait(false);
+        if (WorkGroup == null) {
+          throw new Exception("Failed to create work group folder");
+        }
+        workGroupPath = Path.Combine(orgRootFolder, Cx.AppWorkGroupFolder);
+        await _mediator.SetProperty(WorkGroup, Cx.ItRelativeFolder, workGroupPath).ConfigureAwait(false);
+      } else { 
+        WorkGroup = await _mediator.Send(
+          new GetItemByIdQuery(WorkGroupRelation.RelatedItemId!.Value), cancellationToken).ConfigureAwait(false);     
+      }
+
+      if (WorkGroup != null) {
+        var appSyncDeskName = $"AppSyncDeskOn{machineName}";
+        var appSyncDeskId = WorkGroup.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.DeskLogModel && r.RelatedItemName == appSyncDeskName)?.RelatedItemId ?? 0;
+        if (appSyncDeskId == 0) {
+    
           ItemDto? defaultLogDesk = await _mediator.Send(  // add default system stopping desk.
-            new CreateRelatedItemCommand(OrgChart.Id, (int)WeRelationTypes.Contains,
-              (int)WeItemType.DeskLogModel, $"TheLoomAppSyncDesk", "", "{}"), cancellationToken).ConfigureAwait(false);
+            new CreateRelatedItemCommand(WorkGroup.Id, (int)WeRelationTypes.Contains,
+              (int)WeItemType.DeskLogModel, appSyncDeskName, "", "{}"), cancellationToken).ConfigureAwait(false);
+
           if (defaultLogDesk != null) {
-            var folderPath2 = Path.Combine(folderPath, "TheLoomAppSyncDesk");
-            await _mediator.SetProperty(defaultLogDesk, Cx.ItFilePath, folderPath2).ConfigureAwait(false);
-                       
-            
+            var defaultLogDeskPath = Path.Combine(workGroupPath, appSyncDeskName);
+            await _mediator.SetProperty(defaultLogDesk, Cx.ItFilePath, defaultLogDeskPath).ConfigureAwait(false);
             await _mediator.SetProperty(defaultLogDesk, Cx.ItOperator, humanOperatorId.ToString()).ConfigureAwait(false);
 
-            var defaultTodo = await _appGraphOrgService.AddDeskTodo(defaultLogDesk, "TheLoomApp into Team Member", humanOperatorId, 
+            var defaultTodo = await _appGraphOrgService.AddDeskTodo(defaultLogDesk, "TheLoomApp into Team Member", humanOperatorId,
               "Default todo logs all actions by theLoomApp Human to the team member for attribution. Saves in settings.");
 
             if (defaultTodo != null) {
@@ -235,10 +244,10 @@ namespace Weavers.Core.Handlers.Sessions {
               }
               _settingService[key] = todoSetting;
             }
-            
           }
         }
       }
+      
 
       // docs folder
       var DocsRelation = orgItem.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.OrgFolderModel);
