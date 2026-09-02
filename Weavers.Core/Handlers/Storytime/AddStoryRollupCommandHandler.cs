@@ -128,7 +128,7 @@ namespace Weavers.Core.Handlers.Storytime {
           .OrderByDescending(r => r.RelatedItemId!.Value)
           .FirstOrDefault();
 
-        var actorPerformancesRelations = perf.Relations
+        var actorPerformancesRelations = perf!.Relations
           .Where(r => r.RelatedItemTypeId == (int)WeItemType.ActorPerformanceModel && r.RelatedItemId.HasValue)
           .OrderByDescending(r => r.RelatedItemId!.Value);
         var actorPerformancesIds = actorPerformancesRelations.Select(r => r.RelatedItemId!.Value).ToList();

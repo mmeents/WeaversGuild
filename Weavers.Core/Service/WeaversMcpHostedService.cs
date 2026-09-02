@@ -35,6 +35,7 @@ namespace Weavers.Core.Service {
       MCPServer.Register<AppGraphEntityTools>();
       MCPServer.Register<TodoTools>();
       MCPServer.Register<StorytimeTools>();
+      MCPServer.Register<ChessTools>();
 
       var mcpDriver = _configuration[Cx.Provider] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();

@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.AccessControl;
 using System.Text;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
@@ -42,6 +43,7 @@ namespace TheLoomApp {
     private readonly Dictionary<int, ItemTypeDto> _itemTypeCache = new();
     private readonly HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
     private readonly PropertiesTab _itemPropertiesTab;
+    private readonly ChessGameTab _chessBoardTab;
     private readonly IAppSettingService _settings;
     private AppSessionResponse? _sessionDetails = null;
     private bool _inResize = false;
@@ -89,6 +91,14 @@ namespace TheLoomApp {
         this.Invoke(() => RefreshNode(itemId));
       };
       _itemPropertiesTab = new PropertiesTab(_serviceScopeFactory);
+      _chessBoardTab = new ChessGameTab(_serviceScopeFactory);
+      _chessBoardTab.MoveCompleted += async (move) => {
+        if (_selectedNode != null && _selectedNode.Item != null) {
+          var itemId = _selectedNode.Item.Id;
+          _appDataService.ClearCache();
+          await this.LoadRootProjects(itemId);
+        }        
+      };
       _settings = scope.ServiceProvider.GetRequiredService<IAppSettingService>();
       SetupForStartup();
     }
@@ -449,9 +459,23 @@ namespace TheLoomApp {
         SetupTpRelations();
         SetupTpItems();
         SetupPropertiesTabForItem(item);
+        SetupChessTab(item);
       }
     }
 
+    private void SetupChessTab(ItemDto item) {
+      if (item.ItemTypeId == (int)WeItemType.ChessGameModel) {
+        if (!tabControl2.TabPages.Contains(_chessBoardTab)) {
+          tabControl2.TabPages.Add(_chessBoardTab);
+        }
+        _chessBoardTab.SetupChessTabForItem(item);
+      } else {
+        if (tabControl2.TabPages.Contains(_chessBoardTab)) {
+          tabControl2.TabPages.Remove(_chessBoardTab);
+        }
+
+      }
+    }
 
     private void SetupPropertiesTabForItem(ItemDto item) {
       if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
@@ -820,6 +844,8 @@ namespace TheLoomApp {
         miAddClassMethodParam.Visible = false;
         miAddEntity.Visible = false;
         miAddEntityProperty.Visible = false;
+        miAddGameRoom.Visible = false;
+        miAddChessGame.Visible = false;
         miSepAddBottom.Visible = false;
 
         miMoveItemUp.Visible = false;
@@ -903,6 +929,9 @@ namespace TheLoomApp {
         miAddClassMethodParam.Visible = itemType == WeItemType.ClassMethodModel;
         miAddEntity.Visible = itemType == WeItemType.LibraryModel || itemType == WeItemType.NamespaceModel;
         miAddEntityProperty.Visible = itemType == WeItemType.EntityClassModel;
+
+        miAddGameRoom.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddChessGame.Visible = itemType == WeItemType.GameRoomModel;
 
         miSepAddBottom.Visible = true;
 
@@ -1633,6 +1662,35 @@ namespace TheLoomApp {
       }
     }
 
+    private async void miAddGameRoom_Click(object sender, EventArgs e) {
+      try {
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.GameRoomModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddGameRoomModel(mediator, newItemName);
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add game room model - error:" + ex.Message);
+        MessageBox.Show($"Error adding game room model: {ex.Message}", "Add Game Room Model Failed");
+      }
+    }
+
+    private async void miAddChessGame_Click(object sender, EventArgs e) {
+      try {
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ChessGameModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddChessGameModel(mediator, newItemName);
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add chess game model - error:" + ex.Message);
+        MessageBox.Show($"Error adding chess game model: {ex.Message}", "Add Chess Game Model Failed");
+      }
+    }
 
     private void miMoveItemUp_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Parent == null) { return; }
@@ -1644,8 +1702,8 @@ namespace TheLoomApp {
       if (index2 < 0) { return; }
       var siblingNode = siblings[index2];
 
-      var item1 = _selectedNode.Relation.Rank;
-      var item2 = siblingNode.Relation.Rank;
+      var item1 = _selectedNode.Relation!.Rank;
+      var item2 = siblingNode.Relation!.Rank;
       if (item1 == item2) {
         item2++;
       }
@@ -1656,6 +1714,9 @@ namespace TheLoomApp {
       siblingNode.Relation.Rank = item1;
       _appDataService.UpdateRelationAsync(siblingNode.Relation);
       TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(parentNode, false, TreeViewAction.Expand));
+      if ((tvKb.SelectedNode?.Nodes.Count ?? 0) > _selectedNode.Index - 1) {
+        tvKb.SelectedNode = tvKb.SelectedNode.Nodes[_selectedNode.Index - 1];
+      }
 
     }
 
@@ -2305,7 +2366,12 @@ namespace TheLoomApp {
             } else {
               DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Failed Forward Max Attempts Reached, Response: {result.ResponseText}");
             }
-            await LoadRootProjects();      // UI reload treeview control.
+            if (_selectedNode != null && _selectedNode.Item.Id != null) {              
+              _appDataService.RemoveCacheItem(_selectedNode.Item.Id);
+              await LoadRootProjects(_selectedNode.Item.Id);      // UI reload treeview control.
+            } else {
+              await LoadRootProjects();
+            }
             await ReloadReadyTabAsync();
             _workingTodo = null;
             shouldContinue = true;
@@ -2656,7 +2722,15 @@ namespace TheLoomApp {
           if (dragNode != null && dragNode.Item != null && targetItem.Item != null) {
             var fnn = await _appDataService.MoveItemTo(dragNode.Item.Id, targetItem.Item.Id);
             _appDataService.ClearCache();
-            await LoadRootProjects();
+            tvKb.SelectedNode = targetItem;
+            await LoadRootProjects(targetItem.Item.Id);
+            foreach (ItemNode node in tvKb.SelectedNode.Nodes) {
+              if (node != null && string.Compare(node.Text, dragNode.Text, StringComparison.OrdinalIgnoreCase) == 0) {
+                tvKb.SelectedNode = node;
+                break;
+              }
+            }
+
           }
         }
 
@@ -2693,6 +2767,7 @@ namespace TheLoomApp {
       }
     }
     #endregion
+
 
 
 

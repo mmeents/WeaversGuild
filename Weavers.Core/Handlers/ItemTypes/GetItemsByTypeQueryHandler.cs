@@ -34,7 +34,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
         return activeTypes;
       } else if (lookuptypes.Contains(rt)) {  // regular lookup types are those that have child item types, so we return the child items as lookups
         var items = await _context.ItemTypes
-          .Where(i => i.ParentTypeId == request.ItemTypeId)
+          .Where(i => i.ParentTypeId == request.ItemTypeId).OrderBy(i => i.Name)
           .Select(i => new ItemLookup(i.Id, i.Description, i.Description))
           .ToListAsync(cancellationToken);
         return items;
@@ -66,8 +66,9 @@ namespace Weavers.Core.Handlers.ItemTypes {
           if (rt == WeItemType.GithubRepoBranchModel) {
             if (request.propertyItemId.HasValue) {
               var items = await _context.Relations
-                .Where(r => r.ItemId == request.propertyItemId.Value && r.RelatedItem.ItemTypeId == (int)WeItemType.GithubRepoBranchModel)
-                .Select(i => new ItemLookup(i.RelatedItemId, i.RelatedItem.Name, i.RelatedItem.Name))
+                .Where(r => r.ItemId == request.propertyItemId.Value && r.RelatedItem != null && r.RelatedItemId.HasValue
+                  && r.RelatedItem.ItemTypeId == (int)WeItemType.GithubRepoBranchModel)
+                .Select(i => new ItemLookup(i.RelatedItemId!.Value, i.RelatedItem!.Name, i.RelatedItem.Name))
                 .ToListAsync(cancellationToken);
               return items;
             } else {
@@ -87,13 +88,14 @@ namespace Weavers.Core.Handlers.ItemTypes {
           } else if (rt == WeItemType.DeskModel) {
             var items = await _context.Items
               .Where(i => i.ItemTypeId == (int)WeItemType.DeskModel || i.ItemTypeId == (int)WeItemType.DeskLogModel)
+              .OrderBy(i => i.Name)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
           } else if (rt == WeItemType.PresenceLmStudioGatewayModel || rt == WeItemType.PresenceClaudeGatewayModel || rt == WeItemType.PresenceTheLoomAppGatewayModel) {
-
             var items = await _context.Items
               .Where(i => i.ItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceClaudeGatewayModel || i.ItemTypeId == (int)WeItemType.PresenceTheLoomAppGatewayModel)
+              .OrderBy(i => i.Name)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
@@ -102,6 +104,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
 
             var items = await _context.Items
               .Where(i => i.ItemTypeId == (int)WeItemType.PresModelLmStudioModel || i.ItemTypeId == (int)WeItemType.PresModelClaudeModel || i.ItemTypeId == (int)WeItemType.PresModelHumanModel)
+              .OrderBy(i => i.Name)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;
@@ -109,6 +112,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
           } else {
             var items = await _context.Items
               .Where(i => i.ItemTypeId == request.ItemTypeId)
+              .OrderBy(i => i.Name)
               .Select(i => new ItemLookup(i.Id, i.Name, i.Description))
               .ToListAsync(cancellationToken);
             return items;

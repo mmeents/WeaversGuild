@@ -1,7 +1,9 @@
 ﻿
 using Scriban;
 using Scriban.Runtime;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
+using Weavers.Core.Extensions;
 using Weavers.Core.Models;
 
 
@@ -24,8 +26,32 @@ namespace ResearchSpaceTests {
     }
 
     [TestMethod]
-    public void TestMethod2() {    
+    public void TestMethod2() {
 
+      var defaultData = ItemPropertyDefaultsExt.DefaultProps;
+      var seedData = new List<ItemPropertyDefault>();
+
+      foreach (var itemType in defaultData.Keys) {
+        var item = defaultData[itemType];
+        foreach (var prop in item) {
+          seedData.Add(new ItemPropertyDefault {
+            Id = Hx.StableId((int)itemType, prop.Key),
+            ItemTypeId = (int)itemType,
+            Rank = prop.Rank,
+            Key = prop.Key,
+            DefaultValue = prop.DefaultValue,
+            ValueDataTypeId = prop.ValueDataTypeId,
+            ReferenceItemTypeId = prop.ReferenceItemTypeId,
+            EditorTypeId = prop.EditorTypeId,
+            IsRequired = prop.IsRequired,
+            IsVisible = prop.IsVisible,
+            IsReadOnly = prop.IsReadOnly
+          });
+        }
+      }
+
+      if (seedData.GroupBy(x => x.Id).Any(g => g.Count() > 1))
+        throw new InvalidOperationException("StableId collision in property defaults.");
     }
   }
 

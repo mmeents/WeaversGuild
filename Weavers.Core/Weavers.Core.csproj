@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.5.2" />
+    <PackageReference Include="AngleSharp" Version="1.7.2" />
+    <PackageReference Include="AngleSharp.Css" Version="1.0.2" />
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
-    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
-    <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
+    <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
     <PackageReference Include="MCPSharpMM" Version="1.0.14" />
     <PackageReference Include="MediatR" Version="12.5.0" />
     <PackageReference Include="MessagePack" Version="3.1.7" />
@@ -30,8 +31,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+    <PackageReference Include="Rudzoft.ChessLib" Version="0.0.3" />
     <PackageReference Include="Scriban" Version="7.2.3" />
-    <PackageReference Include="SmartReader" Version="0.11.0" />
+    <PackageReference Include="SmartReader" Version="0.11.1" />
   </ItemGroup>
 
   <ItemGroup>

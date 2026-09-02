@@ -143,6 +143,7 @@
       Margin = new Padding(3, 4, 3, 4);
       MinimumSize = new Size(556, 269);
       Name = "ImportOrgDocsDialog";
+      StartPosition = FormStartPosition.CenterParent;
       Text = "ImportOrgDocsDialog";
       Shown += ImportOrgDocsDialog_Shown;
       ResumeLayout(false);

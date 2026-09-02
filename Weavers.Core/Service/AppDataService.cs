@@ -50,6 +50,7 @@ namespace Weavers.Core.Service {
     Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting);
 
     bool ClearCache();
+    bool RemoveCacheItem(int itemId);
 
     Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
 
@@ -274,6 +275,10 @@ namespace Weavers.Core.Service {
 
     public bool ClearCache() {
       return _sessionCache.ClearCache();
+    }
+
+    public bool RemoveCacheItem(int itemId) {
+      return _sessionCache.RemoveCacheItem(itemId);
     }
 
     public async Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview) {

@@ -95,10 +95,11 @@ namespace Weavers.Core.Handlers.Builds {
         throw new Exception($"Failed to resolve folder path for realm parent {realmParentItem?.Name} (id {realmParentItem?.Id})");
       } 
       
-      var storyIds = realmItem.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.StoryRollupModel).Select(r => r.RelatedItemId).Where(id => id != null && id != 0).ToList();
+      var storyIds = realmItem!.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.StoryRollupModel)
+        .Select(r => r.RelatedItemId).Where(id => id != null && id != 0).ToList();
       var indexList = new IndexList();
       foreach (var storyId in storyIds) { 
-        var storyItem = await _context.GetItemDtoById(storyId.Value, CancellationToken.None);
+        var storyItem = await _context.GetItemDtoById(storyId!.Value, CancellationToken.None);
         if (storyItem == null) continue;
         var indexEntry = await BuildIndexEntry(realmItem, storyItem, realmFolderProp);
         indexList.Stories.Add(indexEntry);
@@ -169,7 +170,7 @@ namespace Weavers.Core.Handlers.Builds {
         Blurb = StringExt.Blurb(StoryItem.Description),
         Words = StringExt.WordCount(StoryItem.Description),
         Content = StoryItem.Description,
-        RealmName = realmItem.Name,
+        RealmName = realmItem!.Name,
         RealmNote = realmNote,
         RealmProse = realmItem.Description,
         Credits = credits

@@ -5,6 +5,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Items;
+using Weavers.Core.Handlers.Chess;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 
@@ -356,6 +357,23 @@ namespace TheLoomApp.Extensions {
         _tv.ReExpandSelectNode(newSubItem.Id);
     }
 
+    public static async Task AddGameRoomModel(this TreeView _tv, IMediator mediator, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || !item.IsValidFolderParent()) { return; }
+      var newSubItem = await mediator.Send(new AddGameRoomCommand(item.Id, name));
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
+
+    public static async Task AddChessGameModel(this TreeView _tv, IMediator mediator, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || item.ItemTypeId != (int)WeItemType.GameRoomModel) { return; }
+      var newSubItem = await mediator.Send(new AddChessGameCommand(item.Id, name, 0,0));
+      if (newSubItem == null) { return; }
+      _tv.AddNewItem(newSubItem);
+    }
 
     private static void ReExpandSelectNode(this TreeView _tv, int itemId) {
       if (_tv.SelectedNode == null) { return; }      

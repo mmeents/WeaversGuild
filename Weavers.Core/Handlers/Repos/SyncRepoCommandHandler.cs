@@ -202,7 +202,7 @@ namespace Weavers.Core.Handlers.Repos {
       
       if (string.IsNullOrEmpty(name)) name = gitPath.ParseLast("/");  // Final safety net
 
-      var repoRoot = callResult.ParentItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value;
+      var repoRoot = callResult.ParentItem!.Properties.FirstOrDefault(p => p.Name == Cx.ItRelativeFolder)?.Value;
       if (repoRoot == null) throw new Exception($"Parent item with ID {ParentId} does not have a valid relative folder property.");
             
 

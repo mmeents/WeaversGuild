@@ -5,7 +5,7 @@ using Weavers.Core.Extensions;
 namespace Weavers.Core.Entities {
   public  class ItemProperty {
     public int Id { get; set; }
-    public int? ItemPropertyDefaultId { get; set; }
+    public long? ItemPropertyDefaultId { get; set; }
     public int ItemId { get; set; }    
     public string Name { get; set; } = string.Empty;    
     public string? Value { get; set; }

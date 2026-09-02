@@ -147,6 +147,14 @@ namespace Weavers.Core.Constants {
     public const string CmdAddEntityClassImport = "addEntityClassImport";
     public const string CmdAddEntityProperty = "addEntityProperty";
 
+
+    public const string CmdAddGameRoomModel = "addGameRoomModel";
+    public const string CmdAddChessGameModel = "addChessBoardModel";
+    public const string CmdChessGetGame = "getChessGame";
+    public const string CmdChessStartGame = "chessStartGame";
+    public const string CmdChessMakeMove = "chessMakeMove";
+
+
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
 
@@ -179,6 +187,8 @@ namespace Weavers.Core.Constants {
     public const string ItClaudeLaunchPath = "ClaudeLaunchPath";    
     public const string ItCharacter = "Character";
 
+    public const string ItCoverImgPrompt = "CoverImgPrompt";
+    public const string ItCoverImgUrl = "CoverImgUrl";
     public const string ItConfirmedReady = "Ready";
     public const string ItContinueTodo = "NextTodo";
     public const string ItContextLength = "ContextLength";  
@@ -349,9 +359,19 @@ namespace Weavers.Core.Constants {
     public const string ItPrivateAssets = "PrivateAssets";
     public const string ItIncludeAssets = "IncludeAssets";
 
+    // Game specific properties
+    public const string ItWhiteDesk = "WhiteDesk";
+    public const string ItBlackDesk = "BlackDesk";
+    public const string ItSideToMove = "SideToMove";
+    public const string ItGameStatus = "GameStatus";
+    public const string ItGameResult = "GameResult";
+
+
     // Above is the method signiture and body start tag. Then MethodStartMarker, then body, then MethodEndMarker.
     public const string MethodStartMarker = $"  //Method Marker Start, edit below, leave above and Markers as is.";
     public const string MethodEndMarker =    "  } //Method Marker End";  // this line needs to be stripped when saving.
+
+
 
   }
 

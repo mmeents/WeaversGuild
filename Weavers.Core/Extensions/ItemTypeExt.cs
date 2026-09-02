@@ -7,55 +7,7 @@ using Weavers.Core.Models;
 namespace Weavers.Core.Extensions {
 
   public static class WeItemTypeExtensions {
-
-    public static string AsCsCode(this WeItemType itemType) {
-      return itemType switch {
-        WeItemType.CSharpClassType => "class",
-        WeItemType.CSharpRecordType => "record",
-        WeItemType.CSharpStructType => "struct",
-        WeItemType.CSharpStringType => "string",
-        WeItemType.CSharpBoolType => "bool",
-        WeItemType.CSharpCharType => "char",
-        WeItemType.CSharpIntType => "int",
-        WeItemType.CSharpLongType => "long",
-        WeItemType.CSharpShortType => "short",
-        WeItemType.CSharpDecimalType => "decimal",
-        WeItemType.CSharpDoubleType => "double",
-        WeItemType.CSharpFloatType => "float",
-        WeItemType.CSharpByteType => "byte",
-        WeItemType.CSharpDateTimeType => "DateTime",
-        WeItemType.CSharpDateType => "Date",
-        WeItemType.CSharpTimeType => "Time",
-        WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset",
-        WeItemType.CSharpByteArrayType => "byte[]",
-        WeItemType.CSharpGuidType => "Guid",
-        _ => itemType.ToString().ToLower()
-      };
-    }
-
-    public static string AsDefault(this WeItemType itemType) {
-      return itemType switch {
-        WeItemType.CSharpStringType => "string.Empty",
-        WeItemType.CSharpBoolType => "false",
-        WeItemType.CSharpCharType => "'\\0'",
-        WeItemType.CSharpIntType => "0",
-        WeItemType.CSharpLongType => "0L",
-        WeItemType.CSharpShortType => "0",
-        WeItemType.CSharpDecimalType => "0m",
-        WeItemType.CSharpDoubleType => "0d",
-        WeItemType.CSharpFloatType => "0f",
-        WeItemType.CSharpByteType => "0",
-        WeItemType.CSharpDateTimeType => "DateTime.MinValue",
-        WeItemType.CSharpDateType => "DateTime.MinValue.Date",
-        WeItemType.CSharpTimeType => "TimeSpan.Zero",
-        WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset.MinValue",
-        WeItemType.CSharpByteArrayType => "Array.Empty<byte>()",
-        WeItemType.CSharpGuidType => "Guid.Empty",
-        _ => "null"
-      };
-    }
-
-
+    
     public static int ImageIndex(this WeItemType itemType) {
       return itemType switch {
         WeItemType.OrganizationModel => 20,
@@ -93,6 +45,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel => 6,
         WeItemType.RssItemModel => 14,
         WeItemType.RssLinkedHtmlModel => 16,
+
+        WeItemType.GameRoomModel => 17,
+        WeItemType.ChessGameModel => 18,
 
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
@@ -240,7 +195,9 @@ namespace Weavers.Core.Extensions {
           WeItemType.LinkResolutionTypes,
           WeItemType.StoryStatus,
           WeItemType.SceneStatus,
-          WeItemType.PovTypes
+          WeItemType.PovTypes,
+          WeItemType.GameStatus,
+          WeItemType.GameTwoPlayerToggle,
       };
       return lookupTypes;
     }
@@ -476,6 +433,53 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static string AsCsCode(this WeItemType itemType) {
+      return itemType switch {
+        WeItemType.CSharpClassType => "class",
+        WeItemType.CSharpRecordType => "record",
+        WeItemType.CSharpStructType => "struct",
+        WeItemType.CSharpStringType => "string",
+        WeItemType.CSharpBoolType => "bool",
+        WeItemType.CSharpCharType => "char",
+        WeItemType.CSharpIntType => "int",
+        WeItemType.CSharpLongType => "long",
+        WeItemType.CSharpShortType => "short",
+        WeItemType.CSharpDecimalType => "decimal",
+        WeItemType.CSharpDoubleType => "double",
+        WeItemType.CSharpFloatType => "float",
+        WeItemType.CSharpByteType => "byte",
+        WeItemType.CSharpDateTimeType => "DateTime",
+        WeItemType.CSharpDateType => "Date",
+        WeItemType.CSharpTimeType => "Time",
+        WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset",
+        WeItemType.CSharpByteArrayType => "byte[]",
+        WeItemType.CSharpGuidType => "Guid",
+        _ => itemType.ToString().ToLower()
+      };
+    }
+
+    public static string AsDefault(this WeItemType itemType) {
+      return itemType switch {
+        WeItemType.CSharpStringType => "string.Empty",
+        WeItemType.CSharpBoolType => "false",
+        WeItemType.CSharpCharType => "'\\0'",
+        WeItemType.CSharpIntType => "0",
+        WeItemType.CSharpLongType => "0L",
+        WeItemType.CSharpShortType => "0",
+        WeItemType.CSharpDecimalType => "0m",
+        WeItemType.CSharpDoubleType => "0d",
+        WeItemType.CSharpFloatType => "0f",
+        WeItemType.CSharpByteType => "0",
+        WeItemType.CSharpDateTimeType => "DateTime.MinValue",
+        WeItemType.CSharpDateType => "DateTime.MinValue.Date",
+        WeItemType.CSharpTimeType => "TimeSpan.Zero",
+        WeItemType.CSharpDateTimeOffsetType => "DateTimeOffset.MinValue",
+        WeItemType.CSharpByteArrayType => "Array.Empty<byte>()",
+        WeItemType.CSharpGuidType => "Guid.Empty",
+        _ => "null"
+      };
+    }
+
     // template to resolve the Entity Config column by type. valide and merge in max size if needed.
     public static string GetConfigSqlType(this WeItemType type, string maxSize) {
       string vmSize = maxSize.ValidateMaxSize(type);
@@ -644,12 +648,18 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,
         //WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
         WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
+
+        WeItemType.CmdAddGameRoom => Cx.CmdAddGameRoomModel,
+        WeItemType.CmdAddChessGame => Cx.CmdAddChessGameModel,
+        WeItemType.CmdGetChessGame => Cx.CmdChessGetGame,
+        WeItemType.CmdChessStartGame => Cx.CmdChessStartGame,
+        WeItemType.CmdChessMakeMove => Cx.CmdChessMakeMove,
         _ => null
       };
     }
 
     public static bool CanDuplicate(this int itemTypeId) {
-      return itemTypeId switch {        
+      return itemTypeId switch {
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.WorkGroupModel => true,
@@ -661,6 +671,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.RssChannelModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
+        (int)WeItemType.GameRoomModel => true,
+        (int)WeItemType.ChessGameModel => true,
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.GitFolderModel => true,

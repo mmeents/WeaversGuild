@@ -4,7 +4,7 @@ using Weavers.Core.Extensions;
 
 namespace Weavers.Core.Entities {
   public class ItemPropertyDefault {
-    public int Id { get; set; } = 0;
+    public long Id { get; set; } = 0;
     public int ItemTypeId { get; set; } = 0;
     public int Rank { get; set; } = 1;
     public string Key { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ namespace Weavers.Core.Entities {
     public void Configure(EntityTypeBuilder<ItemPropertyDefault> builder) {
       builder.ToTable("ItemPropertyDefaults");
       builder.HasKey(x => x.Id);
-      builder.Property(x => x.Id).ValueGeneratedOnAdd();
+      builder.Property(x => x.Id);
       builder.Property(x => x.ItemTypeId).IsRequired();
       builder.Property(x => x.Rank).HasDefaultValue(1);
       builder.Property(x => x.Key).IsRequired().HasMaxLength(200);
@@ -68,13 +68,14 @@ namespace Weavers.Core.Entities {
 
       var defaultData = ItemPropertyDefaultsExt.DefaultProps;
       var seedData = new List<ItemPropertyDefault>();
-      var idCounter = 0;
+      if (seedData.GroupBy(x => x.Id).Any(g => g.Count() > 1))
+        throw new InvalidOperationException("StableId collision in property defaults.");
+
       foreach (var itemType in defaultData.Keys) { 
         var item = defaultData[itemType];
-        foreach(var prop in item) { 
-          idCounter++;
+        foreach(var prop in item) {           
           seedData.Add(new ItemPropertyDefault {
-            Id = idCounter,
+            Id = Hx.StableId((int)itemType, prop.Key),
             ItemTypeId = (int)itemType,
             Rank = prop.Rank,
             Key = prop.Key,
@@ -88,7 +89,10 @@ namespace Weavers.Core.Entities {
           });
         }
       }
-      
+
+      if (seedData.GroupBy(x => x.Id).Any(g => g.Count() > 1))
+        throw new InvalidOperationException("StableId collision in property defaults.");
+
       builder.HasData( seedData );
     }
   }

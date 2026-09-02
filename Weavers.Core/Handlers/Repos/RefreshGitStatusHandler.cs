@@ -38,7 +38,7 @@ namespace Weavers.Core.Handlers.Repos {
         var untrackedCount = status.Untracked.Count();
         var lastCommit = repo.Head.Tip;  // was TrackedBranch.Tip, but that can be null if the branch is not tracking a remote branch
 
-        var remoteNameProp = repoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRemoteName);
+        var remoteNameProp = repoItem!.Properties.FirstOrDefault(p => p.Name == Cx.ItRemoteName);
         if (remoteNameProp != null) {
           var updated0 = await _mediator.Send(new UpdateItemPropertyCommand(remoteNameProp.Id, remoteName), ct);
         }
@@ -96,7 +96,7 @@ namespace Weavers.Core.Handlers.Repos {
       }
 
       if (isGoForSync) {
-        var syncCommand = new SyncRepoCommand(repoItem.Id);
+        var syncCommand = new SyncRepoCommand(repoItem!.Id);
         var syncResult = await _mediator.Send(syncCommand, ct);        
       }
       return repoItem;
