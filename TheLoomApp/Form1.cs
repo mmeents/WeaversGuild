@@ -2366,7 +2366,12 @@ namespace TheLoomApp {
             } else {
               DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Failed Forward Max Attempts Reached, Response: {result.ResponseText}");
             }
-            await LoadRootProjects();      // UI reload treeview control.
+            if (_selectedNode != null && _selectedNode.Item.Id != null) {              
+              _appDataService.RemoveCacheItem(_selectedNode.Item.Id);
+              await LoadRootProjects(_selectedNode.Item.Id);      // UI reload treeview control.
+            } else {
+              await LoadRootProjects();
+            }
             await ReloadReadyTabAsync();
             _workingTodo = null;
             shouldContinue = true;
