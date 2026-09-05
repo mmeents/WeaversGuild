@@ -1,5 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Rudzoft.ChessLib;
+using Rudzoft.ChessLib.Enums;
+using Rudzoft.ChessLib.MoveGeneration;
+using Rudzoft.ChessLib.Fen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +23,11 @@ namespace Weavers.Core.Handlers.Chess {
   public class ChessStartGameCommandHandler : IRequestHandler<ChessStartGameCommand, string> {
     private readonly IMediator _mediator;
     private readonly FabricDbContext _context;
-    public ChessStartGameCommandHandler(IMediator mediator, FabricDbContext context) {
+    private readonly IServiceScopeFactory _scopeFactory;
+    public ChessStartGameCommandHandler(IMediator mediator, FabricDbContext context, IServiceScopeFactory scopeFactory) {
       _mediator = mediator;
       _context = context;
-
+      _scopeFactory = scopeFactory;
     }
     public async Task<string> Handle(ChessStartGameCommand request, CancellationToken cancellationToken) {
 
@@ -89,7 +94,7 @@ namespace Weavers.Core.Handlers.Chess {
 
 
       // setup todo on whites desk.
-      var playTodoName = $"Play next 1 chess move for game Id: {request.ChessGameId} as white.";
+      var playTodoName = $"Play first move for chess gameId: {request.ChessGameId} as white.";
 
       var newTodoItem = await _mediator.Send(
        new CreateRelatedItemCommand(whiteDesk.Id, (int)WeRelationTypes.Contains,
@@ -99,11 +104,26 @@ namespace Weavers.Core.Handlers.Chess {
         throw new Exception("Failed to create new todo item on white players desk.");
       }
 
+      using var scope = _scopeFactory.CreateScope();
+      var _position = scope.ServiceProvider.GetRequiredService<IPosition>();
+      var fenData = new FenData(Fen.StartPositionFen); // new game.
+      State _lastState = new();
+      List<State> _states = new();
+      _position.Set(in fenData, ChessMode.Normal, _lastState);
+      IGame _game = new Game(_position);
+
+      var newLegalMoves = _position.GenerateMoves();
+      var newLegalMovesStr = string.Join(";", newLegalMoves.Select(m => m.Move.ToString())).Trim();
       bool newTodoPromptSet = false;
       var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
       if (newTodoPromptProp != null) {
         newTodoPromptProp.Value =
-          "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine + playTodoName;
+          "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine + playTodoName + Environment.NewLine +            
+            "FEN:" + _position.FenNotation + Environment.NewLine +
+            "Chess board" + Environment.NewLine +
+            _game.RenderBoard() + Environment.NewLine +
+            "Legal Moves: " + newLegalMovesStr + Environment.NewLine +
+            $"again, gameId: {request.ChessGameId}, play White next move."; ;
         await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
         newTodoPromptSet = true;
       }

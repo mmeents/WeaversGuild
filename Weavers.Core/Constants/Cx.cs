@@ -8,55 +8,67 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Weavers.Core.Constants {
-  public static class Cx {
-    public static string AppName => "WeaversGuild";  // org like name describes project off the app data folder.
-    public static string AppOrgExport => "TheOrgExport.md"; 
-    public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, and data together in a structured agentic manner.";
-    // will just go with what they said below lol... 
-    public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, documentation, and data to enhance software development. Our mission is to empower developers with innovative solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";
 
-    //
-    public static string CdnUrlPrismJs = "https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js";
+  // This class contains constants and configuration values for the WeaversGuild applications.
+  public static class Cx {    
 
-    // Org folder names
-    public static string AppHarnessAppName => "TheLoom";
-    public static string AppSessionsFolder => "Sessions";
-    public static string AppGatewayFolder => "Gateways";
-    public static string AppLoomPresenceFolder => "LoomApp Gateway";
-    public static string AppLoomPresUserName => "JoeSmow";
-    public static string AppCredentialStoreFolder => "Credentials";
-    public static string AppTeamFolder => "Team";
-    public static string AppDeskRolesFolder => "DeskRoles";
-    public static string AppWorkGroupFolder => "WorkGroups";
-    public static string AppHarnessMcpName => "TheLoomMcp";
-    public static string Provider => "provider";
-    public static string AppExeName => "TheLoomApp.exe";
-    public static string AppApiName => "Weavers.Api";
+    // The Org details.
+    public static string AppName => "WeaversGuild";  // repo, root org like name.
+    public static string AppVersion => "1.2.154";    // version of the: 1. app. database.    
+    public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
+      "and data together in a structured agentic manner.";    
+    public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, "+
+      "documentation, and data to enhance software development. Our mission is to empower developers with innovative "+
+      "solutions that streamline workflows, foster collaboration, and drive productivity. We are committed to building "+
+      "a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";
+    
+
+    // Org folder names                                                    
+    public const string ApsDefaultFolder = "AppDefaultFolder";
+    public static string AppHarnessAppName => "TheLoom";  // partial name of the harness app, used to find the harness folder in the org.
+    public static string AppSessionsFolder => "Sessions";  // harness app folder for sessions.
+    public static string AppGatewayFolder => "Gateways";  // harness app folder for gateways.
+    public static string AppLoomPresenceFolder => "LoomApp Gateway";  // Gateway to represent the loom app nodes text. 
+    public static string AppCredentialStoreFolder => "Credentials";  // Systems secrets vaults name for the org.
+    public static string AppTeamFolder => "Team";   // org team folder name for the org.
+    public static string AppDeskRolesFolder => "DeskRoles";  // org desk roles folder name for the org.
+    public static string AppWorkGroupFolder => "WorkGroups";  // org work groups folder name for the org.
+    public const string OrgDocsFolder = "Documents";
+
+
+    // Mcp App details.
     public static string McpAppName => "TheLoomMCP";
-    public static string AppVersion => "1.1.37";
-    public const string ApiLocalPort = "44344";
-    public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
-    public const string CredentialProtectorName = "WeaversGuild.YouGotThis";
-    public const int KeyLifetimeDays = 90;
-
-    public const double DefaultTemperature = 0.76;
-    public const int DefaultLmStudioContextLength = 60000;
-    public const int DefaultSummaryMaxLength = 20000;
-    public const int intPropertyLabelLeft = 116;
-    public const int NameFieldMaxLength = 500;
-    public const long MaxImportFileSize = 512 * 1024; // 512 KB
-
-    public const string DaemonsMcpToolName = "mcp/daemonsmcp";
     public const string WeaversMcpToolName = "mcp/theloommcp";
 
+    // MCP startup in mcp.json, use provider key to name the service connection provider.
+    // Used in session creation to identify the which app is requesting from params set in startup.
+    public static string McpStartupParamProviderKey => "provider";
     public static List<string> availableToolsList = new List<string> { 
       //DaemonsMcpToolName, // optional, remove if configured. 
       WeaversMcpToolName 
     };
 
-    public const string ClaudeDefaultModel = "sonnet";
+    // API details 
+    public const string ApiVersion = "v1";
+    public const string ApiLocalPort = "44344";
+    public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
+    public const string CredentialProtectorName = "WeaversGuild.YouGotThis";  // don't change unless starting over with a new org, otherwise existing secrets will be lost.
+    public const int KeyLifetimeDays = 90;  // days before a new key is generated for the data protector, old keys are still valid for decryption.
 
-    // legacy Cmd from BaseToolsHandler, consider refactor to be more specific to the handler or tool using them.
+
+    // int defaults.
+    public const double DefaultTemperature = 0.76;  // todo: need to make this configurable per model, maybe per request.
+    public const int DefaultLmStudioContextLength = 60000;  // this is default that sets the model contextLength property.
+    public const int DefaultSummaryMaxLength = 20000;  // cut off guard on the SummaryDto content results to tool calls. anything larger than this and content is not returned.
+    public const int intPropertyLabelLeft = 116; // left margin for the left edge of the property editors in the PropertiesTabs control. 
+    public const int NameFieldMaxLength = 500;  // Item Name column width and guard.
+    public const long MaxImportFileSize = 512 * 1024; // 512 KB limit for the git file sync import, to avoid large files being imported into the org graph.
+
+
+
+    public static string AppOrgExport => "TheOrgExport.md"; 
+
+    // legacy Cmd from BaseToolsHandler, they are unavailable in the mcp server.
     public const string CmdGetById = "get-item-by-id";
     public const string CmdGetSubgraph = "get-subgraph";
     public const string CmdAddRelationItem = "create-related-item";
@@ -66,7 +78,8 @@ namespace Weavers.Core.Constants {
     public const string CmdAddRelation = "create-relation";
     public const string CmdUpdateRelation = "update-relation";
 
-    // mcp tool commands
+
+    // System Mcp tool commands
     public const string CmdHelp = "help";
     public const string CmdListProjects = "listProjects";
     public const string CmdSearch = "search";
@@ -155,6 +168,8 @@ namespace Weavers.Core.Constants {
     public const string CmdChessMakeMove = "chessMakeMove";
 
 
+
+    // Tool property descriptions
     public const string ValidRelationTypes = "Relation type ";
     public const string ValidItemTypes = "Item types Id ";
 
@@ -162,15 +177,14 @@ namespace Weavers.Core.Constants {
     public const string DefaultSDK = "Microsoft.NET.Sdk";
     public const string DefaultTestSDK = "MSTest.Sdk/3.6.4";
 
-    // AppSettings keys
-    public const string ApsDefaultFolder = "AppDefaultFolder";        
-    public const string OrgDocsFolder = "Documents";
+
 
     // json CharacterPrompt list types
     public const string RoleType = "Role";
     public const string NarrationType = "Narration";
     public const string ActionType = "Action";
     public const string LineType = "Line";
+
 
     // itemProperty names constants 
     public const string ItAccessModifier = "AccessModifier";   
@@ -249,9 +263,6 @@ namespace Weavers.Core.Constants {
     public const string ItIsStatic = "IsStatic";
     public const string ItIsVirtual = "IsVirtual";
     public const string ItIsRemote = "IsRemote";
-    //public const string ItJobCounter = "JobCounter";
-    //public const string ItJobSuccess = "JobSuccess";
-    //public const string ItJobFailure = "JobFailure";
     public const string ItLastStatusChk = "LastStatusChk";
 
     public const string ItLastCommitSha = "LastCommitSha";
@@ -296,7 +307,6 @@ namespace Weavers.Core.Constants {
     public const string ItResolveLink = "ResolveLink";
     public const string ItExtractLink = "ExtractLink";
     public const string ItStructContent = "StructContent";
-    //public const string ItLineNumber = "LineNumber";
     public const string ItRank = "Rank";
     public const string ItRating = "Rating";
     public const string ItRealm = "Realm";
@@ -344,7 +354,6 @@ namespace Weavers.Core.Constants {
     public const string ItVote = "Votes";
     public const string ItValidate = "Validate";
 
-    public const string TestMethodType = "TestMethod";
 
     // library specific properties
     public const string ItVersion = "Version";
@@ -370,7 +379,6 @@ namespace Weavers.Core.Constants {
     // Above is the method signiture and body start tag. Then MethodStartMarker, then body, then MethodEndMarker.
     public const string MethodStartMarker = $"  //Method Marker Start, edit below, leave above and Markers as is.";
     public const string MethodEndMarker =    "  } //Method Marker End";  // this line needs to be stripped when saving.
-
 
 
   }

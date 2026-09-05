@@ -288,7 +288,7 @@ namespace Weavers.Core.Handlers.Presence {
           // attempt != null means we got past config + created the attempt — a genuine invocation failure,
           // not a setup/NotConfigured problem. If it was the last allowed attempt, infra gives up.
           // (FailTodo first, while the attempt is still RunInProgress, so ContinueTodo links; then mark RunFailed.)
-          if (nextAttemptNumber >= maxAttempts) {
+          if (nextAttemptNumber > maxAttempts) {
             await _mediator.Send(new FailTodoCommand(request.TodoId,
               $"Invocation failed on final attempt {nextAttemptNumber}: {ex.Message}"), CancellationToken.None);
           }

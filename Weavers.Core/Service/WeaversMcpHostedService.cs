@@ -37,7 +37,7 @@ namespace Weavers.Core.Service {
       MCPServer.Register<StorytimeTools>();
       MCPServer.Register<ChessTools>();
 
-      var mcpDriver = _configuration[Cx.Provider] ?? "McpPilotNameNotSet";
+      var mcpDriver = _configuration[Cx.McpStartupParamProviderKey] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var result = await mediator.Send(new GetAppSessionCommand(mcpDriver), stoppingToken);

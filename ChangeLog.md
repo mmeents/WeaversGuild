@@ -1,5 +1,9 @@
 
 ## Update History
+- ver 1.154.3 
+  - Reworks Start Chess Game and Make Move to pass the details of the game into the todo so players do not need to use getChessGame to get the game but can respond in 1 call make move.
+  - Minor cleanup in the constants. 
+  
 - Db 154 9/2/2026  - Entertainment divisions forming in the guild!!!
   - rework ItemProperty defaults to use hash instead of autoincrement to smothen out future versions and being able to continue a db without starting over.
   - Adds Game Room as a folder and ChessGame objects so we can have them play chess.

@@ -23,15 +23,9 @@ namespace Weavers.Api {
       builder.Logging.ClearProviders();
       builder.Logging.AddSerilog();
       builder.Services.AddMvc();
-
-
       builder.Services.AddWeaversCore<FabricDbContext>(builder.Configuration);
-     // builder.Services.AddMediatR(cfg => {
-     //   cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);   
-     // });
-
       builder.Services.AddSwaggerGen(options => {
-        options.SwaggerDoc("v1", new OpenApiInfo { Title = $"{Cx.AppName} API", Version = "v1" });
+        options.SwaggerDoc(Cx.ApiVersion, new OpenApiInfo { Title = $"{Cx.AppName} API", Version = Cx.ApiVersion });
       });
 
       builder.Services.AddCors(options => {
@@ -44,10 +38,7 @@ namespace Weavers.Api {
       });
 
       var app = builder.Build();
-
-      app.UseCors("LocalDev");
-
-      // Configure middleware
+      app.UseCors("LocalDev");      
       if (app.Environment.IsDevelopment()) {
         app.MapSwagger();
         app.UseSwagger();
@@ -55,24 +46,17 @@ namespace Weavers.Api {
           options.SwaggerEndpoint("v1/swagger.json", $"{Cx.AppName} {Cx.AppVersion}");
         });
       }
-
-
       app.UseHttpsRedirection();
-
-
       app.MapSummaryEndpoints()
          .MapGraphFileEndpoints()
          .MapMarkTodoEndpoint()
          .MapChessGameEndpoints();
 
-
       await app.RunAsync();
     }
 
     private static void ConfigureSerilog() {
-      // Use the proper logs path from Cx.LogsAppPath
       var logsPath = WeaverExt.LogsAppPath;
-
       Log.Logger = new LoggerConfiguration()
           .MinimumLevel.Debug()
           .MinimumLevel.Override("Microsoft", new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Warning)) // Reduce Microsoft logging noise
@@ -97,8 +81,4 @@ namespace Weavers.Api {
     }
   }
 
-
-
-
-  //   // nice to land on something when we hit run for now.
 }

@@ -1,6 +1,6 @@
 # WeaversGuild
 
-WeaversGuild as the virtual decentralized organization. Footholds are your sets of computers and folders. The Apps are TheLoomApp and TheLoomMcp are the harness for the agents and the knowledge base is the FabricDbContext a SQL Server instance.   
+WeaversGuild as the virtual decentralized organization. Footholds are the computers from agents perspectives. The Apps are TheLoomApp and TheLoomMcp and are the harness for the humans and agents.  The knowledge base is the FabricDbContext a SQL Server instance.   
 
 ## Build & Run
 

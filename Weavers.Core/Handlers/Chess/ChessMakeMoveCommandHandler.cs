@@ -228,7 +228,7 @@ namespace Weavers.Core.Handlers.Chess {
 
         
         // setup todo on opponent's desk. isWhiteToPlay last move so next is switched.
-        var playTodoName = $"gameId: {request.ChessGameId} Play new {(isWhiteToPlay ? "Black" : "White")} next move.";
+        var playTodoName = $"gameId: {request.ChessGameId} Ply {_position.Ply}, play {(isWhiteToPlay ? "Black" : "White")} next move.";
 
         newTodoItem = await _mediator.Send(
           new CreateRelatedItemCommand(opponentDeskId, (int)WeRelationTypes.Contains,
@@ -240,8 +240,16 @@ namespace Weavers.Core.Handlers.Chess {
         bool newTodoPromptSet = false;
         var newTodoPromptProp = newTodoItem.Properties.FirstOrDefault(p => p.Name == Cx.ItUserPromptTemplate);
         if (newTodoPromptProp != null) {
+          var newMoveHistory = string.Join(";", _gameMoveRecords.OrderBy(r => r.Ply).Select(r => $" {r.Ply}: {r.Move.ToString()}")).Trim();
+          var newLegalMovesStr = string.Join(";", newLegalMoves.Select(m => m.Move.ToString())).Trim();
           newTodoPromptProp.Value =
-            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine + playTodoName;
+            "TodoId: {{model.todo.id}} {{model.todo.name}}" + Environment.NewLine + playTodoName + Environment.NewLine + 
+            "Move History: " + newMoveHistory + Environment.NewLine +
+            "FEN:"+ _position.FenNotation + Environment.NewLine +
+            "Chess board" + Environment.NewLine +
+            _game.RenderBoard() + Environment.NewLine +
+            "Legal Moves: "+ newLegalMovesStr + Environment.NewLine+
+            $"again, gameId: {request.ChessGameId}, play {(isWhiteToPlay ? "Black" : "White")} next move.";
           await newTodoPromptProp.SaveProp(newTodoItem, _mediator);
           newTodoPromptSet = true;
         }
