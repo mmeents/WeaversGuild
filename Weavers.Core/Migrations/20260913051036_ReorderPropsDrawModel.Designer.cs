@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Weavers.Core;
 
@@ -11,9 +12,11 @@ using Weavers.Core;
 namespace Weavers.Core.Migrations
 {
     [DbContext(typeof(FabricDbContext))]
-    partial class FabricDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913051036_ReorderPropsDrawModel")]
+    partial class ReorderPropsDrawModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1856,6 +1859,32 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 481157527L,
+                            DefaultValue = "0",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1094,
+                            Key = "AcceptedCount",
+                            Rank = 2,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 563161507L,
+                            DefaultValue = "0",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1094,
+                            Key = "RejectedCount",
+                            Rank = 1,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
                             Id = 137311920L,
                             DefaultValue = "0",
                             EditorTypeId = 10,
@@ -1864,7 +1893,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             ItemTypeId = 1096,
                             Key = "TodoItem",
-                            Rank = 700003,
+                            Rank = -3,
                             ReferenceItemTypeId = 1050,
                             ValueDataTypeId = 57
                         },
@@ -1878,7 +1907,7 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             ItemTypeId = 1096,
                             Key = "AddedBy",
-                            Rank = 700005,
+                            Rank = -5,
                             ValueDataTypeId = 54
                         },
                         new
@@ -1891,35 +1920,21 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             ItemTypeId = 1096,
                             Key = "DrawStatus",
-                            Rank = 700007,
+                            Rank = -7,
                             ReferenceItemTypeId = 310,
                             ValueDataTypeId = 57
                         },
                         new
                         {
-                            Id = 1997314683L,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1096,
-                            Key = "ReplacedBy",
-                            Rank = 700008,
-                            ReferenceItemTypeId = 1096,
-                            ValueDataTypeId = 57
-                        },
-                        new
-                        {
-                            Id = 1509543669L,
+                            Id = 1215418462L,
                             DefaultValue = "",
                             EditorTypeId = 16,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
                             ItemTypeId = 1096,
-                            Key = "Produced",
-                            Rank = 700009,
+                            Key = "RefItem",
+                            Rank = -9,
                             ValueDataTypeId = 57
                         },
                         new

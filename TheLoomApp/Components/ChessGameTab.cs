@@ -34,7 +34,7 @@ namespace TheLoomApp.Components {
     private readonly IServiceScopeFactory _scopeFactory;
     private ItemDto? _item = null;
 
-    public event Action<string> MoveCompleted;
+    public event Action<string>? MoveCompleted;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string TitleLabel {
@@ -60,10 +60,6 @@ namespace TheLoomApp.Components {
 
     public ChessGameTab(IServiceScopeFactory scopeFactory) {
       _scopeFactory = scopeFactory;
-      InitializeComponent();
-    }
-
-    private void InitializeComponent() {
       basePanel = new Panel();
       chessBoard1 = new ChessBoard();
       gameStatus = new Label();
@@ -135,7 +131,7 @@ namespace TheLoomApp.Components {
       // 
       // ChessGameTab
       //
-      Controls.Add(basePanel);      
+      Controls.Add(basePanel);
       basePanel.Controls.Add(gameStatus);
       basePanel.Controls.Add(chessBoard1);
       basePanel.Controls.Add(moveHistory);
@@ -146,7 +142,6 @@ namespace TheLoomApp.Components {
       Resize += ChessGameTab_Resize;
       basePanel.ResumeLayout(false);
       ResumeLayout(false);
-
     }
 
 
@@ -157,21 +152,21 @@ namespace TheLoomApp.Components {
       var position = scope.ServiceProvider.GetRequiredService<IPosition>();
       var game = position.GetCurrentGame(item);
       if (game != null) {
-        chessBoard1.SyncWithGame(game);      
+        chessBoard1.SyncWithGame(game);
+        var sideToMove = game.Pos.SideToMove.IsWhite ? "White" : "Black";
+        TitleLabel = $"Chess Game - {item.Name}";
+        gameStatus.Text = _titleLabel + $" - {sideToMove} to move";
+        var ml = game.Pos.GenerateMoves();
+        cbNextMove.Items.Clear();
+        cbNextMove.Items.AddRange(ml.Select(m => new MoveOption(m.Move)).ToArray());
       }
-      var sideToMove = game.Pos.SideToMove.IsWhite ? "White" : "Black";
-      TitleLabel = $"Chess Game - {item.Name}";
-      gameStatus.Text = _titleLabel+ $" - {sideToMove} to move";
       var playerMoves = JsonSerializer.Deserialize<List<MoveRecord>>(item.Data) ?? new List<MoveRecord>();
       MoveHistoryText = "Moves Made: "+string.Join(",", playerMoves.Select(m => m.Move.ToString()));
-      var ml = game.Pos.GenerateMoves();
-      cbNextMove.Items.Clear();
-      cbNextMove.Items.AddRange(ml.Select(m => new MoveOption(m.Move)).ToArray());
       lbNextMove.Text = "Set Next Moves, TodoId:  ";
       ChessGameTab_Resize(this, EventArgs.Empty);
     }
 
-    private void ChessGameTab_Resize(object sender, EventArgs e) {
+    private void ChessGameTab_Resize(object? sender, EventArgs e) {
       var measuredSize = this.Size;
       var charHeight = gameStatus.Height;
       if (basePanel != null && chessBoard1 != null) {
@@ -212,12 +207,12 @@ namespace TheLoomApp.Components {
       }
     }
 
-    private async void btnDoNextMove_Click(object sender, EventArgs e) {
+    private async void btnDoNextMove_Click(object? sender, EventArgs e) {
       if (_item != null && cbNextMove.SelectedItem != null && edTodoId != null) {
         try {
           var scope = _scopeFactory.CreateScope();
           var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-          string nextMove = cbNextMove.SelectedItem.ToString();
+          string nextMove = cbNextMove.SelectedItem?.ToString() ?? string.Empty;
           var result = await mediator.Send(new ChessMakeMoveCommand(_item.Id, nextMove, (int)edTodoId.Value));
           edTodoId.Value = result.TodoId ?? edTodoId.Value;
           MoveCompleted?.Invoke(nextMove);

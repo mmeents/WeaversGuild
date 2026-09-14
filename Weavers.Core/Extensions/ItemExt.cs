@@ -42,7 +42,7 @@ namespace Weavers.Core.Extensions {
       foreach (var property in expected) {
         var existing = properties.FirstOrDefault(p => p.Name == property.Key);
 
-        if (existing == null) {
+        if (existing == null) {          
           existing = new ItemProperty {
             ItemPropertyDefaultId = property.Id,
             ItemId = itemlId,
@@ -54,7 +54,8 @@ namespace Weavers.Core.Extensions {
             EditorTypeId = property.EditorTypeId,
             IsRequired = property.IsRequired,
             IsVisible = property.IsVisible,
-            IsReadOnly = property.IsReadOnly
+            IsReadOnly = property.IsReadOnly,
+            Rank = property.Rank
           };
           context.ItemProperties.Add(existing);
           updated = true;

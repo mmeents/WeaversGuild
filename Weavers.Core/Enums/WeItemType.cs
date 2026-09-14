@@ -192,6 +192,14 @@ namespace Weavers.Core.Enums {
       CmdChessStartGame =203,
       CmdChessMakeMove = 204,
 
+      CmdAddPattern = 205,
+      CmdAddPatDimension = 206,
+      CmdAddPatDimOption = 207,
+      CmdGetNextDraw = 208,
+      CmdRejectDraw = 209,
+      CmdAcceptDraw = 210,
+
+
     TodoStatuses = 220,
       TodoNotStarted = 221,
       TodoInProgress = 222,
@@ -241,6 +249,13 @@ namespace Weavers.Core.Enums {
     PlayerWhite = 306,
     PlayerBlack = 307,
 
+    DrawStatus = 310,
+      DrawIssued = 311,
+      DrawDeclined = 312,
+      DrawWritten = 313,
+      DrawAccepted = 314,
+      DrawRejected = 315,
+
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
     
@@ -282,6 +297,13 @@ namespace Weavers.Core.Enums {
 
       GameRoomModel = 1080,  // folder for games
         ChessGameModel = 1085,  
+
+      PatternModel = 1090,
+        PatternDimensionModel = 1092,
+          PatternOptionModel = 1094,
+        PatternDrawModel = 1096,
+
+
 
     ProjectFolderModel = 1100,
       ProjectDocs = 1101,       // doc types are 1-1 systme generated type of documentation where expectation that documentation department will fill in later.

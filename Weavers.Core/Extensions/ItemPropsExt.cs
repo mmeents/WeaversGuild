@@ -27,7 +27,8 @@ namespace Weavers.Core.Extensions {
         property.Value,        
         property.ValueDataTypeId,
         property.EditorTypeId,
-        property.ReferenceItemTypeId
+        property.ReferenceItemTypeId,
+        property.Rank
       ));
       if (updatedProp != null) {        
         if (item != null) {
@@ -47,10 +48,11 @@ namespace Weavers.Core.Extensions {
         itemProp.Value,
         itemProp.ValueDataTypeId,
         itemProp.EditorTypeId,
-        itemProp.ReferenceItemTypeId
+        itemProp.ReferenceItemTypeId,
+        itemProp.Rank
       );
       var result = await mediator.Send(command);
-      importItem.AddOrUpdateProperty(itemProp);
+      importItem.AddOrUpdateProperty(result);
       return importItem;
     }
 

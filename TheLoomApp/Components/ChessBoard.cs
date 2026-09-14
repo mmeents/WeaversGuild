@@ -12,15 +12,20 @@ namespace TheLoomApp.Components {
   public partial class ChessBoard : UserControl {
     private TableLayoutPanel _grid;
     private Button[,] _squares = new Button[8, 8];
-    private string _selectedSquare = null; // Stores first click (e.g., "e2")
+    private string? _selectedSquare = null; // Stores first click (e.g., "e2")
 
     // Expose an event so your main form knows when a human completed a move
-    public event Action<string> MoveCompleted;
+    public event Action<string>? MoveCompleted;
     public ChessBoard() {
       InitializeComponent();
+      _grid = new TableLayoutPanel {
+        Dock = DockStyle.Fill,
+        RowCount = 8,
+        ColumnCount = 8
+      };
       InitializeBoardLayout();
     }
-    private System.ComponentModel.IContainer components = null;
+    private System.ComponentModel.IContainer? components = null;
     protected override void Dispose(bool disposing) {
       if (disposing && (components != null)) {
         components.Dispose();
@@ -43,11 +48,7 @@ namespace TheLoomApp.Components {
     private void InitializeBoardLayout() {
       this.Size = new Size(400, 400);
 
-      _grid = new TableLayoutPanel {
-        Dock = DockStyle.Fill,
-        RowCount = 8,
-        ColumnCount = 8
-      };
+
 
       // Set uniform 12.5% width and height for an exact 8x8 grid
       for (int i = 0; i < 8; i++) {
@@ -87,7 +88,7 @@ namespace TheLoomApp.Components {
       this.Controls.Add(_grid);
     }
 
-    private void Square_Click(object sender, EventArgs e) {
+    private void Square_Click(object? sender, EventArgs e) {
       if (sender is Button clickedButton && clickedButton.Tag is string squareCoord) {
         if (_selectedSquare == null) {
           // FIRST CLICK: Select piece to move

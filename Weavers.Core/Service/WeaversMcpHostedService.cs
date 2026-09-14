@@ -36,6 +36,7 @@ namespace Weavers.Core.Service {
       MCPServer.Register<TodoTools>();
       MCPServer.Register<StorytimeTools>();
       MCPServer.Register<ChessTools>();
+      MCPServer.Register<PatternTools>();
 
       var mcpDriver = _configuration[Cx.McpStartupParamProviderKey] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();

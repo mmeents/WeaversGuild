@@ -43,6 +43,7 @@ namespace Weavers.Core.Extensions {
         IsRequired = p.IsRequired,
         IsReadOnly = p.IsReadOnly,
         IsVisible = p.IsVisible,
+        Rank = p.Rank,
         ValueType = p.ValueType == null
           ? new DataTypeDto { Id = (int)WeDataType.None, Name = "None" }
           : new DataTypeDto { Id = p.ValueType.Id, Name = p.ValueType.Name },
@@ -74,7 +75,7 @@ namespace Weavers.Core.Extensions {
         IsActive = i.IsActive,
         Relations = i.Relations.AsQueryable().Select(ToRelationDto).ToList(),
         IncomingRelations = i.IncomingRelations.AsQueryable().Select(ToRelationDto).ToList(),
-        Properties = i.Properties.AsQueryable().Select(ToPropertyDto).ToList()
+        Properties = i.Properties.AsQueryable().OrderBy(p => p.Rank).Select(ToPropertyDto).ToList()
       };
     public static ItemDto LinkProperties(this ItemDto dto) {
       foreach (var p in dto.Properties) p.Item = dto;

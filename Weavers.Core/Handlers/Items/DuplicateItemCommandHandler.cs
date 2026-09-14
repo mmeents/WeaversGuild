@@ -43,7 +43,7 @@ namespace Weavers.Core.Handlers.Items {
         foreach(var prop in item.Properties) {
           var itemProp = newItem.Properties.FirstOrDefault(p => p.Name == prop.Name);
           await _mediator.Send(new AddUpdateItemPropertyCommand(
-              itemProp?.Id ?? 0, newItem.Id, prop.Name, prop.Value, prop.ValueDataTypeId, prop.EditorTypeId, prop.ReferenceItemTypeId));
+              itemProp?.Id ?? 0, newItem.Id, prop.Name, prop.Value, prop.ValueDataTypeId, prop.EditorTypeId, prop.ReferenceItemTypeId, prop.Rank));
 
         }
       }

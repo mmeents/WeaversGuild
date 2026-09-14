@@ -75,6 +75,8 @@
       miAddClassMethodParam = new ToolStripMenuItem();
       miAddEntity = new ToolStripMenuItem();
       miAddEntityProperty = new ToolStripMenuItem();
+      miAddGameRoom = new ToolStripMenuItem();
+      miAddChessGame = new ToolStripMenuItem();
       miSepAddBottom = new ToolStripSeparator();
       miGenerate = new ToolStripMenuItem();
       miSepGenBottom = new ToolStripSeparator();
@@ -163,8 +165,10 @@
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miAddGameRoom = new ToolStripMenuItem();
-      miAddChessGame = new ToolStripMenuItem();
+      miAddPattern = new ToolStripMenuItem();
+      miAddPatDimension = new ToolStripMenuItem();
+      miAddPatDimOption = new ToolStripMenuItem();
+      miGetNextDraw = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -253,9 +257,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1166);
+      cmsTreeMenus.Size = new Size(209, 1254);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -577,6 +581,20 @@
       miAddEntityProperty.Size = new Size(208, 22);
       miAddEntityProperty.Text = "Add Entity Property";
       miAddEntityProperty.Click += miAddEntityProperty_Click;
+      // 
+      // miAddGameRoom
+      // 
+      miAddGameRoom.Name = "miAddGameRoom";
+      miAddGameRoom.Size = new Size(208, 22);
+      miAddGameRoom.Text = "Add Game Room";
+      miAddGameRoom.Click += miAddGameRoom_Click;
+      // 
+      // miAddChessGame
+      // 
+      miAddChessGame.Name = "miAddChessGame";
+      miAddChessGame.Size = new Size(208, 22);
+      miAddChessGame.Text = "Add Chess Game";
+      miAddChessGame.Click += miAddChessGame_Click;
       // 
       // miSepAddBottom
       // 
@@ -960,7 +978,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1605,19 +1622,33 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miAddGameRoom
+      // miAddPattern
       // 
-      miAddGameRoom.Name = "miAddGameRoom";
-      miAddGameRoom.Size = new Size(208, 22);
-      miAddGameRoom.Text = "Add Game Room";
-      miAddGameRoom.Click += miAddGameRoom_Click;
+      miAddPattern.Name = "miAddPattern";
+      miAddPattern.Size = new Size(208, 22);
+      miAddPattern.Text = "Add Pattern";
+      miAddPattern.Click += miAddPattern_Click;
       // 
-      // miAddChessGame
+      // miAddPatDimension
       // 
-      miAddChessGame.Name = "miAddChessGame";
-      miAddChessGame.Size = new Size(208, 22);
-      miAddChessGame.Text = "Add Chess Game";
-      miAddChessGame.Click += miAddChessGame_Click;
+      miAddPatDimension.Name = "miAddPatDimension";
+      miAddPatDimension.Size = new Size(208, 22);
+      miAddPatDimension.Text = "Add Dimension";
+      miAddPatDimension.Click += miAddPatDimension_Click;
+      // 
+      // miAddPatDimOption
+      // 
+      miAddPatDimOption.Name = "miAddPatDimOption";
+      miAddPatDimOption.Size = new Size(208, 22);
+      miAddPatDimOption.Text = "Add Option";
+      miAddPatDimOption.Click += miAddPatDimOption_Click;
+      // 
+      // miGetNextDraw
+      // 
+      miGetNextDraw.Name = "miGetNextDraw";
+      miGetNextDraw.Size = new Size(208, 22);
+      miGetNextDraw.Text = "Get Next Draw";
+      miGetNextDraw.Click += miGetNextDraw_Click;
       // 
       // Form1
       // 
@@ -1784,7 +1815,6 @@
     private ToolStripMenuItem miExtractLinks;
     private ToolStripMenuItem miAddGithubToken;
     private ToolStripMenuItem miAddGitHubRepo;
-    private ToolStripSeparator toolStripSeparator3;
     private ToolStripMenuItem miDoGitClone;
     private ToolStripMenuItem miDoGitRefStatus;
     private ToolStripMenuItem miDoCheckout;
@@ -1814,5 +1844,9 @@
     private ToolStripMenuItem miDuplicateItem;
     private ToolStripMenuItem miAddGameRoom;
     private ToolStripMenuItem miAddChessGame;
+    private ToolStripMenuItem miAddPattern;
+    private ToolStripMenuItem miAddPatDimension;
+    private ToolStripMenuItem miAddPatDimOption;
+    private ToolStripMenuItem miGetNextDraw;
   }
 }

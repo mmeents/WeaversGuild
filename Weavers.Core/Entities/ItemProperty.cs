@@ -16,6 +16,7 @@ namespace Weavers.Core.Entities {
     public bool IsRequired { get; set; } = false;
     public bool IsVisible { get; set; } = true;
     public bool IsReadOnly { get; set; } = false;
+    public int Rank { get; set; } = 1;
 
 
     // Navigation properties
@@ -34,7 +35,8 @@ namespace Weavers.Core.Entities {
       string? value = null,
       int? valueDataTypeId = null,
       int? referenceItemTypeId = null,
-      int? editorTypeId = null
+      int? editorTypeId = null,
+      int rank = 1
     ) {
       ItemId = itemId;
       Name = name;
@@ -43,6 +45,7 @@ namespace Weavers.Core.Entities {
       ValueDataTypeId = valueDataTypeId;
       ReferenceItemTypeId = referenceItemTypeId;
       EditorTypeId = editorTypeId;
+      Rank = rank;
     }
 
     public void Update(string? value, int? valueDataTypeId = null, int? referenceItemTypeId = null, int? editorTypeId = null) {
@@ -77,10 +80,11 @@ namespace Weavers.Core.Entities {
       builder.Property(p => p.ItemPropertyDefaultId).IsRequired(false);
 
       builder.Property(p => p.EditorTypeId).IsRequired(false);
+      builder.Property(p => p.Rank).IsRequired().HasDefaultValue(1);
 
       // Unique constraint on ItemId + Name
       builder.HasIndex(p => new { p.ItemId, p.Name }).IsUnique();
-      
+      builder.HasIndex(p => p.Rank);
       
       builder.HasOne(p => p.ValueType)
           .WithMany()

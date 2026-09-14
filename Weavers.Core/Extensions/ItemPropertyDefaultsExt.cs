@@ -215,7 +215,27 @@ namespace Weavers.Core.Extensions {
         }
       },
       #endregion
+      #region Pattern makers
+      // PatternModel, PatternDimensionModel, PatterOptionModel, PatternDrawModel
+      { WeItemType.PatternModel, new List<ItemPropertyDefault>() { } },
+      { WeItemType.PatternDimensionModel, new List<ItemPropertyDefault>() { } },
+      { WeItemType.PatternOptionModel, new List<ItemPropertyDefault>() {        
+          new() {Rank = 3, Key = Cx.ItIssuedCount, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },        
+        }
+      },
+      { WeItemType.PatternDrawModel, new List<ItemPropertyDefault>() {
+       // note idea is when draw is created, d rows like below are created for each dimension d and 1 option. 
+       // new() {Rank = d.Rank, Key = d.Name,  DefaultValue = $"{PatternOption.Id}", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PatternOptionModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          
+          new() {Rank = 700003, Key = Cx.ItTodoItem,  DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 700005, Key = Cx.ItAddedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+          new() {Rank = 700007, Key = Cx.ItDrawStatus,  DefaultValue = WeItemType.DrawIssued.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.DrawStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 700008, Key = Cx.ItReplacedBy, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.PatternDrawModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 700009, Key = Cx.ItProduced, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Reference },          
+        }
+      },
 
+      #endregion
       #region FileSystem Defaults
       {
         WeItemType.ProjectFolderModel,

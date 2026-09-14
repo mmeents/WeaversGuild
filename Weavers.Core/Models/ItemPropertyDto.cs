@@ -22,6 +22,7 @@ namespace Weavers.Core.Models {
     public bool IsRequired { get; set; } = false;
     public bool IsReadOnly { get; set; }
     public bool IsVisible { get; set; } = true;
+    public int Rank { get; set; } = 1;
 
     // Navigation properties
 
@@ -48,6 +49,7 @@ namespace Weavers.Core.Models {
         IsRequired = itemProperty.IsRequired,
         IsReadOnly = itemProperty.IsReadOnly,
         IsVisible = itemProperty.IsVisible,
+        Rank = itemProperty.Rank,
         //Item =  (itemProperty.Item!=null)? itemProperty.Item.ToDto() : null,
         ValueType = itemProperty.ValueType?.ToDto() ?? null!,
         Editor = itemProperty.Editor?.ToDto(),
@@ -69,6 +71,7 @@ namespace Weavers.Core.Models {
         IsRequired = itemProperty.IsRequired,
         IsReadOnly = itemProperty.IsReadOnly,
         IsVisible = itemProperty.IsVisible,
+        Rank = itemProperty.Rank,
         Item = (itemProperty.Item != null) ? itemProperty.Item : null,
         ValueType = itemProperty.ValueType,
         Editor = itemProperty.Editor,

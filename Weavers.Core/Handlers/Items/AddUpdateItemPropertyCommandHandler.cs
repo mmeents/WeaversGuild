@@ -19,7 +19,8 @@ namespace Weavers.Core.Handlers.Items {
     string? PropertyValue = null,
     int? PropertyValueTypeId = null,
     int? PropertyEditorTypeId = null,
-    int? ReferenceItemTypeId = null
+    int? ReferenceItemTypeId = null,
+    int Rank = 1
   ) : IMcpRequest, IRequest<ItemPropertyDto>;
 
   public class AddUpdateItemPropertyCommandHandler :  IRequestHandler<AddUpdateItemPropertyCommand, ItemPropertyDto> {
@@ -46,7 +47,8 @@ namespace Weavers.Core.Handlers.Items {
           request.PropertyValue,
           request.PropertyValueTypeId,
           request.ReferenceItemTypeId,
-          request.PropertyEditorTypeId);
+          request.PropertyEditorTypeId,
+          request.Rank);
 
         await _context.ItemProperties.AddAsync(property, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -80,7 +82,8 @@ namespace Weavers.Core.Handlers.Items {
         PropertyValue: itemProperty.Value,
         PropertyValueTypeId: itemProperty.ValueDataTypeId,
         PropertyEditorTypeId: itemProperty.EditorTypeId,
-        ReferenceItemTypeId: itemProperty.ReferenceItemTypeId
+        ReferenceItemTypeId: itemProperty.ReferenceItemTypeId,
+        Rank: itemProperty.Rank
       );  
 }
 

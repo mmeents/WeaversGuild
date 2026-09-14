@@ -97,7 +97,7 @@ namespace TheLoomApp {
           var itemId = _selectedNode.Item.Id;
           _appDataService.ClearCache();
           await this.LoadRootProjects(itemId);
-        }        
+        }
       };
       _settings = scope.ServiceProvider.GetRequiredService<IAppSettingService>();
       SetupForStartup();
@@ -822,6 +822,11 @@ namespace TheLoomApp {
         miDoGitRefStatus.Visible = false;
         miDoCheckout.Visible = false;
 
+        miAddPattern.Visible = false;
+        miAddPatDimension.Visible = false;
+        miAddPatDimOption.Visible = false;
+        miGetNextDraw.Visible = false;
+
         miAddRealm.Visible = false;
         miAddStory.Visible = false;
         miAddScene.Visible = false;
@@ -899,6 +904,11 @@ namespace TheLoomApp {
         miAddRssLinkedHtml.Visible = itemType == WeItemType.RssFolderModel || itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miResolveLink.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miExtractLinks.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
+
+        miAddPattern.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddPatDimension.Visible = itemType == WeItemType.PatternModel;
+        miAddPatDimOption.Visible = itemType == WeItemType.PatternDimensionModel;
+        miGetNextDraw.Visible = itemType == WeItemType.PatternModel;
 
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -1199,6 +1209,98 @@ namespace TheLoomApp {
         MessageBox.Show($"Error extracting RSS links: {ex.Message}", "Extract RSS Links Failed");
       }
     }
+
+
+    private async void miAddPattern_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add pattern to.", "Add Pattern Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPattern(mediator, newItemName);
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern: {ex.Message}", "Add Pattern Failed");
+      }
+    }
+
+    private async void miAddPatDimension_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add dimension to.", "Add Pattern Dimension Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternDimensionModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var options = dlg.DbTableName;  // use DbTableName to pass options if needed
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPatDimension(mediator, newItemName, options != null ? options : "");
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern dimension - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern dimension: {ex.Message}", "Add Pattern Dimension Failed");
+      }
+    }
+
+    private async void miAddPatDimOption_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add option to.", "Add Pattern Option Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternOptionModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPatDimOption(mediator, newItemName);
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern option - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern option: {ex.Message}", "Add Pattern Option Failed");
+      }
+    }
+
+    private async void miGetNextDraw_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to get next draw for.", "Get Next Draw Failed");
+          return;
+        }
+
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();          
+        await tvKb.GetNextDraw(mediator, _defaultAppTodoId);
+        await Task.Delay(100);
+        _appDataService.ClearCache();
+        await LoadRootProjects(_selectedNode.Item.Id);
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to get next draw - error:" + ex.Message);
+        MessageBox.Show($"Error getting next draw: {ex.Message}", "Get Next Draw Failed");
+      }
+    }
+
 
     private async void miAddProjectRoot_Click(object sender, EventArgs e) {
       try {
@@ -1714,7 +1816,7 @@ namespace TheLoomApp {
       siblingNode.Relation.Rank = item1;
       _appDataService.UpdateRelationAsync(siblingNode.Relation);
       TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(parentNode, false, TreeViewAction.Expand));
-      if ((tvKb.SelectedNode?.Nodes.Count ?? 0) > _selectedNode.Index - 1) {
+      if (tvKb.SelectedNode != null && (tvKb.SelectedNode.Nodes.Count) > _selectedNode.Index - 1) {
         tvKb.SelectedNode = tvKb.SelectedNode.Nodes[_selectedNode.Index - 1];
       }
 
@@ -1779,8 +1881,8 @@ namespace TheLoomApp {
         return;
       }
 
-      var humanTodoKey = _sessionDetails.HarnessId.GetHumanTodoKey();
-      var skipTodo = _settings[humanTodoKey].Value.AsInt();
+      var humanTodoKey = _sessionDetails!.HarnessId.GetHumanTodoKey();
+      var skipTodo = _settings[humanTodoKey]?.Value.AsInt();
 
       var needsRefresh = false;
       var item = itemNode.Item;
@@ -2366,7 +2468,7 @@ namespace TheLoomApp {
             } else {
               DoLogMessage($"Scheduled TodoId {_workingTodo.Id} Failed Forward Max Attempts Reached, Response: {result.ResponseText}");
             }
-            if (_selectedNode != null && _selectedNode.Item.Id != null) {              
+            if (_selectedNode != null && _selectedNode.Item != null) {
               _appDataService.RemoveCacheItem(_selectedNode.Item.Id);
               await LoadRootProjects(_selectedNode.Item.Id);      // UI reload treeview control.
             } else {
@@ -2767,6 +2869,7 @@ namespace TheLoomApp {
       }
     }
     #endregion
+
 
 
 

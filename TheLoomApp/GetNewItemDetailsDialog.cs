@@ -152,6 +152,16 @@ namespace TheLoomApp {
         lbDbTableName.Visible = true;
       }
 
+      if (_targetTypeToCreate == WeItemType.PatternDimensionModel) { 
+        edDbTableName.Top = edName.Top + edName.Height + 10;
+        edDbTableName.Left = edName.Left;
+        lbDbTableName.Top = edDbTableName.Top;
+        lbDbTableName.Text = "OptionsCsv:";
+        lbDbTableName.Left = edName.Left - lbDbTableName.Width - 6;
+        edDbTableName.Visible = true;
+        lbDbTableName.Visible = true;
+      }
+
     }
 
     private async void GetNewItemDetailsDialog_Shown(object sender, EventArgs e) {

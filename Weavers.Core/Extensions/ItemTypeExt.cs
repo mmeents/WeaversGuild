@@ -49,6 +49,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.GameRoomModel => 17,
         WeItemType.ChessGameModel => 18,
 
+        WeItemType.PatternModel => 1,   // needs icons.
+        WeItemType.PatternDimensionModel => 2,
+        WeItemType.PatternOptionModel => 3,
+        WeItemType.PatternDrawModel => 4,
+
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
 
@@ -198,6 +203,7 @@ namespace Weavers.Core.Extensions {
           WeItemType.PovTypes,
           WeItemType.GameStatus,
           WeItemType.GameTwoPlayerToggle,
+          WeItemType.DrawStatus,
       };
       return lookupTypes;
     }
@@ -654,6 +660,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdGetChessGame => Cx.CmdChessGetGame,
         WeItemType.CmdChessStartGame => Cx.CmdChessStartGame,
         WeItemType.CmdChessMakeMove => Cx.CmdChessMakeMove,
+
+        WeItemType.CmdAddPattern => Cx.CmdAddPattern,
+        WeItemType.CmdAddPatDimension => Cx.CmdAddPatDimension,
+        WeItemType.CmdAddPatDimOption => Cx.CmdAddPatDimOption,
+        WeItemType.CmdGetNextDraw => Cx.CmdGetNextDraw,
+        WeItemType.CmdRejectDraw => Cx.CmdRejectDraw,
+        WeItemType.CmdAcceptDraw => Cx.CmdAcceptDraw,
         _ => null
       };
     }
@@ -673,6 +686,10 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.GameRoomModel => true,
         (int)WeItemType.ChessGameModel => true,
+        (int)WeItemType.PatternModel => true,   
+        (int)WeItemType.PatternDimensionModel => true,
+        (int)WeItemType.PatternOptionModel => true,
+        (int)WeItemType.PatternDrawModel => true,
         (int)WeItemType.ProjectFolderModel => true,
         (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.GitFolderModel => true,

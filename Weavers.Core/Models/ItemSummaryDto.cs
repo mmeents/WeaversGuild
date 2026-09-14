@@ -43,6 +43,9 @@ namespace Weavers.Core.Models {
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+    public int Rank { get; set; } = 0;
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? DataType { get; set; } = null;
 

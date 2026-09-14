@@ -92,7 +92,8 @@ namespace Weavers.Core.Handlers.DepItems {
           folderProp.Value,
           folderProp.ValueDataTypeId,
           folderProp.EditorTypeId,
-          folderProp.ReferenceItemTypeId
+          folderProp.ReferenceItemTypeId,
+          folderProp.Rank
          );
         var updated = await _mediator.Send(command, cancellationToken);
         await _context.MarkItemUpdated(item.Id, cancellationToken);
@@ -122,7 +123,8 @@ namespace Weavers.Core.Handlers.DepItems {
         namespaceProp.Value,
         namespaceProp.ValueDataTypeId,
         namespaceProp.EditorTypeId,
-        namespaceProp.ReferenceItemTypeId
+        namespaceProp.ReferenceItemTypeId,
+        namespaceProp.Rank
         );
         var updated = await _mediator.Send(command);
         await _context.MarkItemUpdated(item.Id);

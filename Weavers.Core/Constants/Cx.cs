@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using Weavers.Core.Enums;
 
 namespace Weavers.Core.Constants {
 
@@ -168,6 +169,14 @@ namespace Weavers.Core.Constants {
     public const string CmdChessMakeMove = "chessMakeMove";
 
 
+    public const string CmdAddPattern = "addPattern";
+    public const string CmdAddPatDimension = "addPatDimension";
+    public const string CmdAddPatDimOption = "addPatDimOption";
+    public const string CmdGetNextDraw = "getNextDraw";
+    public const string CmdRejectDraw = "rejectDraw";
+    public const string CmdAcceptDraw = "acceptDraw";
+
+
 
     // Tool property descriptions
     public const string ValidRelationTypes = "Relation type ";
@@ -187,7 +196,8 @@ namespace Weavers.Core.Constants {
 
 
     // itemProperty names constants 
-    public const string ItAccessModifier = "AccessModifier";   
+    public const string ItAccessModifier = "AccessModifier";    
+    public const string ItAcceptedCount = "AcceptedCount";
     public const string ItApiToken = "ApiToken";
     public const string ItAddedBy = "AddedBy";
     public const string ItBaseType = "BaseType";
@@ -217,6 +227,7 @@ namespace Weavers.Core.Constants {
     public const string ItDbContextName = "DbContextName";
     public const string ItDbSchema = "DbSchema";
     public const string ItDbTableName = "DbTableName";    
+    public const string ItDrawStatus = "DrawStatus";
     public const string ItEnabled = "Enabled";
     public const string ItEntrySha = "EntrySha";
     public const string ItEntryState = "EntryState";
@@ -261,6 +272,7 @@ namespace Weavers.Core.Constants {
     public const string ItIsPackageReference = "PkgReference";
     public const string ItIsSealed = "IsSealed";
     public const string ItIsStatic = "IsStatic";
+    public const string ItIssuedCount = "IssuedCount";
     public const string ItIsVirtual = "IsVirtual";
     public const string ItIsRemote = "IsRemote";
     public const string ItLastStatusChk = "LastStatusChk";
@@ -308,8 +320,12 @@ namespace Weavers.Core.Constants {
     public const string ItExtractLink = "ExtractLink";
     public const string ItStructContent = "StructContent";
     public const string ItRank = "Rank";
+
+    public const string ItRejectedCount = "RejectedCount";
     public const string ItRating = "Rating";
     public const string ItRealm = "Realm";
+    public const string ItReplacedBy = "ReplacedBy";
+    public const string ItProduced = "Produced";
     public const string ItRepoItemId = "RepoItemId";
     public const string ItReferenceItem = "RefItem";
     public const string ItReSync = "DoReSync";

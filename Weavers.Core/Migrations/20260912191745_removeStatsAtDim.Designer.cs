@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Weavers.Core;
 
@@ -11,9 +12,11 @@ using Weavers.Core;
 namespace Weavers.Core.Migrations
 {
     [DbContext(typeof(FabricDbContext))]
-    partial class FabricDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260912191745_removeStatsAtDim")]
+    partial class removeStatsAtDim
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -580,11 +583,6 @@ namespace Weavers.Core.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Rank")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
                     b.Property<int?>("ReferenceItemTypeId")
                         .HasColumnType("int");
 
@@ -607,8 +605,6 @@ namespace Weavers.Core.Migrations
                     b.HasIndex("ItemPropertyDefaultId");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("Rank");
 
                     b.HasIndex("ReferenceItemTypeId");
 
@@ -1856,16 +1852,42 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 137311920L,
+                            Id = 481157527L,
                             DefaultValue = "0",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1094,
+                            Key = "AcceptedCount",
+                            Rank = 2,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 563161507L,
+                            DefaultValue = "0",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1094,
+                            Key = "RejectedCount",
+                            Rank = 1,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1135556740L,
+                            DefaultValue = "311",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
                             ItemTypeId = 1096,
-                            Key = "TodoItem",
-                            Rank = 700003,
-                            ReferenceItemTypeId = 1050,
+                            Key = "DrawStatus",
+                            Rank = 2,
+                            ReferenceItemTypeId = 310,
                             ValueDataTypeId = 57
                         },
                         new
@@ -1878,49 +1900,8 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             ItemTypeId = 1096,
                             Key = "AddedBy",
-                            Rank = 700005,
+                            Rank = 1,
                             ValueDataTypeId = 54
-                        },
-                        new
-                        {
-                            Id = 1135556740L,
-                            DefaultValue = "311",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1096,
-                            Key = "DrawStatus",
-                            Rank = 700007,
-                            ReferenceItemTypeId = 310,
-                            ValueDataTypeId = 57
-                        },
-                        new
-                        {
-                            Id = 1997314683L,
-                            DefaultValue = "",
-                            EditorTypeId = 10,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1096,
-                            Key = "ReplacedBy",
-                            Rank = 700008,
-                            ReferenceItemTypeId = 1096,
-                            ValueDataTypeId = 57
-                        },
-                        new
-                        {
-                            Id = 1509543669L,
-                            DefaultValue = "",
-                            EditorTypeId = 16,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1096,
-                            Key = "Produced",
-                            Rank = 700009,
-                            ValueDataTypeId = 57
                         },
                         new
                         {

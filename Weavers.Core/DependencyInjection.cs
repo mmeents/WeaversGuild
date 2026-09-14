@@ -63,6 +63,7 @@ namespace Weavers.Core {
       services.AddSingleton<ITodoToolsHandler, TodoToolsHandler>();
       services.AddSingleton<IStorytimeToolsHandler, StorytimeToolsHandler>();
       services.AddSingleton<IChessToolsHandler, ChessToolsHandler>();
+      services.AddSingleton<IPatternToolsHandler, PatternToolsHandler>();
 
       services.AddHttpClient("RssResolver", c => {
         c.Timeout = TimeSpan.FromSeconds(30);        

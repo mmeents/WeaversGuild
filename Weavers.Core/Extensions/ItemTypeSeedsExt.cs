@@ -189,6 +189,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdChessStartGame => WeItemType.LoomMcpCommands,
         WeItemType.CmdChessMakeMove => WeItemType.LoomMcpCommands,
 
+        WeItemType.CmdAddPattern => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddPatDimension => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAddPatDimOption => WeItemType.LoomMcpCommands,
+        WeItemType.CmdGetNextDraw => WeItemType.LoomMcpCommands,
+        WeItemType.CmdRejectDraw => WeItemType.LoomMcpCommands,
+        WeItemType.CmdAcceptDraw => WeItemType.LoomMcpCommands,
+
         WeItemType.TodoStatuses => null,
         WeItemType.TodoNotStarted => WeItemType.TodoStatuses,
         WeItemType.TodoInProgress => WeItemType.TodoStatuses,
@@ -238,6 +245,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.PlayerWhite => WeItemType.GameTwoPlayerToggle,
         WeItemType.PlayerBlack => WeItemType.GameTwoPlayerToggle,
 
+        WeItemType.DrawStatus => null,
+        WeItemType.DrawIssued => WeItemType.DrawStatus,
+        WeItemType.DrawDeclined => WeItemType.DrawStatus,
+        WeItemType.DrawWritten => WeItemType.DrawStatus,
+        WeItemType.DrawAccepted => WeItemType.DrawStatus,
+        WeItemType.DrawRejected => WeItemType.DrawStatus,
+
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
         WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 
@@ -277,6 +291,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.GameRoomModel => WeItemType.OrganizationModel,
         WeItemType.ChessGameModel => WeItemType.GameRoomModel,
+
+        WeItemType.PatternModel => WeItemType.OrganizationModel,
+        WeItemType.PatternDimensionModel => WeItemType.PatternModel,
+        WeItemType.PatternOptionModel => WeItemType.PatternDimensionModel,
+        WeItemType.PatternDrawModel => WeItemType.PatternModel,
 
         WeItemType.ProjectFolderModel => WeItemType.OrganizationModel,
         WeItemType.ProjectDocs => WeItemType.ProjectFolderModel,
@@ -403,6 +422,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.GameRoomModel => true,
         WeItemType.ChessGameModel => true,
 
+        WeItemType.PatternModel => true,   
+        WeItemType.PatternDimensionModel => true,
+        WeItemType.PatternOptionModel => true,
+        WeItemType.PatternDrawModel => true,
+
         WeItemType.ProjectFolderModel => true,
         WeItemType.RelativeFolderModel => true,
         WeItemType.GitFolderModel => true,
@@ -465,6 +489,11 @@ namespace Weavers.Core.Extensions {
 
         WeItemType.GameRoomModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.GameRoomModel },
         WeItemType.ChessGameModel => new HashSet<WeItemType> { WeItemType.GameRoomModel },
+
+        WeItemType.PatternModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },   // needs icons.
+        WeItemType.PatternDimensionModel => new HashSet<WeItemType> { WeItemType.PatternModel },
+        WeItemType.PatternOptionModel => new HashSet<WeItemType> { WeItemType.PatternDimensionModel },
+        WeItemType.PatternDrawModel => new HashSet<WeItemType> { WeItemType.PatternModel },
 
         WeItemType.ProjectFolderModel => new HashSet<WeItemType> { WeItemType.OrganizationModel },
         WeItemType.RelativeFolderModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
@@ -942,6 +971,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdChessStartGame => 70,
         WeItemType.CmdChessMakeMove => 71,
 
+        WeItemType.CmdAddPattern => 72,
+        WeItemType.CmdAddPatDimension => 73,
+        WeItemType.CmdAddPatDimOption => 74,
+        WeItemType.CmdGetNextDraw => 75,
+        WeItemType.CmdRejectDraw => 76,
+        WeItemType.CmdAcceptDraw => 77,
+
         WeItemType.TodoStatuses => 12,
         WeItemType.TodoNotStarted => 1,
         WeItemType.TodoInProgress => 2,
@@ -991,6 +1027,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.PlayerWhite => 7,
         WeItemType.PlayerBlack => 8,
 
+        WeItemType.DrawStatus => 21,
+        WeItemType.DrawIssued => 1,
+        WeItemType.DrawDeclined => 2,
+        WeItemType.DrawWritten => 3,
+        WeItemType.DrawAccepted => 4,
+        WeItemType.DrawRejected => 5,
+
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
         WeItemType.HarnessSessionsModel => (int)WeItemType.HarnessSessionsModel,
@@ -1020,6 +1063,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel => (int)WeItemType.RssChannelModel,
         WeItemType.RssItemModel => (int)WeItemType.RssItemModel,
         WeItemType.RssLinkedHtmlModel => (int)WeItemType.RssLinkedHtmlModel,
+
+        WeItemType.PatternModel => (int)WeItemType.PatternModel,
+        WeItemType.PatternDimensionModel => (int)WeItemType.PatternDimensionModel,
+        WeItemType.PatternOptionModel => (int)WeItemType.PatternOptionModel,
+        WeItemType.PatternDrawModel => (int)WeItemType.PatternDrawModel,
 
         WeItemType.ProjectFolderModel => (int)WeItemType.ProjectFolderModel,
         WeItemType.ProjectDocs => (int)WeItemType.ProjectDocs,
@@ -1299,6 +1347,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.CmdChessStartGame => Cx.CmdChessStartGame,
         WeItemType.CmdChessMakeMove => Cx.CmdChessMakeMove,
 
+        WeItemType.CmdAddPattern => Cx.CmdAddPattern,
+        WeItemType.CmdAddPatDimension => Cx.CmdAddPatDimension,
+        WeItemType.CmdAddPatDimOption => Cx.CmdAddPatDimOption,
+        WeItemType.CmdGetNextDraw => Cx.CmdGetNextDraw,
+        WeItemType.CmdRejectDraw => Cx.CmdRejectDraw,
+        WeItemType.CmdAcceptDraw => Cx.CmdAcceptDraw,
+
         WeItemType.TodoStatuses => "Todo Statuses",
         WeItemType.TodoNotStarted => "Not Started",
         WeItemType.TodoInProgress => "In Progress",
@@ -1348,6 +1403,13 @@ namespace Weavers.Core.Extensions {
         WeItemType.PlayerWhite => "Player White",
         WeItemType.PlayerBlack => "Player Black",
 
+        WeItemType.DrawStatus => "Draw Status",
+        WeItemType.DrawIssued => "Draw Issued",
+        WeItemType.DrawDeclined => "Draw Declined",
+        WeItemType.DrawWritten => "Draw Written",
+        WeItemType.DrawAccepted => "Draw Accepted",
+        WeItemType.DrawRejected => "Draw Rejected",
+
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",
         WeItemType.HarnessSessionsModel => "Sessions",
@@ -1382,6 +1444,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.RssChannelModel => "Rss Channel",
         WeItemType.RssItemModel => "Rss Item",
         WeItemType.RssLinkedHtmlModel => "Linked Html",
+
+        WeItemType.PatternModel => "Pattern",
+        WeItemType.PatternDimensionModel => "Pattern Dimension",
+        WeItemType.PatternOptionModel => "Pattern Option",
+        WeItemType.PatternDrawModel => "Pattern Draw",
 
         WeItemType.ProjectFolderModel => "Project Folder",
         WeItemType.ProjectDocs => "Project Documentation",

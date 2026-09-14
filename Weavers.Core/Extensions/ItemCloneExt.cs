@@ -46,7 +46,7 @@ namespace Weavers.Core.Extensions {
           Established = r.Established,
           RelatedItemHasChildren = r.RelatedItemHasChildren
         }).ToList(),
-        Properties = item.Properties.Select(p => new ItemPropertyDto {
+        Properties = item.Properties.OrderBy(p => p.Rank).Select(p => new ItemPropertyDto {
           Id = p.Id,
           ItemId = p.ItemId,
           Name = p.Name,
@@ -78,7 +78,8 @@ namespace Weavers.Core.Extensions {
               Rank = p.Editor.Rank
             },
           ReferenceItemType = (p.ReferenceItemType == null)
-            ? null : new ItemTypeDto { Id = p.ReferenceItemType.Id, Name = p.ReferenceItemType.Name }
+            ? null : new ItemTypeDto { Id = p.ReferenceItemType.Id, Name = p.ReferenceItemType.Name },
+          Rank = p.Rank
         }).ToList()
       };
       if (result != null) {

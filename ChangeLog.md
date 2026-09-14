@@ -1,5 +1,27 @@
 
 ## Update History
+- ver 1.154.4
+  - Adds Rank to ItemProperty and uses it for sorting in mcp calls and PropertiesTab. 
+  - Adds PatternModel, PatternDimension, PatternOption, PatternDraw Model Types.  Use app or agent to build them out.   
+    - AddPattern, AddPatDimension, AddPatDimOption, GetNextDraw, RejectDraw, AcceptDraw new agent tools.
+    - Usage like Setupd: Create a Pattern and set of Dimensions and Options per, then GetNextDraw makes a new PatternDraw object and picks an option randomly from least used set. 
+      - if it doesn't work out they can use RejectDraw to issue a new one and mark the draw as rejected. 
+      - They can mark it accepted with AcceptDraw tool and include their work for reference. 
+    - What this solves: Instead of asking agents to write a unique item by reading all the other items, we can ask the to getNextDraw to grab a set of dimensions for them to write about. 
+    - Loop desks accept desk to it's self for steady stream of topics.
+    - Example brainstorm roadmap workflow like:
+```
+Process:
+1. Use getSummaryById with fileId to see current state of roadmap. 
+2. Use getNextDraw with patternId to get a set of constraints as draw to target the roadmap towards. 
+3. If draw is not feasible, use rejectDraw to mark it as so and generate a new one. 
+4. Write a full roadmap using the template below.
+5. Persist with addMdFile. One file per roadmap. Filename: roadmap<short-slug>.md
+6. After submission, mark the draw complete via acceptDraw. 
+7. After call completeTodo with newly created file as reference item to mark todo complete.
+```
+
+
 - ver 1.154.3 
   - Reworks Start Chess Game and Make Move to pass the details of the game into the todo so players do not need to use getChessGame to get the game but can respond in 1 call make move.
   - Minor cleanup in the constants. 

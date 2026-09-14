@@ -35,6 +35,8 @@ namespace Weavers.Core.Handlers.ItemSummaries {
       var dbResults = await _Context.ItemProperties
         .AsNoTracking()
         .Where(ip => ids.Contains(ip.ItemId))
+        .OrderBy(ip => ip.ItemId)
+        .ThenBy(ip => ip.Rank)
         .Select(p => new PropSummaryDto {          
           Id = p.Id,
           ItemId = p.ItemId,
@@ -42,7 +44,8 @@ namespace Weavers.Core.Handlers.ItemSummaries {
           Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
           DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
           EditorType = p.Editor == null ? null : p.Editor.Name,
-          ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name
+          ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name,
+          Rank = p.Rank
         })
         .ToListAsync(cancellationToken);      
 

@@ -157,7 +157,7 @@ namespace TheLoomApp.Components {
       BasePanel.Controls.Add(MenuPanel);
 
       
-      foreach (var field in ItemProps) {
+      foreach (var field in ItemProps.OrderByDescending(f => f.Rank)) {
         var propertyEditor = PropertyEditorFactory.CreateEditor(field, _itemTypeLookupComboProvider, _cryptoService);
         if (propertyEditor != null) {
           propertyEditor.Field = field;

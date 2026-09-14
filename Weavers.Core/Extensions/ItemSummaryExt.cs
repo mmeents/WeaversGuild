@@ -25,7 +25,7 @@ namespace Weavers.Core.Extensions {
           Content = i.ItemTypeId.IsContentType() ? i.Description : null,
           Data = i.ItemTypeId.IsDataType() && i.Data != null && i.Data != "{}" ? i.Data : null,
           NodesUp = nodesUp,
-          Nodes = !nodesUp ? null : i.Relations
+          Nodes = !nodesUp ? null : i.Relations.OrderBy(r => r.Rank)
             .Where(r => r.RelatedItem != null 
               && r.RelatedItem.IsActive
               && !SystemTypeIds.Contains(r.RelatedItem.ItemTypeId))
@@ -36,7 +36,7 @@ namespace Weavers.Core.Extensions {
               TypeId = r.RelatedItem != null ? r.RelatedItem.ItemTypeId : 0,
               TypeName = r.RelatedItem != null ? r.RelatedItem.ItemType.Name : "",
           }).ToList(),
-          Props = !includeProps ? null : i.Properties.Select(p => new PropSummaryDto {
+          Props = !includeProps ? null : i.Properties.OrderBy(p => p.Rank).Select(p => new PropSummaryDto {
             Id = p.Id,
             Name = p.Name,
             Value =  (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",            
@@ -44,8 +44,8 @@ namespace Weavers.Core.Extensions {
               ? null : ((WeDataType)p.ValueType.Id).ToString(),
             EditorType = p.Editor == null ? null : p.Editor.Name,
             ReferenceType = p.ReferenceItemType == null 
-              ? null : p.ReferenceItemType.Name
-
+              ? null : p.ReferenceItemType.Name,
+            Rank = p.Rank
           }).ToList()
 
         })
@@ -96,13 +96,14 @@ namespace Weavers.Core.Extensions {
           Content = r.RelatedItem != null && r.RelatedItem.ItemTypeId.IsContentType() 
             && r.RelatedItem.Description.Length < Cx.DefaultSummaryMaxLength ? r.RelatedItem.Description  : null,
           Props = !includeProps ? null : r.RelatedItem != null
-            ? r.RelatedItem.Properties.Select(p => new PropSummaryDto {
+            ? r.RelatedItem.Properties.OrderBy(p => p.Rank).Select(p => new PropSummaryDto {
             Id = p.Id,
             Name = p.Name,
             Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
             DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
             EditorType = p.Editor == null ? null : p.Editor.Name,
-            ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name
+            ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name,
+            Rank = p.Rank
           }).ToList()
         : new List<PropSummaryDto>()
         })
@@ -157,13 +158,14 @@ namespace Weavers.Core.Extensions {
                : item.ItemTypeId.IsMethodCodeType() ? code : null)
             : null,
         Data = item.ItemTypeId.IsDataType() && (!string.IsNullOrEmpty(item.Data)) && (item.Data != "{}") ? item.Data : null,
-        Props = item.Properties.Select(p => new PropSummaryDto {
+        Props = item.Properties.OrderBy(p => p.Rank).Select(p => new PropSummaryDto {
           Id = p.Id,
           Name = p.Name,
           Value = (p.EditorTypeId != null && ((WeEditorType)p.EditorTypeId) == WeEditorType.Password) ? "********" : p.Value ?? "",
           DataType = p.ValueType == null ? null : ((WeDataType)p.ValueType.Id).ToString(),
           EditorType = p.Editor == null ? null : p.Editor.Name,
-          ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name
+          ReferenceType = p.ReferenceItemType == null ? null : p.ReferenceItemType.Name,
+          Rank = p.Rank
         }).ToList()
       };
     }
