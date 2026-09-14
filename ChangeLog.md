@@ -1,15 +1,15 @@
 
 ## Update History
-- ver 1.154.4
+- ver 1.154.4 (9/14/2026)
   - Adds Rank to ItemProperty and uses it for sorting in mcp calls and PropertiesTab. 
   - Adds PatternModel, PatternDimension, PatternOption, PatternDraw Model Types.  Use app or agent to build them out.   
     - AddPattern, AddPatDimension, AddPatDimOption, GetNextDraw, RejectDraw, AcceptDraw new agent tools.
-    - Usage like Setupd: Create a Pattern and set of Dimensions and Options per, then GetNextDraw makes a new PatternDraw object and picks an option randomly from least used set. 
+    - Usage like Setup: Create a Pattern and set of Dimensions and Options per, then GetNextDraw makes a new PatternDraw object and picks an option randomly from least used set. 
       - if it doesn't work out they can use RejectDraw to issue a new one and mark the draw as rejected. 
       - They can mark it accepted with AcceptDraw tool and include their work for reference. 
     - What this solves: Instead of asking agents to write a unique item by reading all the other items, we can ask the to getNextDraw to grab a set of dimensions for them to write about. 
-    - Loop desks accept desk to it's self for steady stream of topics.
-    - Example brainstorm roadmap workflow like:
+    - Loop desks, set desks accept-desk to itself, for steady stream of topics.
+    - Example brainstorm roadmap workflow looked something like:
 ```
 Process:
 1. Use getSummaryById with fileId to see current state of roadmap. 
@@ -22,7 +22,7 @@ Process:
 ```
 
 
-- ver 1.154.3 
+- ver 1.154.3 9/7/2026
   - Reworks Start Chess Game and Make Move to pass the details of the game into the todo so players do not need to use getChessGame to get the game but can respond in 1 call make move.
   - Minor cleanup in the constants. 
   
