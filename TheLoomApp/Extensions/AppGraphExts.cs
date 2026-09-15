@@ -19,6 +19,8 @@ namespace TheLoomApp.Extensions {
       if (_selectedNode == null || item == null) { return; }
       var newSubItem = await _mediator.Send(new DuplicateItemCommand(item.Id));
       if (newSubItem == null) { return; }
+      _tv.SelectedNode = _selectedNode.Parent;
+      _selectedNode = _selectedNode.Parent as ItemNode;
       _tv.AddNewItem(newSubItem);
     }
 
