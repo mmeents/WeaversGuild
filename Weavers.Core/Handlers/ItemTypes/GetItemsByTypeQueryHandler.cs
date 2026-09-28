@@ -32,6 +32,12 @@ namespace Weavers.Core.Handlers.ItemTypes {
        .Distinct()
        .ToListAsync(cancellationToken);
         return activeTypes;
+      } else if (rt == WeItemType.LoomMcpCommands){ 
+        var items = await _context.CommandDefs
+          .OrderBy(c => c.Group).ThenBy(c => c.Code)
+          .Select(c => new ItemLookup(c.Id, c.Code, c.Description))
+          .ToListAsync(cancellationToken);
+        return items;
       } else if (lookuptypes.Contains(rt)) {  // regular lookup types are those that have child item types, so we return the child items as lookups
         var items = await _context.ItemTypes
           .Where(i => i.ParentTypeId == request.ItemTypeId).OrderBy(i => i.Name)

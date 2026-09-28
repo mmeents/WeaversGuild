@@ -28,7 +28,7 @@ namespace ResearchSpaceTests {
     //TestMethod]
     public void TestMethod1() {
 
-      string repoPath = @"C:\Develop\RepoTest"; // Change this to your repository path
+    //  string repoPath = @"C:\Develop\RepoTest"; // Change this to your repository path
       string repoUrl = "";
       var findings = Repository.ListRemoteReferences(repoUrl, new LibGit2Sharp.Handlers.CredentialsHandler((url, usernameFromUrl, types) =>
       {

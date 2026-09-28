@@ -50,6 +50,15 @@ namespace Weavers.Core.Extensions {
       return validity == PathValidity.ValidAndExists;
     }
 
+    public static string GetFilePathFromFileName(this string fileName) {
+      if (string.IsNullOrWhiteSpace(fileName)) {
+        throw new ArgumentException("File name cannot be null or whitespace.", nameof(fileName));
+      }
+      var name = Path.GetFileName(fileName);
+      var filePath = fileName.Substring(0, fileName.Length - name.Length);
+      return filePath;
+    }
+
   }
 
   public enum PathValidity {

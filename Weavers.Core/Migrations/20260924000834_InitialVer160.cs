@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Weavers.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDbVer154 : Migration
+    public partial class InitialVer160 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,6 +29,23 @@ namespace Weavers.Core.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AppSettings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CommandDefs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LegacyId = table.Column<int>(type: "int", nullable: true),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    McpCode = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Group = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CommandDefs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -240,7 +257,8 @@ namespace Weavers.Core.Migrations
                     EditorTypeId = table.Column<int>(type: "int", nullable: true),
                     IsRequired = table.Column<bool>(type: "bit", nullable: false),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    IsReadOnly = table.Column<bool>(type: "bit", nullable: false)
+                    IsReadOnly = table.Column<bool>(type: "bit", nullable: false),
+                    Rank = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -342,6 +360,94 @@ namespace Weavers.Core.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "CommandDefs",
+                columns: new[] { "Id", "Code", "Description", "Group", "LegacyId", "McpCode" },
+                values: new object[,]
+                {
+                    { 11, "CmdHelp", "Displays helpful documentation describing how to use the available commands.", "query", 122, "help" },
+                    { 13, "CmdSearch", "Searches for items based on the provided search criteria.", "query", 126, "search" },
+                    { 15, "CmdGetSummaryById", "Gets the summary of an item by its ID.", "query", 128, "getSummaryById" },
+                    { 17, "CmdGetTypeDetails", "Lookup details of an item type id.", "query", 130, "getTypeDetails" },
+                    { 19, "CmdListProjects", "Lists all root level projects.", "query", 124, "listProjects" },
+                    { 21, "CmdUpdateItemName", "Update the name of an item by its ID.", "modify", 132, "updateItemName" },
+                    { 23, "CmdUpdateItemContent", "Update the content of an item of one of the File types or Method types.", "modify", 134, "updateItemContent" },
+                    { 25, "CmdAppendItemContent", "Append content to end of existing item. Valid types are Md document types: OrgDocModel and FileMdModel. Infra will handle seperators on append.", "modify", 135, "appendItemContent" },
+                    { 27, "CmdUpdateItemProperty", "Update a property of an item by its property ID.", "modify", 136, "updateItemProperty" },
+                    { 29, "CmdDuplicateItem", "Duplicate an item by its ID.", "modify", 131, "duplicateItem" },
+                    { 41, "CmdSetTodoReady", "Marks a todo item as ready for execution. Adds it to the execution queue if desk is enabled.", "todo", 138, "setTodoReady" },
+                    { 42, "CmdCompleteTodo", "Marks a todo item as completed with a note and produced item. Use zero for no produced item.", "todo", 137, "completeTodo" },
+                    { 43, "CmdRejectTodo", "Rejects a todo item with a reason.", "todo", 139, "rejectTodo" },
+                    { 44, "CmdReviewPass", "Marks a todo item as passed review with optional review notes.", "todo", 140, "reviewPass" },
+                    { 45, "CmdReviewFail", "Marks a todo item as failed review with review notes and a change request.", "todo", 141, "reviewFail" },
+                    { 51, "CmdAddOrgDeskRole", "Add a role to an organizational desk.", "org", 142, "addOrgDeskRole" },
+                    { 55, "CmdAddOrgDesk", "Adds a new desk to the specified workgroup. Note: the desk's properties need to be configured after the Add, use updateItemProperty. The SystemPrompt is a Scriban template rendered into the operator's instructions. ex: {{ model.desk }} renders the desk name. Template model:\r\n  desk - string, the desk name\r\n  operator - string, the operator name\r\n  role - string, the desk role name\r\n  role_commands - list of:\r\n    command_type - string\r\n    command - string", "org", 143, "addOrgDesk" },
+                    { 59, "CmdAddDeskTodo", "Adds a new Todo to the desk. Note: promptTemplate follows Scriban syntax.model being passed in has both Todo and Target ItemSummaryDto objects. ex: {{ model.todo.id }} {{ model.target.name }} would render todo id and target name.", "org", 144, "addDeskTodo" },
+                    { 61, "CmdAddDigitalOperator", "Adds a digital operator to the specified DigitalOperatorPoolModel typed parentItem. Note: Properties need to be configured manually after the Add.", "org", 145, "addDigitalOperator" },
+                    { 71, "CmdAddOrgFolder", "Adds a new organizational folder.", "org", 146, "addOrgFolder" },
+                    { 73, "CmdAddOrgFile", "Adds a new .md file item in the specified Org folder item, infra adds ext to name.", "org", 148, "addOrgFile" },
+                    { 81, "CmdAddRssFolder", "Adds a new RSS folder.", "rss", 149, "addRssFolder" },
+                    { 83, "CmdAddRssChannel", "Adds a new RSS channel.", "rss", 150, "addRssChannel" },
+                    { 84, "CmdRssResyncChannel", "Resyncs the RSS channel, fetches new items and updates the channel.", "rss", 151, "rssResyncChannel" },
+                    { 85, "CmdRssResolveLink", "Resolves the specified Rss link to an Org file.", "rss", 152, "rssResolveLink" },
+                    { 86, "CmdRssExtractLinks", "Extracts links from the specified Rss link.", "rss", 153, "rssExtractLinks" },
+                    { 87, "CmdAppendGuildNote", "Appends a note to the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel", "rss", 154, "appendGuildNote" },
+                    { 88, "CmdUpdateGuildNote", "Updates a note in the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel", "rss", 155, "updateGuildNote" },
+                    { 89, "CmdArchiveItem", "Archives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel", "rss", 156, "archiveItem" },
+                    { 90, "CmdUnarchiveItem", "Unarchives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel", "rss", 157, "unarchiveItem" },
+                    { 91, "CmdAddProjectRoot", "Adds a new root level project folder.", "file", 158, "addProjectRoot" },
+                    { 92, "CmdAddSubFolder", "Adds a new sub folder to the specified parent folder or project root.", "file", 159, "addSubFolder" },
+                    { 93, "CmdAddGithubRepo", "Adds a new GitHub repository item to the specified folder.", "file", 160, "addGithubRepo" },
+                    { 94, "CmdDoGitClone", "Clones the GitHub repository item to the local file system, calls RefreshStatus", "file", 161, "doGitClone" },
+                    { 95, "CmdDoGitRefreshStatus", "Refreshes the Git status of the specified repository item. Syncs the child branches to graph.", "file", 162, "doGitRefreshStatus" },
+                    { 96, "CmdDoGitCheckout", "Checks out the specified branch item. Returns the repository item.", "file", 163, "doGitCheckout" },
+                    { 97, "CmdAddSolution", "Adds a new solution item under the specified folder.", "file", 181, "addSolution" },
+                    { 98, "CmdAddSolutionImport", "Adds a new solution import relation to the specified solution item.", "file", 182, "addSolutionImport" },
+                    { 99, "CmdAddMdFile", "Adds a new .md file item in the specified folder item, infra adds ext to name.", "file", 183, "addMdFile" },
+                    { 100, "CmdAddHtmlFile", "Adds a new .html file item in the specified folder item, infra adds ext to name.", "file", 184, "addHtmlFile" },
+                    { 101, "CmdAddConfigFile", "Adds a new .json file item in the specified folder item, infra adds ext to name.", "file", 185, "addConfigFile" },
+                    { 311, "CmdAddRealm", "Adds a new story realm project.", "storytime", 164, "addRealm" },
+                    { 315, "CmdAddStory", "Adds a new story item to the realm.", "storytime", 165, "addStory" },
+                    { 319, "CmdAddScene", "Adds a new scene item to the story.", "storytime", 166, "addScene" },
+                    { 321, "CmdScheduleBeatWriters", "Adds todo for each scene in story to write the beats on the handler desk. Skips scenes that have been requested or if it has beats. Details in results", "storytime", 169, "scheduleBeatWriters" },
+                    { 325, "CmdAddBeat", "Adds a new beat item to the scene, requires: sceneId, name, details parameters.", "storytime", 168, "addBeat" },
+                    { 329, "CmdAddCharacter", "Adds a new character item to the scene.", "storytime", 167, "addCharacter" },
+                    { 331, "CmdScheduleBeatDirectors", "Adds todo for each beat in scene to direct the beat on the handler desk. Skips beats that have been requested or if it has a call sheet. Details in results", "storytime", 170, "scheduleBeatDirectors" },
+                    { 335, "CmdAddCallSheet", "Adds a new call sheet item to the beat.", "storytime", 171, "addCallSheet" },
+                    { 339, "CmdAddCallSheetNarration", "Adds a new narration to the call sheet.", "storytime", 172, "addCallSheetNarration" },
+                    { 341, "CmdAddCallSheetRole", "Adds a character role to a call sheet. Adds Character to scene if not already present by character.", "storytime", 173, "addCallSheetRole" },
+                    { 345, "CmdAddPerformance", "Adds a new performance for a scene. Builds the data field by enumerating the script entries for all call sheets in scene.", "storytime", 174, "addPerformance" },
+                    { 349, "CmdScheduleActors", "Adds todo for each role in performance to direct the acting performance on the handler desk. Skips Roles that have been requested or if it has a ActorPerformance. Details in results", "storytime", 175, "scheduleActorPerformances" },
+                    { 351, "CmdAddPerformanceAction", "Adds a new character action item to the performance.", "storytime", 176, "addPerformanceAction" },
+                    { 355, "CmdAddPerformanceLine", "Adds a new line of dialogue for a character in a performance.", "storytime", 177, "addPerformanceLine" },
+                    { 359, "CmdGetPerformanceRollup", "Gets a rollup of the performance actions and lines for a performance.", "storytime", 178, "getPerformanceRollup" },
+                    { 361, "CmdAddObservation", "Adds a new observation item to the scene.", "storytime", 179, "addObservation" },
+                    { 365, "CmdAddStoryRollupModel", "Adds a new story rollup item to the story.", "storytime", 180, "addStoryRollup" },
+                    { 371, "CmdAddLibrary", "Adds a new csharp library model.", "library", 186, "addLibrary" },
+                    { 375, "CmdAddNamespace", "Adds a new namespace.", "library", 187, "addNamespace" },
+                    { 381, "CmdAddClass", "Adds a new class model, with options to generate interface and register DI.", "class", 188, "addClass" },
+                    { 385, "CmdAddClassImport", "Adds a new class import model to an existing class. Makes a private _var and sets it via constructor and DI.", "class", 189, "addClassImport" },
+                    { 389, "CmdAddClassProperty", "Adds a new class property model to an existing class.", "class", 190, "addClassProperty" },
+                    { 393, "CmdAddClassMethod", "Adds a new class method to an existing class.", "class", 191, "addClassMethod" },
+                    { 397, "CmdAddClassMethodParam", "Adds a new class method parameter to an existing class method.", "class", 192, "addClassMethodParam" },
+                    { 401, "CmdAddEntityClass", "Adds two classes, a new entity class with primary Id property, a entity config class, and imports ref to DbContext.", "entity", 193, "addEntityClass" },
+                    { 405, "CmdAddEntityProperty", "Adds a new entity property model to an existing entity class. If it is a navigation property, additional navigation properties will be added; they will need to be configured.", "entity", 195, "addEntityProperty" },
+                    { 421, "CmdAddGameRoom", "Adds a new game room model. Game rooms can be added to the Org root or other game rooms.", "game", 200, "addGameRoomModel" },
+                    { 431, "CmdAddChessGame", "Adds a new chess game model.", "game", 201, "addChessGameModel" },
+                    { 433, "CmdGetChessGame", "Gets an existing chess game model.", "game", 202, "getChessGame" },
+                    { 435, "CmdChessStartGame", "Starts a chess game. (Issues todo on whites desk.)", "game", 203, "chessStartGame" },
+                    { 437, "CmdChessMakeMove", "Makes a move in a chess game. (Issues todo on opponents desk, marks todo as done.)", "game", 204, "chessMakeMove" },
+                    { 441, "CmdAddPattern", "Adds a new pattern.", "pattern", 205, "addPattern" },
+                    { 443, "CmdAddPatDimension", "Adds a new dimension to a pattern.", "pattern", 206, "addPatDimension" },
+                    { 445, "CmdAddPatDimOption", "Adds an additional option to a pattern dimension.", "pattern", 207, "addPatDimOption" },
+                    { 447, "CmdGetNextDraw", "Get the next draw for a pattern. Sets draw status to DrawIssued id: 311.", "pattern", 208, "getNextDraw" },
+                    { 449, "CmdRejectDraw", "Reject a draw for a pattern. Sets draw status to DrawRejected id: 315. Issues and returns another draw.", "pattern", 209, "rejectDraw" },
+                    { 451, "CmdAcceptDraw", "Accept a draw for a pattern. Sets draw status to DrawAccepted id 314. Assigns the reference item.", "pattern", 210, "acceptDraw" },
+                    { 461, "CmdAddComfyWorkflow", "Adds a new Comfy workflow.", "comfy", 1, "addComfyWorkflow" },
+                    { 465, "CmdAddComfyWfParam", "Adds a new parameter to a Comfy workflow.", "comfy", 1, "addComfyWfParam" },
+                    { 469, "CmdAddComfyTodo", "Adds a new todo to a Comfy workflow.", "comfy", 1, "addComfyTodo" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "DataTypes",
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
@@ -437,6 +543,8 @@ namespace Weavers.Core.Migrations
                     { 290, "Point of View Types", -1, "", true, "PovTypes", null, 18 },
                     { 300, "Game Status", -1, "", true, "GameStatus", null, 19 },
                     { 305, "Two Player Toggle", -1, "", true, "GameTwoPlayerToggle", null, 20 },
+                    { 310, "Draw Status", -1, "", true, "DrawStatus", null, 21 },
+                    { 320, "Comfy Target Override Types", -1, "", true, "ComfyTargetOverrideTypes", null, 22 },
                     { 1000, "Organization", -1, "", true, "OrganizationModel", null, 1000 },
                     { 1107, "DocRating", -1, "", true, "DocRating", 1107, 0 },
                     { 1311, "DbContext Documentation", 4, "", true, "DbContextDocs", 1311, 1 }
@@ -527,77 +635,6 @@ namespace Weavers.Core.Migrations
                     { 116, "Disabled", -1, "", true, "FloorDisabled", 115, 1 },
                     { 117, "Operational", -1, "", true, "FloorOperational", 115, 2 },
                     { 118, "Stopping", -1, "", true, "FloorStopping", 115, 3 },
-                    { 122, "help", 4, "", true, "CmdHelp", 120, 1 },
-                    { 124, "listProjects", 4, "", true, "CmdListProjects", 120, 2 },
-                    { 126, "search", 4, "", true, "CmdSearch", 120, 3 },
-                    { 128, "getSummaryById", 4, "", true, "CmdGetSummaryById", 120, 4 },
-                    { 130, "getTypeDetails", 4, "", true, "CmdGetTypeDetails", 120, 5 },
-                    { 132, "updateItemName", 4, "", true, "CmdUpdateItemName", 120, 6 },
-                    { 134, "updateItemContent", 4, "", true, "CmdUpdateItemContent", 120, 7 },
-                    { 135, "appendItemContent", 4, "", true, "CmdAppendItemContent", 120, 8 },
-                    { 136, "updateItemProperty", 4, "", true, "CmdUpdateItemProperty", 120, 9 },
-                    { 137, "completeTodo", -1, "", true, "CmdCompleteTodo", 120, 10 },
-                    { 138, "setTodoReady", -1, "", true, "CmdSetTodoReady", 120, 11 },
-                    { 139, "rejectTodo", -1, "", true, "CmdRejectTodo", 120, 12 },
-                    { 140, "reviewPass", -1, "", true, "CmdReviewPass", 120, 13 },
-                    { 141, "reviewFail", -1, "", true, "CmdReviewFail", 120, 14 },
-                    { 142, "addOrgDeskRole", 4, "", true, "CmdAddOrgDeskRole", 120, 15 },
-                    { 143, "addOrgDesk", -1, "", true, "CmdAddOrgDesk", 120, 16 },
-                    { 144, "addDeskTodo", -1, "", true, "CmdAddDeskTodo", 120, 17 },
-                    { 145, "addDigitalOperator", -1, "", true, "CmdAddDigitalOperator", 120, 18 },
-                    { 146, "addOrgFolder", -1, "", true, "CmdAddOrgFolder", 120, 19 },
-                    { 148, "addOrgFile", -1, "", true, "CmdAddOrgFile", 120, 20 },
-                    { 149, "addRssFolder", 4, "", true, "CmdAddRssFolder", 120, 21 },
-                    { 150, "addRssChannel", 4, "", true, "CmdAddRssChannel", 120, 22 },
-                    { 151, "rssResyncChannel", 4, "", true, "CmdRssResyncChannel", 120, 23 },
-                    { 152, "rssResolveLink", 4, "", true, "CmdRssResolveLink", 120, 24 },
-                    { 153, "rssExtractLinks", 4, "", true, "CmdRssExtractLinks", 120, 25 },
-                    { 154, "appendGuildNote", 4, "", true, "CmdAppendGuildNote", 120, 26 },
-                    { 155, "updateGuildNote", 4, "", true, "CmdUpdateGuildNote", 120, 27 },
-                    { 156, "archiveItem", 4, "", true, "CmdArchiveItem", 120, 28 },
-                    { 157, "unarchiveItem", 4, "", true, "CmdUnarchiveItem", 120, 29 },
-                    { 158, "addProjectRoot", 4, "", true, "CmdAddProjectRoot", 120, 30 },
-                    { 159, "addSubFolder", 4, "", true, "CmdAddSubFolder", 120, 31 },
-                    { 160, "addGithubRepo", 4, "", true, "CmdAddGithubRepo", 120, 32 },
-                    { 161, "doGitClone", 4, "", true, "CmdDoGitClone", 120, 33 },
-                    { 162, "doGitRefreshStatus", 4, "", true, "CmdDoGitRefreshStatus", 120, 34 },
-                    { 163, "doGitCheckout", 4, "", true, "CmdDoGitCheckout", 120, 35 },
-                    { 164, "addRealm", -1, "", true, "CmdAddRealm", 120, 36 },
-                    { 165, "addStory", -1, "", true, "CmdAddStory", 120, 37 },
-                    { 166, "addScene", -1, "", true, "CmdAddScene", 120, 38 },
-                    { 167, "addCharacter", -1, "", true, "CmdAddCharacter", 120, 39 },
-                    { 168, "addBeat", -1, "", true, "CmdAddBeat", 120, 40 },
-                    { 169, "scheduleBeatWriters", -1, "", true, "CmdScheduleBeatWriters", 120, 41 },
-                    { 170, "scheduleBeatDirectors", -1, "", true, "CmdScheduleBeatDirectors", 120, 42 },
-                    { 171, "addCallSheet", -1, "", true, "CmdAddCallSheet", 120, 43 },
-                    { 172, "addCallSheetNarration", -1, "", true, "CmdAddCallSheetNarration", 120, 44 },
-                    { 173, "addCallSheetRole", -1, "", true, "CmdAddCallSheetRole", 120, 45 },
-                    { 174, "addPerformance", -1, "", true, "CmdAddPerformance", 120, 46 },
-                    { 175, "scheduleActorPerformances", -1, "", true, "CmdScheduleActors", 120, 47 },
-                    { 176, "addPerformanceAction", -1, "", true, "CmdAddPerformanceAction", 120, 48 },
-                    { 177, "addPerformanceLine", -1, "", true, "CmdAddPerformanceLine", 120, 49 },
-                    { 178, "getPerformanceRollup", -1, "", true, "CmdGetPerformanceRollup", 120, 50 },
-                    { 179, "addObservation", -1, "", true, "CmdAddObservation", 120, 51 },
-                    { 180, "addStoryRollup", -1, "", true, "CmdAddStoryRollupModel", 120, 52 },
-                    { 181, "addSolution", 4, "", true, "CmdAddSolution", 120, 53 },
-                    { 182, "addSolutionImport", 4, "", true, "CmdAddSolutionImport", 120, 54 },
-                    { 183, "addMdFile", 4, "", true, "CmdAddMdFile", 120, 55 },
-                    { 184, "addHtmlFile", 4, "", true, "CmdAddHtmlFile", 120, 56 },
-                    { 185, "addConfigFile", 4, "", true, "CmdAddConfigFile", 120, 57 },
-                    { 186, "addLibrary", 4, "", true, "CmdAddLibrary", 120, 58 },
-                    { 187, "addNamespace", 4, "", true, "CmdAddNamespace", 120, 59 },
-                    { 188, "addClass", 4, "", true, "CmdAddClass", 120, 60 },
-                    { 189, "addClassImport", 4, "", true, "CmdAddClassImport", 120, 61 },
-                    { 190, "addClassProperty", 4, "", true, "CmdAddClassProperty", 120, 62 },
-                    { 191, "addClassMethod", 4, "", true, "CmdAddClassMethod", 120, 63 },
-                    { 192, "addClassMethodParam", 4, "", true, "CmdAddClassMethodParam", 120, 64 },
-                    { 193, "addEntityClass", 4, "", true, "CmdAddEntityClass", 120, 65 },
-                    { 195, "addEntityProperty", 4, "", true, "CmdAddEntityProperty", 120, 66 },
-                    { 200, "addGameRoomModel", -1, "", true, "CmdAddGameRoom", 120, 67 },
-                    { 201, "addChessBoardModel", -1, "", true, "CmdAddChessGame", 120, 68 },
-                    { 202, "getChessGame", -1, "", true, "CmdGetChessGame", 120, 69 },
-                    { 203, "chessStartGame", -1, "", true, "CmdChessStartGame", 120, 70 },
-                    { 204, "chessMakeMove", -1, "", true, "CmdChessMakeMove", 120, 71 },
                     { 221, "Not Started", -1, "", true, "TodoNotStarted", 220, 1 },
                     { 222, "In Progress", -1, "", true, "TodoInProgress", 220, 2 },
                     { 223, "Complete Forward", -1, "", true, "TodoCompleteForward", 220, 3 },
@@ -629,6 +666,16 @@ namespace Weavers.Core.Migrations
                     { 304, "Failed", -1, "", true, "GameFailed", 300, 5 },
                     { 306, "Player White", -1, "", true, "PlayerWhite", 305, 7 },
                     { 307, "Player Black", -1, "", true, "PlayerBlack", 305, 8 },
+                    { 311, "Draw Issued", -1, "", true, "DrawIssued", 310, 1 },
+                    { 312, "Draw Declined", -1, "", true, "DrawDeclined", 310, 2 },
+                    { 313, "Draw Written", -1, "", true, "DrawWritten", 310, 3 },
+                    { 314, "Draw Accepted", -1, "", true, "DrawAccepted", 310, 4 },
+                    { 315, "Draw Rejected", -1, "", true, "DrawRejected", 310, 5 },
+                    { 321, "Override Seed Type", -1, "", true, "CtOverrideSeed", 320, 1 },
+                    { 322, "Override String Type", -1, "", true, "CtOverrideString", 320, 2 },
+                    { 323, "Override File Path Type", -1, "", true, "CtOverrideFilePath", 320, 3 },
+                    { 324, "Override Int Type", -1, "", true, "CtOverrideInt", 320, 4 },
+                    { 325, "Override Decimal Type", -1, "", true, "CtOverrideDecimal", 320, 5 },
                     { 1010, "App Harness", -1, "", true, "HarnessAppModel", 1000, 1010 },
                     { 1025, "Org Credential Store", -1, "", true, "CredentialStoreModel", 1000, 1025 },
                     { 1030, "Digital Operator Pool", -1, "", true, "DigitalOperatorPoolModel", 1000, 1030 },
@@ -637,6 +684,7 @@ namespace Weavers.Core.Migrations
                     { 1060, "Org Folder", 4, "", true, "OrgFolderModel", 1000, 1060 },
                     { 1070, "Rss Folder", -1, "", true, "RssFolderModel", 1000, 1070 },
                     { 1080, "GameRoomModel", -1, "", true, "GameRoomModel", 1000, 0 },
+                    { 1090, "Pattern", -1, "", true, "PatternModel", 1000, 1090 },
                     { 1100, "Project Folder", 4, "pi pi-folder", true, "ProjectFolderModel", 1000, 1100 },
                     { 1160, "Realm", -1, "", true, "RealmModel", 1000, 1160 }
                 });
@@ -677,6 +725,8 @@ namespace Weavers.Core.Migrations
                     { 1065, "Org File", 4, "", true, "OrgFileModel", 1060, 1065 },
                     { 1075, "Rss Channel", -1, "", true, "RssChannelModel", 1070, 1075 },
                     { 1085, "ChessGameModel", -1, "", true, "ChessGameModel", 1080, 0 },
+                    { 1092, "Pattern Dimension", -1, "", true, "PatternDimensionModel", 1090, 1092 },
+                    { 1096, "Pattern Draw", -1, "", true, "PatternDrawModel", 1090, 1096 },
                     { 1101, "Project Documentation", 4, "", true, "ProjectDocs", 1100, 1101 },
                     { 1110, "Relative Folder", 4, "pi pi-folder", true, "RelativeFolderModel", 1100, 1110 },
                     { 1163, "Story", -1, "", true, "StoryModel", 1160, 1163 },
@@ -725,11 +775,13 @@ namespace Weavers.Core.Migrations
                     { 999987650L, "", 12, true, 1075, "GuildNotes", 2, null, 54 },
                     { 1065361085L, "", 4, true, 1026, "GithubUser", 10, null, 54 },
                     { 1117398557L, "0", 2, true, 1013, "HasLmStudio", 3, null, 55 },
+                    { 1135556740L, "311", 10, true, 1096, "DrawStatus", 700007, 310, 57 },
                     { 1153606490L, "", 10, true, 1045, "Operator", 10, 1035, 57 },
                     { 1212031852L, "0", 10, true, 1045, "DeskRole", 12, 1038, 57 },
                     { 1323603135L, "", 14, true, 1075, "RelativeFolder", 10, null, 54 },
                     { 1443823880L, "", 5, true, 1035, "FilePath", 1, null, 54 },
                     { 1501037254L, "0", 2, true, 1075, "DoResync", 3, null, 55 },
+                    { 1509543669L, "", 16, true, 1096, "Produced", 700009, null, 57 },
                     { 1538047928L, "", 12, true, 1180, "Credits", 9, null, 54 },
                     { 1543463914L, "", 10, true, 1085, "WhiteDesk", 20, 1045, 57 },
                     { 1571397578L, "3", 3, true, 1045, "MaxAttempts", 4, null, 57 },
@@ -737,8 +789,10 @@ namespace Weavers.Core.Migrations
                     { 1619684267L, "5", 3, true, 1163, "TargetSceneCount", 10, null, 57 },
                     { 1902801050L, "", 5, true, 1038, "FilePath", 10, null, 54 },
                     { 1935475214L, "", 14, true, 1043, "RelativeFolder", 9, null, 54 },
+                    { 1937565097L, "0", 2, true, 1013, "HasComfy", 1, null, 55 },
                     { 1965538836L, "", 4, true, 1163, "AddedBy", 5, null, 54 },
-                    { 1969780564L, "", 10, true, 1085, "BlackDesk", 19, 1045, 57 }
+                    { 1969780564L, "", 10, true, 1085, "BlackDesk", 19, 1045, 57 },
+                    { 1997314683L, "", 10, true, 1096, "ReplacedBy", 700008, 1096, 57 }
                 });
 
             migrationBuilder.InsertData(
@@ -752,6 +806,7 @@ namespace Weavers.Core.Migrations
                 values: new object[,]
                 {
                     { 2061193119L, "", 5, true, 1065, "FilePath", 1, null, 54 },
+                    { 2081888173L, "", 4, true, 1096, "AddedBy", 700005, null, 54 },
                     { 2104296258L, "", 4, true, 1075, "ChannelUrl", 5, null, 54 },
                     { 2123862451L, "0", 2, true, 1045, "Enabled", 11, null, 55 }
                 });
@@ -767,13 +822,14 @@ namespace Weavers.Core.Migrations
                     { 1018, "Claude Gateway", -1, "", true, "PresenceClaudeGatewayModel", 1013, 1018 },
                     { 1050, "Todo", 4, "", true, "TodoModel", 1045, 1050 },
                     { 1076, "Rss Item", -1, "", true, "RssItemModel", 1075, 1076 },
+                    { 1094, "Pattern Option", -1, "", true, "PatternOptionModel", 1092, 1094 },
                     { 1111, "Relative Folder Documentation", 4, "", true, "RelativeFolderDocs", 1110, 1111 },
                     { 1112, "GitHub Repo", 4, "", true, "GithubRepoModel", 1110, 1112 },
                     { 1115, "Git Folder", 4, "", true, "GitFolderModel", 1110, 1115 },
                     { 1120, "Md File", 4, "pi pi-file", true, "FileMdModel", 1110, 1120 },
                     { 1130, "Html File", 4, "", true, "FileHtmlModel", 1110, 1130 },
                     { 1140, "Config File", 4, "", true, "FileConfigModel", 1110, 1140 },
-                    { 1150, "Image File", 4, "", true, "FileImageModel", 1110, 0 },
+                    { 1150, "Comfy Service", -1, "", true, "ComfyServiceModel", 1013, 1150 },
                     { 1166, "Scene", -1, "", true, "SceneModel", 1163, 1166 },
                     { 1190, "Solution", 4, "pi pi-sitemap", true, "SolutionModel", 1110, 1190 },
                     { 1200, "Library", 4, "pi pi-book", true, "LibraryModel", 1110, 1200 }
@@ -785,18 +841,21 @@ namespace Weavers.Core.Migrations
                 values: new object[,]
                 {
                     { 16569088L, "", 14, true, 1112, "RelativeFolder", 20, null, 54 },
+                    { 31906623L, "", 13, true, 1150, "ServiceInput", 5, null, 54 },
                     { 43629855L, "", 6, true, 1112, "LastStatusChk", 14, null, 64 },
                     { 60991522L, "1", 2, true, 1200, "ImplicitUsing", 7, null, 55 },
                     { 64020760L, "", 4, true, 1115, "GitPath", 17, null, 54 },
                     { 87994939L, "1", 2, true, 1200, "IsNullable", 8, null, 55 },
                     { 110591840L, "", 10, true, 1112, "GithubCreds", 19, 1026, 57 },
                     { 135559006L, ".csproj", 1, true, 1200, "FileExt", 2, null, 54 },
+                    { 137311920L, "0", 10, true, 1096, "TodoItem", 700003, 1050, 57 },
                     { 159801895L, "", 4, true, 1112, "RepoUrl", 18, null, 54 },
                     { 172982693L, "", 16, true, 1050, "RefItem", 10, null, 57 },
                     { 187455678L, "1.0.0.0", 4, true, 1200, "AssemblyVersion", 5, null, 54 },
                     { 218297439L, "261", 10, true, 1076, "ResolveState", 7, 260, 57 },
                     { 248237489L, "0", 2, true, 1076, "ExtractLink", 3, null, 55 },
                     { 273430945L, "0", 3, true, 1112, "ModifiedCount", 12, null, 57 },
+                    { 365055096L, "0", 3, true, 1094, "IssuedCount", 3, null, 57 },
                     { 432618265L, "", 9, true, 1016, "ApiToken", 2, null, 54 },
                     { 451025254L, ".html", 4, true, 1130, "FileExt", 1, null, 54 },
                     { 492099725L, "104", 10, true, 1111, "Results", 1, 100, 57 },
@@ -804,13 +863,13 @@ namespace Weavers.Core.Migrations
                     { 515996961L, "", 13, true, 1115, "RelativeFolder", 20, null, 54 },
                     { 576954176L, "", 4, true, 1076, "HasUrl", 8, null, 54 },
                     { 630102173L, "0", 2, true, 1112, "IsDirty", 13, null, 55 },
-                    { 646614241L, "", 5, true, 1150, "FilePath", 2, null, 54 },
                     { 674657094L, "", 3, true, 1012, "ProcessId", 1, null, 57 },
                     { 694097343L, "", 17, true, 1050, "UserPrompt", 9, null, 54 },
                     { 728965473L, "20", 3, true, 1076, "MaxLinks", 1, null, 57 },
                     { 745089752L, "", 10, true, 1045, "CurrentTodo", 2, 1050, 57 },
                     { 756291580L, "0", 2, true, 1016, "DoReSync", 4, null, 55 },
                     { 781809747L, "", 12, true, 1166, "EntryState", 9, null, 54 },
+                    { 791676853L, "", 13, true, 1150, "ServiceOutput", 7, null, 54 },
                     { 828310896L, "", 12, true, 1076, "GuildNotes", 2, null, 54 },
                     { 857012581L, "0", 2, true, 1200, "IsTestLib", 3, null, 55 },
                     { 890235089L, "", 4, true, 1112, "LastCommitSha", 15, null, 54 },
@@ -829,14 +888,15 @@ namespace Weavers.Core.Migrations
                     { 1468851005L, "0", 2, true, 1050, "Ready", 12, null, 55 },
                     { 1630406066L, "", 4, true, 1012, "ProviderType", 2, null, 54 },
                     { 1715745638L, ".json", 4, true, 1140, "FileExt", 1, null, 54 },
+                    { 1748159520L, "116", 10, true, 1150, "FloorStatus", 9, 115, 57 },
                     { 1770471601L, "0", 3, true, 1112, "UntrackedFiles", 10, null, 57 },
                     { 1799423562L, "0", 10, true, 1115, "RepoItemId", 9, 1112, 57 },
                     { 1815645061L, "281", 10, true, 1166, "SceneStatus", 10, 280, 57 },
                     { 1824573741L, "1", 3, true, 1050, "TodoDepth", 6, null, 57 },
-                    { 1840038555L, ".png", 4, true, 1150, "FileExt", 1, null, 54 },
                     { 1840217467L, "", 5, true, 1140, "FilePath", 2, null, 54 },
                     { 1897614528L, "", 4, true, 1200, "FilePath", 11, null, 54 },
                     { 1929466650L, "291", 10, true, 1166, "POV", 7, 290, 57 },
+                    { 1937703094L, "", 4, true, 1150, "UrlBase", 3, null, 54 },
                     { 1945282407L, "", 5, true, 1120, "FilePath", 2, null, 54 },
                     { 1948602033L, "", 10, true, 1050, "FromTodo", 8, 1050, 57 },
                     { 1974303431L, "", 4, true, 1112, "RemoteName", 17, null, 54 },
@@ -864,7 +924,8 @@ namespace Weavers.Core.Migrations
                     { 1121, "Md File Documentation", 4, "", true, "FileMdDocs", 1120, 1121 },
                     { 1131, "Html File Documentation", 4, "", true, "FileHtmlDocs", 1130, 1131 },
                     { 1141, "Config File Documentation", 4, "", true, "FileConfigDocs", 1140, 1141 },
-                    { 1151, "Image File Documentation", 4, "", true, "FileImageDocs", 1150, 0 },
+                    { 1151, "Comfy Workflow Folder", -1, "", true, "ComfyWorkflowFolderModel", 1150, 1151 },
+                    { 1154, "Comfy Operations", -1, "", true, "ComfyOperationsModel", 1150, 1154 },
                     { 1168, "Character", -1, "", true, "CharacterModel", 1166, 1168 },
                     { 1170, "Beat", -1, "", true, "BeatModel", 1166, 1170 },
                     { 1177, "Performance", -1, "", true, "PerformanceModel", 1166, 1177 },
@@ -899,7 +960,6 @@ namespace Weavers.Core.Migrations
                     { 632364359L, "", 4, true, 1210, "PrivateAssets", 4, null, 54 },
                     { 679503905L, ".cs", 1, true, 1300, "FileExt", 6, null, 54 },
                     { 707711779L, "", 12, true, 1055, "UserPrompt", 7, null, 54 },
-                    { 768037527L, "104", 10, true, 1151, "Results", 1, 100, 57 },
                     { 811808380L, "", 4, true, 1170, "AddedBy", 5, null, 54 },
                     { 817996596L, "", 10, true, 1055, "Operator", 5, 1035, 57 },
                     { 891138225L, "", 12, true, 1055, "SysPrompt", 8, null, 54 },
@@ -947,6 +1007,11 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
+                    { 1152, "Comfy Workflow Templates", -1, "", true, "ComfyWorkflowTemplate", 1151, 1152 },
+                    { 1153, "Comfy WF Param", -1, "", true, "ComfyWfParamModel", 1151, 1153 },
+                    { 1155, "Comfy Op Todo", -1, "", true, "ComfyOpTodoModel", 1154, 1155 },
+                    { 1156, "Comfy Op Param", -1, "", true, "ComfyOpParamModel", 1154, 1156 },
+                    { 1157, "Comfy Op Todo Attempt", -1, "", true, "ComfyOpTodoAttemptModel", 1154, 1157 },
                     { 1172, "Call Sheet", -1, "", true, "CallSheetModel", 1170, 1172 },
                     { 1178, "Actor Performance", -1, "", true, "ActorPerformanceModel", 1177, 1178 },
                     { 1179, "Observed", -1, "", true, "ObservationModel", 1177, 1179 },
@@ -976,36 +1041,54 @@ namespace Weavers.Core.Migrations
                     { 201304388L, "104", 10, true, 1301, "Results", 1, 100, 57 },
                     { 201835931L, "", 4, true, 1172, "AddedBy", 5, null, 54 },
                     { 238500287L, "0", 2, true, 1500, "TestClass", 19, null, 55 },
+                    { 275330974L, "", 12, true, 1157, "Response", 6, null, 54 },
                     { 281060123L, "", 4, true, 1700, "Namespace", 14, null, 54 },
                     { 295932443L, ".cs", 1, true, 1500, "FileExt", 17, null, 54 },
                     { 339368038L, "", 4, true, 1450, "Namespace", 14, null, 54 },
                     { 361010066L, "", 10, true, 1460, "BaseType", 13, 50, 57 },
+                    { 364057390L, "", 4, true, 1156, "ObjectKey", 9, null, 54 },
+                    { 386962911L, "0", 2, true, 1155, "Ready", 10, null, 55 },
                     { 388463739L, "", 4, true, 1600, "FilePath", 16, null, 54 },
+                    { 421425207L, "", 12, true, 1156, "PropValue", 6, null, 54 },
                     { 435789011L, "", 4, true, 1179, "AddedBy", 5, null, 54 },
                     { 438280773L, ".cs", 1, true, 1700, "FileExt", 16, null, 54 },
                     { 454549381L, "", 12, true, 1178, "Instructions", 10, null, 54 },
+                    { 467835329L, "221", 10, true, 1155, "Status", 11, 220, 57 },
                     { 509661068L, "", 2, true, 1500, "GenInterface", 13, null, 55 },
                     { 510921193L, "", 4, true, 1310, "FilePath", 3, null, 54 },
                     { 527495690L, "", 4, true, 1700, "FilePath", 15, null, 54 },
+                    { 532096174L, "", 4, true, 1153, "PropKey", 10, null, 54 },
+                    { 564635326L, "", 4, true, 1153, "ObjectKey", 9, null, 54 },
                     { 757477476L, "", 4, true, 1460, "Namespace", 14, null, 54 },
                     { 778858570L, "0", 2, true, 1500, "IsStatic", 11, null, 55 },
                     { 911311179L, "", 10, true, 1302, "RegisterObj", 2, 1500, 57 },
                     { 938322919L, "", 4, true, 1500, "FilePath", 16, null, 54 },
                     { 1082478032L, "", 10, true, 1500, "BaseType", 14, 1500, 57 },
+                    { 1113530738L, "322", 10, true, 1153, "OverrideType", 11, 320, 57 },
                     { 1152461030L, "", 4, true, 1450, "FilePath", 15, null, 54 },
                     { 1157931639L, "0", 10, true, 1178, "Character", 15, 1168, 57 },
                     { 1202318301L, "", 2, true, 1500, "RegisterDI", 12, null, 55 },
+                    { 1230454950L, "", 4, true, 1153, "SectionKey", 8, null, 54 },
+                    { 1230722682L, "0", 2, true, 1152, "Enabled", 11, null, 55 },
+                    { 1246006094L, "231", 10, true, 1157, "Status", 10, 230, 57 },
                     { 1314399708L, "91", 10, true, 1460, "AccessModifier", 17, 90, 57 },
                     { 1382050752L, "104", 10, true, 1401, "Results", 1, 100, 57 },
                     { 1417816706L, "", 4, true, 1178, "AddedBy", 5, null, 54 },
                     { 1455914208L, "", 3, true, 1178, "Rank", 8, null, 57 },
+                    { 1583220167L, "", 4, true, 1156, "PropKey", 10, null, 54 },
+                    { 1590401157L, "300", 3, true, 1155, "TimeoutSec", 8, null, 57 },
+                    { 1626448412L, "", 12, true, 1153, "PropValue", 6, null, 54 },
                     { 1674639385L, ".cs", 4, true, 1460, "FileExt", 16, null, 54 },
+                    { 1757300449L, "", 4, true, 1156, "SectionKey", 8, null, 54 },
                     { 1775986758L, ".cs", 1, true, 1600, "FileExt", 17, null, 54 },
                     { 1844748562L, ".cs", 4, true, 1450, "FileExt", 16, null, 54 },
                     { 1869308991L, "", 4, true, 1600, "DbTableName", 13, null, 54 },
+                    { 1894812385L, "300", 3, true, 1152, "TimeoutSec", 8, null, 57 },
                     { 1917099339L, "42", 10, true, 1302, "LifetimeScope", 3, 40, 57 },
                     { 1931179760L, "dbo", 4, true, 1600, "DbSchema", 14, null, 54 },
+                    { 1948218175L, "", 10, true, 1155, "WfTemplate", 12, 1152, 57 },
                     { 1949436720L, "", 4, true, 1600, "Namespace", 15, null, 54 },
+                    { 1984596359L, "322", 10, true, 1156, "OverrideType", 11, 320, 57 },
                     { 1996215178L, "", 2, true, 1460, "GenInterface", 12, null, 55 },
                     { 2010778278L, "", 2, true, 1302, "RegisterIntf", 1, null, 55 },
                     { 2053661514L, ".cs", 4, true, 1310, "FileExt", 2, null, 54 },
@@ -1017,6 +1100,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "Description", "EditorTypeId", "IconName", "IsVisible", "Name", "ParentTypeId", "Rank" },
                 values: new object[,]
                 {
+                    { 1158, "Comfy Media File", -1, "", true, "ComfyMediaFileModel", 1157, 1158 },
                     { 1312, "Db Entity Import", 4, "pi pi-database", true, "DbContextEntityImportModel", 1310, 1 },
                     { 1421, "Interface Documentation", 4, "", true, "InterfaceDocs", 1420, 1421 },
                     { 1422, "Interface Property", 4, "pi pi-plug", true, "InterfacePropertyModel", 1420, 1422 },
@@ -1042,6 +1126,7 @@ namespace Weavers.Core.Migrations
                 columns: new[] { "Id", "DefaultValue", "EditorTypeId", "IsVisible", "ItemTypeId", "Key", "Rank", "ReferenceItemTypeId", "ValueDataTypeId" },
                 values: new object[,]
                 {
+                    { 62661322L, "", 5, true, 1158, "FilePath", 9, null, 54 },
                     { 80393804L, "", 10, true, 1602, "ImportObj", 4, 1500, 57 },
                     { 101016958L, "104", 10, true, 1601, "Results", 1, 100, 57 },
                     { 264340796L, "", 10, true, 1510, "PropClass", 4, 1500, 57 },
@@ -1054,6 +1139,7 @@ namespace Weavers.Core.Migrations
                     { 784956022L, "", 10, true, 1520, "ReturnClass", 16, 1500, 57 },
                     { 813213418L, "104", 10, true, 1451, "Results", 1, 100, 57 },
                     { 838278686L, "-1", 3, true, 1610, "MaxSize", 3, null, 57 },
+                    { 865960650L, "", 10, true, 1158, "FromAttempt", 11, 1157, 57 },
                     { 896297069L, "", 10, true, 1720, "PropClass", 2, 1500, 57 },
                     { 956434271L, "", 4, true, 1630, "InverseNav", 3, null, 54 },
                     { 988798323L, "1", 2, true, 1630, "IsNullable", 4, null, 55 },
@@ -1063,6 +1149,7 @@ namespace Weavers.Core.Migrations
                     { 1295253040L, "0", 2, true, 1610, "IsPrimaryKey", 4, null, 55 },
                     { 1300622506L, "0", 2, true, 1520, "IsStatic", 12, null, 55 },
                     { 1384864029L, "57", 10, true, 1510, "PropType", 5, 50, 57 },
+                    { 1387343174L, "", 10, true, 1158, "FromTodo", 11, 1155, 57 },
                     { 1398346717L, "1", 2, true, 1510, "IsNullable", 3, null, 55 },
                     { 1440965944L, "1", 2, true, 1610, "HasSetter", 6, null, 55 },
                     { 1475755140L, "0", 2, true, 1520, "IsSealed", 10, null, 55 },
@@ -1078,6 +1165,7 @@ namespace Weavers.Core.Migrations
                     { 1916279885L, "32", 10, true, 1520, "TestMethod", 19, 31, 57 },
                     { 1922581080L, "", 10, true, 1630, "ForeignKey", 6, 1610, 57 },
                     { 1928527879L, "", 2, true, 1602, "UseIntf", 3, null, 55 },
+                    { 1955860612L, "", 4, true, 1158, "MediaType", 8, null, 54 },
                     { 1981324502L, "0", 2, true, 1520, "IsVirtual", 13, null, 55 },
                     { 2093742418L, "", 10, true, 1502, "ImportObj", 4, 1500, 57 }
                 });
@@ -1194,6 +1282,12 @@ namespace Weavers.Core.Migrations
                 column: "LibraryItemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CommandDefs_Code",
+                table: "CommandDefs",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DataTypes_Name",
                 table: "DataTypes",
                 column: "Name",
@@ -1235,6 +1329,11 @@ namespace Weavers.Core.Migrations
                 name: "IX_ItemProperties_Name_ValueHash",
                 table: "ItemProperties",
                 columns: new[] { "Name", "ValueHash" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemProperties_Rank",
+                table: "ItemProperties",
+                column: "Rank");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemProperties_ReferenceItemTypeId",
@@ -1325,6 +1424,9 @@ namespace Weavers.Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "BuildFiles");
+
+            migrationBuilder.DropTable(
+                name: "CommandDefs");
 
             migrationBuilder.DropTable(
                 name: "ItemProperties");

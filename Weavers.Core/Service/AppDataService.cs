@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Weavers.Core.Handlers.Items;
 using Weavers.Core.Models;
 using Weavers.Core.Enums;
+using Weavers.Core.Handlers.Comfy;
 using Weavers.Core.Handlers.RelationTypes;
 using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.DepItems;
@@ -44,7 +45,7 @@ namespace Weavers.Core.Service {
     Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite);
     Task<WriteDocumentCmdResult> WriteDocument(int itemId);
 
-    Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude);
+    Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude, bool? hasComfy);
 
     Task<ItemDto?> SyncLmStudioModels(int gatewayModelId);
     Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting);
@@ -53,8 +54,11 @@ namespace Weavers.Core.Service {
     bool RemoveCacheItem(int itemId);
 
     Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview);
+    Task<RunComfyTodoAttemptResult> RunComfyTodoItem(int todoItemId, bool isPreview);
 
     Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter);
+    Task<IReadOnlyList<ReadyTodoRow>> GetComfyTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter);
+
 
     Task<bool> CheckHasRepoInHeirarcy(int repoId);
 
@@ -63,62 +67,65 @@ namespace Weavers.Core.Service {
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;    
     private readonly ISessionItemCacheService _sessionCache = sessionCache;
 
-    private IMediator GetMediator() {
-      var scope = _scopeFactory.CreateScope();
-      return scope.ServiceProvider.GetRequiredService<IMediator>();
-    }
-
     public async Task<AppSessionResponse?> GetAppSession() {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new GetAppSessionCommand("TheLoomAppUI");
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<bool> EnforceDataRetentionOrgPolicy() {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new EnforceDataRetentionOrgPolicyCommand();
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<List<ItemDto>> GetRootProjectsAsync() {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetRootProjectsQuery();
       var result = await mediator.Send(query);
       return result;
     }
 
     public async Task<ItemDto?> GetItemById(int itemId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetItemByIdQuery(itemId);
       var result = await mediator.Send(query);
       return result;
     }
 
     public async Task<ItemDto?> CreateItemAsync(ItemDto itemDto) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new CreateItemCommand(itemDto.Name, itemDto.ItemTypeId, itemDto.Description, itemDto.Data);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<ItemDto?> CreateRelatedItemAsync(int parentItemId, int relationTypeId, int ItemTypeId, string itemName, string itemDescription, string itemData) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new CreateRelatedItemCommand(parentItemId, relationTypeId, ItemTypeId, itemName, itemDescription, itemData);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<bool> DeleteItemAsync(int itemId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new DeleteItemCommand(itemId);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<ItemDto?> UpdateItemAsync(ItemDto request) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new UpdateItemCommand(request.Id, request.ItemTypeId, request.Name, request.Description, request.Data, request.IsActive, request.WrittenAt);
       var result = await mediator.Send(command);
       return result;
@@ -130,21 +137,24 @@ namespace Weavers.Core.Service {
         throw new ArgumentException("RelatedItemId cannot be null for updating a relation.");
       }
 
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new UpdateRelationCommand(relation.Id, relation.ItemId, relation.RelationTypeId, relation.RelatedItemId ?? 0, relation.Rank);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<List<RelationTypeDto>> GetRelationTypesAsync() {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetAllRelationTypesQuery();
       var result = await mediator.Send(query);
       return result;
     }
 
     public async Task<List<ItemTypeDto>> GetAllItemTypesAsync() {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetAllItemTypesQuery();
       var result = await mediator.Send(query);
       return result;
@@ -152,7 +162,8 @@ namespace Weavers.Core.Service {
 
     public async Task<ItemPropertyDto?> AddUpdateItemPropertyAsync(ItemPropertyDto? itemProperty) {
       ArgumentNullException.ThrowIfNull(itemProperty);
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new AddUpdateItemPropertyCommand(
         itemProperty.Id,
         itemProperty.ItemId,
@@ -167,39 +178,45 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<List<ItemLookup>> GetItemsByItemType(int itemTypeId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetItemsByItemTypeQuery(itemTypeId);
       var result = await mediator.Send(query);
       return result;
     }
 
     public async Task<int> GetNextItemRank(int? itemId = null) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var query = new GetNextItemRankQuery(itemId);
       var result = await mediator.Send(query);
       return result;
     }
 
     public async Task UpdateItemPropertyPathRecursive(int itemId, string oldPath, string newPath) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new UpdateItemPropertyPathRecursiveCommand(itemId, newPath);
       await mediator.Send(command);
     }
 
     public async Task UpdateItemPropertyNamespaceRecursive(int itemId, string oldNamespace, string newNamespace) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new UpdateItemPropertyNamespaceRecursiveCommand(itemId, oldNamespace, newNamespace);
       await mediator.Send(command);
     }
 
     public async Task AddRemoveClassToLibDi(int ClassItemId, bool add, bool generateInterface) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new AddRemoveClassToLibDiCommand(ClassItemId, add, generateInterface);
       await mediator.Send(command);
     }
 
     public async Task AddRemoveDbContextToLibDi(int DiItemId, bool add) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new AddRemoveDbContextToLibDiCommand(DiItemId, add);
       await mediator.Send(command);
     }
@@ -211,55 +228,63 @@ namespace Weavers.Core.Service {
     //}
 
     public async Task ProcessPropertyUpdate(ItemDto entityItem, ItemDto propertyItem) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new ProcessPropertyUpdateCommand(entityItem, propertyItem);
       await mediator.Send(command);
     }
 
     public async Task<bool> MoveItemTo(int itemId, int newParentItemId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new MoveItemToCommand(itemId, newParentItemId);
       var result = await mediator.Send(command);
       return true;
     }
 
     public async Task<BuildContext> WriteLibrary(int libraryItemId, bool forceWrite) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new WriteLibraryCommand(libraryItemId, forceWrite);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<BuildContext> WriteSolution(int solutionItemId, bool forceWrite) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new WriteSolutionCommand(solutionItemId, forceWrite);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<BuildContext> WriteOrganization(int organizationItemId, bool forceWrite) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new WriteOrganizationCommand();
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<WriteDocumentCmdResult> WriteDocument(int itemId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new WriteDocumentCommand(itemId);
       var result = await mediator.Send(command);
       return result;
     }
 
-    public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude) {
-      var mediator = GetMediator();
-      var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio, hasClaude);
+    public async Task<bool> SyncHarnessPresence(int harnessAppId, bool? hasLmStudio, bool? hasClaude, bool? hasComfy) {
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var command = new SyncHarnessPresenceCommand(harnessAppId, hasLmStudio, hasClaude, hasComfy);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<ItemDto?> SyncLmStudioModels(int gatewayModelId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new SyncLmStudioModelsCommand(gatewayModelId);
       var result = await mediator.Send(command);
       return result;
@@ -267,7 +292,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ImportOrgResponse> ImportOrgDoc(string OrgDocFullPath, string OrgDocRelPath, bool OverwriteExisting) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new ImportOrgDocCommand(OrgDocFullPath, OrgDocRelPath, OverwriteExisting);
       var result = await mediator.Send(command);
       return result;
@@ -282,22 +308,41 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<RunTodoAttemptResult> RunTodoItem(int todoItemId, bool isPreview) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new RunTodoAttemptCommand(todoItemId, isPreview);
       var result = await mediator.Send(command);
       return result;
     }
 
     public async Task<IReadOnlyList<ReadyTodoRow>> GetTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new GetTodoByStatusReadyCommand(harnessId, todoStatusFilter, readyFilter);
       var result = await mediator.Send(command);
       return result;
     }
 
+    public async Task<IReadOnlyList<ReadyTodoRow>> GetComfyTodoByStatusReady(int harnessId, WeItemType todoStatusFilter, bool readyFilter) {
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var command = new GetComfyTodoByStatusCommand(harnessId, todoStatusFilter, readyFilter);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
     public async Task<bool> CheckHasRepoInHeirarcy(int repoId) {
-      var mediator = GetMediator();
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new HierarchyContainsRepoQuery(repoId);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
+    public async Task<RunComfyTodoAttemptResult> RunComfyTodoItem(int todoItemId, bool isPreview) {
+      var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var command = new RunComfyTodoAttemptCommand(todoItemId, isPreview);
       var result = await mediator.Send(command);
       return result;
     }

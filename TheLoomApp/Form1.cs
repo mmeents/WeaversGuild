@@ -15,6 +15,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.Comfy;
 using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
@@ -86,6 +87,7 @@ namespace TheLoomApp {
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
       _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
+      DiBridgeService2.Initialize(scope.ServiceProvider);
 
       _graphItemUpdateService.OnItemAdded += itemId => {
         this.Invoke(() => RefreshNode(itemId));
@@ -111,6 +113,7 @@ namespace TheLoomApp {
       btnAbortItem.Visible = false;
       btnUpdateItem.Visible = false;
       btnGenerateDesc.Visible = false;
+      btnAttemptTodo.Visible = false;
       var aDefaultFolder = _settings[Cx.ApsDefaultFolder];
       if (aDefaultFolder != null && !string.IsNullOrEmpty(aDefaultFolder.Value)) {
         edAppDefaultFolder.Text = aDefaultFolder.Value;
@@ -127,10 +130,20 @@ namespace TheLoomApp {
       _inResize = true;
       var horizonalSpace = splitContainer1.Panel2.Width - splitContainer1.SplitterWidth;
       var verticalSpace = splitContainer1.Panel2.Height - (splitContainer3.Panel2Collapsed ? 0 : splitContainer3.Panel2.Height + 4);
-      btnArchive.Left = horizonalSpace - btnArchive.Width - 10;
-      btnGenerateDesc.Left = btnArchive.Left - btnGenerateDesc.Width - 4;
-      btnWriteFile.Left = btnGenerateDesc.Left - btnWriteFile.Width - 4;
-
+      var rightEdge = horizonalSpace - btnArchive.Width - 10;
+      btnArchive.Left = rightEdge;
+      if (btnGenerateDesc.Visible) {
+        rightEdge = btnArchive.Left - btnGenerateDesc.Width - 4;
+        btnGenerateDesc.Left = rightEdge;
+      }
+      if (btnWriteFile.Visible) {
+        rightEdge = btnGenerateDesc.Left - btnWriteFile.Width - 4;
+        btnWriteFile.Left = rightEdge;
+      }
+      if (btnAttemptTodo.Visible) {
+        rightEdge = btnWriteFile.Left - btnAttemptTodo.Width - 4;
+        btnAttemptTodo.Left = rightEdge;
+      }
 
       btnAbortItem.Left = horizonalSpace - btnAbortItem.Width - 10;
       btnUpdateItem.Left = btnAbortItem.Left - btnUpdateItem.Width - 4;
@@ -493,21 +506,22 @@ namespace TheLoomApp {
       if (_selectedNode != null && _selectedNode.Item != null) {
         _inSetupTpItems = true;
         var item = _selectedNode.Item;
-        btnWriteFile.Visible = item.ItemTypeId == (int)WeItemType.LibraryModel
-          || item.ItemTypeId == (int)WeItemType.SolutionModel
-          || item.ItemTypeId == (int)WeItemType.OrganizationModel
-          || item.ItemTypeId.IsContentType();
-        btnAttemptTodo.Visible = item.ItemTypeId == (int)WeItemType.TodoModel;
+        btnWriteFile.Visible = item.ItemTypeId.IsWriteFileType();
+        btnAttemptTodo.Visible = item.ItemTypeId == (int)WeItemType.TodoModel || item.ItemTypeId == (int)WeItemType.ComfyOpTodoModel;
+        if (btnAttemptTodo.Visible) {
+          bool isTodoStatusReady = ((item?.Properties?.FirstOrDefault(p => p.Name == Cx.ItStatus)?.Value.AsInt() ?? 0) == (int)WeItemType.TodoNotStarted);
+          btnAttemptTodo.Enabled = isTodoStatusReady;
+        }
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
-        wvDescription.SetupHtmlViewForItem(item);
+        wvDescription.SetupHtmlViewForItem(item!);
 
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
         edItemType.DataBindings.Clear();
         edItemType.DataBindings.Add("SelectedValue", _selectedNode.Item, "ItemTypeId", true, DataSourceUpdateMode.OnPropertyChanged);
         edItemName.DataBindings.Clear();
         edItemName.DataBindings.Add("Text", _selectedNode.Item, "Name", true, DataSourceUpdateMode.OnPropertyChanged);
-        if (item.ItemTypeId.IsMethodCodeType()) {
+        if (item!.ItemTypeId.IsMethodCodeType()) {
           edItemDesc.DataBindings.Clear();
           edItemDesc.DataBindings.Add("Text", _selectedNode.Item, "", true, DataSourceUpdateMode.OnPropertyChanged);
         } else {
@@ -549,6 +563,9 @@ namespace TheLoomApp {
         ReloadReadyTab();
       } else if (tabControl1.SelectedTab == tpResults) {
         ReloadResultsTab();
+      } else if (tabControl1.SelectedTab == tpComfy) {
+        var selectedTab = tcComfyScheduleSwitch.SelectedTab;
+        await ReloadComfyTabAsync(selectedTab);
       }
     }
 
@@ -574,11 +591,18 @@ namespace TheLoomApp {
     private async void ProjectTab_OnPostEvent() {
       try {
         if (_selectedNode != null && _selectedNode.Item != null && _selectedNode.Item.Properties != null) {
+
           _itemPropertiesTab.ItemProps = _selectedNode.Item.Properties.ToList();
           _itemPropertiesTab.SetEditingMode(false);
           _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
 
           var selectedItemTypeId = _selectedNode.Item.ItemTypeId;
+
+          btnAttemptTodo.Visible = selectedItemTypeId == (int)WeItemType.TodoModel || selectedItemTypeId == (int)WeItemType.ComfyOpTodoModel;
+          if (btnAttemptTodo.Visible) {
+            bool isTodoStatusReady = ((_selectedNode.Item?.Properties?.FirstOrDefault(p => p.Name == Cx.ItStatus)?.Value.AsInt() ?? 0) == (int)WeItemType.TodoNotStarted);
+            btnAttemptTodo.Enabled = isTodoStatusReady;
+          }
 
           if (selectedItemTypeId.IsOnPostPathUpdate()) {
             var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
@@ -590,7 +614,8 @@ namespace TheLoomApp {
           } else if (selectedItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
             var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
             var hasClaude = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
-            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude);
+            var hasComfy = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasComfyPresence)?.Value.AsBoolean();
+            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude, hasComfy);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
           } else if (selectedItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
@@ -827,6 +852,10 @@ namespace TheLoomApp {
         miAddPatDimOption.Visible = false;
         miGetNextDraw.Visible = false;
 
+        miAddComfyWorkflow.Visible = false;
+        miAddComfyWfParam.Visible = false;
+        miAddComfyTodo.Visible = false;
+
         miAddRealm.Visible = false;
         miAddStory.Visible = false;
         miAddScene.Visible = false;
@@ -910,6 +939,10 @@ namespace TheLoomApp {
         miAddPatDimOption.Visible = itemType == WeItemType.PatternDimensionModel;
         miGetNextDraw.Visible = itemType == WeItemType.PatternModel;
 
+        miAddComfyWorkflow.Visible = itemType == WeItemType.ComfyWorkflowFolderModel;
+        miAddComfyWfParam.Visible = itemType == WeItemType.ComfyWorkflowTemplate;
+        miAddComfyTodo.Visible = itemType == WeItemType.ComfyOperationsModel;
+
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddGitHubRepo.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -976,6 +1009,7 @@ namespace TheLoomApp {
       }
     }
 
+    #region Github handlers 
     private async void miAddGithubToken_Click(object sender, EventArgs e) {
       try {
 
@@ -988,346 +1022,6 @@ namespace TheLoomApp {
       } catch (Exception ex) {
         DoLogMessage("Failed to add github token - error:" + ex.Message);
         MessageBox.Show($"Error adding github token: {ex.Message}", "Add Github Token Failed");
-      }
-    }
-
-
-    private async void miAddWorkGroup_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.WorkGroupModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddOrgWorkGroup(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add work group - error:" + ex.Message);
-        MessageBox.Show($"Error adding work group: {ex.Message}", "Add Work Group Failed");
-      }
-    }
-
-    private async void miAddOrgRole_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskRoleModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddOrgDeskRole(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add project root - error:" + ex.Message);
-        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
-      }
-    }
-
-    private async void miAddDigitalOperator_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DigitalOperatorModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddDigitalOperator(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add project root - error:" + ex.Message);
-        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
-      }
-    }
-
-    private async void miAddOrgDesk_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddDesk(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add desk - error:" + ex.Message);
-        MessageBox.Show($"Error adding desk: {ex.Message}", "Add Desk Failed");
-      }
-    }
-
-    private async void miAddDeskTodo_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.TodoModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddDeskTodo(_appGraphOrgService, newItemName, null, null);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
-        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
-      }
-    }
-
-
-    private async void miAddForeachTodo_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new AddTodoForeachDialog(_serviceScopeFactory);
-        var selectedNode = tvKb.SelectedNode;
-        var selectedItem = (selectedNode as ItemNode)?.Item;
-        if (selectedItem == null || selectedItem.ItemTypeId != (int)WeItemType.DeskModel) {
-          MessageBox.Show("Selected item must be a desk to add a foreach todo.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          return;
-        }
-        dlg.DeskId = selectedItem.Id;
-        dlg.DeskName = selectedItem.Name;
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var foreachList = dlg.ForeachList.Split(Environment.NewLine, options: StringSplitOptions.RemoveEmptyEntries);
-          var refId = dlg.RefId;
-          var promptTemplate = "";
-          foreach (var foreachItem in foreachList) {
-            promptTemplate = dlg.PromptTemplate + Environment.NewLine + foreachItem;
-            await tvKb.AddDeskTodo(_appGraphOrgService, null, refId, promptTemplate);
-            // add desk sets selection to new todo.  we need to move selection back to desk.
-            if (_selectedNode != null) {
-              tvKb.SelectedNode = _selectedNode.Parent;
-            }
-          }
-        }
-        var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
-        TvKb_BeforeExpand(ee, ee);
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
-        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
-      }
-    }
-
-    private async void miAddOrgFolder_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFolderModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddOrgFolder(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add org folder - error:" + ex.Message);
-        MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
-      }
-    }
-
-    private async void miAddOrgFile_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFileModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddOrgFile(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add file - error:" + ex.Message);
-        MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
-      }
-    }
-
-    private async void miAddOrgRssFolder_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssFolderModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddRssFolder(_appGraphOrgService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add RSS folder - error:" + ex.Message);
-        MessageBox.Show($"Error adding RSS folder: {ex.Message}", "Add RSS Folder Failed");
-      }
-    }
-    private async void miAddRssChannel_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssChannelModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          var rssUrl = dlg.RssUrl;
-          await tvKb.AddRssChannel(_appGraphOrgService, newItemName, rssUrl);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add RSS channel - error:" + ex.Message);
-        MessageBox.Show($"Error adding RSS channel: {ex.Message}", "Add RSS Channel Failed");
-      }
-    }
-    private async void miResyncChannel_Click(object sender, EventArgs e) {
-      try {
-        await tvKb.RssResyncChannel(_appGraphOrgService);
-        var selected = tvKb.SelectedNode as ItemNode;
-        _appDataService.ClearCache();
-        await LoadRootProjects(selected!.Item!.Id);
-      } catch (Exception ex) {
-        DoLogMessage("Failed to resync RSS channel - error:" + ex.Message);
-        MessageBox.Show($"Error resyncing RSS channel: {ex.Message}", "Resync RSS Channel Failed");
-      }
-    }
-
-    private async void miAddRssLinkedHtml_Click(object sender, EventArgs e) {
-      try {
-        await tvKb.AddLinkedHtml(_appGraphOrgService, "New Linked HTML");
-        var selected = tvKb.SelectedNode as ItemNode;
-        _appDataService.ClearCache();
-        await LoadRootProjects(selected!.Item!.Id);
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add Linked HTML - error:" + ex.Message);
-        MessageBox.Show($"Error adding Linked HTML: {ex.Message}", "Add Linked HTML Failed");
-      }
-    }
-
-
-    private async void miResolveLink_Click(object sender, EventArgs e) {
-      try {
-        await tvKb.RssResolveLink(_appGraphOrgService);
-        var selected = tvKb.SelectedNode as ItemNode;
-        _appDataService.ClearCache();
-        await LoadRootProjects(selected!.Item!.Id);
-      } catch (Exception ex) {
-        DoLogMessage("Failed to resolve RSS link - error:" + ex.Message);
-        MessageBox.Show($"Error resolving RSS link: {ex.Message}", "Resolve RSS Link Failed");
-      }
-    }
-
-    private async void miExtractLinks_Click(object sender, EventArgs e) {
-      try {
-        await tvKb.RssExtractLinks(_appGraphOrgService);
-        _appDataService.ClearCache();
-        var selected = tvKb.SelectedNode as ItemNode;
-        await LoadRootProjects(selected!.Item!.Id);
-      } catch (Exception ex) {
-        DoLogMessage("Failed to extract RSS links - error:" + ex.Message);
-        MessageBox.Show($"Error extracting RSS links: {ex.Message}", "Extract RSS Links Failed");
-      }
-    }
-
-
-    private async void miAddPattern_Click(object sender, EventArgs e) {
-      try {
-        if (_selectedNode == null || _selectedNode.Item == null) {
-          MessageBox.Show("No selected node to add pattern to.", "Add Pattern Failed");
-          return;
-        }
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          using var scope = _serviceScopeFactory.CreateScope();
-          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-          await tvKb.AddPattern(mediator, newItemName);
-          await Task.Delay(100);
-          _appDataService.ClearCache();
-          await LoadRootProjects(_selectedNode.Item.Id);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add pattern - error:" + ex.Message);
-        MessageBox.Show($"Error adding pattern: {ex.Message}", "Add Pattern Failed");
-      }
-    }
-
-    private async void miAddPatDimension_Click(object sender, EventArgs e) {
-      try {
-        if (_selectedNode == null || _selectedNode.Item == null) {
-          MessageBox.Show("No selected node to add dimension to.", "Add Pattern Dimension Failed");
-          return;
-        }
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternDimensionModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          var options = dlg.DbTableName;  // use DbTableName to pass options if needed
-          using var scope = _serviceScopeFactory.CreateScope();
-          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-          await tvKb.AddPatDimension(mediator, newItemName, options != null ? options : "");
-          await Task.Delay(100);
-          _appDataService.ClearCache();
-          await LoadRootProjects(_selectedNode.Item.Id);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add pattern dimension - error:" + ex.Message);
-        MessageBox.Show($"Error adding pattern dimension: {ex.Message}", "Add Pattern Dimension Failed");
-      }
-    }
-
-    private async void miAddPatDimOption_Click(object sender, EventArgs e) {
-      try {
-        if (_selectedNode == null || _selectedNode.Item == null) {
-          MessageBox.Show("No selected node to add option to.", "Add Pattern Option Failed");
-          return;
-        }
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternOptionModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          using var scope = _serviceScopeFactory.CreateScope();
-          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-          await tvKb.AddPatDimOption(mediator, newItemName);
-          await Task.Delay(100);
-          _appDataService.ClearCache();
-          await LoadRootProjects(_selectedNode.Item.Id);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add pattern option - error:" + ex.Message);
-        MessageBox.Show($"Error adding pattern option: {ex.Message}", "Add Pattern Option Failed");
-      }
-    }
-
-    private async void miGetNextDraw_Click(object sender, EventArgs e) {
-      try {
-        if (_selectedNode == null || _selectedNode.Item == null) {
-          MessageBox.Show("No selected node to get next draw for.", "Get Next Draw Failed");
-          return;
-        }
-
-        using var scope = _serviceScopeFactory.CreateScope();
-        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();          
-        await tvKb.GetNextDraw(mediator, _defaultAppTodoId);
-        await Task.Delay(100);
-        _appDataService.ClearCache();
-        await LoadRootProjects(_selectedNode.Item.Id);
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to get next draw - error:" + ex.Message);
-        MessageBox.Show($"Error getting next draw: {ex.Message}", "Get Next Draw Failed");
-      }
-    }
-
-
-    private async void miAddProjectRoot_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ProjectFolderModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddProjectRoot(_appGraphService, newItemName, edAppDefaultFolder.Text);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add project root - error:" + ex.Message);
-        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
-      }
-    }
-    private async void miAddSubProject_Click(object sender, EventArgs e) {
-      try {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RelativeFolderModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          await tvKb.AddSubFolder(_appGraphService, newItemName);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add subfolder - error:" + ex.Message);
-        MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
       }
     }
 
@@ -1423,6 +1117,433 @@ namespace TheLoomApp {
         DoLogMessage($"Error checking out branch: {errorMsg}");
       }
       return;
+    }
+
+
+    #endregion
+    private async void miAddWorkGroup_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.WorkGroupModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgWorkGroup(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add work group - error:" + ex.Message);
+        MessageBox.Show($"Error adding work group: {ex.Message}", "Add Work Group Failed");
+      }
+    }
+
+    private async void miAddOrgRole_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskRoleModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgDeskRole(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add project root - error:" + ex.Message);
+        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
+
+    private async void miAddDigitalOperator_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DigitalOperatorModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDigitalOperator(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add project root - error:" + ex.Message);
+        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
+
+    private async void miAddOrgDesk_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.DeskModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDesk(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk: {ex.Message}", "Add Desk Failed");
+      }
+    }
+
+    private async void miAddDeskTodo_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.TodoModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddDeskTodo(_appGraphOrgService, newItemName, null, null);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
+      }
+    }
+
+    private async void miAddForeachTodo_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new AddTodoForeachDialog(_serviceScopeFactory);
+        var selectedNode = tvKb.SelectedNode;
+        var selectedItem = (selectedNode as ItemNode)?.Item;
+        if (selectedItem == null || selectedItem.ItemTypeId != (int)WeItemType.DeskModel) {
+          MessageBox.Show("Selected item must be a desk to add a foreach todo.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        dlg.DeskId = selectedItem.Id;
+        dlg.DeskName = selectedItem.Name;
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var foreachList = dlg.ForeachList.Split(Environment.NewLine, options: StringSplitOptions.RemoveEmptyEntries);
+          var refId = dlg.RefId;
+          var promptTemplate = "";
+          foreach (var foreachItem in foreachList) {
+            promptTemplate = dlg.PromptTemplate + Environment.NewLine + foreachItem;
+            await tvKb.AddDeskTodo(_appGraphOrgService, null, refId, promptTemplate);
+            // add desk sets selection to new todo.  we need to move selection back to desk.
+            if (_selectedNode != null) {
+              tvKb.SelectedNode = _selectedNode.Parent;
+            }
+          }
+        }
+        var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
+        TvKb_BeforeExpand(ee, ee);
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add desk todo - error:" + ex.Message);
+        MessageBox.Show($"Error adding desk todo: {ex.Message}", "Add Desk Todo Failed");
+      }
+    }
+
+    private async void miAddOrgFolder_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgFolder(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add org folder - error:" + ex.Message);
+        MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
+      }
+    }
+
+    private async void miAddOrgFile_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OrgFileModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddOrgFile(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add file - error:" + ex.Message);
+        MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
+      }
+    }
+
+    #region RSS handlers
+    private async void miAddOrgRssFolder_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddRssFolder(_appGraphOrgService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add RSS folder - error:" + ex.Message);
+        MessageBox.Show($"Error adding RSS folder: {ex.Message}", "Add RSS Folder Failed");
+      }
+    }
+    private async void miAddRssChannel_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RssChannelModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var rssUrl = dlg.RssUrl;
+          await tvKb.AddRssChannel(_appGraphOrgService, newItemName, rssUrl);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add RSS channel - error:" + ex.Message);
+        MessageBox.Show($"Error adding RSS channel: {ex.Message}", "Add RSS Channel Failed");
+      }
+    }
+    private async void miResyncChannel_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssResyncChannel(_appGraphOrgService);
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to resync RSS channel - error:" + ex.Message);
+        MessageBox.Show($"Error resyncing RSS channel: {ex.Message}", "Resync RSS Channel Failed");
+      }
+    }
+
+    private async void miAddRssLinkedHtml_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.AddLinkedHtml(_appGraphOrgService, "New Linked HTML");
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add Linked HTML - error:" + ex.Message);
+        MessageBox.Show($"Error adding Linked HTML: {ex.Message}", "Add Linked HTML Failed");
+      }
+    }
+
+
+    private async void miResolveLink_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssResolveLink(_appGraphOrgService);
+        var selected = tvKb.SelectedNode as ItemNode;
+        _appDataService.ClearCache();
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to resolve RSS link - error:" + ex.Message);
+        MessageBox.Show($"Error resolving RSS link: {ex.Message}", "Resolve RSS Link Failed");
+      }
+    }
+
+    private async void miExtractLinks_Click(object sender, EventArgs e) {
+      try {
+        await tvKb.RssExtractLinks(_appGraphOrgService);
+        _appDataService.ClearCache();
+        var selected = tvKb.SelectedNode as ItemNode;
+        await LoadRootProjects(selected!.Item!.Id);
+      } catch (Exception ex) {
+        DoLogMessage("Failed to extract RSS links - error:" + ex.Message);
+        MessageBox.Show($"Error extracting RSS links: {ex.Message}", "Extract RSS Links Failed");
+      }
+    }
+    #endregion
+    #region Pattern handlers
+    private async void miAddPattern_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add pattern to.", "Add Pattern Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPattern(mediator, newItemName);
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern: {ex.Message}", "Add Pattern Failed");
+      }
+    }
+
+    private async void miAddPatDimension_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add dimension to.", "Add Pattern Dimension Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternDimensionModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var options = dlg.DbTableName;  // use DbTableName to pass options if needed
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPatDimension(mediator, newItemName, options != null ? options : "");
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern dimension - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern dimension: {ex.Message}", "Add Pattern Dimension Failed");
+      }
+    }
+
+    private async void miAddPatDimOption_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to add option to.", "Add Pattern Option Failed");
+          return;
+        }
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.PatternOptionModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddPatDimOption(mediator, newItemName);
+          await Task.Delay(100);
+          _appDataService.ClearCache();
+          await LoadRootProjects(_selectedNode.Item.Id);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add pattern option - error:" + ex.Message);
+        MessageBox.Show($"Error adding pattern option: {ex.Message}", "Add Pattern Option Failed");
+      }
+    }
+
+    private async void miGetNextDraw_Click(object sender, EventArgs e) {
+      try {
+        if (_selectedNode == null || _selectedNode.Item == null) {
+          MessageBox.Show("No selected node to get next draw for.", "Get Next Draw Failed");
+          return;
+        }
+
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        await tvKb.GetNextDraw(mediator, _defaultAppTodoId);
+        await Task.Delay(100);
+        _appDataService.ClearCache();
+        await LoadRootProjects(_selectedNode.Item.Id);
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to get next draw - error:" + ex.Message);
+        MessageBox.Show($"Error getting next draw: {ex.Message}", "Get Next Draw Failed");
+      }
+    }
+
+    #endregion
+
+    private async void miAddComfyWorkflow_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ComfyWorkflowTemplate);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var ComfyExportApiForWorkflowFilePath = dlg.RssUrl;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddComfyWorkflow(mediator, newItemName, ComfyExportApiForWorkflowFilePath);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add comfy workflow - error:" + ex.Message);
+        MessageBox.Show($"Error adding comfy workflow: {ex.Message}", "Add Comfy Workflow Failed");
+      }
+    }
+
+    private async void miAddComfyWfParam_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ComfyWfParamModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddComfyWfParam(mediator, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add comfy workflow parameter - error:" + ex.Message);
+        MessageBox.Show($"Error adding comfy workflow parameter: {ex.Message}", "Add Comfy Workflow Parameter Failed");
+      }
+    }
+
+    private async void miAddComfyTodo_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ComfyOpTodoModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var workflowId = dlg.LookupItemId ?? 0;
+          if (workflowId == 0) {
+            throw new Exception("Workflow ID is required to add a Comfy Todo.");
+          }
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddComfyTodo(mediator, newItemName, workflowId);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add comfy todo - error:" + ex.Message);
+        MessageBox.Show($"Error adding comfy todo: {ex.Message}", "Add Comfy Todo Failed");
+      }
+    }
+
+    private async void miAddProjectRoot_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ProjectFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddProjectRoot(_appGraphService, newItemName, edAppDefaultFolder.Text);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add project root - error:" + ex.Message);
+        MessageBox.Show($"Error adding project: {ex.Message}", "Add Project Failed");
+      }
+    }
+    private async void miAddSubProject_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.RelativeFolderModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          await tvKb.AddSubFolder(_appGraphService, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add subfolder - error:" + ex.Message);
+        MessageBox.Show($"Error adding folder: {ex.Message}", "Add Folder Failed");
+      }
+    }
+    private async void miAddFile_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.FileMdModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var fileType = dlg.NewFileType;
+          if (fileType != null) {
+            switch (fileType) {
+              case WeItemType.FileMdModel:
+                await tvKb.AddMdFile(_appGraphService, newItemName);
+                break;
+              case WeItemType.FileHtmlModel:
+                await tvKb.AddHtmlFile(_appGraphService, newItemName);
+                break;
+              case WeItemType.FileConfigModel:
+                await tvKb.AddConfigFile(_appGraphService, newItemName);
+                break;
+              default:
+                break;
+            }
+          }
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add file - error:" + ex.Message);
+        MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
+      }
     }
 
     #region Storytime handlers
@@ -1576,6 +1697,7 @@ namespace TheLoomApp {
     }
     #endregion
 
+    #region Solution handlers
     private async void miAddSolution_Click(object sender, EventArgs e) {
       try {
 
@@ -1598,35 +1720,7 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding solution import: {ex.Message}", "Add Solution failed");
       }
     }
-    private async void miAddFile_Click(object sender, EventArgs e) {
-      try {
 
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.FileMdModel);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          var fileType = dlg.NewFileType;
-          if (fileType != null) {
-            switch (fileType) {
-              case WeItemType.FileMdModel:
-                await tvKb.AddMdFile(_appGraphService, newItemName);
-                break;
-              case WeItemType.FileHtmlModel:
-                await tvKb.AddHtmlFile(_appGraphService, newItemName);
-                break;
-              case WeItemType.FileConfigModel:
-                await tvKb.AddConfigFile(_appGraphService, newItemName);
-                break;
-              default:
-                break;
-            }
-          }
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage("Failed to add file - error:" + ex.Message);
-        MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
-      }
-    }
 
     private async void miAddLibrary_Click(object sender, EventArgs e) {
       try {
@@ -1764,6 +1858,8 @@ namespace TheLoomApp {
       }
     }
 
+    #endregion
+    #region Game handlers
     private async void miAddGameRoom_Click(object sender, EventArgs e) {
       try {
         using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.GameRoomModel);
@@ -1793,7 +1889,8 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding chess game model: {ex.Message}", "Add Chess Game Model Failed");
       }
     }
-
+    #endregion
+    #region Item handlers
     private void miMoveItemUp_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Parent == null) { return; }
       var parentNode = _selectedNode.Parent as ItemNode;
@@ -1871,7 +1968,6 @@ namespace TheLoomApp {
 
     }
 
-
     private async void miEmptyDesk_Click(object sender, EventArgs e) {
       var itemNode = _selectedNode;
       if (itemNode == null || itemNode.Item == null) return;
@@ -1900,7 +1996,7 @@ namespace TheLoomApp {
         TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand));
       }
     }
-
+    #endregion
     #endregion
 
     #region Settings Tab
@@ -1995,7 +2091,7 @@ namespace TheLoomApp {
             string fullPath = resultList[key];
 
             string fileExt = Path.GetExtension(fullPath).ToLower();
-            bool isOrgDoc = fileExt == ".md";
+            bool isOrgDoc = fileExt == ".md" || fileExt == ".txt";
             bool isDigitalOperator = fileExt == ".json" && fullPath.Contains(Cx.AppTeamFolder);
             bool isDesk = fileExt == ".json" && fullPath.Contains(Cx.AppWorkGroupFolder);
             bool isRole = fileExt == ".json" && fullPath.Contains(Cx.AppDeskRolesFolder);
@@ -2212,6 +2308,34 @@ namespace TheLoomApp {
           DoLogMessage($"{DateTime.Now}: {result.Operator} Attempting TodoId {item.Id}");
           var attemptResult = await _appDataService.RunTodoItem(item.Id, false);
           if (attemptResult.Status == RunTodoAttemptOutcome.SuccessWithResponse) {
+            DoLogMessage($"TodoId {item.Id} Attempt Successful, Response: {attemptResult.ResponseText}");
+            await LoadRootProjects();
+          } else {
+            DoLogMessage($"TodoId {item.Id} Attempt Failed, Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}");
+          }
+        }
+      } else if (item != null && item.ItemTypeId == (int)WeItemType.ComfyOpTodoModel) {
+        RunComfyTodoAttemptResult result;
+
+        result = await _appDataService.RunComfyTodoItem(item.Id, true);
+        var pad = new PreviewComfyAttemptDialog();
+        pad.Operator = $"{result.TodoName} (Id: {result.TodoId})";
+        if (result.Status == RunComfyTodoAttemptOutcome.InvocationFailed) {
+          pad.SystemPrompt = result.ErrorMessage ?? "Error and no message?";
+        } else {
+          pad.SystemPrompt = result.ResolvedPromptJson.TryToPretty();
+        }
+
+        pad.Harness = $"{result.HarnessName} (Id:{result.HarnessId})";
+        if (pad.ShowDialog() == DialogResult.OK) {
+          if (result.HarnessId != _sessionDetails!.HarnessId) {
+            MessageBox.Show("The harness for this todo is not accessible from the current session harness.", "Harness Mismatch", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DoLogMessage($"{DateTime.Now}: Aborted Attempting TodoId {item.Id}");
+            return;
+          }
+          DoLogMessage($"{DateTime.Now}: {result.TodoName} Attempting TodoId {item.Id}");
+          var attemptResult = await _appDataService.RunComfyTodoItem(item.Id, false);
+          if (attemptResult.Status == RunComfyTodoAttemptOutcome.SuccessWithResponse) {
             DoLogMessage($"TodoId {item.Id} Attempt Successful, Response: {attemptResult.ResponseText}");
             await LoadRootProjects();
           } else {
@@ -2774,7 +2898,7 @@ namespace TheLoomApp {
              && int.TryParse(v.ToString(), out var id) ? id : 0;
           var searchMaxResults = edSearchMaxResults.Value.AsInt();
           var searchResults = await _summaryToolsHandler.Search(searchText, searchType, searchMaxResults);
-          tbSearchResults.Text = searchResults;
+          tbSearchResults.Text = searchResults.TryToPretty();
         } catch (Exception ex) {
           DoLogMessage("Error during search: " + ex.Message);
           MessageBox.Show($"An error occurred during the search operation: {ex.Message}", "Search Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -2869,13 +2993,376 @@ namespace TheLoomApp {
       }
     }
     #endregion
+    #region Comfy Tabs
+
+    private async void tcComfyScheduleSwitch_SelectedIndexChanged(object sender, EventArgs e) {
+      var selectedTab = tcComfyScheduleSwitch.SelectedTab;
+      await ReloadComfyTabAsync(selectedTab);
+    }
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _notReadyComfyDict = new();
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _scheduleComfyDict = new();
+    private readonly ConcurrentDictionary<int, ReadyTodoRow> _resultComfyDict = new();
+
+    public async Task ReloadComfyTabAsync(TabPage? selectedTab) { 
+
+      ListBox? list = null;
+      IReadOnlyList<ReadyTodoRow> schedules = new List<ReadyTodoRow>();
+      ConcurrentDictionary<int, ReadyTodoRow> dict = new();
+
+      //var selectedTab = tcComfyScheduleSwitch.SelectedTab;
+      int selectedHarnessId = _sessionDetails!.HarnessId;
+      if (selectedTab == tpComfyReadyReview) {
+        list = lbComfyNotReady;
+        schedules = await _appDataService.GetComfyTodoByStatusReady(selectedHarnessId, WeItemType.TodoNotStarted, false);
+        dict = _notReadyComfyDict;
+      } else if (selectedTab == tpComfySchedule) {
+        list = lbComfySchedule;
+        schedules = await _appDataService.GetComfyTodoByStatusReady(selectedHarnessId, WeItemType.TodoInProgress, true);
+        dict = _scheduleComfyDict;
+      } else if (selectedTab == tpComfyResultReview) {
+        list = lbComfyResult;
+        schedules = await _appDataService.GetComfyTodoByStatusReady(selectedHarnessId, WeItemType.TodoCompleteForward, true);
+        dict = _resultComfyDict;
+      }
+      if (list == null) {
+        return;
+      }
+      int selectedIndex = list.SelectedIndex;
+      if (selectedIndex == -1 && list.Items.Count > 0) {
+        selectedIndex = 0;
+      }
+      RunOnUi(() => {
+        lbComfyNotReady.Items.Clear();
+        lbComfySchedule.Items.Clear();
+        lbComfyResult.Items.Clear();
+        dict.Clear();
+        foreach (var schedule in schedules) {
+          var todoStr = $"{schedule.Id}: on " + schedule.DeskName + " " + schedule.Name;
+          var index = list.Items.Add(todoStr);
+          dict[index] = schedule;
+        }
+        if (list.Items.Count > 0) {
+          list.SelectedIndex = Math.Min(selectedIndex, list.Items.Count - 1);
+        }
+      });
+
+      return;
+
+    }
+
+    private async void lbComfyNotReady_SelectedIndexChanged(object sender, EventArgs e) {
+      //edReadyTodoName.Text = "";
+      //edReadyRefItem.Text = "";
+      //edReadyPrompt.Text = "";
+
+      btnUpdateComfyReadyTodo.Visible = false;
+      btnAbortComfyReadyTodoUpdate.Visible = false;
+      cbComfyReadySetReady.Checked = false;
+      cbComfyReadyDoDelete.Checked = false;
+
+      var selectedIndex = lbComfyNotReady.SelectedIndex;
+      if (selectedIndex >= 0 && _notReadyComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        edReadyTodoName.Text = todo.Id.ToString() + ": " + todo.Name + " on " + todo.DeskName;
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+
+          var preview = await _appDataService.RunComfyTodoItem(item.Id, true);
+          if (preview != null) {
+            string previewText = $"{preview.ResolvedPromptJson.TryToPretty()}";
+            if (previewText == "") {
+              previewText = preview.ErrorMessage ?? "No preview available.";
+            }
+            edComfyReadyPreview.Text = previewText;
+          }
+        }
+
+      }
+    }
+    private async void lbComfySchedule_SelectedIndexChanged(object sender, EventArgs e) {
+      btnUpdateComfyScheduleTodo.Visible = false;
+      btnAbortComfyScheduleTodoUpdate.Visible = false;
+      cbComfyScheduleSetReady.Checked = true;
+
+      var selectedIndex = lbComfySchedule.SelectedIndex;
+      if (selectedIndex >= 0 && _scheduleComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+
+          var preview = await _appDataService.RunComfyTodoItem(item.Id, true);
+          if (preview != null) {
+            string previewText = $"{preview.ResolvedPromptJson.TryToPretty()}";
+            if (previewText == "") {
+              previewText = preview.ErrorMessage ?? "No preview available.";
+            }
+            edComfySchedulePreview.Text = previewText;
+          }
+        }
+
+      }
+    }
+    private async void lbComfyResult_SelectedIndexChanged(object sender, EventArgs e) {
+      btnUpdateComfyResultTodo.Visible = false;
+      btnAbortComfyResultTodoUpdate.Visible = false;
+      cbComfyResultSetReady.Checked = false;
+
+      var selectedIndex = lbComfyResult.SelectedIndex;
+      if (selectedIndex >= 0 && _resultComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        edReadyTodoName.Text = todo.Id.ToString() + ": " + todo.Name + " on " + todo.DeskName;
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+
+          var preview = await _appDataService.RunComfyTodoItem(item.Id, true);
+          if (preview != null) {
+            string previewText = $"{preview.ResolvedPromptJson.TryToPretty()}";
+            if (previewText == "") {
+              previewText = preview.ErrorMessage ?? "No preview available.";
+            }
+            edComfyResultPreview.Text = previewText;
+          }
+        }
+
+      }
+    }
+
+    private void cbComfyReadySetReady_CheckedChanged(object sender, EventArgs e) {
+      btnUpdateComfyReadyTodo.Visible = cbComfyReadySetReady.Checked || cbDeleteNotReady.Checked;
+      btnAbortComfyReadyTodoUpdate.Visible = cbComfyReadySetReady.Checked || cbDeleteNotReady.Checked;
+    }
+    private void cbComfyScheduleSetReady_CheckedChanged(object sender, EventArgs e) {
+      btnUpdateComfyScheduleTodo.Visible = !cbComfyScheduleSetReady.Checked;
+      btnAbortComfyScheduleTodoUpdate.Visible = !cbComfyScheduleSetReady.Checked;
+    }
+    private void cbComfyResultSetReady_CheckedChanged(object sender, EventArgs e) {
+      btnUpdateComfyResultTodo.Visible = cbComfyResultSetReady.Checked || cbDeleteNotReady.Checked;
+      btnAbortComfyResultTodoUpdate.Visible = cbComfyResultSetReady.Checked || cbDeleteNotReady.Checked;
+    }
 
 
+    private async void btnUpdateComfyReadyTodo_Click(object sender, EventArgs e) {
+      btnUpdateComfyReadyTodo.Visible = false;
+      btnAbortComfyReadyTodoUpdate.Visible = false;
+      var isSetReady = cbComfyReadySetReady.Checked;
+      var isDelete = cbComfyReadyDoDelete.Checked;
+      cbComfyReadySetReady.Checked = false;
+      cbComfyReadyDoDelete.Checked = false;
+
+      var selectedIndex = lbComfyNotReady.SelectedIndex;
+      if (selectedIndex >= 0 && _notReadyComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          if (isSetReady) {
+            var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+            if (readyProp != null) {
+              readyProp.Value = "1";
+              await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+            }
+          }
+          if (isDelete) {
+            await _appDataService.DeleteItemAsync(item.Id);
+          }
+          await ReloadComfyTabAsync(tpComfyReadyReview);
+        }
+      }
+
+    }
+
+    private void btnAbortComfyReadyTodoUpdate_Click(object sender, EventArgs e) {
+      btnUpdateComfyReadyTodo.Visible = false;
+      btnAbortComfyReadyTodoUpdate.Visible = false;
+      cbComfyReadySetReady.Checked = false;
+      cbComfyReadyDoDelete.Checked = false;
+    }
+
+    private async void btnUpdateComfyScheduleTodo_Click(object sender, EventArgs e) {
+      btnUpdateComfyScheduleTodo.Visible = false;
+      btnAbortComfyScheduleTodoUpdate.Visible = false;
+      var isSetReady = cbComfyScheduleSetReady.Checked;
+      cbComfyScheduleSetReady.Checked = true;
+
+      var selectedIndex = lbComfySchedule.SelectedIndex;
+      if (selectedIndex >= 0 && _scheduleComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          if (!isSetReady) {
+            var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+            if (readyProp != null) {
+              readyProp.Value = "0";
+              await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+            }
+          }
+          await ReloadComfyTabAsync(tpComfySchedule);
+        }
+      }
+    }
+
+    private void btnAbortComfyScheduleTodoUpdate_Click(object sender, EventArgs e) {
+      btnUpdateComfyScheduleTodo.Visible = false;
+      btnAbortComfyScheduleTodoUpdate.Visible = false;
+      cbComfyScheduleSetReady.Checked = false;
+    }
+
+    private async void btnUpdateComfyResultTodo_Click(object sender, EventArgs e) {
+      btnUpdateComfyResultTodo.Visible = false;
+      btnAbortComfyResultTodoUpdate.Visible = false;
+      var isSetReady = cbComfyResultSetReady.Checked;
+      var isDelete = cbComfyResultDoDelete.Checked;
+      cbComfyResultSetReady.Checked = false;
+      cbComfyResultDoDelete.Checked = false;
+
+      var selectedIndex = lbComfyResult.SelectedIndex;
+      if (selectedIndex >= 0 && _resultComfyDict.TryGetValue(selectedIndex, out var todo)) {
+        var item = await _appDataService.GetItemById(todo.Id);
+        if (item != null) {
+          if (isSetReady) {
+            var readyProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItConfirmedReady);
+            if (readyProp != null) {
+              readyProp.Value = "1";
+              await _appDataService.AddUpdateItemPropertyAsync(readyProp);
+            }
+            var statusProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItStatus);
+            if (statusProp != null) {
+              statusProp.Value = ((int)WeItemType.TodoNotStarted).ToString();
+              await _appDataService.AddUpdateItemPropertyAsync(statusProp);
+            }
+          }
+          if (isDelete) {
+            await _appDataService.DeleteItemAsync(item.Id);
+          }
+          await ReloadComfyTabAsync(tpComfyResultReview);
+        }
+      }
+    }
+
+    private void btnAbortComfyResultTodoUpdate_Click(object sender, EventArgs e) {
+      btnUpdateComfyResultTodo.Visible = false;
+      btnAbortComfyResultTodoUpdate.Visible = false;
+      cbComfyResultSetReady.Checked = false;
+    }
+
+    private bool _isComfyEngineRunning = false;
+    private ReadyTodoRow? _workingComfyTodo = null;
+    private bool _comfyEngineRunning = false;
+    private bool _isComfyStopping = false;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ComfyEngineRunning {
+      get { return _comfyEngineRunning; }
+      set {
+        _comfyEngineRunning = value;
+        if (_comfyEngineRunning) {
+          lbComfyWorkingStatus.Text = "Status: Pipeline Running";
+          btnAttemptComfyTodo.Text = "Stop";
+          _isComfyStopping = false;
+        } else {
+          if (!_isComfyStopping) {
+            lbComfyWorkingStatus.Text = "Status: Pipeline Stopping";
+            btnAttemptComfyTodo.Text = "Waiting";
+            btnAttemptComfyTodo.Enabled = false;
+            _isComfyStopping = true;
+          } else {
+            lbComfyWorkingStatus.Text = "Status: Pipeline Stopped";
+            btnAttemptComfyTodo.Text = "Start";
+            btnAttemptComfyTodo.Enabled = true;            
+            _isComfyStopping = false;
+          }
+        }
+      }
+    }
+    private async void btnAttemptComfyTodo_Click(object sender, EventArgs e) {
+      if (btnAttemptComfyTodo.Text == "Start") {
+        ComfyEngineRunning = true;
+        tRunComfy.Enabled = true;
+      } else {
+        tRunComfy.Enabled = false;
+        ComfyEngineRunning = false;
+      }
+    }
+
+    private async void tRunComfy_Tick(object sender, EventArgs e) {
+      tRunComfy.Enabled = false;
+      bool isError = false;
+      bool result = false;
+      try {
+        result = await DoNextScheduledComfyTodo();
+      } catch {
+        isError = true;
+      } finally {
+
+        if (isError || !result || _isComfyStopping || !_comfyEngineRunning) {
+          _isComfyStopping = true;
+          ComfyEngineRunning = false;
+        } else {
+          if (cbCoolDown.Checked) {
+            var delaySec = edCoolDownMs.Value.AsInt();
+            DoLogMessage($"Cooling down for {delaySec} seconds before next scheduled todo.");
+            await Task.Delay(delaySec * 1000);
+            if (_isComfyStopping || !_comfyEngineRunning) {
+              _isComfyStopping = true;
+              ComfyEngineRunning = false;
+            }
+          }
+          if (ComfyEngineRunning) {
+            tRunComfy.Enabled = true;
+          }
+        }
+
+      }
+    }
+
+    private async Task<bool> DoNextScheduledComfyTodo() {
+      if (_isComfyEngineRunning) {
+        return false;
+      }
+      _isComfyEngineRunning = true;
+      bool shouldContinue = false;
+      try {   
+        // reload the schedule
+        await ReloadComfyTabAsync(tpComfySchedule);          
+        if (_scheduleComfyDict.Count == 0) {
+          return false;
+        }
+        if (_scheduleComfyDict.TryGetValue(0, out var nextTodo)) {
+          _workingComfyTodo = nextTodo;
+        } else {
+          _workingComfyTodo = null;
+        }
+
+        if (_workingComfyTodo != null) {
+          DoLogMessage($"Running scheduled Comfy todo {_workingComfyTodo.Name} on {_workingComfyTodo.DeskName} (Id: {_workingComfyTodo.Id})");
+          RunOnUi(() => {
+            lbWorkingStatus.Text = "Status: Pipeline running " + _workingComfyTodo.Id.ToString() + ": " + _workingComfyTodo.Name + " on " + _workingComfyTodo.DeskName;
+          });
+
+          var result = await _appDataService.RunComfyTodoItem(_workingComfyTodo.Id, false);
+
+          if (result.Status == RunComfyTodoAttemptOutcome.SuccessWithResponse) {
+            DoLogMessage($"Scheduled Comfy TodoId {_workingComfyTodo.Id} Attempt Completed, Response: {result.ResponseText}");
+            await ReloadComfyTabAsync(tpComfySchedule);
+            shouldContinue = true;
+          } else if (result.Status == RunComfyTodoAttemptOutcome.GenerationFailed) {
+            DoLogMessage($"Scheduled Comfy TodoId {_workingComfyTodo.Id} timed out waiting for generation to complete. Attempt did not complete. Response: {result.ResponseText}");
+            shouldContinue = false;
+          } else if (result.Status == RunComfyTodoAttemptOutcome.NotConfigured ||
+            result.Status == RunComfyTodoAttemptOutcome.InvocationFailed) {
+            DoLogMessage($"Scheduled Comfy TodoId {_workingComfyTodo.Id} Attempt Failed, Status: {result.Status}, Error: {result.ErrorMessage}");
+          }
+          _workingComfyTodo = null;
+
+        } else {
+          DoLogMessage("No scheduled Comfy todo found to run.");
+          shouldContinue = false;
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Error in scheduled Comfy todo execution: " + ex.Message);
+        return false;
+      } finally {
+        _isComfyEngineRunning = false;
+      }
+      return shouldContinue;
+    }
 
 
-
-
-
+    #endregion
+    //  -- end of form and namespace below, no need to edit. 
   }
-
 }

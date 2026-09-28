@@ -20,7 +20,8 @@ namespace Weavers.Core.Handlers.Templates {
       var fieldsItemId = request.field.ItemId;
       var templateText = request.field.Value;
       var fieldsItem = await _context.GetItemDtoById(fieldsItemId);
-      if (fieldsItem != null && !string.IsNullOrEmpty(templateText)) {        
+      if (fieldsItem != null && !string.IsNullOrEmpty(templateText)) { 
+        
         var fieldItemTypeId = fieldsItem.ItemTypeId;
         if (fieldItemTypeId == (int)WeItemType.DeskModel) {
 

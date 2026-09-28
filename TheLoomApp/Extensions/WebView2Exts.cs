@@ -1,4 +1,5 @@
-﻿using Microsoft.Web.WebView2.WinForms;
+﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace TheLoomApp.Extensions {
         } else {
           webView.NavigateToMdString(item.ToMdString());
         }
-      } else if (item.ItemTypeId == (int) WeItemType.RssItemModel || item.ItemTypeId == (int) WeItemType.RssLinkedHtmlModel) {
+      } else if (item.ItemTypeId == (int)WeItemType.RssItemModel || item.ItemTypeId == (int)WeItemType.RssLinkedHtmlModel) {
         if (!string.IsNullOrEmpty(item.Description)) {
           var contenttypeProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItMediaType);
           var contenttype = contenttypeProp?.Value ?? "text/html";
@@ -30,11 +31,11 @@ namespace TheLoomApp.Extensions {
             webView.NavigateToHtmlString(item.Description);
           } else {
             webView.NavigateToMdString(item.Description);
-          }          
+          }
         } else {
           webView.NavigateToMdString(item.ToMdString());
-        }        
-      } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgFileModel) {        
+        }
+      } else if (item.ItemTypeId == (int)WeItemType.FileMdModel || item.ItemTypeId == (int)WeItemType.OrgFileModel) {
         if (!string.IsNullOrEmpty(item.Description)) {
           webView.NavigateToMdString(item.Description);
         } else {
@@ -42,11 +43,13 @@ namespace TheLoomApp.Extensions {
         }
       } else if (item.ItemTypeId == (int)WeItemType.GitFileModel) {
         var extension = System.IO.Path.GetExtension(item.Name).ToLower();
-        if (extension == ".md" || extension == ".markdown") {          
-          webView.NavigateToMdString(item.Description);          
+        if (extension == ".md" || extension == ".markdown") {
+          webView.NavigateToMdString(item.Description);
         } else {
           webView.NavigateToGitFile(item);
         }
+      } else if (item.ItemTypeId == (int)WeItemType.ComfyMediaFileModel) {
+        webView.NavigateToMediaFile(item);
       } else if (item.ItemTypeId >= (int)WeItemType.RealmModel && item.ItemTypeId <= (int)WeItemType.StoryRollupModel ){
         if (string.IsNullOrEmpty(item.Description)) {
           webView.NavigateToMdString(item.ToMdString());
@@ -61,6 +64,32 @@ namespace TheLoomApp.Extensions {
     public static void NavigateToHtmlString(this WebView2 webView, string htmlString) {
       webView.CoreWebView2.NavigateToString(htmlString);
     }
+
+    public static void NavigateToMediaFile(this WebView2 webView, ItemDto item) {
+      var path = item.Properties.FirstOrDefault(p => p.Name == Cx.ItFilePath)?.Value;
+      if (string.IsNullOrEmpty(path) || !File.Exists(path)) {
+        webView.NavigateToMdString(item.ToMdString() + $"\n\n> **File not found:** `{path}`");
+        return;
+      }
+
+      const string host = "comfy-media.local";
+      var core = webView.CoreWebView2;
+      core.ClearVirtualHostNameToFolderMapping(host);
+      core.SetVirtualHostNameToFolderMapping(host, Path.GetDirectoryName(path)!, CoreWebView2HostResourceAccessKind.Allow);
+      var src = $"https://{host}/{Uri.EscapeDataString(Path.GetFileName(path))}";
+
+      var player = Path.GetExtension(path).ToLowerInvariant() switch {
+        ".png" or ".jpg" or ".jpeg" or ".webp" or ".gif" => $"<img src=\"{src}\" style=\"max-width:100%\">",
+        ".mp4" or ".webm" => $"<video src=\"{src}\" controls style=\"max-width:100%\"></video>",
+        ".mp3" or ".wav" or ".flac" or ".ogg" or ".opus" or ".m4a" => $"<audio src=\"{src}\" controls style=\"width:100%\"></audio>",
+        var ext => $"<p>No inline preview for <code>{ext}</code>.</p>"
+      };
+
+      var detailsJson = JsonSerializer.Serialize(item.ToMdString());
+      webView.NavigateToHtmlSnippet($"{player}<hr><div id=\"md\"></div>" +
+        $"<script>document.getElementById('md').innerHTML = marked.parse({detailsJson});</script>");
+    }
+
 
     public static void NavigateToHtmlSnippet(this WebView2 webView, string htmlSnippet) {
       var htmlContent = $@"<!DOCTYPE html>

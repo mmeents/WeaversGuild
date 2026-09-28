@@ -28,7 +28,7 @@ namespace Weavers.Core.Handlers.Import {
         return new ImportOrgResponse("Organization document not found.", false);
       }
       string fileExt = Path.GetExtension(request.OrgDocFullPath).ToLower();
-      bool isOrgDoc = fileExt == ".md";
+      bool isOrgDoc = fileExt == ".md" || fileExt == ".txt";
       bool isDigitalOperator = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppTeamFolder);
       bool isDesk = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppWorkGroupFolder);
       bool isRole = fileExt == ".json" && request.OrgDocFullPath.Contains(Cx.AppDeskRolesFolder);      

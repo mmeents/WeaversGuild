@@ -103,102 +103,9 @@ namespace Weavers.Core.Enums {
       FloorOperational = 117,
       FloorStopping = 118,
 
-    // WeaversGuilds commands for future workflow designs
-    LoomMcpCommands = 120,      
-      CmdHelp = 122,   // in Summary Tools.            
-      CmdListProjects = 124,
-      CmdSearch = 126,
-      CmdGetSummaryById =128,
-      CmdGetTypeDetails = 130,
-
-      CmdUpdateItemName = 132,
-      CmdUpdateItemContent = 134,
-      CmdAppendItemContent = 135,
-      CmdUpdateItemProperty = 136,
-
-      CmdCompleteTodo = 137,
-      CmdSetTodoReady = 138,
-      CmdRejectTodo = 139,
-      CmdReviewPass = 140,
-      CmdReviewFail = 141,
-
-      CmdAddOrgDeskRole = 142,
-      CmdAddOrgDesk = 143,  // in AppGraphOrgTools
-      CmdAddDeskTodo = 144,
-
-      CmdAddDigitalOperator =145,
-      CmdAddOrgFolder = 146,
-      CmdAddOrgFile = 148,
-
-      CmdAddRssFolder = 149,
-      CmdAddRssChannel = 150,
-      CmdRssResyncChannel = 151,
-      CmdRssResolveLink = 152,
-      CmdRssExtractLinks = 153,
-      CmdAppendGuildNote = 154,
-      CmdUpdateGuildNote = 155,
-      CmdArchiveItem = 156,
-      CmdUnarchiveItem =157,
-
-      CmdAddProjectRoot = 158,  // in AppGraphFileTools
-      CmdAddSubFolder = 159,
-
-      CmdAddGithubRepo = 160,
-      CmdDoGitClone = 161,
-      CmdDoGitRefreshStatus = 162,
-      CmdDoGitCheckout = 163,
-
-      CmdAddRealm = 164,
-      CmdAddStory = 165,
-      CmdAddScene = 166,
-      CmdAddCharacter = 167,
-      CmdAddBeat = 168,
-      CmdScheduleBeatWriters = 169,  
-      CmdScheduleBeatDirectors = 170,
-      CmdAddCallSheet = 171,
-      CmdAddCallSheetNarration = 172,  // director
-      CmdAddCallSheetRole = 173,
-      CmdAddPerformance = 174,
-      CmdScheduleActors = 175,  
-      CmdAddPerformanceAction = 176,    // performance
-      CmdAddPerformanceLine = 177,
-      CmdGetPerformanceRollup = 178,  // rollup of all performance lines and cross ref with ActorPerformace.
-      CmdAddObservation = 179,
-      CmdAddStoryRollupModel = 180,
-
-      CmdAddSolution = 181,
-      CmdAddSolutionImport = 182,
-
-      CmdAddMdFile = 183,
-      CmdAddHtmlFile = 184,
-      CmdAddConfigFile = 185,
-
-      CmdAddLibrary = 186,  // in AppGraphLibraryTools
-      CmdAddNamespace = 187,
-
-      CmdAddClass = 188,  // in AppGraphClassTools
-      CmdAddClassImport = 189,
-      CmdAddClassProperty = 190,
-      CmdAddClassMethod = 191,
-      CmdAddClassMethodParam = 192,
-
-      CmdAddEntityClass = 193,  // in AppGraphEntityTools
-      //CmdAddEntityClassImport = 194,
-      CmdAddEntityProperty = 195,
-
-      CmdAddGameRoom = 200,
-      CmdAddChessGame = 201,
-      CmdGetChessGame = 202,
-      CmdChessStartGame =203,
-      CmdChessMakeMove = 204,
-
-      CmdAddPattern = 205,
-      CmdAddPatDimension = 206,
-      CmdAddPatDimOption = 207,
-      CmdGetNextDraw = 208,
-      CmdRejectDraw = 209,
-      CmdAcceptDraw = 210,
-
+    LoomMcpCommands = 120, // commands moved to WeCmdType enum.
+    //Category remains for access into the type lookup responses.
+    //Previous range ended at Cx.LastCommandItemTypeId 210.
 
     TodoStatuses = 220,
       TodoNotStarted = 221,
@@ -255,6 +162,13 @@ namespace Weavers.Core.Enums {
       DrawWritten = 313,
       DrawAccepted = 314,
       DrawRejected = 315,
+
+    ComfyTargetOverrideTypes = 320,
+      CtOverrideSeed = 321,
+      CtOverrideString = 322,
+      CtOverrideFilePath = 323,
+      CtOverrideInt = 324,
+      CtOverrideDecimal = 325,
 
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
@@ -330,12 +244,20 @@ namespace Weavers.Core.Enums {
       FileHtmlModel = 1130,
         FileHtmlDocs = 1131,
       FileConfigModel = 1140,    // appsettings.json, connection strings sill shell shocked from names with JSON in it.
-        FileConfigDocs = 1141,
-      FileImageModel = 1150,     // placeholder for SlideSketch hook
-        FileImageDocs = 1151,
+        FileConfigDocs = 1141,      
 
-        
-      RealmModel = 1160,  // universe of the story.
+   
+    ComfyServiceModel = 1150,
+      ComfyWorkflowFolderModel = 1151,  // gets added on service creation.
+        ComfyWorkflowTemplate = 1152, // takes export json when adding populates data field on item with it.
+          ComfyWfParamModel = 1153,  // added manually during workflow creation to set up overrides for this workflow.
+      ComfyOperationsModel = 1154, // gets added on service creation.
+        ComfyOpTodoModel = 1155,
+          ComfyOpParamModel = 1156,
+          ComfyOpTodoAttemptModel = 1157,
+            ComfyMediaFileModel = 1158,
+
+    RealmModel = 1160,  // universe of the story.
        StoryModel = 1163, //ItStoryStatus ItTargetSceneCount ItPovDefault  
         SceneModel = 1166, //itEntryState itExitState ItPOV ItSceneStatus                 
          CharacterModel = 1168,

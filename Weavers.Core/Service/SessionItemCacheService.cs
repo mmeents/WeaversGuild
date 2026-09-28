@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Weavers.Core.Models;
+using Weavers.Core.Entities;
 using Weavers.Core.Extensions;
-using Microsoft.Extensions.DependencyInjection;
+using Weavers.Core.Models;
 
 namespace Weavers.Core.Service {
 
   public interface ISessionItemCacheService {
-    public Task<ItemDto?> GetItemAsync(int itemId, CancellationToken cancellationToken);
+    public Task<ItemDto?> GetItemAsync(int itemId, CancellationToken cancellationToken, bool? skipCache = null);
     public bool RemoveCacheItem(int itemId);
     public bool ClearCache();
   }
@@ -26,8 +27,11 @@ namespace Weavers.Core.Service {
       _itemCache = new ConcurrentDictionary<int, ItemDto>();
     }   
 
-    public async Task<ItemDto?> GetItemAsync(int itemId, CancellationToken cancellationToken) {
-      if (_itemCache.TryGetValue(itemId, out var cachedItem)) {
+    public async Task<ItemDto?> GetItemAsync(int itemId, CancellationToken cancellationToken, bool? skipCache = null) {
+      if (skipCache == true) {
+        _itemCache.TryRemove(itemId, out _);
+      }
+      if (skipCache != true && _itemCache.TryGetValue(itemId, out var cachedItem)) {
         return cachedItem;
       }
       using (var scope = _serviceScopeFactory.CreateScope()) {

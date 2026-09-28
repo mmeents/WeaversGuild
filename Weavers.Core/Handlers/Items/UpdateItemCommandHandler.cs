@@ -187,9 +187,8 @@ namespace Weavers.Core.Handlers.Items {
           await _mediator.Send(new ProcessPropertyUpdateCommand(parentItem, preParentNode));
         }
       }
-
-      _sessionCache.RemoveCacheItem(item.Id);
-      itemDto = await _sessionCache.GetItemAsync(item.Id, cancellationToken);      
+            
+      itemDto = await _sessionCache.GetItemAsync(item.Id, cancellationToken, true);      
       return itemDto;
 
     }

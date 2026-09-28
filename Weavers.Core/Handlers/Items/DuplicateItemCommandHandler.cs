@@ -24,6 +24,10 @@ namespace Weavers.Core.Handlers.Items {
         throw new Exception($"Item with ID {request.ItemId} not found.");
       }
 
+      if (item.ItemTypeId.CanDuplicate() == false) {
+        throw new Exception($"Item with ID {request.ItemId} cannot be duplicated.");
+      }
+
       var parentItemId = item.GetParentId();
       var parent = await _context.GetItemDtoById(parentItemId, cancellationToken);
       if (parent == null) { 

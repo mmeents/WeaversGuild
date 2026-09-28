@@ -27,6 +27,7 @@ namespace Weavers.Core.Tools {
     Task<string> UpdateItemContent(int id, string content);
     Task<string> AppendItemContent(int id, string content);
     Task<string> UpdateItemProperty(int itemPropertyId, string propertyValue);
+    Task<string> DuplicateItem(int id);
   }
 
   public class SummaryToolsHandler : ISummaryToolsHandler {
@@ -284,10 +285,27 @@ namespace Weavers.Core.Tools {
         var opResult = McpOpResult.CreateFailure("UpdateItemProperty", "Failed to update item property", ex);
         return JsonSerializer.Serialize(opResult);
       }
-
-
-
-
     }
+
+    public async Task<string> DuplicateItem(int id) {
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+        var command = new DuplicateItemCommand(id);
+        var result = await mediator.Send(command);
+        if (result == null) {
+          var notFoundResult = McpOpResult.CreateFailure("DuplicateItem", $"No item found for id {id}");
+          return JsonSerializer.Serialize(notFoundResult);
+        }
+        var opResult = McpOpResult.CreateSuccess("DuplicateItem", await context.ToSummary(result, false));
+        return JsonSerializer.Serialize(opResult);
+      } catch (Exception ex) {
+        _logger.LogError(ex, "Error duplicating item");
+        var opResult = McpOpResult.CreateFailure("DuplicateItem", "Failed to duplicate item", ex);
+        return JsonSerializer.Serialize(opResult);
+      }
+    }
+
   }
 }
