@@ -52,7 +52,7 @@ namespace Weavers.Core.Handlers.Templates {
             if (importObj != null) {
               var importNamespace = importObj.ResolveItemsNamespace(importObj.Name);
               var importObjName = importObj.Name.AsUpperCaseFirstLetter();
-              var varName = $"{importObj.Name.AsLowerCaseFirstLetter()}";
+              var varName = $"{importObj.Name.UrlSafe().AsLowerCaseFirstLetter()}";
               if (!usesHashSet.Contains(importNamespace)) {
                 sbUses.AppendLine($"using {importNamespace};");
                 usesHashSet.Add(importNamespace);

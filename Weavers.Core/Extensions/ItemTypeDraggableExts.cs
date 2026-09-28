@@ -131,9 +131,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.ComfyServiceModel => new HashSet<WeItemType> { WeItemType.HarnessGatewaysModel },
         WeItemType.ComfyWorkflowFolderModel => new HashSet<WeItemType> { WeItemType.ComfyServiceModel },
         WeItemType.ComfyWorkflowTemplate => new HashSet<WeItemType> { WeItemType.ComfyWorkflowFolderModel },
-        WeItemType.ComfyWfParamModel => new HashSet<WeItemType> { WeItemType.ComfyWorkflowFolderModel },
+        WeItemType.ComfyWfParamModel => new HashSet<WeItemType> { WeItemType.ComfyWorkflowTemplate },
 
-        WeItemType.ComfyOperationsModel => new HashSet<WeItemType> { WeItemType.ComfyServiceModel },
+        WeItemType.ComfyOperationsModel => new HashSet<WeItemType> { WeItemType.OrgFolderModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.ComfyServiceModel },
         WeItemType.ComfyOpTodoModel => new HashSet<WeItemType> { WeItemType.ComfyOperationsModel },
         WeItemType.ComfyOpParamModel => new HashSet<WeItemType> { WeItemType.ComfyOpTodoModel },
         WeItemType.ComfyOpTodoAttemptModel => new HashSet<WeItemType> { WeItemType.ComfyOpTodoModel },

@@ -40,7 +40,9 @@ namespace Weavers.Core.Handlers.Comfy {
       string isReady = request.ReadyFilter ? "1" : "0";  // on todo.
 
       // only require enabled if the request is for ready todos and the harness is the current harness.
-      bool isEnabledNeeded = request.ReadyFilter && (_sessionService.HarnessId == harnessId);  
+      bool isEnabledNeeded = request.ReadyFilter 
+        && request.TodoStatusFilter != WeItemType.TodoCompleteForward 
+        && (_sessionService.HarnessId == harnessId);  
       string isEnabled = isEnabledNeeded ? "1" : "0";  // require on template to be enabled.          
       
       var sql = @$"       

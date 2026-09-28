@@ -53,7 +53,7 @@ namespace Weavers.Core.Handlers.Items {
     private readonly HashSet<WeItemType> _parentFolderTypes = WeItemTypeExtensions.GetParentFileFolderDependTypes();
     private readonly HashSet<WeItemType> _parentNamespaceTypes = WeItemTypeExtensions.GetParentNamespaceDependTypes();
     public async Task<ItemDto?> Handle(UpdateItemCommand request, CancellationToken cancellationToken) {
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       var _context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       var item = await _context.Items.FindAsync(request.Id);
       var nameWas = item?.Name;
@@ -194,7 +194,7 @@ namespace Weavers.Core.Handlers.Items {
     }
 
     private async Task<bool> DoRename(int? itemId, string newName, CancellationToken cancellationToken) {
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       var _context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
       int theId = 0;
       if (itemId != null) { 

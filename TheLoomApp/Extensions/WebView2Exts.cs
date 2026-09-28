@@ -1,6 +1,6 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
-using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -82,7 +82,7 @@ namespace TheLoomApp.Extensions {
         ".png" or ".jpg" or ".jpeg" or ".webp" or ".gif" => $"<img src=\"{src}\" style=\"max-width:100%\">",
         ".mp4" or ".webm" => $"<video src=\"{src}\" controls style=\"max-width:100%\"></video>",
         ".mp3" or ".wav" or ".flac" or ".ogg" or ".opus" or ".m4a" => $"<audio src=\"{src}\" controls style=\"width:100%\"></audio>",
-        var ext => $"<p>No inline preview for <code>{ext}</code>.</p>"
+        var ext => $"<p>No inline preview for <code>{WebUtility.HtmlEncode(ext)}</code>.</p>"
       };
 
       var detailsJson = JsonSerializer.Serialize(item.ToMdString());

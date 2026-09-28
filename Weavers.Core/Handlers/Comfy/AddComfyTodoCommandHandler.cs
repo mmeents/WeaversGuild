@@ -50,6 +50,10 @@ namespace Weavers.Core.Handlers.Comfy {
       if (workflowItem == null) {
         throw new ArgumentException($"Workflow item with id {request.workflowId} not found", nameof(request.workflowId));
       }
+      if (workflowItem.ItemTypeId != (int)WeItemType.ComfyWorkflowTemplate) {
+        throw new ArgumentException($"Workflow item with id {request.workflowId} is not a Comfy Workflow Template", nameof(request.workflowId));
+      }
+
       var workflowInstructions = workflowItem.Description;
       var fileContent = workflowItem.Data;   
       var workflowTimeoutSec = workflowItem.Properties.FirstOrDefault(p => p.Name == Cx.ItTimeoutSec)?.Value ?? "300";

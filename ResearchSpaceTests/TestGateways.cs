@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 namespace ResearchSpaceTests {
 
-  [TestClass]
+  // these are proof of concept tests for the ComfyUI gateway, which is a local-only service.
+  // so these tests are not meant to be run in a CI/CD pipeline, but rather as a local test harness
+  // for development and experimentation.  They show the minimum steps needed to submit a prompt and
+  // retrieve an image output from the ComfyUI gateway.  
+  //[TestClass]
   public class TestGateways {
 
-    [TestMethod]
+    //[TestMethod]
     public async Task TestMethod1() {
       // Implement your test logic here
       const string gatewayUrl = "http://localhost:8188/"; // Replace with your actual gateway URL
@@ -94,7 +98,7 @@ namespace ResearchSpaceTests {
 
     }
 
-    [TestMethod]
+    //[TestMethod]
     public async Task ExploreJsonLoadUp() {
         
       const string TextToImageExportedJsonPath = "C:\\Floor\\WeaversGuild\\ResearchSpaceTests\\FirstExport.json"; // Path to your exported JSON file

@@ -147,7 +147,7 @@ namespace TheLoomApp.Components {
 
     public async void SetupChessTabForItem(ItemDto item) {
       _item = item;
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var position = scope.ServiceProvider.GetRequiredService<IPosition>();
       var game = position.GetCurrentGame(item);
@@ -196,7 +196,7 @@ namespace TheLoomApp.Components {
         MessageBox.Show($"No game item is currently loaded.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var position = scope.ServiceProvider.GetRequiredService<IPosition>();
       var game = position.GetCurrentGame(_item);
@@ -210,7 +210,7 @@ namespace TheLoomApp.Components {
     private async void btnDoNextMove_Click(object? sender, EventArgs e) {
       if (_item != null && cbNextMove.SelectedItem != null && edTodoId != null) {
         try {
-          var scope = _scopeFactory.CreateScope();
+          using var scope = _scopeFactory.CreateScope();
           var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
           string nextMove = cbNextMove.SelectedItem?.ToString() ?? string.Empty;
           var result = await mediator.Send(new ChessMakeMoveCommand(_item.Id, nextMove, (int)edTodoId.Value));
