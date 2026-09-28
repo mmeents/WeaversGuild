@@ -7,13 +7,13 @@ A **gateway** is a way work gets into or out of TheLoomApp. There are four:
 | **LM Studio** | LLM gateway | MCP tools + chat completion | Main Schedule | Local models (GPU PC, DGX Spark) |
 | **Claude Code** | LLM gateway | MCP tools (`claude -p` subprocess) | Main Schedule | Claude models on subscription |
 | **Comfy** | Generation gateway | ComfyUI HTTP API (`/prompt`, `/history`, `/view`) | Comfy Schedule | ComfyUI workflows (image, audio, …) |
-| **Human / App** | Human gateway | TheLoomApp UI | — (reviews and approves both schedules) | You |
+| **Human / App** | Human gateway | TheLoomApp UI | — (reviews and approves, starts both schedules) | You |
 
-The first three are *machine* gateways and are enabled per harness. The fourth is implicit: the app itself is how a person creates todos, marks them Ready, reviews results, and edits the graph.
+The first three are *machine* gateways and are enabled per harness and installing the components and tools. The fourth is implicit: the app itself is how a person creates todos, marks them Ready, reviews results, and edits the graph.
 
 ## Two kinds of machine gateway
 
-**LLM gateways (LM Studio, Claude Code)** run an *operator* against a *desk*. The desk supplies the system prompt, the todo supplies the user prompt, and the model acts on the graph through MCP tools. These two gateways are interchangeable from the schedule's point of view — which one runs a todo is a provider choice (FactorySwitch), not a structural one.
+**LLM gateways (LM Studio, Claude Code)** run an *operator* against a *desk*. The desk supplies the system prompt, the todo supplies the user prompt, and the model acts on the graph through MCP tools. These two gateways are interchangeable from the schedule's point of view — which one runs a todo is a provider choice (by operator on the desk), not a structural one.
 
 **The Comfy gateway** is different in kind. ComfyUI models don't use MCP and don't take a system/user prompt pair. A Comfy job is a *workflow*: a JSON graph of nodes with inputs (prompt text, seed, lyrics, duration…). The gateway's job is to clone a workflow template, overwrite specific node inputs with values from the todo, submit it, wait, and collect the output file. Because of that difference Comfy has its own todo type and its own schedule. See [AboutComfy](AboutComfy.md).
 
@@ -21,9 +21,10 @@ The first three are *machine* gateways and are enabled per harness. The fourth i
 
 ```
 Org
-└── HarnessAppModel
+└── HarnessAppModel         ← Gets set up per machine that runs the loom.
     ├── Sessions
     └── Gateways            ← HasLmStudio / HasClaudeCode / HasComfy checkboxes
+        ├── TheLoomApp       (Presence Gateway for humans, the app it's self.)    
         ├── LM Studio        (Presence Gateway)
         ├── Claude Code      (Presence Gateway)
         └── Comfy            (Presence Gateway)
@@ -38,6 +39,11 @@ Org
 3. Click **Save**.
 
 Saving creates the matching child **Presence Gateway** items. A presence gateway is the harness saying "this machine can serve this kind of work."
+
+## Configure the Gateways
+
+LM Studio needs the url and api keys set.
+Comfy needs the url, input and output folders set. (note: include trailing seperator on UrlBase properties...  example: http://localhost:8188/ same goes for  input/output folders.)
 
 ## Two schedules
 
