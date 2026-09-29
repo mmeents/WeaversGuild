@@ -1,3 +1,4 @@
+![TheLoom](https://mmeents.github.io/files/WeaversGuild.png)
 # WeaversGuild
 
 WeaversGuild as the virtual decentralized organization. Footholds are the computers from agents perspectives. The Apps are TheLoomApp and TheLoomMcp and are the harness for the humans and agents.  The knowledge base is the FabricDbContext a SQL Server instance.   
@@ -42,3 +43,4 @@ see [ChangeLog.md](ChangeLog.md)
 
 ## My multi machine config
 ![TheLoomLooksLike](https://mmeents.github.io/files/TheLoomLooksLike.png)
+![TheLoomLooksLike](https://mmeents.github.io/files/TheLoomAppMedia.png)
