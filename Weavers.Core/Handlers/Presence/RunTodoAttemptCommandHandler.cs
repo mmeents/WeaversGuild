@@ -8,7 +8,6 @@ using Weavers.Core.Handlers.Templates;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Weavers.Core.Handlers.Presence {
 

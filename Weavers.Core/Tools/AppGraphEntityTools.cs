@@ -10,7 +10,7 @@ namespace Weavers.Core.Tools {
   public class AppGraphEntityTools {
     private static IAppGraphEntityToolsHandler GetTools() => DiBridgeService.GetService<IAppGraphEntityToolsHandler>();
 
-    [McpTool(Cx.CmdAddEntityClass, "Adds a new entity class model, with a config model and primary Id entity property model. Adds import ref to DbContext.")]
+    [McpTool(Cx.CmdAddEntityClass, Cx.CmdAddEntityClassDesc)]
     public static Task<string> AddEntityClassModel(
       [Description("The Item Id of the parent item (either Library or Namespace type Models) to add the new entity class model.")] int parentItemId,
       [Description("The name of the new entity class model. This is normally a Singular named class.")] string className,
@@ -20,7 +20,7 @@ namespace Weavers.Core.Tools {
     }
 
 
-    [McpTool(Cx.CmdAddEntityProperty, "Adds a new entity property model to an existing entity class. If it is a navigation property, additional navigation properties will be added; they will need to be configured.")]
+    [McpTool(Cx.CmdAddEntityProperty, Cx.CmdAddEntityPropertyDesc)]
     public static Task<string> AddEntityPropertyModel(
       [Description("The Item Id of the entity class model to add the new property model to.")]
       int entityClassId,

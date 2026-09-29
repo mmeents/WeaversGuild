@@ -48,6 +48,13 @@
       miAddRssLinkedHtml = new ToolStripMenuItem();
       miResolveLink = new ToolStripMenuItem();
       miExtractLinks = new ToolStripMenuItem();
+      miAddPattern = new ToolStripMenuItem();
+      miAddPatDimension = new ToolStripMenuItem();
+      miAddPatDimOption = new ToolStripMenuItem();
+      miGetNextDraw = new ToolStripMenuItem();
+      miAddComfyWorkflow = new ToolStripMenuItem();
+      miAddComfyWfParam = new ToolStripMenuItem();
+      miAddComfyTodo = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
       miAddGitHubRepo = new ToolStripMenuItem();
@@ -159,16 +166,37 @@
       btnSearchText = new Button();
       lbSearchText = new Label();
       tbSearchText = new TextBox();
+      tpComfy = new TabPage();
+      tcComfyScheduleSwitch = new TabControl();
+      tpComfyReadyReview = new TabPage();
+      cbComfyReadyDoDelete = new CheckBox();
+      btnAbortComfyReadyTodoUpdate = new Button();
+      btnUpdateComfyReadyTodo = new Button();
+      cbComfyReadySetReady = new CheckBox();
+      edComfyReadyPreview = new TextBox();
+      lbComfyNotReady = new ListBox();
+      tpComfySchedule = new TabPage();
+      lbComfyWorkingStatus = new Label();
+      btnAbortComfyScheduleTodoUpdate = new Button();
+      btnUpdateComfyScheduleTodo = new Button();
+      cbComfyScheduleSetReady = new CheckBox();
+      edComfySchedulePreview = new TextBox();
+      btnAttemptComfyTodo = new Button();
+      lbComfySchedule = new ListBox();
+      tpComfyResultReview = new TabPage();
+      cbComfyResultDoDelete = new CheckBox();
+      btnAbortComfyResultTodoUpdate = new Button();
+      btnUpdateComfyResultTodo = new Button();
+      cbComfyResultSetReady = new CheckBox();
+      edComfyResultPreview = new TextBox();
+      lbComfyResult = new ListBox();
       tbErrorOut = new TextBox();
       tsErrorPopup = new ToolStrip();
       toolStripLabel1 = new ToolStripLabel();
       tsBtnDismiss = new ToolStripButton();
       splitter1 = new Splitter();
       tRun = new System.Windows.Forms.Timer(components);
-      miAddPattern = new ToolStripMenuItem();
-      miAddPatDimension = new ToolStripMenuItem();
-      miAddPatDimOption = new ToolStripMenuItem();
-      miGetNextDraw = new ToolStripMenuItem();
+      tRunComfy = new System.Windows.Forms.Timer(components);
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -196,6 +224,11 @@
       tpResults.SuspendLayout();
       tpSearch.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)edSearchMaxResults).BeginInit();
+      tpComfy.SuspendLayout();
+      tcComfyScheduleSwitch.SuspendLayout();
+      tpComfyReadyReview.SuspendLayout();
+      tpComfySchedule.SuspendLayout();
+      tpComfyResultReview.SuspendLayout();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -257,9 +290,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyTodo, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1254);
+      cmsTreeMenus.Size = new Size(209, 1298);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -392,6 +425,55 @@
       miExtractLinks.Size = new Size(208, 22);
       miExtractLinks.Text = "Extract Links";
       miExtractLinks.Click += miExtractLinks_Click;
+      // 
+      // miAddPattern
+      // 
+      miAddPattern.Name = "miAddPattern";
+      miAddPattern.Size = new Size(208, 22);
+      miAddPattern.Text = "Add Pattern";
+      miAddPattern.Click += miAddPattern_Click;
+      // 
+      // miAddPatDimension
+      // 
+      miAddPatDimension.Name = "miAddPatDimension";
+      miAddPatDimension.Size = new Size(208, 22);
+      miAddPatDimension.Text = "Add Dimension";
+      miAddPatDimension.Click += miAddPatDimension_Click;
+      // 
+      // miAddPatDimOption
+      // 
+      miAddPatDimOption.Name = "miAddPatDimOption";
+      miAddPatDimOption.Size = new Size(208, 22);
+      miAddPatDimOption.Text = "Add Option";
+      miAddPatDimOption.Click += miAddPatDimOption_Click;
+      // 
+      // miGetNextDraw
+      // 
+      miGetNextDraw.Name = "miGetNextDraw";
+      miGetNextDraw.Size = new Size(208, 22);
+      miGetNextDraw.Text = "Get Next Draw";
+      miGetNextDraw.Click += miGetNextDraw_Click;
+      // 
+      // miAddComfyWorkflow
+      // 
+      miAddComfyWorkflow.Name = "miAddComfyWorkflow";
+      miAddComfyWorkflow.Size = new Size(208, 22);
+      miAddComfyWorkflow.Text = "Add Comfy Workflow";
+      miAddComfyWorkflow.Click += miAddComfyWorkflow_Click;
+      // 
+      // miAddComfyWfParam
+      // 
+      miAddComfyWfParam.Name = "miAddComfyWfParam";
+      miAddComfyWfParam.Size = new Size(208, 22);
+      miAddComfyWfParam.Text = "Add Workflow Param";
+      miAddComfyWfParam.Click += miAddComfyWfParam_Click;
+      // 
+      // miAddComfyTodo
+      // 
+      miAddComfyTodo.Name = "miAddComfyTodo";
+      miAddComfyTodo.Size = new Size(208, 22);
+      miAddComfyTodo.Text = "Add Comfy Todo";
+      miAddComfyTodo.Click += miAddComfyTodo_Click;
       // 
       // miAddProjectRoot
       // 
@@ -700,6 +782,7 @@
       tabControl1.Controls.Add(tpSchedule);
       tabControl1.Controls.Add(tpResults);
       tabControl1.Controls.Add(tpSearch);
+      tabControl1.Controls.Add(tpComfy);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Margin = new Padding(3, 2, 3, 2);
@@ -897,9 +980,9 @@
       // 
       // btnAttemptTodo
       // 
-      btnAttemptTodo.Location = new Point(225, 33);
+      btnAttemptTodo.Location = new Point(225, 35);
       btnAttemptTodo.Name = "btnAttemptTodo";
-      btnAttemptTodo.Size = new Size(101, 23);
+      btnAttemptTodo.Size = new Size(101, 21);
       btnAttemptTodo.TabIndex = 48;
       btnAttemptTodo.Text = "Attempt Todo";
       btnAttemptTodo.UseVisualStyleBackColor = true;
@@ -978,6 +1061,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1215,6 +1299,8 @@
       // 
       // edReadyPrompt
       // 
+      edReadyPrompt.AcceptsReturn = true;
+      edReadyPrompt.AcceptsTab = true;
       edReadyPrompt.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
       edReadyPrompt.Location = new Point(21, 261);
       edReadyPrompt.Multiline = true;
@@ -1571,6 +1657,296 @@
       tbSearchText.Size = new Size(388, 23);
       tbSearchText.TabIndex = 0;
       // 
+      // tpComfy
+      // 
+      tpComfy.Controls.Add(tcComfyScheduleSwitch);
+      tpComfy.Location = new Point(4, 24);
+      tpComfy.Name = "tpComfy";
+      tpComfy.Padding = new Padding(3);
+      tpComfy.Size = new Size(580, 485);
+      tpComfy.TabIndex = 6;
+      tpComfy.Text = "Comfy Schedule";
+      tpComfy.UseVisualStyleBackColor = true;
+      // 
+      // tcComfyScheduleSwitch
+      // 
+      tcComfyScheduleSwitch.Controls.Add(tpComfyReadyReview);
+      tcComfyScheduleSwitch.Controls.Add(tpComfySchedule);
+      tcComfyScheduleSwitch.Controls.Add(tpComfyResultReview);
+      tcComfyScheduleSwitch.Dock = DockStyle.Fill;
+      tcComfyScheduleSwitch.Location = new Point(3, 3);
+      tcComfyScheduleSwitch.Name = "tcComfyScheduleSwitch";
+      tcComfyScheduleSwitch.SelectedIndex = 0;
+      tcComfyScheduleSwitch.Size = new Size(574, 479);
+      tcComfyScheduleSwitch.TabIndex = 0;
+      tcComfyScheduleSwitch.SelectedIndexChanged += tcComfyScheduleSwitch_SelectedIndexChanged;
+      // 
+      // tpComfyReadyReview
+      // 
+      tpComfyReadyReview.Controls.Add(cbComfyReadyDoDelete);
+      tpComfyReadyReview.Controls.Add(btnAbortComfyReadyTodoUpdate);
+      tpComfyReadyReview.Controls.Add(btnUpdateComfyReadyTodo);
+      tpComfyReadyReview.Controls.Add(cbComfyReadySetReady);
+      tpComfyReadyReview.Controls.Add(edComfyReadyPreview);
+      tpComfyReadyReview.Controls.Add(lbComfyNotReady);
+      tpComfyReadyReview.Location = new Point(4, 24);
+      tpComfyReadyReview.Name = "tpComfyReadyReview";
+      tpComfyReadyReview.Padding = new Padding(3);
+      tpComfyReadyReview.Size = new Size(566, 451);
+      tpComfyReadyReview.TabIndex = 0;
+      tpComfyReadyReview.Text = "Comfy Todo Ready Review";
+      tpComfyReadyReview.UseVisualStyleBackColor = true;
+      // 
+      // cbComfyReadyDoDelete
+      // 
+      cbComfyReadyDoDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbComfyReadyDoDelete.AutoSize = true;
+      cbComfyReadyDoDelete.Location = new Point(97, 417);
+      cbComfyReadyDoDelete.Name = "cbComfyReadyDoDelete";
+      cbComfyReadyDoDelete.Size = new Size(59, 19);
+      cbComfyReadyDoDelete.TabIndex = 47;
+      cbComfyReadyDoDelete.Text = "Delete";
+      cbComfyReadyDoDelete.UseVisualStyleBackColor = true;
+      cbComfyReadyDoDelete.CheckedChanged += cbComfyReadySetReady_CheckedChanged;
+      // 
+      // btnAbortComfyReadyTodoUpdate
+      // 
+      btnAbortComfyReadyTodoUpdate.Anchor = AnchorStyles.Bottom;
+      btnAbortComfyReadyTodoUpdate.Location = new Point(241, 415);
+      btnAbortComfyReadyTodoUpdate.Margin = new Padding(3, 2, 3, 2);
+      btnAbortComfyReadyTodoUpdate.Name = "btnAbortComfyReadyTodoUpdate";
+      btnAbortComfyReadyTodoUpdate.Size = new Size(66, 21);
+      btnAbortComfyReadyTodoUpdate.TabIndex = 46;
+      btnAbortComfyReadyTodoUpdate.Text = "Abort";
+      btnAbortComfyReadyTodoUpdate.UseVisualStyleBackColor = true;
+      btnAbortComfyReadyTodoUpdate.Click += btnAbortComfyReadyTodoUpdate_Click;
+      // 
+      // btnUpdateComfyReadyTodo
+      // 
+      btnUpdateComfyReadyTodo.Anchor = AnchorStyles.Bottom;
+      btnUpdateComfyReadyTodo.Location = new Point(171, 415);
+      btnUpdateComfyReadyTodo.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateComfyReadyTodo.Name = "btnUpdateComfyReadyTodo";
+      btnUpdateComfyReadyTodo.Size = new Size(66, 21);
+      btnUpdateComfyReadyTodo.TabIndex = 45;
+      btnUpdateComfyReadyTodo.Text = "Update";
+      btnUpdateComfyReadyTodo.UseVisualStyleBackColor = true;
+      btnUpdateComfyReadyTodo.Click += btnUpdateComfyReadyTodo_Click;
+      // 
+      // cbComfyReadySetReady
+      // 
+      cbComfyReadySetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbComfyReadySetReady.AutoSize = true;
+      cbComfyReadySetReady.Location = new Point(14, 417);
+      cbComfyReadySetReady.Name = "cbComfyReadySetReady";
+      cbComfyReadySetReady.Size = new Size(77, 19);
+      cbComfyReadySetReady.TabIndex = 44;
+      cbComfyReadySetReady.Text = "Set Ready";
+      cbComfyReadySetReady.UseVisualStyleBackColor = true;
+      cbComfyReadySetReady.CheckedChanged += cbComfyReadySetReady_CheckedChanged;
+      // 
+      // edComfyReadyPreview
+      // 
+      edComfyReadyPreview.AcceptsReturn = true;
+      edComfyReadyPreview.AcceptsTab = true;
+      edComfyReadyPreview.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edComfyReadyPreview.Location = new Point(10, 187);
+      edComfyReadyPreview.Multiline = true;
+      edComfyReadyPreview.Name = "edComfyReadyPreview";
+      edComfyReadyPreview.ScrollBars = ScrollBars.Vertical;
+      edComfyReadyPreview.Size = new Size(536, 223);
+      edComfyReadyPreview.TabIndex = 6;
+      // 
+      // lbComfyNotReady
+      // 
+      lbComfyNotReady.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbComfyNotReady.FormattingEnabled = true;
+      lbComfyNotReady.Location = new Point(10, 12);
+      lbComfyNotReady.Name = "lbComfyNotReady";
+      lbComfyNotReady.Size = new Size(544, 139);
+      lbComfyNotReady.TabIndex = 2;
+      lbComfyNotReady.SelectedIndexChanged += lbComfyNotReady_SelectedIndexChanged;
+      // 
+      // tpComfySchedule
+      // 
+      tpComfySchedule.Controls.Add(lbComfyWorkingStatus);
+      tpComfySchedule.Controls.Add(btnAbortComfyScheduleTodoUpdate);
+      tpComfySchedule.Controls.Add(btnUpdateComfyScheduleTodo);
+      tpComfySchedule.Controls.Add(cbComfyScheduleSetReady);
+      tpComfySchedule.Controls.Add(edComfySchedulePreview);
+      tpComfySchedule.Controls.Add(btnAttemptComfyTodo);
+      tpComfySchedule.Controls.Add(lbComfySchedule);
+      tpComfySchedule.Location = new Point(4, 24);
+      tpComfySchedule.Name = "tpComfySchedule";
+      tpComfySchedule.Padding = new Padding(3);
+      tpComfySchedule.Size = new Size(566, 451);
+      tpComfySchedule.TabIndex = 1;
+      tpComfySchedule.Text = "Todo Schedule";
+      tpComfySchedule.UseVisualStyleBackColor = true;
+      // 
+      // lbComfyWorkingStatus
+      // 
+      lbComfyWorkingStatus.AutoSize = true;
+      lbComfyWorkingStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      lbComfyWorkingStatus.Location = new Point(102, 138);
+      lbComfyWorkingStatus.Name = "lbComfyWorkingStatus";
+      lbComfyWorkingStatus.Size = new Size(182, 21);
+      lbComfyWorkingStatus.TabIndex = 52;
+      lbComfyWorkingStatus.Text = "Loom Operational Status";
+      // 
+      // btnAbortComfyScheduleTodoUpdate
+      // 
+      btnAbortComfyScheduleTodoUpdate.Anchor = AnchorStyles.Bottom;
+      btnAbortComfyScheduleTodoUpdate.Location = new Point(246, 425);
+      btnAbortComfyScheduleTodoUpdate.Margin = new Padding(3, 2, 3, 2);
+      btnAbortComfyScheduleTodoUpdate.Name = "btnAbortComfyScheduleTodoUpdate";
+      btnAbortComfyScheduleTodoUpdate.Size = new Size(66, 21);
+      btnAbortComfyScheduleTodoUpdate.TabIndex = 51;
+      btnAbortComfyScheduleTodoUpdate.Text = "Abort";
+      btnAbortComfyScheduleTodoUpdate.UseVisualStyleBackColor = true;
+      btnAbortComfyScheduleTodoUpdate.Click += btnAbortComfyScheduleTodoUpdate_Click;
+      // 
+      // btnUpdateComfyScheduleTodo
+      // 
+      btnUpdateComfyScheduleTodo.Anchor = AnchorStyles.Bottom;
+      btnUpdateComfyScheduleTodo.Location = new Point(176, 425);
+      btnUpdateComfyScheduleTodo.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateComfyScheduleTodo.Name = "btnUpdateComfyScheduleTodo";
+      btnUpdateComfyScheduleTodo.Size = new Size(66, 21);
+      btnUpdateComfyScheduleTodo.TabIndex = 50;
+      btnUpdateComfyScheduleTodo.Text = "Update";
+      btnUpdateComfyScheduleTodo.UseVisualStyleBackColor = true;
+      btnUpdateComfyScheduleTodo.Click += btnUpdateComfyScheduleTodo_Click;
+      // 
+      // cbComfyScheduleSetReady
+      // 
+      cbComfyScheduleSetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbComfyScheduleSetReady.AutoSize = true;
+      cbComfyScheduleSetReady.Location = new Point(19, 427);
+      cbComfyScheduleSetReady.Name = "cbComfyScheduleSetReady";
+      cbComfyScheduleSetReady.Size = new Size(77, 19);
+      cbComfyScheduleSetReady.TabIndex = 49;
+      cbComfyScheduleSetReady.Text = "Set Ready";
+      cbComfyScheduleSetReady.UseVisualStyleBackColor = true;
+      cbComfyScheduleSetReady.CheckedChanged += cbComfyScheduleSetReady_CheckedChanged;
+      // 
+      // edComfySchedulePreview
+      // 
+      edComfySchedulePreview.AcceptsReturn = true;
+      edComfySchedulePreview.AcceptsTab = true;
+      edComfySchedulePreview.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edComfySchedulePreview.Location = new Point(6, 165);
+      edComfySchedulePreview.Multiline = true;
+      edComfySchedulePreview.Name = "edComfySchedulePreview";
+      edComfySchedulePreview.ScrollBars = ScrollBars.Vertical;
+      edComfySchedulePreview.Size = new Size(550, 255);
+      edComfySchedulePreview.TabIndex = 48;
+      // 
+      // btnAttemptComfyTodo
+      // 
+      btnAttemptComfyTodo.Location = new Point(6, 136);
+      btnAttemptComfyTodo.Name = "btnAttemptComfyTodo";
+      btnAttemptComfyTodo.Size = new Size(90, 23);
+      btnAttemptComfyTodo.TabIndex = 4;
+      btnAttemptComfyTodo.Text = "Start";
+      btnAttemptComfyTodo.UseVisualStyleBackColor = true;
+      btnAttemptComfyTodo.Click += btnAttemptComfyTodo_Click;
+      // 
+      // lbComfySchedule
+      // 
+      lbComfySchedule.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbComfySchedule.FormattingEnabled = true;
+      lbComfySchedule.Location = new Point(6, 6);
+      lbComfySchedule.Name = "lbComfySchedule";
+      lbComfySchedule.Size = new Size(554, 124);
+      lbComfySchedule.TabIndex = 3;
+      lbComfySchedule.SelectedIndexChanged += lbComfySchedule_SelectedIndexChanged;
+      // 
+      // tpComfyResultReview
+      // 
+      tpComfyResultReview.Controls.Add(cbComfyResultDoDelete);
+      tpComfyResultReview.Controls.Add(btnAbortComfyResultTodoUpdate);
+      tpComfyResultReview.Controls.Add(btnUpdateComfyResultTodo);
+      tpComfyResultReview.Controls.Add(cbComfyResultSetReady);
+      tpComfyResultReview.Controls.Add(edComfyResultPreview);
+      tpComfyResultReview.Controls.Add(lbComfyResult);
+      tpComfyResultReview.Location = new Point(4, 24);
+      tpComfyResultReview.Name = "tpComfyResultReview";
+      tpComfyResultReview.Size = new Size(566, 451);
+      tpComfyResultReview.TabIndex = 2;
+      tpComfyResultReview.Text = "Operation Results";
+      tpComfyResultReview.UseVisualStyleBackColor = true;
+      // 
+      // cbComfyResultDoDelete
+      // 
+      cbComfyResultDoDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbComfyResultDoDelete.AutoSize = true;
+      cbComfyResultDoDelete.Location = new Point(100, 427);
+      cbComfyResultDoDelete.Name = "cbComfyResultDoDelete";
+      cbComfyResultDoDelete.Size = new Size(59, 19);
+      cbComfyResultDoDelete.TabIndex = 52;
+      cbComfyResultDoDelete.Text = "Delete";
+      cbComfyResultDoDelete.UseVisualStyleBackColor = true;
+      cbComfyResultDoDelete.CheckedChanged += cbComfyResultSetReady_CheckedChanged;
+      // 
+      // btnAbortComfyResultTodoUpdate
+      // 
+      btnAbortComfyResultTodoUpdate.Anchor = AnchorStyles.Bottom;
+      btnAbortComfyResultTodoUpdate.Location = new Point(244, 425);
+      btnAbortComfyResultTodoUpdate.Margin = new Padding(3, 2, 3, 2);
+      btnAbortComfyResultTodoUpdate.Name = "btnAbortComfyResultTodoUpdate";
+      btnAbortComfyResultTodoUpdate.Size = new Size(66, 21);
+      btnAbortComfyResultTodoUpdate.TabIndex = 51;
+      btnAbortComfyResultTodoUpdate.Text = "Abort";
+      btnAbortComfyResultTodoUpdate.UseVisualStyleBackColor = true;
+      btnAbortComfyResultTodoUpdate.Click += btnAbortComfyResultTodoUpdate_Click;
+      // 
+      // btnUpdateComfyResultTodo
+      // 
+      btnUpdateComfyResultTodo.Anchor = AnchorStyles.Bottom;
+      btnUpdateComfyResultTodo.Location = new Point(174, 425);
+      btnUpdateComfyResultTodo.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateComfyResultTodo.Name = "btnUpdateComfyResultTodo";
+      btnUpdateComfyResultTodo.Size = new Size(66, 21);
+      btnUpdateComfyResultTodo.TabIndex = 50;
+      btnUpdateComfyResultTodo.Text = "Update";
+      btnUpdateComfyResultTodo.UseVisualStyleBackColor = true;
+      btnUpdateComfyResultTodo.Click += btnUpdateComfyResultTodo_Click;
+      // 
+      // cbComfyResultSetReady
+      // 
+      cbComfyResultSetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbComfyResultSetReady.AutoSize = true;
+      cbComfyResultSetReady.Location = new Point(17, 427);
+      cbComfyResultSetReady.Name = "cbComfyResultSetReady";
+      cbComfyResultSetReady.Size = new Size(77, 19);
+      cbComfyResultSetReady.TabIndex = 49;
+      cbComfyResultSetReady.Text = "Set Ready";
+      cbComfyResultSetReady.UseVisualStyleBackColor = true;
+      cbComfyResultSetReady.CheckedChanged += cbComfyResultSetReady_CheckedChanged;
+      // 
+      // edComfyResultPreview
+      // 
+      edComfyResultPreview.AcceptsReturn = true;
+      edComfyResultPreview.AcceptsTab = true;
+      edComfyResultPreview.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      edComfyResultPreview.Location = new Point(13, 197);
+      edComfyResultPreview.Multiline = true;
+      edComfyResultPreview.Name = "edComfyResultPreview";
+      edComfyResultPreview.ScrollBars = ScrollBars.Vertical;
+      edComfyResultPreview.Size = new Size(536, 223);
+      edComfyResultPreview.TabIndex = 48;
+      // 
+      // lbComfyResult
+      // 
+      lbComfyResult.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      lbComfyResult.FormattingEnabled = true;
+      lbComfyResult.Location = new Point(13, 12);
+      lbComfyResult.Name = "lbComfyResult";
+      lbComfyResult.Size = new Size(536, 139);
+      lbComfyResult.TabIndex = 3;
+      lbComfyResult.SelectedIndexChanged += lbComfyResult_SelectedIndexChanged;
+      // 
       // tbErrorOut
       // 
       tbErrorOut.Dock = DockStyle.Fill;
@@ -1622,33 +1998,10 @@
       tRun.Interval = 250;
       tRun.Tick += tRun_Tick;
       // 
-      // miAddPattern
+      // tRunComfy
       // 
-      miAddPattern.Name = "miAddPattern";
-      miAddPattern.Size = new Size(208, 22);
-      miAddPattern.Text = "Add Pattern";
-      miAddPattern.Click += miAddPattern_Click;
-      // 
-      // miAddPatDimension
-      // 
-      miAddPatDimension.Name = "miAddPatDimension";
-      miAddPatDimension.Size = new Size(208, 22);
-      miAddPatDimension.Text = "Add Dimension";
-      miAddPatDimension.Click += miAddPatDimension_Click;
-      // 
-      // miAddPatDimOption
-      // 
-      miAddPatDimOption.Name = "miAddPatDimOption";
-      miAddPatDimOption.Size = new Size(208, 22);
-      miAddPatDimOption.Text = "Add Option";
-      miAddPatDimOption.Click += miAddPatDimOption_Click;
-      // 
-      // miGetNextDraw
-      // 
-      miGetNextDraw.Name = "miGetNextDraw";
-      miGetNextDraw.Size = new Size(208, 22);
-      miGetNextDraw.Text = "Get Next Draw";
-      miGetNextDraw.Click += miGetNextDraw_Click;
+      tRunComfy.Interval = 250;
+      tRunComfy.Tick += tRunComfy_Tick;
       // 
       // Form1
       // 
@@ -1697,6 +2050,14 @@
       tpSearch.ResumeLayout(false);
       tpSearch.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)edSearchMaxResults).EndInit();
+      tpComfy.ResumeLayout(false);
+      tcComfyScheduleSwitch.ResumeLayout(false);
+      tpComfyReadyReview.ResumeLayout(false);
+      tpComfyReadyReview.PerformLayout();
+      tpComfySchedule.ResumeLayout(false);
+      tpComfySchedule.PerformLayout();
+      tpComfyResultReview.ResumeLayout(false);
+      tpComfyResultReview.PerformLayout();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -1848,5 +2209,33 @@
     private ToolStripMenuItem miAddPatDimension;
     private ToolStripMenuItem miAddPatDimOption;
     private ToolStripMenuItem miGetNextDraw;
+    private ToolStripMenuItem miAddComfyWorkflow;
+    private ToolStripMenuItem miAddComfyWfParam;
+    private ToolStripMenuItem miAddComfyTodo;
+    private TabPage tpComfy;
+    private TabControl tcComfyScheduleSwitch;
+    private TabPage tpComfyReadyReview;
+    private TabPage tpComfySchedule;
+    private TabPage tpComfyResultReview;
+    private ListBox lbComfyNotReady;
+    private ListBox lbComfySchedule;
+    private ListBox lbComfyResult;
+    private Button btnAttemptComfyTodo;
+    private TextBox edComfyReadyPreview;
+    private CheckBox cbComfyReadyDoDelete;
+    private Button btnAbortComfyReadyTodoUpdate;
+    private Button btnUpdateComfyReadyTodo;
+    private CheckBox cbComfyReadySetReady;
+    private Button btnAbortComfyScheduleTodoUpdate;
+    private Button btnUpdateComfyScheduleTodo;
+    private CheckBox cbComfyScheduleSetReady;
+    private TextBox edComfySchedulePreview;
+    private CheckBox cbComfyResultDoDelete;
+    private Button btnAbortComfyResultTodoUpdate;
+    private Button btnUpdateComfyResultTodo;
+    private CheckBox cbComfyResultSetReady;
+    private TextBox edComfyResultPreview;
+    private Label lbComfyWorkingStatus;
+    private System.Windows.Forms.Timer tRunComfy;
   }
 }

@@ -12,25 +12,25 @@ namespace Weavers.Core.Tools {
   public class TodoTools {
     private static ITodoToolsHandler GetTools() => DiBridgeService.GetService<ITodoToolsHandler>();
 
-    [McpTool(Cx.CmdSetTodoReady, "Marks a todo item as ready for execution. Adds it to the execution queue if desk is enabled.")]
+    [McpTool(Cx.CmdSetTodoReady, Cx.CmdSetTodoReadyDesc)]
     public static Task<string> SetTodoReady(int todoId)
       => GetTools().SetTodoReady(todoId);
 
-    [McpTool(Cx.CmdCompleteTodo, "Marks a todo item as completed with a note and produced item. Use zero for no produced item.")]
+    [McpTool(Cx.CmdCompleteTodo, Cx.CmdCompleteTodoDesc)]
     public static Task<string> CompleteTodo(int todoId, string todoNote, int producedItemId)
       => GetTools().CompletedTodo(todoId, todoNote, producedItemId);
 
-    [McpTool(Cx.CmdRejectTodo, "Rejects a todo item with a reason.")]
+    [McpTool(Cx.CmdRejectTodo, Cx.CmdRejectTodoDesc)]
     public static Task<string> RejectTodo(int todoId, string reason)
       => GetTools().RejectTodo(todoId, reason);
 
 
-    [McpTool(Cx.CmdReviewPass, "Marks a todo item as passed review with optional review notes.")]
+    [McpTool(Cx.CmdReviewPass, Cx.CmdReviewPassDesc)]
     public static Task<string> ReviewPass(int todoId, string reviewNotes)
       => GetTools().ReviewPass(todoId, reviewNotes);
 
 
-    [McpTool(Cx.CmdReviewFail, "Marks a todo item as failed review with review notes and a change request.")]
+    [McpTool(Cx.CmdReviewFail, Cx.CmdReviewFailDesc)]
     public static Task<string> ReviewFail(int todoId, string reviewNotes, string changeRequest)
       => GetTools().ReviewFail(todoId, reviewNotes, changeRequest);
 

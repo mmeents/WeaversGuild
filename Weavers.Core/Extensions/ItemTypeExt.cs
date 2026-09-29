@@ -1,6 +1,7 @@
 ﻿using System.Data.SqlTypes;
 using System.Drawing;
 using Weavers.Core.Constants;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Models;
 
@@ -65,6 +66,17 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileMdModel => 2,
         WeItemType.FileHtmlModel => 16,
         WeItemType.FileConfigModel => 17,
+
+        
+        WeItemType.ComfyServiceModel => 25,
+        WeItemType.ComfyWorkflowFolderModel => 19, 
+        WeItemType.ComfyWorkflowTemplate => 23, 
+        WeItemType.ComfyWfParamModel => 14,  
+        WeItemType.ComfyOperationsModel => 21, 
+        WeItemType.ComfyOpTodoModel => 22,
+        WeItemType.ComfyOpParamModel => 14,
+        WeItemType.ComfyOpTodoAttemptModel => 24,
+        WeItemType.ComfyMediaFileModel => 17,
 
         WeItemType.RealmModel => 1,
         WeItemType.StoryModel => 13,
@@ -204,6 +216,7 @@ namespace Weavers.Core.Extensions {
           WeItemType.GameStatus,
           WeItemType.GameTwoPlayerToggle,
           WeItemType.DrawStatus,
+          WeItemType.ComfyTargetOverrideTypes,
       };
       return lookupTypes;
     }
@@ -294,6 +307,8 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
+        (int)WeItemType.ComfyWorkflowTemplate => true,
+        (int)WeItemType.ComfyOpTodoModel => true,
         (int)WeItemType.RealmModel => true,
         (int)WeItemType.StoryModel => true,
         (int)WeItemType.SceneModel => true,
@@ -305,11 +320,31 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsWriteFileType(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.LibraryModel => true,
+        (int)WeItemType.SolutionModel => true,
+        (int)WeItemType.OrganizationModel => true,
+        (int)WeItemType.OrgFileModel => true,
+        (int)WeItemType.RssItemModel => true,
+        (int)WeItemType.RssLinkedHtmlModel => true,
+        (int)WeItemType.GitFileModel => true,
+        (int)WeItemType.FileMdModel => true,
+        (int)WeItemType.FileHtmlModel => true,
+        (int)WeItemType.FileConfigModel => true,                
+        _ => false
+      };
+    }
+
     public static bool IsDataType(this int itemTypeID) {
       return itemTypeID switch {
         (int)WeItemType.CallSheetModel => true,
         (int)WeItemType.PerformanceModel => true,
         (int)WeItemType.ActorPerformanceModel => true,
+        (int)WeItemType.ComfyWorkflowTemplate => true,
+        (int)WeItemType.ComfyOpTodoModel => true,
+        (int)WeItemType.ComfyOpParamModel => true,
+        (int)WeItemType.ComfyOpTodoAttemptModel => true,
         _ => false
       };
     }
@@ -571,106 +606,7 @@ namespace Weavers.Core.Extensions {
         _ => "Not set, use 3rd Person Limited"
       };
     }
-
-    public static string? GetMcpCommandString(this WeItemType loomCommand) {
-      return loomCommand switch {
-        WeItemType.CmdHelp => Cx.CmdHelp,
-        WeItemType.CmdListProjects => Cx.CmdListProjects,
-        WeItemType.CmdSearch => Cx.CmdSearch,
-        WeItemType.CmdGetSummaryById => Cx.CmdGetSummaryById,
-
-        WeItemType.CmdGetTypeDetails => Cx.CmdGetTypeDetails,
-
-        WeItemType.CmdUpdateItemName => Cx.CmdUpdateItemName,
-        WeItemType.CmdUpdateItemContent => Cx.CmdUpdateItemContent,
-        WeItemType.CmdAppendItemContent => Cx.CmdAppendItemContent,
-        WeItemType.CmdUpdateItemProperty => Cx.CmdUpdateItemProperty,
-
-        WeItemType.CmdCompleteTodo => Cx.CmdCompleteTodo,
-        WeItemType.CmdSetTodoReady => Cx.CmdSetTodoReady,
-        WeItemType.CmdRejectTodo => Cx.CmdRejectTodo,
-        WeItemType.CmdReviewPass => Cx.CmdReviewPass,
-        WeItemType.CmdReviewFail => Cx.CmdReviewFail,
-
-        WeItemType.CmdAddOrgDeskRole => Cx.CmdAddOrgDeskRole,
-        WeItemType.CmdAddOrgDesk => Cx.CmdAddOrgDesk,
-        WeItemType.CmdAddDeskTodo => Cx.CmdAddDeskTodo,
-        WeItemType.CmdAddDigitalOperator => Cx.CmdAddDigitalOperator,
-        WeItemType.CmdAddOrgFolder => Cx.CmdAddOrgFolder,
-        WeItemType.CmdAddOrgFile => Cx.CmdAddOrgFile,
-
-        WeItemType.CmdAddRssFolder => Cx.CmdAddRssFolder,
-        WeItemType.CmdAddRssChannel => Cx.CmdAddRssChannel,
-        WeItemType.CmdRssResyncChannel => Cx.CmdRssResyncChannel,
-        WeItemType.CmdRssResolveLink => Cx.CmdRssResolveLink,
-        WeItemType.CmdRssExtractLinks => Cx.CmdRssExtractLinks,
-        WeItemType.CmdAppendGuildNote => Cx.CmdAppendGuildNote,
-        WeItemType.CmdUpdateGuildNote => Cx.CmdUpdateGuildNote,
-        WeItemType.CmdArchiveItem => Cx.CmdArchiveItem,
-        WeItemType.CmdUnarchiveItem => Cx.CmdUnarchiveItem,
-
-        WeItemType.CmdAddProjectRoot => Cx.CmdAddProjectRoot,
-        WeItemType.CmdAddSubFolder => Cx.CmdAddSubFolder,
-
-        WeItemType.CmdAddGithubRepo => Cx.CmdAddGithubRepo,
-        WeItemType.CmdDoGitClone => Cx.CmdDoGitClone,
-        WeItemType.CmdDoGitRefreshStatus => Cx.CmdDoGitRefreshStatus,
-        WeItemType.CmdDoGitCheckout => Cx.CmdDoGitCheckout,
-
-        WeItemType.CmdAddRealm => Cx.CmdAddRealm,
-        WeItemType.CmdAddStory => Cx.CmdAddStory,
-        WeItemType.CmdAddScene => Cx.CmdAddScene,
-        WeItemType.CmdAddCharacter => Cx.CmdAddCharacter,
-        WeItemType.CmdAddBeat => Cx.CmdAddBeat,
-        WeItemType.CmdScheduleBeatWriters => Cx.CmdScheduleBeatWriters,
-        WeItemType.CmdScheduleBeatDirectors => Cx.CmdScheduleBeatDirectors,
-        WeItemType.CmdAddCallSheet => Cx.CmdAddCallSheet,
-        WeItemType.CmdAddCallSheetNarration => Cx.CmdAddCallSheetNarration,  // director
-        WeItemType.CmdAddCallSheetRole => Cx.CmdAddCallSheetRole,
-        WeItemType.CmdAddPerformance => Cx.CmdAddPerformance,
-        WeItemType.CmdScheduleActors => Cx.CmdScheduleActorPerformances,
-        WeItemType.CmdAddPerformanceAction => Cx.CmdAddPerformanceAction,    // performance
-        WeItemType.CmdAddPerformanceLine => Cx.CmdAddPerformanceLine,
-        WeItemType.CmdGetPerformanceRollup => Cx.CmdGetPerformanceRollup,
-        WeItemType.CmdAddObservation => Cx.CmdAddObservation,
-        WeItemType.CmdAddStoryRollupModel => Cx.CmdAddStoryRollup,
-
-        WeItemType.CmdAddSolution => Cx.CmdAddSolution,
-        WeItemType.CmdAddSolutionImport => Cx.CmdAddSolutionImport,
-
-        WeItemType.CmdAddMdFile => Cx.CmdAddMdFile,
-        WeItemType.CmdAddHtmlFile => Cx.CmdAddHtmlFile,
-        WeItemType.CmdAddConfigFile => Cx.CmdAddConfigFile,
-
-        WeItemType.CmdAddLibrary => Cx.CmdAddLibrary,
-        WeItemType.CmdAddNamespace => Cx.CmdAddNamespace,
-
-        WeItemType.CmdAddClass => Cx.CmdAddClass,
-        WeItemType.CmdAddClassImport => Cx.CmdAddClassImport,
-        WeItemType.CmdAddClassProperty => Cx.CmdAddClassProperty,
-        WeItemType.CmdAddClassMethod => Cx.CmdAddClassMethod,
-        WeItemType.CmdAddClassMethodParam => Cx.CmdAddClassMethodParam,
-
-        WeItemType.CmdAddEntityClass => Cx.CmdAddEntityClass,
-        //WeItemType.CmdAddEntityClassImport => Cx.CmdAddEntityClassImport,
-        WeItemType.CmdAddEntityProperty => Cx.CmdAddEntityProperty,
-
-        WeItemType.CmdAddGameRoom => Cx.CmdAddGameRoomModel,
-        WeItemType.CmdAddChessGame => Cx.CmdAddChessGameModel,
-        WeItemType.CmdGetChessGame => Cx.CmdChessGetGame,
-        WeItemType.CmdChessStartGame => Cx.CmdChessStartGame,
-        WeItemType.CmdChessMakeMove => Cx.CmdChessMakeMove,
-
-        WeItemType.CmdAddPattern => Cx.CmdAddPattern,
-        WeItemType.CmdAddPatDimension => Cx.CmdAddPatDimension,
-        WeItemType.CmdAddPatDimOption => Cx.CmdAddPatDimOption,
-        WeItemType.CmdGetNextDraw => Cx.CmdGetNextDraw,
-        WeItemType.CmdRejectDraw => Cx.CmdRejectDraw,
-        WeItemType.CmdAcceptDraw => Cx.CmdAcceptDraw,
-        _ => null
-      };
-    }
-
+     
     public static bool CanDuplicate(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.DigitalOperatorModel => true,
@@ -697,7 +633,13 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
-        (int)WeItemType.FileImageModel => true,
+            
+        (int)WeItemType.ComfyWorkflowTemplate => true,
+        (int)WeItemType.ComfyWfParamModel => true,
+        (int)WeItemType.ComfyOpTodoModel => true,
+        (int)WeItemType.ComfyOpParamModel => true,
+        (int)WeItemType.ComfyMediaFileModel => true,
+
         (int)WeItemType.RealmModel => true,
         (int)WeItemType.StoryModel => true,
         (int)WeItemType.SceneModel => true,

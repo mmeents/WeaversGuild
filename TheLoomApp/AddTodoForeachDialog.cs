@@ -24,7 +24,7 @@ namespace TheLoomApp {
     public AddTodoForeachDialog(IServiceScopeFactory scopeFactory) {
       InitializeComponent();
       _scopeFactory = scopeFactory;
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       _dataProvider = scope.ServiceProvider.GetRequiredService<IItemTypeLookupComboProvider>();
 
     }

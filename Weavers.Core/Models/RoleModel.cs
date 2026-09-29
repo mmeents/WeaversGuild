@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Weavers.Core.Constants;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 
@@ -16,11 +17,11 @@ namespace Weavers.Core.Models {
   }
 
   public class RoleCommand {
-    public WeItemType CommandType { get; set; }
+    public WeCmdType CommandType { get; set; }
     public string Command { get; set; } = string.Empty;
-    public RoleCommand(WeItemType command) {
+    public RoleCommand(WeCmdType command) {
       CommandType = command;
-      Command = command.GetMcpCommandString() ?? string.Empty;
+      Command = command.McpCode() ?? string.Empty;
     }
   }
 
@@ -36,6 +37,17 @@ namespace Weavers.Core.Models {
               .Select(id => id!.Value)
               .ToHashSet();
 
+      var selectedList = roleCommands.ToList(); // upgrade any old ids
+      foreach (var id in selectedList) {  
+        if (id > (int)WeItemType.LoomMcpCommands && id <= Cx.LastCommandItemTypeId) {
+          var updatedId = id.UpgradeTypeId();
+          if (updatedId != id && updatedId != (int)WeCmdType154.NotSet) {
+            roleCommands.Remove(id);
+            roleCommands.Add(updatedId);
+          }
+        }
+      }
+
       var role = new RoleModel {
         Desk = deskName,
         Operator = operatorName,
@@ -43,8 +55,8 @@ namespace Weavers.Core.Models {
       };
 
       foreach(var cmdId in roleCommands) {
-        if (Enum.IsDefined(typeof(WeItemType), cmdId)) {
-          var cmdType = (WeItemType)cmdId;
+        if (Enum.IsDefined(typeof(WeCmdType), cmdId)) {
+          var cmdType = (WeCmdType)cmdId;
           role.RoleCommands.Add(new RoleCommand(cmdType));
         }
       }
@@ -52,7 +64,7 @@ namespace Weavers.Core.Models {
       return role;
     }
 
-    public static RoleModel WithCommand(this RoleModel roleModel, WeItemType command) {
+    public static RoleModel WithCommand(this RoleModel roleModel, WeCmdType command) {
       roleModel.RoleCommands.Add(new RoleCommand(command));
       return roleModel;
     }

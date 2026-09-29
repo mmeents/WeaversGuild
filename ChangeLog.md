@@ -1,5 +1,7 @@
 
 ## Update History
+- Db 160 9/27/2026 
+  - Adds Comfy Gateway.  See [AboutComfy](AboutComfy.md) 
 - ver 1.154.4 (9/14/2026)
   - Adds Rank to ItemProperty and uses it for sorting in mcp calls and PropertiesTab. 
   - Adds PatternModel, PatternDimension, PatternOption, PatternDraw Model Types.  Use app or agent to build them out.   

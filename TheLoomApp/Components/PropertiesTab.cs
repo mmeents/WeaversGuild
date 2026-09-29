@@ -22,7 +22,7 @@ namespace TheLoomApp.Components {
     }
     public PropertiesTab(IServiceScopeFactory scopeFactory) {
       _scopeFactory = scopeFactory;    
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
       _itemTypeLookupComboProvider = scope.ServiceProvider.GetRequiredService<IItemTypeLookupComboProvider>();
       _cryptoService = scope.ServiceProvider.GetRequiredService<ICryptoService>();

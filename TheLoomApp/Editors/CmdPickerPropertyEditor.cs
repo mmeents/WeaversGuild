@@ -4,7 +4,9 @@ using TheLoomApp.Models;
 using Weavers.Core.Models;
 using Weavers.Core.Extensions;
 using Weavers.Core.Enums;
+using Weavers.Core.Entities;
 using TheLoomApp.Components;
+using Weavers.Core.Constants;
 
 
 namespace TheLoomApp.Editors {
@@ -116,6 +118,17 @@ namespace TheLoomApp.Editors {
               .Where(id => id.HasValue)
               .Select(id => id!.Value)
               .ToHashSet();
+          var selectedList = selected.ToList();
+          foreach (var id in selectedList) {  // upgrade any old ids
+            if (id > (int)WeItemType.LoomMcpCommands && id <= Cx.LastCommandItemTypeId) {
+              var updatedId = id.UpgradeTypeId();
+              if (updatedId != id && updatedId != (int)WeCmdType154.NotSet) {
+                selected.Remove(id);
+                selected.Add(updatedId);
+              }
+            }
+          }
+
         }
 
         // 3. Populate and check items
@@ -203,7 +216,7 @@ namespace TheLoomApp.Editors {
               .Select(s => int.TryParse(s, out int id) ? id : (int?)null)
               .Where(id => id.HasValue)
               .Select(id => id!.Value)
-              .ToHashSet();
+              .ToHashSet();          
         }
 
         // 2. Wrap in BeginUpdate to stop UI flickering while updating checks

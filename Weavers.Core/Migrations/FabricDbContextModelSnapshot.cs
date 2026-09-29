@@ -126,6 +126,767 @@ namespace Weavers.Core.Migrations
                     b.ToTable("BuildFiles", (string)null);
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.CommandDef", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("LegacyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("McpCode")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("CommandDefs", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 11,
+                            Code = "CmdHelp",
+                            Description = "Displays helpful documentation describing how to use the available commands.",
+                            Group = "query",
+                            LegacyId = 122,
+                            McpCode = "help"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Code = "CmdSearch",
+                            Description = "Searches for items based on the provided search criteria.",
+                            Group = "query",
+                            LegacyId = 126,
+                            McpCode = "search"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Code = "CmdGetSummaryById",
+                            Description = "Gets the summary of an item by its ID.",
+                            Group = "query",
+                            LegacyId = 128,
+                            McpCode = "getSummaryById"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Code = "CmdGetTypeDetails",
+                            Description = "Lookup details of an item type id.",
+                            Group = "query",
+                            LegacyId = 130,
+                            McpCode = "getTypeDetails"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Code = "CmdListProjects",
+                            Description = "Lists all root level projects.",
+                            Group = "query",
+                            LegacyId = 124,
+                            McpCode = "listProjects"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Code = "CmdUpdateItemName",
+                            Description = "Update the name of an item by its ID.",
+                            Group = "modify",
+                            LegacyId = 132,
+                            McpCode = "updateItemName"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Code = "CmdUpdateItemContent",
+                            Description = "Update the content of an item of one of the File types or Method types.",
+                            Group = "modify",
+                            LegacyId = 134,
+                            McpCode = "updateItemContent"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Code = "CmdAppendItemContent",
+                            Description = "Append content to end of existing item. Valid types are Md document types: OrgDocModel and FileMdModel. Infra will handle seperators on append.",
+                            Group = "modify",
+                            LegacyId = 135,
+                            McpCode = "appendItemContent"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Code = "CmdUpdateItemProperty",
+                            Description = "Update a property of an item by its property ID.",
+                            Group = "modify",
+                            LegacyId = 136,
+                            McpCode = "updateItemProperty"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Code = "CmdDuplicateItem",
+                            Description = "Duplicate an item by its ID.",
+                            Group = "modify",
+                            LegacyId = 131,
+                            McpCode = "duplicateItem"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Code = "CmdSetTodoReady",
+                            Description = "Marks a todo item as ready for execution. Adds it to the execution queue if desk is enabled.",
+                            Group = "todo",
+                            LegacyId = 138,
+                            McpCode = "setTodoReady"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Code = "CmdCompleteTodo",
+                            Description = "Marks a todo item as completed with a note and produced item. Use zero for no produced item.",
+                            Group = "todo",
+                            LegacyId = 137,
+                            McpCode = "completeTodo"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Code = "CmdRejectTodo",
+                            Description = "Rejects a todo item with a reason.",
+                            Group = "todo",
+                            LegacyId = 139,
+                            McpCode = "rejectTodo"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Code = "CmdReviewPass",
+                            Description = "Marks a todo item as passed review with optional review notes.",
+                            Group = "todo",
+                            LegacyId = 140,
+                            McpCode = "reviewPass"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Code = "CmdReviewFail",
+                            Description = "Marks a todo item as failed review with review notes and a change request.",
+                            Group = "todo",
+                            LegacyId = 141,
+                            McpCode = "reviewFail"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Code = "CmdAddOrgDeskRole",
+                            Description = "Add a role to an organizational desk.",
+                            Group = "org",
+                            LegacyId = 142,
+                            McpCode = "addOrgDeskRole"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Code = "CmdAddOrgDesk",
+                            Description = "Adds a new desk to the specified workgroup. Note: the desk's properties need to be configured after the Add, use updateItemProperty. The SystemPrompt is a Scriban template rendered into the operator's instructions. ex: {{ model.desk }} renders the desk name. Template model:\r\n  desk - string, the desk name\r\n  operator - string, the operator name\r\n  role - string, the desk role name\r\n  role_commands - list of:\r\n    command_type - string\r\n    command - string",
+                            Group = "org",
+                            LegacyId = 143,
+                            McpCode = "addOrgDesk"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Code = "CmdAddDeskTodo",
+                            Description = "Adds a new Todo to the desk. Note: promptTemplate follows Scriban syntax.model being passed in has both Todo and Target ItemSummaryDto objects. ex: {{ model.todo.id }} {{ model.target.name }} would render todo id and target name.",
+                            Group = "org",
+                            LegacyId = 144,
+                            McpCode = "addDeskTodo"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Code = "CmdAddDigitalOperator",
+                            Description = "Adds a digital operator to the specified DigitalOperatorPoolModel typed parentItem. Note: Properties need to be configured manually after the Add.",
+                            Group = "org",
+                            LegacyId = 145,
+                            McpCode = "addDigitalOperator"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Code = "CmdAddOrgFolder",
+                            Description = "Adds a new organizational folder.",
+                            Group = "org",
+                            LegacyId = 146,
+                            McpCode = "addOrgFolder"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Code = "CmdAddOrgFile",
+                            Description = "Adds a new .md file item in the specified Org folder item, infra adds ext to name.",
+                            Group = "org",
+                            LegacyId = 148,
+                            McpCode = "addOrgFile"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Code = "CmdAddRssFolder",
+                            Description = "Adds a new RSS folder.",
+                            Group = "rss",
+                            LegacyId = 149,
+                            McpCode = "addRssFolder"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Code = "CmdAddRssChannel",
+                            Description = "Adds a new RSS channel.",
+                            Group = "rss",
+                            LegacyId = 150,
+                            McpCode = "addRssChannel"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Code = "CmdRssResyncChannel",
+                            Description = "Resyncs the RSS channel, fetches new items and updates the channel.",
+                            Group = "rss",
+                            LegacyId = 151,
+                            McpCode = "rssResyncChannel"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Code = "CmdRssResolveLink",
+                            Description = "Resolves the specified Rss link to an Org file.",
+                            Group = "rss",
+                            LegacyId = 152,
+                            McpCode = "rssResolveLink"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Code = "CmdRssExtractLinks",
+                            Description = "Extracts links from the specified Rss link.",
+                            Group = "rss",
+                            LegacyId = 153,
+                            McpCode = "rssExtractLinks"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Code = "CmdAppendGuildNote",
+                            Description = "Appends a note to the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel",
+                            Group = "rss",
+                            LegacyId = 154,
+                            McpCode = "appendGuildNote"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Code = "CmdUpdateGuildNote",
+                            Description = "Updates a note in the specified GuildNote property. works with item types RssLinkedHtmlModel, RssItemModel, RssChannelModel, RssFolderModel",
+                            Group = "rss",
+                            LegacyId = 155,
+                            McpCode = "updateGuildNote"
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Code = "CmdArchiveItem",
+                            Description = "Archives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel",
+                            Group = "rss",
+                            LegacyId = 156,
+                            McpCode = "archiveItem"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Code = "CmdUnarchiveItem",
+                            Description = "Unarchives the specified item, only items with type: TodoModel, TodoAttemptModel, RssLinkedHtmlModel, RssItemModel",
+                            Group = "rss",
+                            LegacyId = 157,
+                            McpCode = "unarchiveItem"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Code = "CmdAddProjectRoot",
+                            Description = "Adds a new root level project folder.",
+                            Group = "file",
+                            LegacyId = 158,
+                            McpCode = "addProjectRoot"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Code = "CmdAddSubFolder",
+                            Description = "Adds a new sub folder to the specified parent folder or project root.",
+                            Group = "file",
+                            LegacyId = 159,
+                            McpCode = "addSubFolder"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Code = "CmdAddGithubRepo",
+                            Description = "Adds a new GitHub repository item to the specified folder.",
+                            Group = "file",
+                            LegacyId = 160,
+                            McpCode = "addGithubRepo"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Code = "CmdDoGitClone",
+                            Description = "Clones the GitHub repository item to the local file system, calls RefreshStatus",
+                            Group = "file",
+                            LegacyId = 161,
+                            McpCode = "doGitClone"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Code = "CmdDoGitRefreshStatus",
+                            Description = "Refreshes the Git status of the specified repository item. Syncs the child branches to graph.",
+                            Group = "file",
+                            LegacyId = 162,
+                            McpCode = "doGitRefreshStatus"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Code = "CmdDoGitCheckout",
+                            Description = "Checks out the specified branch item. Returns the repository item.",
+                            Group = "file",
+                            LegacyId = 163,
+                            McpCode = "doGitCheckout"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Code = "CmdAddSolution",
+                            Description = "Adds a new solution item under the specified folder.",
+                            Group = "file",
+                            LegacyId = 181,
+                            McpCode = "addSolution"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Code = "CmdAddSolutionImport",
+                            Description = "Adds a new solution import relation to the specified solution item.",
+                            Group = "file",
+                            LegacyId = 182,
+                            McpCode = "addSolutionImport"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Code = "CmdAddMdFile",
+                            Description = "Adds a new .md file item in the specified folder item, infra adds ext to name.",
+                            Group = "file",
+                            LegacyId = 183,
+                            McpCode = "addMdFile"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Code = "CmdAddHtmlFile",
+                            Description = "Adds a new .html file item in the specified folder item, infra adds ext to name.",
+                            Group = "file",
+                            LegacyId = 184,
+                            McpCode = "addHtmlFile"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Code = "CmdAddConfigFile",
+                            Description = "Adds a new .json file item in the specified folder item, infra adds ext to name.",
+                            Group = "file",
+                            LegacyId = 185,
+                            McpCode = "addConfigFile"
+                        },
+                        new
+                        {
+                            Id = 311,
+                            Code = "CmdAddRealm",
+                            Description = "Adds a new story realm project.",
+                            Group = "storytime",
+                            LegacyId = 164,
+                            McpCode = "addRealm"
+                        },
+                        new
+                        {
+                            Id = 315,
+                            Code = "CmdAddStory",
+                            Description = "Adds a new story item to the realm.",
+                            Group = "storytime",
+                            LegacyId = 165,
+                            McpCode = "addStory"
+                        },
+                        new
+                        {
+                            Id = 319,
+                            Code = "CmdAddScene",
+                            Description = "Adds a new scene item to the story.",
+                            Group = "storytime",
+                            LegacyId = 166,
+                            McpCode = "addScene"
+                        },
+                        new
+                        {
+                            Id = 321,
+                            Code = "CmdScheduleBeatWriters",
+                            Description = "Adds todo for each scene in story to write the beats on the handler desk. Skips scenes that have been requested or if it has beats. Details in results",
+                            Group = "storytime",
+                            LegacyId = 169,
+                            McpCode = "scheduleBeatWriters"
+                        },
+                        new
+                        {
+                            Id = 325,
+                            Code = "CmdAddBeat",
+                            Description = "Adds a new beat item to the scene, requires: sceneId, name, details parameters.",
+                            Group = "storytime",
+                            LegacyId = 168,
+                            McpCode = "addBeat"
+                        },
+                        new
+                        {
+                            Id = 329,
+                            Code = "CmdAddCharacter",
+                            Description = "Adds a new character item to the scene.",
+                            Group = "storytime",
+                            LegacyId = 167,
+                            McpCode = "addCharacter"
+                        },
+                        new
+                        {
+                            Id = 331,
+                            Code = "CmdScheduleBeatDirectors",
+                            Description = "Adds todo for each beat in scene to direct the beat on the handler desk. Skips beats that have been requested or if it has a call sheet. Details in results",
+                            Group = "storytime",
+                            LegacyId = 170,
+                            McpCode = "scheduleBeatDirectors"
+                        },
+                        new
+                        {
+                            Id = 335,
+                            Code = "CmdAddCallSheet",
+                            Description = "Adds a new call sheet item to the beat.",
+                            Group = "storytime",
+                            LegacyId = 171,
+                            McpCode = "addCallSheet"
+                        },
+                        new
+                        {
+                            Id = 339,
+                            Code = "CmdAddCallSheetNarration",
+                            Description = "Adds a new narration to the call sheet.",
+                            Group = "storytime",
+                            LegacyId = 172,
+                            McpCode = "addCallSheetNarration"
+                        },
+                        new
+                        {
+                            Id = 341,
+                            Code = "CmdAddCallSheetRole",
+                            Description = "Adds a character role to a call sheet. Adds Character to scene if not already present by character.",
+                            Group = "storytime",
+                            LegacyId = 173,
+                            McpCode = "addCallSheetRole"
+                        },
+                        new
+                        {
+                            Id = 345,
+                            Code = "CmdAddPerformance",
+                            Description = "Adds a new performance for a scene. Builds the data field by enumerating the script entries for all call sheets in scene.",
+                            Group = "storytime",
+                            LegacyId = 174,
+                            McpCode = "addPerformance"
+                        },
+                        new
+                        {
+                            Id = 349,
+                            Code = "CmdScheduleActors",
+                            Description = "Adds todo for each role in performance to direct the acting performance on the handler desk. Skips Roles that have been requested or if it has a ActorPerformance. Details in results",
+                            Group = "storytime",
+                            LegacyId = 175,
+                            McpCode = "scheduleActorPerformances"
+                        },
+                        new
+                        {
+                            Id = 351,
+                            Code = "CmdAddPerformanceAction",
+                            Description = "Adds a new character action item to the performance.",
+                            Group = "storytime",
+                            LegacyId = 176,
+                            McpCode = "addPerformanceAction"
+                        },
+                        new
+                        {
+                            Id = 355,
+                            Code = "CmdAddPerformanceLine",
+                            Description = "Adds a new line of dialogue for a character in a performance.",
+                            Group = "storytime",
+                            LegacyId = 177,
+                            McpCode = "addPerformanceLine"
+                        },
+                        new
+                        {
+                            Id = 359,
+                            Code = "CmdGetPerformanceRollup",
+                            Description = "Gets a rollup of the performance actions and lines for a performance.",
+                            Group = "storytime",
+                            LegacyId = 178,
+                            McpCode = "getPerformanceRollup"
+                        },
+                        new
+                        {
+                            Id = 361,
+                            Code = "CmdAddObservation",
+                            Description = "Adds a new observation item to the scene.",
+                            Group = "storytime",
+                            LegacyId = 179,
+                            McpCode = "addObservation"
+                        },
+                        new
+                        {
+                            Id = 365,
+                            Code = "CmdAddStoryRollupModel",
+                            Description = "Adds a new story rollup item to the story.",
+                            Group = "storytime",
+                            LegacyId = 180,
+                            McpCode = "addStoryRollup"
+                        },
+                        new
+                        {
+                            Id = 371,
+                            Code = "CmdAddLibrary",
+                            Description = "Adds a new csharp library model.",
+                            Group = "library",
+                            LegacyId = 186,
+                            McpCode = "addLibrary"
+                        },
+                        new
+                        {
+                            Id = 375,
+                            Code = "CmdAddNamespace",
+                            Description = "Adds a new namespace.",
+                            Group = "library",
+                            LegacyId = 187,
+                            McpCode = "addNamespace"
+                        },
+                        new
+                        {
+                            Id = 381,
+                            Code = "CmdAddClass",
+                            Description = "Adds a new class model, with options to generate interface and register DI.",
+                            Group = "class",
+                            LegacyId = 188,
+                            McpCode = "addClass"
+                        },
+                        new
+                        {
+                            Id = 385,
+                            Code = "CmdAddClassImport",
+                            Description = "Adds a new class import model to an existing class. Makes a private _var and sets it via constructor and DI.",
+                            Group = "class",
+                            LegacyId = 189,
+                            McpCode = "addClassImport"
+                        },
+                        new
+                        {
+                            Id = 389,
+                            Code = "CmdAddClassProperty",
+                            Description = "Adds a new class property model to an existing class.",
+                            Group = "class",
+                            LegacyId = 190,
+                            McpCode = "addClassProperty"
+                        },
+                        new
+                        {
+                            Id = 393,
+                            Code = "CmdAddClassMethod",
+                            Description = "Adds a new class method to an existing class.",
+                            Group = "class",
+                            LegacyId = 191,
+                            McpCode = "addClassMethod"
+                        },
+                        new
+                        {
+                            Id = 397,
+                            Code = "CmdAddClassMethodParam",
+                            Description = "Adds a new class method parameter to an existing class method.",
+                            Group = "class",
+                            LegacyId = 192,
+                            McpCode = "addClassMethodParam"
+                        },
+                        new
+                        {
+                            Id = 401,
+                            Code = "CmdAddEntityClass",
+                            Description = "Adds two classes, a new entity class with primary Id property, a entity config class, and imports ref to DbContext.",
+                            Group = "entity",
+                            LegacyId = 193,
+                            McpCode = "addEntityClass"
+                        },
+                        new
+                        {
+                            Id = 405,
+                            Code = "CmdAddEntityProperty",
+                            Description = "Adds a new entity property model to an existing entity class. If it is a navigation property, additional navigation properties will be added; they will need to be configured.",
+                            Group = "entity",
+                            LegacyId = 195,
+                            McpCode = "addEntityProperty"
+                        },
+                        new
+                        {
+                            Id = 421,
+                            Code = "CmdAddGameRoom",
+                            Description = "Adds a new game room model. Game rooms can be added to the Org root or other game rooms.",
+                            Group = "game",
+                            LegacyId = 200,
+                            McpCode = "addGameRoomModel"
+                        },
+                        new
+                        {
+                            Id = 431,
+                            Code = "CmdAddChessGame",
+                            Description = "Adds a new chess game model.",
+                            Group = "game",
+                            LegacyId = 201,
+                            McpCode = "addChessGameModel"
+                        },
+                        new
+                        {
+                            Id = 433,
+                            Code = "CmdGetChessGame",
+                            Description = "Gets an existing chess game model.",
+                            Group = "game",
+                            LegacyId = 202,
+                            McpCode = "getChessGame"
+                        },
+                        new
+                        {
+                            Id = 435,
+                            Code = "CmdChessStartGame",
+                            Description = "Starts a chess game. (Issues todo on whites desk.)",
+                            Group = "game",
+                            LegacyId = 203,
+                            McpCode = "chessStartGame"
+                        },
+                        new
+                        {
+                            Id = 437,
+                            Code = "CmdChessMakeMove",
+                            Description = "Makes a move in a chess game. (Issues todo on opponents desk, marks todo as done.)",
+                            Group = "game",
+                            LegacyId = 204,
+                            McpCode = "chessMakeMove"
+                        },
+                        new
+                        {
+                            Id = 441,
+                            Code = "CmdAddPattern",
+                            Description = "Adds a new pattern.",
+                            Group = "pattern",
+                            LegacyId = 205,
+                            McpCode = "addPattern"
+                        },
+                        new
+                        {
+                            Id = 443,
+                            Code = "CmdAddPatDimension",
+                            Description = "Adds a new dimension to a pattern.",
+                            Group = "pattern",
+                            LegacyId = 206,
+                            McpCode = "addPatDimension"
+                        },
+                        new
+                        {
+                            Id = 445,
+                            Code = "CmdAddPatDimOption",
+                            Description = "Adds an additional option to a pattern dimension.",
+                            Group = "pattern",
+                            LegacyId = 207,
+                            McpCode = "addPatDimOption"
+                        },
+                        new
+                        {
+                            Id = 447,
+                            Code = "CmdGetNextDraw",
+                            Description = "Get the next draw for a pattern. Sets draw status to DrawIssued id: 311.",
+                            Group = "pattern",
+                            LegacyId = 208,
+                            McpCode = "getNextDraw"
+                        },
+                        new
+                        {
+                            Id = 449,
+                            Code = "CmdRejectDraw",
+                            Description = "Reject a draw for a pattern. Sets draw status to DrawRejected id: 315. Issues and returns another draw.",
+                            Group = "pattern",
+                            LegacyId = 209,
+                            McpCode = "rejectDraw"
+                        },
+                        new
+                        {
+                            Id = 451,
+                            Code = "CmdAcceptDraw",
+                            Description = "Accept a draw for a pattern. Sets draw status to DrawAccepted id 314. Assigns the reference item.",
+                            Group = "pattern",
+                            LegacyId = 210,
+                            McpCode = "acceptDraw"
+                        },
+                        new
+                        {
+                            Id = 462,
+                            Code = "CmdListComfyWorkflows",
+                            Description = "Lists all Comfy workflow templates installed.",
+                            Group = "comfy",
+                            LegacyId = 1,
+                            McpCode = "listComfyWorkflows"
+                        },
+                        new
+                        {
+                            Id = 469,
+                            Code = "CmdAddComfyTodo",
+                            Description = "Adds a new Comfy Todo. Clones the workflow template.",
+                            Group = "comfy",
+                            LegacyId = 1,
+                            McpCode = "addComfyTodo"
+                        });
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.DataType", b =>
                 {
                     b.Property<int>("Id")
@@ -816,6 +1577,19 @@ namespace Weavers.Core.Migrations
                             ItemTypeId = 1013,
                             Key = "HasClaudeCode",
                             Rank = 2,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 1937565097L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1013,
+                            Key = "HasComfy",
+                            Rank = 1,
                             ValueDataTypeId = 55
                         },
                         new
@@ -2506,42 +3280,348 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 646614241L,
+                            Id = 1937703094L,
                             DefaultValue = "",
-                            EditorTypeId = 5,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1150,
-                            Key = "FilePath",
-                            Rank = 2,
-                            ValueDataTypeId = 54
-                        },
-                        new
-                        {
-                            Id = 1840038555L,
-                            DefaultValue = ".png",
                             EditorTypeId = 4,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
                             ItemTypeId = 1150,
-                            Key = "FileExt",
-                            Rank = 1,
+                            Key = "UrlBase",
+                            Rank = 3,
                             ValueDataTypeId = 54
                         },
                         new
                         {
-                            Id = 768037527L,
-                            DefaultValue = "104",
+                            Id = 31906623L,
+                            DefaultValue = "",
+                            EditorTypeId = 13,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1150,
+                            Key = "ServiceInput",
+                            Rank = 5,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 791676853L,
+                            DefaultValue = "",
+                            EditorTypeId = 13,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1150,
+                            Key = "ServiceOutput",
+                            Rank = 7,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1748159520L,
+                            DefaultValue = "116",
                             EditorTypeId = 10,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 1151,
-                            Key = "Results",
-                            Rank = 1,
-                            ReferenceItemTypeId = 100,
+                            ItemTypeId = 1150,
+                            Key = "FloorStatus",
+                            Rank = 9,
+                            ReferenceItemTypeId = 115,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1894812385L,
+                            DefaultValue = "300",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1152,
+                            Key = "TimeoutSec",
+                            Rank = 8,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1230722682L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1152,
+                            Key = "Enabled",
+                            Rank = 11,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 1626448412L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1153,
+                            Key = "PropValue",
+                            Rank = 6,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1230454950L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1153,
+                            Key = "SectionKey",
+                            Rank = 8,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 564635326L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1153,
+                            Key = "ObjectKey",
+                            Rank = 9,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 532096174L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1153,
+                            Key = "PropKey",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1113530738L,
+                            DefaultValue = "322",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1153,
+                            Key = "OverrideType",
+                            Rank = 11,
+                            ReferenceItemTypeId = 320,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1590401157L,
+                            DefaultValue = "300",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1155,
+                            Key = "TimeoutSec",
+                            Rank = 8,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 386962911L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1155,
+                            Key = "Ready",
+                            Rank = 10,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 467835329L,
+                            DefaultValue = "221",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1155,
+                            Key = "Status",
+                            Rank = 11,
+                            ReferenceItemTypeId = 220,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1948218175L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1155,
+                            Key = "WfTemplate",
+                            Rank = 12,
+                            ReferenceItemTypeId = 1152,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 421425207L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1156,
+                            Key = "PropValue",
+                            Rank = 6,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1757300449L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1156,
+                            Key = "SectionKey",
+                            Rank = 8,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 364057390L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1156,
+                            Key = "ObjectKey",
+                            Rank = 9,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1583220167L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1156,
+                            Key = "PropKey",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1984596359L,
+                            DefaultValue = "322",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1156,
+                            Key = "OverrideType",
+                            Rank = 11,
+                            ReferenceItemTypeId = 320,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1246006094L,
+                            DefaultValue = "231",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1157,
+                            Key = "Status",
+                            Rank = 10,
+                            ReferenceItemTypeId = 230,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 275330974L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1157,
+                            Key = "Response",
+                            Rank = 6,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 62661322L,
+                            DefaultValue = "",
+                            EditorTypeId = 5,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "FilePath",
+                            Rank = 9,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1955860612L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "MediaType",
+                            Rank = 8,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 865960650L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "FromAttempt",
+                            Rank = 11,
+                            ReferenceItemTypeId = 1157,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1387343174L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "FromTodo",
+                            Rank = 11,
+                            ReferenceItemTypeId = 1155,
                             ValueDataTypeId = 57
                         },
                         new
@@ -5826,930 +6906,6 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 122,
-                            Description = "help",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdHelp",
-                            ParentTypeId = 120,
-                            Rank = 1
-                        },
-                        new
-                        {
-                            Id = 124,
-                            Description = "listProjects",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdListProjects",
-                            ParentTypeId = 120,
-                            Rank = 2
-                        },
-                        new
-                        {
-                            Id = 126,
-                            Description = "search",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdSearch",
-                            ParentTypeId = 120,
-                            Rank = 3
-                        },
-                        new
-                        {
-                            Id = 128,
-                            Description = "getSummaryById",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdGetSummaryById",
-                            ParentTypeId = 120,
-                            Rank = 4
-                        },
-                        new
-                        {
-                            Id = 130,
-                            Description = "getTypeDetails",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdGetTypeDetails",
-                            ParentTypeId = 120,
-                            Rank = 5
-                        },
-                        new
-                        {
-                            Id = 132,
-                            Description = "updateItemName",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdUpdateItemName",
-                            ParentTypeId = 120,
-                            Rank = 6
-                        },
-                        new
-                        {
-                            Id = 134,
-                            Description = "updateItemContent",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdUpdateItemContent",
-                            ParentTypeId = 120,
-                            Rank = 7
-                        },
-                        new
-                        {
-                            Id = 135,
-                            Description = "appendItemContent",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAppendItemContent",
-                            ParentTypeId = 120,
-                            Rank = 8
-                        },
-                        new
-                        {
-                            Id = 136,
-                            Description = "updateItemProperty",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdUpdateItemProperty",
-                            ParentTypeId = 120,
-                            Rank = 9
-                        },
-                        new
-                        {
-                            Id = 137,
-                            Description = "completeTodo",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdCompleteTodo",
-                            ParentTypeId = 120,
-                            Rank = 10
-                        },
-                        new
-                        {
-                            Id = 138,
-                            Description = "setTodoReady",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdSetTodoReady",
-                            ParentTypeId = 120,
-                            Rank = 11
-                        },
-                        new
-                        {
-                            Id = 139,
-                            Description = "rejectTodo",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdRejectTodo",
-                            ParentTypeId = 120,
-                            Rank = 12
-                        },
-                        new
-                        {
-                            Id = 140,
-                            Description = "reviewPass",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdReviewPass",
-                            ParentTypeId = 120,
-                            Rank = 13
-                        },
-                        new
-                        {
-                            Id = 141,
-                            Description = "reviewFail",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdReviewFail",
-                            ParentTypeId = 120,
-                            Rank = 14
-                        },
-                        new
-                        {
-                            Id = 142,
-                            Description = "addOrgDeskRole",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddOrgDeskRole",
-                            ParentTypeId = 120,
-                            Rank = 15
-                        },
-                        new
-                        {
-                            Id = 143,
-                            Description = "addOrgDesk",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddOrgDesk",
-                            ParentTypeId = 120,
-                            Rank = 16
-                        },
-                        new
-                        {
-                            Id = 144,
-                            Description = "addDeskTodo",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddDeskTodo",
-                            ParentTypeId = 120,
-                            Rank = 17
-                        },
-                        new
-                        {
-                            Id = 145,
-                            Description = "addDigitalOperator",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddDigitalOperator",
-                            ParentTypeId = 120,
-                            Rank = 18
-                        },
-                        new
-                        {
-                            Id = 146,
-                            Description = "addOrgFolder",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddOrgFolder",
-                            ParentTypeId = 120,
-                            Rank = 19
-                        },
-                        new
-                        {
-                            Id = 148,
-                            Description = "addOrgFile",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddOrgFile",
-                            ParentTypeId = 120,
-                            Rank = 20
-                        },
-                        new
-                        {
-                            Id = 149,
-                            Description = "addRssFolder",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddRssFolder",
-                            ParentTypeId = 120,
-                            Rank = 21
-                        },
-                        new
-                        {
-                            Id = 150,
-                            Description = "addRssChannel",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddRssChannel",
-                            ParentTypeId = 120,
-                            Rank = 22
-                        },
-                        new
-                        {
-                            Id = 151,
-                            Description = "rssResyncChannel",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdRssResyncChannel",
-                            ParentTypeId = 120,
-                            Rank = 23
-                        },
-                        new
-                        {
-                            Id = 152,
-                            Description = "rssResolveLink",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdRssResolveLink",
-                            ParentTypeId = 120,
-                            Rank = 24
-                        },
-                        new
-                        {
-                            Id = 153,
-                            Description = "rssExtractLinks",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdRssExtractLinks",
-                            ParentTypeId = 120,
-                            Rank = 25
-                        },
-                        new
-                        {
-                            Id = 154,
-                            Description = "appendGuildNote",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAppendGuildNote",
-                            ParentTypeId = 120,
-                            Rank = 26
-                        },
-                        new
-                        {
-                            Id = 155,
-                            Description = "updateGuildNote",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdUpdateGuildNote",
-                            ParentTypeId = 120,
-                            Rank = 27
-                        },
-                        new
-                        {
-                            Id = 156,
-                            Description = "archiveItem",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdArchiveItem",
-                            ParentTypeId = 120,
-                            Rank = 28
-                        },
-                        new
-                        {
-                            Id = 157,
-                            Description = "unarchiveItem",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdUnarchiveItem",
-                            ParentTypeId = 120,
-                            Rank = 29
-                        },
-                        new
-                        {
-                            Id = 158,
-                            Description = "addProjectRoot",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddProjectRoot",
-                            ParentTypeId = 120,
-                            Rank = 30
-                        },
-                        new
-                        {
-                            Id = 159,
-                            Description = "addSubFolder",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddSubFolder",
-                            ParentTypeId = 120,
-                            Rank = 31
-                        },
-                        new
-                        {
-                            Id = 160,
-                            Description = "addGithubRepo",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddGithubRepo",
-                            ParentTypeId = 120,
-                            Rank = 32
-                        },
-                        new
-                        {
-                            Id = 161,
-                            Description = "doGitClone",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdDoGitClone",
-                            ParentTypeId = 120,
-                            Rank = 33
-                        },
-                        new
-                        {
-                            Id = 162,
-                            Description = "doGitRefreshStatus",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdDoGitRefreshStatus",
-                            ParentTypeId = 120,
-                            Rank = 34
-                        },
-                        new
-                        {
-                            Id = 163,
-                            Description = "doGitCheckout",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdDoGitCheckout",
-                            ParentTypeId = 120,
-                            Rank = 35
-                        },
-                        new
-                        {
-                            Id = 164,
-                            Description = "addRealm",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddRealm",
-                            ParentTypeId = 120,
-                            Rank = 36
-                        },
-                        new
-                        {
-                            Id = 165,
-                            Description = "addStory",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddStory",
-                            ParentTypeId = 120,
-                            Rank = 37
-                        },
-                        new
-                        {
-                            Id = 166,
-                            Description = "addScene",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddScene",
-                            ParentTypeId = 120,
-                            Rank = 38
-                        },
-                        new
-                        {
-                            Id = 167,
-                            Description = "addCharacter",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddCharacter",
-                            ParentTypeId = 120,
-                            Rank = 39
-                        },
-                        new
-                        {
-                            Id = 168,
-                            Description = "addBeat",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddBeat",
-                            ParentTypeId = 120,
-                            Rank = 40
-                        },
-                        new
-                        {
-                            Id = 169,
-                            Description = "scheduleBeatWriters",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdScheduleBeatWriters",
-                            ParentTypeId = 120,
-                            Rank = 41
-                        },
-                        new
-                        {
-                            Id = 170,
-                            Description = "scheduleBeatDirectors",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdScheduleBeatDirectors",
-                            ParentTypeId = 120,
-                            Rank = 42
-                        },
-                        new
-                        {
-                            Id = 171,
-                            Description = "addCallSheet",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddCallSheet",
-                            ParentTypeId = 120,
-                            Rank = 43
-                        },
-                        new
-                        {
-                            Id = 172,
-                            Description = "addCallSheetNarration",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddCallSheetNarration",
-                            ParentTypeId = 120,
-                            Rank = 44
-                        },
-                        new
-                        {
-                            Id = 173,
-                            Description = "addCallSheetRole",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddCallSheetRole",
-                            ParentTypeId = 120,
-                            Rank = 45
-                        },
-                        new
-                        {
-                            Id = 174,
-                            Description = "addPerformance",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPerformance",
-                            ParentTypeId = 120,
-                            Rank = 46
-                        },
-                        new
-                        {
-                            Id = 175,
-                            Description = "scheduleActorPerformances",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdScheduleActors",
-                            ParentTypeId = 120,
-                            Rank = 47
-                        },
-                        new
-                        {
-                            Id = 176,
-                            Description = "addPerformanceAction",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPerformanceAction",
-                            ParentTypeId = 120,
-                            Rank = 48
-                        },
-                        new
-                        {
-                            Id = 177,
-                            Description = "addPerformanceLine",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPerformanceLine",
-                            ParentTypeId = 120,
-                            Rank = 49
-                        },
-                        new
-                        {
-                            Id = 178,
-                            Description = "getPerformanceRollup",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdGetPerformanceRollup",
-                            ParentTypeId = 120,
-                            Rank = 50
-                        },
-                        new
-                        {
-                            Id = 179,
-                            Description = "addObservation",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddObservation",
-                            ParentTypeId = 120,
-                            Rank = 51
-                        },
-                        new
-                        {
-                            Id = 180,
-                            Description = "addStoryRollup",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddStoryRollupModel",
-                            ParentTypeId = 120,
-                            Rank = 52
-                        },
-                        new
-                        {
-                            Id = 181,
-                            Description = "addSolution",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddSolution",
-                            ParentTypeId = 120,
-                            Rank = 53
-                        },
-                        new
-                        {
-                            Id = 182,
-                            Description = "addSolutionImport",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddSolutionImport",
-                            ParentTypeId = 120,
-                            Rank = 54
-                        },
-                        new
-                        {
-                            Id = 183,
-                            Description = "addMdFile",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddMdFile",
-                            ParentTypeId = 120,
-                            Rank = 55
-                        },
-                        new
-                        {
-                            Id = 184,
-                            Description = "addHtmlFile",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddHtmlFile",
-                            ParentTypeId = 120,
-                            Rank = 56
-                        },
-                        new
-                        {
-                            Id = 185,
-                            Description = "addConfigFile",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddConfigFile",
-                            ParentTypeId = 120,
-                            Rank = 57
-                        },
-                        new
-                        {
-                            Id = 186,
-                            Description = "addLibrary",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddLibrary",
-                            ParentTypeId = 120,
-                            Rank = 58
-                        },
-                        new
-                        {
-                            Id = 187,
-                            Description = "addNamespace",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddNamespace",
-                            ParentTypeId = 120,
-                            Rank = 59
-                        },
-                        new
-                        {
-                            Id = 188,
-                            Description = "addClass",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddClass",
-                            ParentTypeId = 120,
-                            Rank = 60
-                        },
-                        new
-                        {
-                            Id = 189,
-                            Description = "addClassImport",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddClassImport",
-                            ParentTypeId = 120,
-                            Rank = 61
-                        },
-                        new
-                        {
-                            Id = 190,
-                            Description = "addClassProperty",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddClassProperty",
-                            ParentTypeId = 120,
-                            Rank = 62
-                        },
-                        new
-                        {
-                            Id = 191,
-                            Description = "addClassMethod",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddClassMethod",
-                            ParentTypeId = 120,
-                            Rank = 63
-                        },
-                        new
-                        {
-                            Id = 192,
-                            Description = "addClassMethodParam",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddClassMethodParam",
-                            ParentTypeId = 120,
-                            Rank = 64
-                        },
-                        new
-                        {
-                            Id = 193,
-                            Description = "addEntityClass",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddEntityClass",
-                            ParentTypeId = 120,
-                            Rank = 65
-                        },
-                        new
-                        {
-                            Id = 195,
-                            Description = "addEntityProperty",
-                            EditorTypeId = 4,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddEntityProperty",
-                            ParentTypeId = 120,
-                            Rank = 66
-                        },
-                        new
-                        {
-                            Id = 200,
-                            Description = "addGameRoomModel",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddGameRoom",
-                            ParentTypeId = 120,
-                            Rank = 67
-                        },
-                        new
-                        {
-                            Id = 201,
-                            Description = "addChessBoardModel",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddChessGame",
-                            ParentTypeId = 120,
-                            Rank = 68
-                        },
-                        new
-                        {
-                            Id = 202,
-                            Description = "getChessGame",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdGetChessGame",
-                            ParentTypeId = 120,
-                            Rank = 69
-                        },
-                        new
-                        {
-                            Id = 203,
-                            Description = "chessStartGame",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdChessStartGame",
-                            ParentTypeId = 120,
-                            Rank = 70
-                        },
-                        new
-                        {
-                            Id = 204,
-                            Description = "chessMakeMove",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdChessMakeMove",
-                            ParentTypeId = 120,
-                            Rank = 71
-                        },
-                        new
-                        {
-                            Id = 205,
-                            Description = "addPattern",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPattern",
-                            ParentTypeId = 120,
-                            Rank = 72
-                        },
-                        new
-                        {
-                            Id = 206,
-                            Description = "addPatDimension",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPatDimension",
-                            ParentTypeId = 120,
-                            Rank = 73
-                        },
-                        new
-                        {
-                            Id = 207,
-                            Description = "addPatDimOption",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAddPatDimOption",
-                            ParentTypeId = 120,
-                            Rank = 74
-                        },
-                        new
-                        {
-                            Id = 208,
-                            Description = "getNextDraw",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdGetNextDraw",
-                            ParentTypeId = 120,
-                            Rank = 75
-                        },
-                        new
-                        {
-                            Id = 209,
-                            Description = "rejectDraw",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdRejectDraw",
-                            ParentTypeId = 120,
-                            Rank = 76
-                        },
-                        new
-                        {
-                            Id = 210,
-                            Description = "acceptDraw",
-                            EditorTypeId = -1,
-                            IconName = "",
-                            IsReadOnly = false,
-                            IsVisible = true,
-                            Name = "CmdAcceptDraw",
-                            ParentTypeId = 120,
-                            Rank = 77
-                        },
-                        new
-                        {
                             Id = 220,
                             Description = "Todo Statuses",
                             EditorTypeId = 10,
@@ -7288,6 +7444,77 @@ namespace Weavers.Core.Migrations
                             IsVisible = true,
                             Name = "DrawRejected",
                             ParentTypeId = 310,
+                            Rank = 5
+                        },
+                        new
+                        {
+                            Id = 320,
+                            Description = "Comfy Target Override Types",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyTargetOverrideTypes",
+                            Rank = 22
+                        },
+                        new
+                        {
+                            Id = 321,
+                            Description = "Override Seed Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideSeed",
+                            ParentTypeId = 320,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 322,
+                            Description = "Override String Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideString",
+                            ParentTypeId = 320,
+                            Rank = 2
+                        },
+                        new
+                        {
+                            Id = 323,
+                            Description = "Override File Path Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideFilePath",
+                            ParentTypeId = 320,
+                            Rank = 3
+                        },
+                        new
+                        {
+                            Id = 324,
+                            Description = "Override Int Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideInt",
+                            ParentTypeId = 320,
+                            Rank = 4
+                        },
+                        new
+                        {
+                            Id = 325,
+                            Description = "Override Decimal Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideDecimal",
+                            ParentTypeId = 320,
                             Rank = 5
                         },
                         new
@@ -7880,26 +8107,110 @@ namespace Weavers.Core.Migrations
                         new
                         {
                             Id = 1150,
-                            Description = "Image File",
-                            EditorTypeId = 4,
+                            Description = "Comfy Service",
+                            EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "FileImageModel",
-                            ParentTypeId = 1110,
-                            Rank = 0
+                            Name = "ComfyServiceModel",
+                            ParentTypeId = 1013,
+                            Rank = 1150
                         },
                         new
                         {
                             Id = 1151,
-                            Description = "Image File Documentation",
-                            EditorTypeId = 4,
+                            Description = "Comfy Workflow Folder",
+                            EditorTypeId = -1,
                             IconName = "",
                             IsReadOnly = false,
                             IsVisible = true,
-                            Name = "FileImageDocs",
+                            Name = "ComfyWorkflowFolderModel",
                             ParentTypeId = 1150,
-                            Rank = 0
+                            Rank = 1151
+                        },
+                        new
+                        {
+                            Id = 1152,
+                            Description = "Comfy Workflow Templates",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyWorkflowTemplate",
+                            ParentTypeId = 1151,
+                            Rank = 1152
+                        },
+                        new
+                        {
+                            Id = 1153,
+                            Description = "Comfy WF Param",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyWfParamModel",
+                            ParentTypeId = 1151,
+                            Rank = 1153
+                        },
+                        new
+                        {
+                            Id = 1154,
+                            Description = "Comfy Operations",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyOperationsModel",
+                            ParentTypeId = 1150,
+                            Rank = 1154
+                        },
+                        new
+                        {
+                            Id = 1155,
+                            Description = "Comfy Op Todo",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyOpTodoModel",
+                            ParentTypeId = 1154,
+                            Rank = 1155
+                        },
+                        new
+                        {
+                            Id = 1156,
+                            Description = "Comfy Op Param",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyOpParamModel",
+                            ParentTypeId = 1154,
+                            Rank = 1156
+                        },
+                        new
+                        {
+                            Id = 1157,
+                            Description = "Comfy Op Todo Attempt",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyOpTodoAttemptModel",
+                            ParentTypeId = 1154,
+                            Rank = 1157
+                        },
+                        new
+                        {
+                            Id = 1158,
+                            Description = "Comfy Media File",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ComfyMediaFileModel",
+                            ParentTypeId = 1157,
+                            Rank = 1158
                         },
                         new
                         {

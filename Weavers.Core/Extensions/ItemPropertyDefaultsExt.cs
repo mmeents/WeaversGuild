@@ -31,7 +31,8 @@ namespace Weavers.Core.Extensions {
       },
       { WeItemType.HarnessGatewaysModel, new List<ItemPropertyDefault>(){
           new() {Rank = 3, Key = Cx.ItHasLmStudioPresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
-          new() {Rank = 2, Key = Cx.ItHasClaudePresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
+          new() {Rank = 2, Key = Cx.ItHasClaudePresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 1, Key = Cx.ItHasComfyPresence, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean }
         }
       },      
       {
@@ -236,6 +237,7 @@ namespace Weavers.Core.Extensions {
       },
 
       #endregion
+      
       #region FileSystem Defaults
       {
         WeItemType.ProjectFolderModel,
@@ -337,17 +339,52 @@ namespace Weavers.Core.Extensions {
           new() {Rank = 1, Key = Cx.ItResultingState, DefaultValue = WeItemType.Tie.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.RatingStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor }
         }
       },
-      {
-        WeItemType.FileImageModel,
-        new List<ItemPropertyDefault>(){
-            new() {Rank = 2, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
-            new() {Rank = 1, Key = Cx.ItFileExt, DefaultValue = ".png", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String }
-        }
-      },
-      { WeItemType.FileImageDocs, new List<ItemPropertyDefault>() {
-          new() {Rank = 1, Key = Cx.ItResultingState, DefaultValue = WeItemType.Tie.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.RatingStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor }
-        }
-      },
+      #endregion
+      #region Comfy Service
+
+      { WeItemType.ComfyServiceModel, new List<ItemPropertyDefault>() {
+        new() {Rank = 3, Key = Cx.ItUrlBase, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 5, Key = Cx.ItServiceInput, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
+        new() {Rank = 7, Key = Cx.ItServiceOutput, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
+        new() {Rank = 9, Key = Cx.ItFloorStatus, DefaultValue = WeItemType.FloorDisabled.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.FloorStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+      } },
+      //{ WeItemType.ComfyWorkflowFolderModel, new List<ItemPropertyDefault>() { } },
+      { WeItemType.ComfyWorkflowTemplate, new List<ItemPropertyDefault>() {
+        new() {Rank = 8, Key = Cx.ItTimeoutSec, DefaultValue = "300", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+        new() {Rank = 11, Key = Cx.ItEnabled, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+      } },
+      { WeItemType.ComfyWfParamModel, new List<ItemPropertyDefault>() {
+        new() {Rank = 6, Key = Cx.ItPropValue, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+        new() {Rank = 8, Key = Cx.ItSectionKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 9, Key = Cx.ItObjectKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 10, Key = Cx.ItPropKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 11, Key = Cx.ItOverrideType, DefaultValue = WeItemType.CtOverrideString.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ComfyTargetOverrideTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+      } },
+
+     // { WeItemType.ComfyOperationsModel, new List<ItemPropertyDefault>() { } },
+      { WeItemType.ComfyOpTodoModel, new List<ItemPropertyDefault>() {
+          new() {Rank = 8, Key = Cx.ItTimeoutSec, DefaultValue = "300", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() {Rank = 10, Key = Cx.ItConfirmedReady, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+          new() {Rank = 11, Key = Cx.ItStatus, DefaultValue = ((int)WeItemType.TodoNotStarted).ToString(),  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.TodoStatuses, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() {Rank = 12, Key = Cx.ItWfTemplate, DefaultValue = "",  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ComfyWorkflowTemplate, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+      } },
+      { WeItemType.ComfyOpParamModel, new List<ItemPropertyDefault>() {
+        new() {Rank = 6, Key = Cx.ItPropValue, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },
+        new() {Rank = 8, Key = Cx.ItSectionKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 9, Key = Cx.ItObjectKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 10, Key = Cx.ItPropKey, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 11, Key = Cx.ItOverrideType, DefaultValue = WeItemType.CtOverrideString.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ComfyTargetOverrideTypes, EditorTypeId=(int)WeEditorType.LookupTypeEditor },       
+      } },
+      { WeItemType.ComfyOpTodoAttemptModel, new List<ItemPropertyDefault>() {
+        new() {Rank = 10, Key = Cx.ItStatus, DefaultValue = WeItemType.RunInProgress.AsIntString(),  ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.RunStatus, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        new() {Rank = 6, Key = Cx.ItResponse, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Memo },        
+      } },
+      { WeItemType.ComfyMediaFileModel, new List<ItemPropertyDefault>() {
+        new() {Rank = 9, Key = Cx.ItFilePath, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.FileName },
+        new() {Rank = 8, Key = Cx.ItMediaType, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() {Rank = 11, Key = Cx.ItFromAttempt, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ComfyOpTodoAttemptModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        new() {Rank = 11, Key = Cx.ItFromTodo, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ComfyOpTodoModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+      } },
       #endregion
       #region Storytime Defaults
 

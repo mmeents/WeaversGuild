@@ -162,11 +162,34 @@ namespace TheLoomApp {
         lbDbTableName.Visible = true;
       }
 
+      if (_targetTypeToCreate == WeItemType.ComfyWorkflowTemplate) {
+        edDbTableName.Top = edName.Top + edName.Height + 10;
+        edDbTableName.Left = edName.Left;
+        lbDbTableName.Top = edDbTableName.Top;
+        lbDbTableName.Text = "ExportApiFilePath:";
+        lbDbTableName.Left = edName.Left - lbDbTableName.Width - 6;
+        edDbTableName.Visible = true;
+        lbDbTableName.Visible = true;
+      }
+
+      if (_targetTypeToCreate == WeItemType.ComfyOpTodoModel) {
+        cbItemLookup.Top = edName.Top + edName.Height + 10;
+        cbItemLookup.Left = edName.Left;
+        lbWhich.Top = cbItemLookup.Top;
+        lbWhich.Text = "Workflow:";
+        lbWhich.Left = edName.Left - lbWhich.Width - 6;
+        cbItemLookup.Visible = true;
+        lbWhich.Visible = true;
+      }
+
     }
 
     private async void GetNewItemDetailsDialog_Shown(object sender, EventArgs e) {
       if (_targetTypeToCreate == WeItemType.GithubRepoModel) {
         LoadCbItemLookup((int)WeItemType.GitHubCredentialModel);
+      }
+      if (_targetTypeToCreate == WeItemType.ComfyOpTodoModel) {
+        LoadCbItemLookup((int)WeItemType.ComfyWorkflowTemplate);
       }
     }
 

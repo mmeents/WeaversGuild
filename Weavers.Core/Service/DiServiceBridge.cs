@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,4 +19,26 @@ namespace Weavers.Core.Service {
       return _serviceProvider.GetRequiredService<T>();
     }
   }
+
+
+  public static class DiBridgeService2 {
+    private static IServiceScopeFactory? _serviceScopeFactory;
+    public static void Initialize(IServiceProvider root)
+      => _serviceScopeFactory = root.GetRequiredService<IServiceScopeFactory>();
+
+    public static async Task<T> Send<T>(IRequest<T> request, CancellationToken ct = default) {
+      if (_serviceScopeFactory is null) throw new InvalidOperationException("Call Initialize first.");
+      await using var scope = _serviceScopeFactory.CreateAsyncScope();
+      return await scope.ServiceProvider.GetRequiredService<IMediator>().Send(request, ct);
+    }
+
+    public static async Task Send(IRequest request, CancellationToken ct = default) {
+      if (_serviceScopeFactory is null) throw new InvalidOperationException("Call Initialize first.");
+      await using var scope = _serviceScopeFactory.CreateAsyncScope();
+      await scope.ServiceProvider.GetRequiredService<IMediator>().Send(request, ct);
+    }
+
+  }
+
+
 }

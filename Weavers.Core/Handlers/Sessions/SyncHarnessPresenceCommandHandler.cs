@@ -12,7 +12,7 @@ using Weavers.Core.Handlers.Items;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Sessions {
-  public record SyncHarnessPresenceCommand(int HarnessGatewayId, bool? HasLmStudio, bool? HasClaude) : IRequest<bool>;
+  public record SyncHarnessPresenceCommand(int HarnessGatewayId, bool? HasLmStudio, bool? HasClaude, bool? HasComfy) : IRequest<bool>;
   public class SyncHarnessPresenceCommandHandler : IRequestHandler<SyncHarnessPresenceCommand, bool> {
     private readonly FabricDbContext _dbContext;
     private readonly IMediator _mediator;
@@ -28,9 +28,6 @@ namespace Weavers.Core.Handlers.Sessions {
 
       var harness = await _dbContext.GetItemDtoById(request.HarnessGatewayId);
       if (harness == null) { return false; }
-
-
-
 
       var hasLmStudioProp = harness.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence);
       if (hasLmStudioProp != null) {
@@ -53,9 +50,6 @@ namespace Weavers.Core.Handlers.Sessions {
           }
         }        
       }
-
-
-
 
 
       var hasClaudeProp = harness.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence);
@@ -89,12 +83,47 @@ namespace Weavers.Core.Handlers.Sessions {
           if (gatewayItemId != 0) {
             await _mediator.Send(new DeleteItemCommand(gatewayItemId), cancellationToken);
           }
-        }
-
-        
-      }    
+        }        
+      }
       
 
+      var hasComfyProp = harness.Properties.FirstOrDefault(p => p.Name == Cx.ItHasComfyPresence);
+      var hasComfyValue = hasComfyProp?.Value.AsBoolean() ?? false;
+
+      if (hasComfyProp != null && hasComfyValue != request.HasComfy) {  // different
+        hasComfyValue = request.HasComfy ?? false;
+        hasComfyProp.Value = hasComfyValue.ToString();
+        await hasComfyProp.SaveProp(harness, _mediator);
+      }
+
+      if (hasComfyProp != null) {        
+
+        var gatewayItemId = harness.Relations.FirstOrDefault(r => r.RelatedItemTypeId == (int)WeItemType.ComfyServiceModel)?.RelatedItemId ?? 0;
+
+        if (hasComfyValue) {            
+          if (gatewayItemId == 0) {
+            var presenceItem = await _mediator.Send(
+              new CreateRelatedItemCommand(harness.Id, (int)WeRelationTypes.Contains,
+                (int)WeItemType.ComfyServiceModel, "Comfy Gateway", "", "{}"), cancellationToken).ConfigureAwait(false);
+            if (presenceItem != null) {
+
+              var WorkflowFolderItem = await _mediator.Send(
+                new CreateRelatedItemCommand(presenceItem.Id, (int)WeRelationTypes.Contains,
+                  (int)WeItemType.ComfyWorkflowFolderModel, "Configured Workflows", "", "{}"), cancellationToken).ConfigureAwait(false);
+
+              var OperationsFolderItem = await _mediator.Send(
+                new CreateRelatedItemCommand(presenceItem.Id, (int)WeRelationTypes.Contains,
+                  (int)WeItemType.ComfyOperationsModel, "Operations", "", "{}"), cancellationToken).ConfigureAwait(false);
+
+            }
+          }
+        } else { 
+          if (gatewayItemId != 0) {
+            await _mediator.Send(new DeleteItemCommand(gatewayItemId), cancellationToken);
+          }
+        }        
+      }
+      
 
       return true;
     }

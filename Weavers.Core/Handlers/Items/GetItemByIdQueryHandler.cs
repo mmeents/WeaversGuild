@@ -6,7 +6,7 @@ using Weavers.Core.Models;
 using Weavers.Core.Service;
 
 namespace Weavers.Core.Handlers.Items {
-  public record GetItemByIdQuery(int Id) : IRequest<ItemDto?>;
+  public record GetItemByIdQuery(int Id, bool? skipCache = null) : IRequest<ItemDto?>;
 
   public class GetItemByIdQueryHandler(    
     ISessionItemCacheService sessionCache
@@ -14,7 +14,7 @@ namespace Weavers.Core.Handlers.Items {
     private readonly ISessionItemCacheService _sessionCache = sessionCache;
 
     public async Task<ItemDto?> Handle(GetItemByIdQuery request, CancellationToken cancellationToken) {      
-      var result = await _sessionCache.GetItemAsync(request.Id, cancellationToken);      
+      var result = await _sessionCache.GetItemAsync(request.Id, cancellationToken, request.skipCache);      
       return result;
     }
   }

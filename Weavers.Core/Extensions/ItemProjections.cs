@@ -69,7 +69,7 @@ namespace Weavers.Core.Extensions {
         ItemTypeName = i.ItemType.Name,
         Name = i.Name,
         Description = i.Description,
-        Data = i.Data,
+        Data = i.Data.TryToPretty(),
         Established = i.Established,
         WrittenAt = i.WrittenAt,
         IsActive = i.IsActive,

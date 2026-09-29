@@ -36,27 +36,14 @@ namespace Weavers.Core.Service {
     public AppGraphFileService(IServiceScopeFactory scopeFactory) { 
       _scopeFactory = scopeFactory;
     }
-    private IMediator GetMediator() {
-      var scope = _scopeFactory.CreateScope();
-      return scope.ServiceProvider.GetRequiredService<IMediator>(); 
-    }
 
-    private IAppGraphOrgService GetAppGraphOrgService() {
-      var scope = _scopeFactory.CreateScope();
-      return scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
-    }
-    private FabricDbContext GetDbContext() {
-      var scope = _scopeFactory.CreateScope();
-      return scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-    }
-
-  
-
-    public async Task<ItemDto?> AddProjectRoot(string? projectName, string projectPath) {      
-      var mediator = GetMediator();
+    public async Task<ItemDto?> AddProjectRoot(string? projectName, string projectPath) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var _dbContext = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
+      
       var nextRank = await mediator.Send(new GetNextItemRankQuery((int?)null))+1;
-
-      var _dbContext = GetDbContext();
+      
       var OrganizationId = _dbContext.Items.FirstOrDefault(i => i.ItemTypeId == (int)WeItemType.OrganizationModel)?.Id ?? 0;
       var OrgItem = await _dbContext.GetItemDtoById(OrganizationId);
       var rootFolder = projectPath;
@@ -65,7 +52,8 @@ namespace Weavers.Core.Service {
       }
 
       var name = projectName == null ? $"Project {nextRank}" : projectName;      
-      var newItem = await mediator.Send(new CreateRelatedItemCommand(OrganizationId, (int)WeRelationTypes.Contains, (int)WeItemType.ProjectFolderModel, name, "", "{}"));
+      var newItem = await mediator.Send(new CreateRelatedItemCommand(OrganizationId, (int)WeRelationTypes.Contains, 
+        (int)WeItemType.ProjectFolderModel, name, "", "{}"));
       if (newItem == null) return null;
 
 
@@ -78,7 +66,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddSubFolder(ItemDto parentItem, string? subFolderName) {
-      var mediator = GetMediator();      
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = parentItem;
       if (!item.IsValidFolderParent()) return null;
       var nextRank = 1;
@@ -103,20 +92,24 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddGithubRepo(ItemDto parentItem, string repoUrl) { 
-      var orgService = GetAppGraphOrgService();
+      
+      using var scope = _scopeFactory.CreateScope();
+      var orgService = scope.ServiceProvider.GetRequiredService<IAppGraphOrgService>();
       var addRepoCommand = await orgService.AddGithubRepo(parentItem, ".git", null, repoUrl);
       return addRepoCommand;
     }
 
     public async Task<ItemDto?> DoCloneGithubRepoItem(ItemDto repoItem) {             
       repoItem.ValidateRepoItemExists(repoItem.Id);
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var result = await mediator.Send(new CloneGithubRepoCommand(repoItem.Id));
       return result;
     }
     public async Task<ItemDto?> DoGitRefreshStatus(ItemDto repoItem) { 
       repoItem.ValidateRepoItemExists(repoItem.Id);
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var result = await mediator.Send(new RefreshGitStatusCommand(repoItem.Id));
       return result;
     }
@@ -124,13 +117,15 @@ namespace Weavers.Core.Service {
     // return a repo with the branch checked out.  will except if fails.
     public async Task<ItemDto?> DoCheckoutBranch(ItemDto branchItem) {
       branchItem.ValidateBranchItemExists(branchItem.Id);
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var result = await mediator.Send(new CheckoutBranchCommand(branchItem.Id));
       return result;
     }
 
     public async Task<ItemDto?> AddSolution(ItemDto projectFolderItem, string? solutionName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = projectFolderItem;
       if (!item.IsValidFolderParent()) return null;
       var nextRank = 1;
@@ -165,7 +160,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddSolutionImport(ItemDto slnItem, string? importName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (slnItem.ItemTypeId != (int)WeItemType.SolutionModel) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(importName)) nextRank = await mediator.Send(new GetNextItemRankQuery(slnItem.Id)) + 1;
@@ -190,7 +186,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddMdFile(ItemDto folderItem, string? fileName, string? fileContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
@@ -215,7 +212,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddHtmlFile(ItemDto folderItem, string? fileName, string? fileContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
@@ -240,7 +238,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddConfigFile(ItemDto folderItem, string? fileName, string? fileContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;

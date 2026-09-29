@@ -7,7 +7,7 @@ namespace Weavers.Core.Tools {
   public class StorytimeTools {
     private static IStorytimeToolsHandler GetTools() => DiBridgeService.GetService<IStorytimeToolsHandler>();
 
-    [McpTool(Cx.CmdAddRealm, "Adds a new story realm project")]
+    [McpTool(Cx.CmdAddRealm, Cx.CmdAddRealmDesc)]
     public static async Task<string> AddRealm(
      [Description("Id of the parent folder item.(valid parent types: Organization 1000, ProjectFolder 1100 or RelativeFolder 1110)")]
       int folderId,
@@ -20,7 +20,7 @@ namespace Weavers.Core.Tools {
    ) => await GetTools().AddRealm(folderId, name, details, tone);
 
 
-    [McpTool(Cx.CmdAddStory, "Adds a new story to a realm.")]
+    [McpTool(Cx.CmdAddStory, Cx.CmdAddStoryDesc)]
     public static async Task<string> AddStory(
       [Description("Id of the parent realm item")]
       int realmId,
@@ -37,7 +37,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddStory(realmId, name, details, povTypeId, targetSceneCount, todoId);
 
 
-    [McpTool(Cx.CmdAddScene, "Adds a new scene to a story")]
+    [McpTool(Cx.CmdAddScene, Cx.CmdAddSceneDesc)]
     public static async Task<string> AddScene(
       [Description("Id of the parent story item")]
       int storyId,
@@ -52,7 +52,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddScene(storyId, name, "", entryState, exitState, todoId);
 
     
-    [McpTool(Cx.CmdScheduleBeatWriters, "Adds todo for each scene in story to write the beats on the handler desk. Skips scenes that have been requested or if it has beats. Details in results")]
+    [McpTool(Cx.CmdScheduleBeatWriters, Cx.CmdScheduleBeatWritersDesc)]
     public static async Task<string> ScheduleBeatWriters(
       [Description("Id of the story item")]
       int storyId,
@@ -63,7 +63,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().ScheduleBeatWriters(storyId, handlerDeskId, fromTodoId);
     
 
-    [McpTool(Cx.CmdAddBeat, "Adds a new beat to a scene, requires: sceneId, name, details parameters.")]
+    [McpTool(Cx.CmdAddBeat, Cx.CmdAddBeatDesc)]
     public static async Task<string> AddBeat(
       [Description("Id of the parent scene item")]
       int sceneId,
@@ -76,7 +76,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddBeat(sceneId, name, details, todoId);
 
 
-    [McpTool(Cx.CmdAddCharacter, "Adds a new character to a scene.")]
+    [McpTool(Cx.CmdAddCharacter, Cx.CmdAddCharacterDesc)]
     public static async Task<string> AddCharacter(
       [Description("Id of the parent scene item to add to")]
       int sceneId,
@@ -87,7 +87,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddCharacter(sceneId, name, details);
 
 
-    [McpTool(Cx.CmdScheduleBeatDirectors, "Adds todo for each beat in scene to direct the beat on the handler desk. Skips beats that have been requested or if it has a call sheet. Details in results")]
+    [McpTool(Cx.CmdScheduleBeatDirectors, Cx.CmdScheduleBeatDirectorsDesc)]
     public static async Task<string> ScheduleBeatDirectors(
       [Description("Id of the scene item")]
       int sceneId,
@@ -98,7 +98,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().ScheduleBeatDirectors(sceneId, handlerDeskId, fromTodoId);
 
 
-    [McpTool(Cx.CmdAddCallSheet, "Adds a new call sheet to a beat.")]
+    [McpTool(Cx.CmdAddCallSheet, Cx.CmdAddCallSheetDesc)]
     public static async Task<string> AddCallSheet(
       [Description("Id of the parent beat item")]
       int beatId,
@@ -109,7 +109,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddCallSheet(beatId, name, "", todoId);
 
     
-    [McpTool(Cx.CmdAddCallSheetNarration, "Adds a new narration to a call sheet.")]
+    [McpTool(Cx.CmdAddCallSheetNarration, Cx.CmdAddCallSheetNarrationDesc)]
     public static async Task<string> AddCallSheetNarration(
       [Description("Id of the call sheet item")]
       int callSheetId,
@@ -122,7 +122,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddCallSheetNarration(callSheetId, name, narration, todoId);
 
 
-    [McpTool(Cx.CmdAddCallSheetRole, "Adds a character role to a call sheet. Adds Character to scene if not already present by character.")]
+    [McpTool(Cx.CmdAddCallSheetRole, Cx.CmdAddCallSheetRoleDesc)]
     public static async Task<string> AddCallSheetRole(
       [Description("Id of the call sheet item")]
       int callSheetId,
@@ -135,7 +135,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddCallSheetRole(callSheetId, character, directions, todoId);
 
 
-    [McpTool(Cx.CmdScheduleActorPerformances, "Adds todo for each role in performance to direct the acting performance on the handler desk. Skips Roles that have been requested or if it has a ActorPerformance. Details in results")]
+    [McpTool(Cx.CmdScheduleActorPerformances, Cx.CmdScheduleActorPerformancesDesc)]
     public static async Task<string> ScheduleActors(
       [Description("Id of the performance to schedule")]
       int performanceId,
@@ -146,7 +146,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().ScheduleActorPerformances(performanceId, handlerDeskId, fromTodoId);
   
 
-    [McpTool(Cx.CmdAddPerformance, "Adds a new performance for a scene. Build the data field by enumerating the script entries for all call sheets in scene.")]
+    [McpTool(Cx.CmdAddPerformance, Cx.CmdAddPerformanceDesc)]
     public static async Task<string> AddPerformance(
       [Description("Id of the scene to add to.")]
       int sceneId,
@@ -155,7 +155,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddPerformance(sceneId, name, "");
 
     
-    [McpTool(Cx.CmdAddPerformanceAction, "Adds a new character action to a performance.")]
+    [McpTool(Cx.CmdAddPerformanceAction, Cx.CmdAddPerformanceActionDesc)]
     public static async Task<string> AddPerformanceAction(
       [Description("Id of the actor performance item")]
       int actorPerformanceId,      
@@ -166,7 +166,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddPerformanceAction(actorPerformanceId, action, todoId);
 
 
-    [McpTool(Cx.CmdAddPerformanceLine, "Adds a new line of dialogue for a character in a performance.")]
+    [McpTool(Cx.CmdAddPerformanceLine, Cx.CmdAddPerformanceLineDesc)]
     public static async Task<string> AddPerformanceLine(
       [Description("Id of the actor performance item")]
       int actorPerformanceId,
@@ -177,14 +177,14 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddPerformanceLine(actorPerformanceId, line, todoId);
 
     
-    [McpTool(Cx.CmdGetPerformanceRollup, "Gets a rollup of the performance actions and lines for a performance.")]
+    [McpTool(Cx.CmdGetPerformanceRollup, Cx.CmdGetPerformanceRollupDesc)]
     public static async Task<string> GetPerformanceRollup(
     [Description("Id of the performance item")]
     int performanceItemId
     ) => await GetTools().GetPerformanceRollup(performanceItemId);
 
 
-    [McpTool(Cx.CmdAddObservation, "Adds a new observation to a performance.")]
+    [McpTool(Cx.CmdAddObservation, Cx.CmdAddObservationDesc)]
     public static async Task<string> AddObserved(
       [Description("Id of the parent performance item to add to.")]
       int performanceId,
@@ -197,7 +197,7 @@ namespace Weavers.Core.Tools {
     ) => await GetTools().AddObservation(performanceId, name, contents, todoId);
 
 
-    [McpTool(Cx.CmdAddStoryRollup, "Adds a new story rollup to a story.")]
+    [McpTool(Cx.CmdAddStoryRollup, Cx.CmdAddStoryRollupDesc)]
     public static async Task<string> AddStoryRollup(
       [Description("Id story item id to add rollup for. Note: new item is added to story parent, result is a sibling of target story.")]
       int storyId,

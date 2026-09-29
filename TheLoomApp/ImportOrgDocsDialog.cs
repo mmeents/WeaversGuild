@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Weavers.Core.Constants;
 using Weavers.Core.Service;
+using Weavers.Core.Extensions;
 
 namespace TheLoomApp {
   public partial class ImportOrgDocsDialog : Form {
@@ -66,7 +67,7 @@ namespace TheLoomApp {
       };
 
       fileBrowserDialog.InitialDirectory = OrgRootPath ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-      if (fileBrowserDialog.ShowDialog() == DialogResult.OK) {
+      if (fileBrowserDialog.ShowDialog() == DialogResult.OK) {       
         OrgRootFileName = System.IO.Path.GetDirectoryName(fileBrowserDialog.FileName); // root is a folder, fileName has a filename so need to trim filename.
         button4_Click(sender, e);  // populate listbox after selecting file.
       }
@@ -75,7 +76,7 @@ namespace TheLoomApp {
     private ConcurrentDictionary<string, string> _relToFullPathDict = new ConcurrentDictionary<string, string>();
     private ConcurrentDictionary<string, string> _relToFullPathDictFinal = new ConcurrentDictionary<string, string>();
     private void button4_Click(object sender, EventArgs e) {
-      var orgPath = OrgRootPath != null ? OrgRootPath : string.Empty;
+      var orgPath = textBox1.Text.GetFilePathFromFileName();
       var orgName = OrgRootFileName;
       if (string.IsNullOrEmpty(orgPath) ) { return; }
       lbItemToImport.Items.Clear();
@@ -89,6 +90,18 @@ namespace TheLoomApp {
           if (!lbItemToImport.Items.Contains(relPath)) {
             lbItemToImport.Items.Add(relPath);
             _relToFullPathDict[relPath] = mdFile;
+          }
+        }
+      }
+
+      var someTextFiles = Directory.GetFiles(orgPath, "*.txt", SearchOption.AllDirectories);
+      foreach (var txtFile in someTextFiles) {
+        var basePathLength = OrgRootPath?.Length ?? 0;
+        if (basePathLength > 0 && txtFile != OrgRootFileName) {
+          var relPath = txtFile.Substring(basePathLength);
+          if (!lbItemToImport.Items.Contains(relPath)) {
+            lbItemToImport.Items.Add(relPath);
+            _relToFullPathDict[relPath] = txtFile;
           }
         }
       }

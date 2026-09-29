@@ -14,7 +14,7 @@ using MediatR;
 
 namespace Weavers.Core.Tools {
 
-  interface IPatternToolsHandler {
+  public interface IPatternToolsHandler {
     Task<string> AddPattern(int parentId, string name);
     Task<string> AddPatDimension(int patternId, string name, string commaDelimOptions);
     Task<string> AddPatDimOption(int patDimId, string name);

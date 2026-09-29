@@ -11,7 +11,7 @@ using Weavers.Core.Service;
 using Weavers.Core.Handlers.Storytime;
 
 namespace TheLoomApp.Extensions {
-  public static class StorytimeExts {
+  public static class TvStorytimeExts {
 
     public static async Task AddRealm(this TreeView _tv, IMediator _mediator, string name, string description, string tone) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
@@ -25,7 +25,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddRealmCommand(item.Id, name, description, tone));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
 
@@ -41,7 +41,7 @@ namespace TheLoomApp.Extensions {
       }      
       var newSubItem = await _mediator.Send(new AddStoryCommand(item.Id, name, description, povTypeId, sceneCount, todoId));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
     public static async Task AddScene(this TreeView _tv, IMediator _mediator,
@@ -55,7 +55,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddSceneCommand(item.Id, name, description, entryState, exitState, todoId));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
     public static async Task AddBeat(this TreeView _tv, IMediator _mediator,
@@ -69,7 +69,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddBeatCommand(item.Id, name, description, todoId));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
     public static async Task AddCharacter(this TreeView _tv, IMediator _mediator, string name, string description) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
@@ -81,7 +81,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddCharacterCommand(item.Id, name, description));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
     public static async Task AddCallSheet(this TreeView _tv, IMediator _mediator, int todoId, string name, string description) {
@@ -94,7 +94,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddCallSheetCommand(item.Id, name, description, todoId));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
     public static async Task AddPerformance(this TreeView _tv, IMediator _mediator, string name, string description) {
@@ -107,7 +107,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddPerformanceCommand(item.Id, name));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
     public static async Task AddObserved(this TreeView _tv, IMediator _mediator, int todoId, string name, string description) {
@@ -120,7 +120,7 @@ namespace TheLoomApp.Extensions {
       }
       var newSubItem = await _mediator.Send(new AddObservationCommand(item.Id, name, description, todoId));
       if (newSubItem == null) { return; }
-      _tv.AddNewItem(newSubItem);
+      await _tv.AddNewItem(newSubItem);
     }
 
   }

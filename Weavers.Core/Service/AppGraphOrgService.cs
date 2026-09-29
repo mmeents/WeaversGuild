@@ -51,13 +51,9 @@ namespace Weavers.Core.Service {
       _scopeFactory = scopeFactory;
       _httpClientFactory = httpClientFactory;
     }
-    private IMediator GetMediator() {
-      var scope = _scopeFactory.CreateScope();
-      return scope.ServiceProvider.GetRequiredService<IMediator>();
-    }
-
-    public async Task<ItemDto?> AddGithubRepo(ItemDto item, string? name, int? credItemId = null, string? remoteUrl = null) { 
-      var mediator = GetMediator();
+    public async Task<ItemDto?> AddGithubRepo(ItemDto item, string? name, int? credItemId = null, string? remoteUrl = null) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();      
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.GithubRepoModel, name ?? ".git", "", "{}"));
@@ -97,7 +93,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddGithubToken(ItemDto item, string? name) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var newItem = await mediator.Send(
         new CreateRelatedItemCommand(item.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.GitHubCredentialModel, name ?? "GitHub Token", "", "{}"));
@@ -106,7 +103,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddOrgWorkGroup(ItemDto orgChart, string? workGroupName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var name = workGroupName ?? "";
       if (workGroupName == null) {
         var nextRank = await mediator.Send(new GetNextItemRankQuery(orgChart.Id)) + 1;
@@ -129,7 +127,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddOrgDeskRole(ItemDto orgDeskRoles, string? roleName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var nextRank = await mediator.Send(new GetNextItemRankQuery(orgDeskRoles.Id)) + 1;
       var name = roleName == null ? $"Role {nextRank}" : roleName;
       var newItem = await mediator.Send(
@@ -148,7 +147,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddOrgDesk(ItemDto OrgChart, string? deskName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var nextRank = await mediator.Send(new GetNextItemRankQuery(OrgChart.Id)) + 1;
       var name = deskName == null ? $"Desk {nextRank}" : deskName;
       var newItem = await mediator.Send(
@@ -167,7 +167,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddDeskTodo(ItemDto OrgDesk, string? todoName, int? refId, string? promptTemplate) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var nextRank = await mediator.Send(new GetNextItemRankQuery(OrgDesk.Id)) + 1;
       var name = todoName == null ? $"Todo {nextRank}" : todoName;
       var newItem = await mediator.Send(
@@ -194,7 +195,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddDigitalOperator(ItemDto parentItem, string? operatorName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var nextRank = await mediator.Send(new GetNextItemRankQuery((int?)null)) + 1;
       var name = operatorName == null ? $"Operator {nextRank}" : operatorName;
       var newItem = await mediator.Send(
@@ -213,7 +215,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddOrgFolder(ItemDto parentItem, string? subFolderName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = parentItem;
       if (!item.IsValidFolderParent()) return null;
       var nextRank = 1;
@@ -239,7 +242,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddOrgFile(ItemDto folderItem, string? fileName, string? fileContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (!folderItem.IsValidFolderParent()) return null;
       var nextRank = 1;
       if (string.IsNullOrEmpty(fileName)) nextRank = await mediator.Send(new GetNextItemRankQuery(folderItem.Id)) + 1;
@@ -264,7 +268,8 @@ namespace Weavers.Core.Service {
     }
     
     public async Task<ItemDto?> AddRssFolder(ItemDto parentItem, string? folderName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = parentItem;
       if (!item.IsValidRssFolderParent()) return null;
       var nextRank = 1;
@@ -290,7 +295,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AddLinkedHtml(ItemDto parentItem, string? urlName) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = parentItem;
       if (!item.IsValidRssFolderParent()) return null;
       var nextRank = 1;
@@ -317,7 +323,8 @@ namespace Weavers.Core.Service {
 
     public async Task<ItemDto?> AddRssChannel(ItemDto parentItem, string? channelName, string? channelUrl = null) {
 
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       ItemDto item = parentItem;
       if (item.ItemTypeId != (int)WeItemType.RssFolderModel) return null;
       var nextRank = 1;
@@ -353,7 +360,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> RssResyncChannel(ItemDto rssChannelItem) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (rssChannelItem == null) throw new ArgumentNullException(nameof(rssChannelItem));
       int rssChannelId = rssChannelItem.Id;
       var ChannelUrlProp = rssChannelItem.Properties.FirstOrDefault(p => p.Name == Cx.ItChannelUrl);
@@ -412,13 +420,15 @@ namespace Weavers.Core.Service {
     private static readonly HtmlSanitizer Sanitizer = new();
 
     public async Task<ItemDto?> RssResolveLink(ItemDto rssLinkedHtmlItem, CancellationToken ct = default) {
-      var mediator = GetMediator();     
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var updatedItem = await mediator.Send(new ResolveLinkCommand(rssLinkedHtmlItem.Id), ct);
       return updatedItem;
     }
 
     public async Task<ItemDto?> RssExtractLinks(ItemDto rssLinkedHtmlItem, CancellationToken ct = default) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var sanitizedHtml = rssLinkedHtmlItem.Description ?? "";
       var baseUrl = rssLinkedHtmlItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasUrl)?.Value ?? "";
       var results = new List<string>();
@@ -493,7 +503,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> AppendGuildNote(ItemDto rssItem, string noteContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (rssItem == null) throw new ArgumentNullException(nameof(rssItem));
       if (string.IsNullOrWhiteSpace(noteContent)) throw new ArgumentException("Note content cannot be empty.", nameof(noteContent));
 
@@ -510,7 +521,8 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<ItemDto?> UpdateGuildNote(ItemDto RssItem, string noteContent) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       if (RssItem == null) throw new ArgumentNullException(nameof(RssItem));      
       var guildNotesProp = RssItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGuildNotes);
       if (guildNotesProp != null) {         
@@ -521,13 +533,15 @@ namespace Weavers.Core.Service {
     }
 
     public async Task<bool> ArchiveItem(ItemDto ArchiveItem) { 
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var item = await mediator.Send(new ArchiveItemCommand(ArchiveItem.Id, true));
       return item;
     }
 
     public async Task<bool> UnarchiveItem(int itemId) {
-      var mediator = GetMediator();
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var item = await mediator.Send(new ArchiveItemCommand(itemId, false));
       return item;
     }

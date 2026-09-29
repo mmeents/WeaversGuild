@@ -79,7 +79,7 @@ namespace Weavers.Core.Extensions {
     public static string AsLowerCaseFirstLetter(this string content) {
       if (string.IsNullOrEmpty(content)) return "";
       var newName = content.Substring(0, 1).ToLower() + content.Substring(1);
-      return newName.UrlSafe();
+      return newName;
     }
 
     

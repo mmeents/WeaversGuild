@@ -74,7 +74,9 @@ WeaversGuild - A agentic oriented collection of tools and services to weave code
 - [updateItemContent](Documents/CommandHelps/updateItemContent.md)
 - [addSolution](Documents/CommandHelps/addSolution.md)
 - [addNamespace](Documents/CommandHelps/addNamespace.md)
+- [AboutTheGateways](AboutTheGateways.md)
+- [AboutComfy](AboutComfy.md)
 ## Export Details
 Schema: 1.0
 Location: C:\Develop\WeaversGuild\TheOrgExport.md
-Exported at: 8/16/2026 4:56:04 AM Utc, 8/16/2026 12:56:04 AM Local
+Exported at: 9/28/2026 1:40:30 AM Utc, 9/27/2026 9:40:30 PM Local

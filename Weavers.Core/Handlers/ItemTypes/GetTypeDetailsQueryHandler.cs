@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Pipeline;
@@ -55,20 +57,39 @@ namespace Weavers.Core.Handlers.ItemTypes {
         }
 
         if (lookuptypes.Contains(weItemType)) {
-          var res2 = new GetTypeDetailsResponse() {
-            WeItemTypeId = (int)weItemType,
-            Name = $"{weItemType.ToString()}",
-            Description = $"{weItemType.Description()}"
-          };
-          var relatedTypes = Enum.GetValues<WeItemType>().Where(t => t.ParentType() == weItemType).ToList();
-          foreach (var relatedType in relatedTypes) {
-            res2.RelatedTypes.Add(new WeItemTypeDetails() {
-              ItemTypeId = (int)relatedType,
-              Name = relatedType.ToString(),
-              Description = relatedType.Description()
-            });
-          }
-          return res2;
+
+          if (weItemType == WeItemType.LoomMcpCommands) {
+            var res2 = new GetTypeDetailsResponse() {
+              WeItemTypeId = (int)weItemType,
+              Name = $"{weItemType.ToString()}",
+              Description = $"{weItemType.Description()}"
+            };
+            var relatedTypes = Enum.GetValues<WeCmdType>().ToList();
+            foreach (var relatedType in relatedTypes) {
+              res2.RelatedTypes.Add(new WeItemTypeDetails() {
+                ItemTypeId = (int)relatedType,
+                Name = relatedType.ToString(),
+                Description = relatedType.Described()
+              });
+            }
+            return res2;
+
+          } else {
+            var res2 = new GetTypeDetailsResponse() {
+              WeItemTypeId = (int)weItemType,
+              Name = $"{weItemType.ToString()}",
+              Description = $"{weItemType.Description()}"
+            };
+            var relatedTypes = Enum.GetValues<WeItemType>().Where(t => t.ParentType() == weItemType).ToList();
+            foreach (var relatedType in relatedTypes) {
+              res2.RelatedTypes.Add(new WeItemTypeDetails() {
+                ItemTypeId = (int)relatedType,
+                Name = relatedType.ToString(),
+                Description = relatedType.Description()
+              });
+            }
+            return res2;
+          }         
 
         } else if (typeId < (int)WeItemType.OrganizationModel) {
 
@@ -93,7 +114,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
               .ToListAsync(cancellationToken);
             foreach (var item in items) {
               res3.RelatedTypes.Add(new WeItemTypeDetails() {
-                ItemTypeId = item.Value is int id ? id : 0,
+                ItemId = item.Value is int id ? id : (int?)null,
                 Name = item.DisplayText,
                 Description = item.Description ?? ""
               });
@@ -113,7 +134,7 @@ namespace Weavers.Core.Handlers.ItemTypes {
               .ToListAsync(cancellationToken);
             foreach (var item in items) {
               res4.RelatedTypes.Add(new WeItemTypeDetails() {
-                ItemTypeId = item.Value is int id ? id : 0,
+                ItemId = item.Value is int id ? id : (int?)null,
                 Name = item.DisplayText,
                 Description = item.Description ?? ""
               });
@@ -132,8 +153,8 @@ namespace Weavers.Core.Handlers.ItemTypes {
               .Select(i => new ItemLookup(i.Id, i.Name, weItemType.ToString()))
               .ToListAsync(cancellationToken);
             foreach (var item in items) {
-              res5.RelatedTypes.Add(new WeItemTypeDetails() {
-                ItemTypeId = item.Value is int id ? id : 0,
+              res5.RelatedTypes.Add(new WeItemTypeDetails() {                
+                ItemId = item.Value is int id ? id : (int?)null,
                 Name = item.DisplayText,
                 Description = item.Description ?? ""
               });
@@ -163,7 +184,12 @@ namespace Weavers.Core.Handlers.ItemTypes {
   }
 
   public class WeItemTypeDetails {
-    public int ItemTypeId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ItemTypeId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ItemId { get; set; }
     public string Name { get; set; } = "";
     public string Description { get; set; } = "";
   }

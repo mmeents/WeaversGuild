@@ -29,7 +29,7 @@ namespace TheLoomApp {
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Operator {
       get => edOperator.Text;
-      set => edOperator.Text = value; 
+      set => edOperator.Text = value;
     }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -37,8 +37,6 @@ namespace TheLoomApp {
       get => edHarness.Text;
       set => edHarness.Text = value;
     }
-
-
 
   }
 }

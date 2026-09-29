@@ -25,7 +25,7 @@ namespace Weavers.Core.Service {
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken) {
       await Task.Delay(1500, stoppingToken);
-      _logger.LogInformation("🚀 Weavers MCP Server starting");
+      _logger.LogInformation($"🚀 {Cx.McpAppName}, {Cx.AppVersion} Server starting");
       DiBridgeService.Initialize(_serviceProvider);
       MCPServer.Register<SummaryTools>();
       MCPServer.Register<AppGraphOrgTools>();
@@ -37,6 +37,7 @@ namespace Weavers.Core.Service {
       MCPServer.Register<StorytimeTools>();
       MCPServer.Register<ChessTools>();
       MCPServer.Register<PatternTools>();
+      MCPServer.Register<ComfyTools>();
 
       var mcpDriver = _configuration[Cx.McpStartupParamProviderKey] ?? "McpPilotNameNotSet";
       using var scope = _scopeFactory.CreateScope();

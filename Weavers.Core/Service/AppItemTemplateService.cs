@@ -19,7 +19,7 @@ namespace Weavers.Core.Service {
     private readonly IServiceScopeFactory _scopeFactory = serviceScopeFactory;
 
     private IMediator GetMediator() {
-      var scope = _scopeFactory.CreateScope();
+      using var scope = _scopeFactory.CreateScope();
       return scope.ServiceProvider.GetRequiredService<IMediator>();
     }
 
