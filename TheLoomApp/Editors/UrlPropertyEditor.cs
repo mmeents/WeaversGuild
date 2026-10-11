@@ -84,7 +84,7 @@ namespace TheLoomApp.Editors {
     }
 
     private void BtnBrowse_Click(object? sender, EventArgs e) {      
-      var local = Path.GetDirectoryName(textBox1.Text);
+      var local = textBox1.Text;
       if (local != null && local.IsValidBrowserUrl()) {
         Process.Start(new ProcessStartInfo {
           FileName = local,

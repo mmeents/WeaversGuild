@@ -370,6 +370,7 @@ namespace Weavers.Core.Constants {
     public const string ItEntryState = "EntryState";
     public const string ItExitState = "ExitState";
     public const string ItExpires = "Expires";
+    public const string ItExportOnWrite = "ExportOnWrite";
     public const string ItFilePath = "FilePath";
     public const string ItFileExt = "FileExt";
     public const string ItFileSize = "FileSize";
@@ -423,6 +424,8 @@ namespace Weavers.Core.Constants {
 
     public const string ItLifetimeScope = "LifetimeScope";
     public const string ItLibraryInclude = "LibInclude";
+    public const string ItLinkIconUrl = "LinkIconUrl";
+    public const string ItLinkAsEmbed = "LinkAsEmbed";
     public const string ItLmStudioConfig = "LmStudioCfg";
     public const string ItMaxSize = "MaxSize";  
     public const string ItMaxAttempts = "MaxAttempts";
@@ -468,6 +471,7 @@ namespace Weavers.Core.Constants {
     public const string ItRating = "Rating";
     public const string ItRealm = "Realm";
     public const string ItReplacedBy = "ReplacedBy";
+    public const string ItPublishedUrl = "PublishedUrl";
     public const string ItProduced = "Produced";
     public const string ItRepoItemId = "RepoItemId";
     public const string ItReferenceItem = "RefItem";

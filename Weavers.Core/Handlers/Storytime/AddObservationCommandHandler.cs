@@ -29,9 +29,9 @@ namespace Weavers.Core.Handlers.Storytime {
         new CreateRelatedItemCommand(performanceItem.Id, (int)WeRelationTypes.Contains,
           (int)WeItemType.ObservationModel, request.name, request.description, "{}"));
 
-      if (newItem != null) {
+      if (newItem != null && request.todoId > 0) {
         var addedByProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
-        if (addedByProp != null && request.todoId > 0) {
+        if (addedByProp != null) {
           var attribution = await _mediator.Send(new ResolveAttributionQuery(request.todoId));
           addedByProp.Value = attribution.PresenceModelKey;
           await addedByProp.SaveProp(newItem, _mediator);

@@ -65,6 +65,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.ActorPerformanceModel => false,
         WeItemType.ObservationModel => true,
         WeItemType.StoryRollupModel => true,
+        WeItemType.MusicAlbumModel => true,
+        WeItemType.AlbumTrackModel => true,
+        WeItemType.LinkedOnModel => true,
 
         WeItemType.SolutionModel => true,
         WeItemType.LibraryModel => true,
@@ -137,7 +140,8 @@ namespace Weavers.Core.Extensions {
         WeItemType.ComfyOpTodoModel => new HashSet<WeItemType> { WeItemType.ComfyOperationsModel },
         WeItemType.ComfyOpParamModel => new HashSet<WeItemType> { WeItemType.ComfyOpTodoModel },
         WeItemType.ComfyOpTodoAttemptModel => new HashSet<WeItemType> { WeItemType.ComfyOpTodoModel },
-        WeItemType.ComfyMediaFileModel => new HashSet<WeItemType> { WeItemType.OrgFolderModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.ComfyOpTodoAttemptModel },
+        WeItemType.ComfyMediaFileModel => new HashSet<WeItemType> { WeItemType.OrgFolderModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, 
+          WeItemType.ComfyOpTodoAttemptModel, WeItemType.RealmModel, WeItemType.StoryRollupModel, WeItemType.MusicAlbumModel, WeItemType.AlbumTrackModel },
 
         WeItemType.RealmModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.StoryModel => new HashSet<WeItemType> { WeItemType.RealmModel },
@@ -149,6 +153,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.ActorPerformanceModel => new HashSet<WeItemType> { WeItemType.PerformanceModel },
         WeItemType.ObservationModel => new HashSet<WeItemType> { WeItemType.PerformanceModel },
         WeItemType.StoryRollupModel => new HashSet<WeItemType> { WeItemType.RealmModel },
+        WeItemType.MusicAlbumModel => new HashSet<WeItemType> { WeItemType.RealmModel },
+        WeItemType.AlbumTrackModel => new HashSet<WeItemType> { WeItemType.MusicAlbumModel },
+        WeItemType.LinkedOnModel => new HashSet<WeItemType> { WeItemType.RealmModel, WeItemType.StoryRollupModel, WeItemType.MusicAlbumModel, WeItemType.AlbumTrackModel },
 
         WeItemType.SolutionModel => new HashSet<WeItemType> { WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },
         WeItemType.SolutionImportModel => new HashSet<WeItemType> { WeItemType.SolutionModel },

@@ -3572,6 +3572,32 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 887840109L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "ExportOnWrite",
+                            Rank = 1,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 906081851L,
+                            DefaultValue = "",
+                            EditorTypeId = 15,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1158,
+                            Key = "PublishedUrl",
+                            Rank = 2,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
                             Id = 62661322L,
                             DefaultValue = "",
                             EditorTypeId = 5,
@@ -3626,6 +3652,19 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 1389682802L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1160,
+                            Key = "ExportOnWrite",
+                            Rank = 3,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
                             Id = 30480761L,
                             DefaultValue = "",
                             EditorTypeId = 12,
@@ -3648,19 +3687,6 @@ namespace Weavers.Core.Migrations
                             ItemTypeId = 1160,
                             Key = "CoverImgPrompt",
                             Rank = 8,
-                            ValueDataTypeId = 54
-                        },
-                        new
-                        {
-                            Id = 2140676322L,
-                            DefaultValue = "",
-                            EditorTypeId = 15,
-                            IsReadOnly = false,
-                            IsRequired = false,
-                            IsVisible = true,
-                            ItemTypeId = 1160,
-                            Key = "CoverImgUrl",
-                            Rank = 5,
                             ValueDataTypeId = 54
                         },
                         new
@@ -3904,6 +3930,19 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 1672982413L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1180,
+                            Key = "ExportOnWrite",
+                            Rank = 1,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
                             Id = 248253779L,
                             DefaultValue = "",
                             EditorTypeId = 12,
@@ -3956,15 +3995,80 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
-                            Id = 941576447L,
+                            Id = 1756118225L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1185,
+                            Key = "ExportOnWrite",
+                            Rank = 1,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 1939950204L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1185,
+                            Key = "Credits",
+                            Rank = 9,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1038379064L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1186,
+                            Key = "Credits",
+                            Rank = 9,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1838160992L,
                             DefaultValue = "",
                             EditorTypeId = 15,
                             IsReadOnly = false,
                             IsRequired = false,
                             IsVisible = true,
-                            ItemTypeId = 1180,
-                            Key = "CoverImgUrl",
+                            ItemTypeId = 1187,
+                            Key = "PublishedUrl",
+                            Rank = 1,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1280448088L,
+                            DefaultValue = "",
+                            EditorTypeId = 15,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1187,
+                            Key = "LinkIconUrl",
                             Rank = 2,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 472305031L,
+                            DefaultValue = "",
+                            EditorTypeId = 12,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1187,
+                            Key = "LinkAsEmbed",
+                            Rank = 3,
                             ValueDataTypeId = 54
                         },
                         new
@@ -8331,6 +8435,42 @@ namespace Weavers.Core.Migrations
                             Name = "StoryRollupModel",
                             ParentTypeId = 1160,
                             Rank = 1180
+                        },
+                        new
+                        {
+                            Id = 1185,
+                            Description = "Music Album",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "MusicAlbumModel",
+                            ParentTypeId = 1160,
+                            Rank = 1185
+                        },
+                        new
+                        {
+                            Id = 1186,
+                            Description = "Album Track",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AlbumTrackModel",
+                            ParentTypeId = 1185,
+                            Rank = 1186
+                        },
+                        new
+                        {
+                            Id = 1187,
+                            Description = "Linked On",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "LinkedOnModel",
+                            ParentTypeId = 1160,
+                            Rank = 1187
                         },
                         new
                         {

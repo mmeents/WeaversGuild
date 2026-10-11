@@ -21,11 +21,22 @@ namespace TheLoomApp.Extensions {
       await _tv.AddNewItem(newSubItem);
     }
 
+
+
     public static async Task AddComfyWfParam(this TreeView _tv, IMediator mediator, string name) {
       ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
       var item = _selectedNode?.Item;
       if (_selectedNode == null || item == null) { throw new ArgumentException("Selected node or item is null"); }
       var newSubItem = await mediator.Send(new AddComfyWfParamCommand(item.Id, name));
+      if (newSubItem == null) { return; }
+      await _tv.AddNewItem(newSubItem);
+    }
+
+    public static async Task AddComfyOpFolder(this TreeView _tv, IMediator mediator, string name) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null) { throw new ArgumentException("Selected node or item is null"); }
+      var newSubItem = await mediator.Send(new AddComfyOpFolderCommand(item.Id, name));
       if (newSubItem == null) { return; }
       await _tv.AddNewItem(newSubItem);
     }

@@ -1,5 +1,28 @@
 
 ## Update History
+
+- Db 160.1 10/11/2026
+  - Warning, Removes 2 properties (Cx.ItCoverImgUrl from Realm and Story types.), so users need to delete them before migrating their databases or else referencial links will fail the migration. so far looks like possibly the following 2 id so delete looks like:
+    - Would recommend running the migration first and if it fails then attempt the delete and try again. As it only matters if you have pre existing Realms and Stories in your databases with those properties. 
+```
+  delete FROM [dbo].[ItemProperties] where ItemPropertyDefaultId in (941576447, 2140676322)
+  -- or below from ssms should work as well
+  delete FROM [dbo].[ItemProperties] where name ='CoverImgUrl'
+```
+  
+  - Adds MusicAlbum and AlbumTrack types to support music albums and tracks.  
+  - Adds LinkedOn item, this along with Album exist on a realm which is a unit of publishing supported by the Write operations. Basially build the Realm as list of publishable types and the write will write it.  I also included the folder to write recursive children so one could write a folder of realms etc. 
+  - Stack ComfyMediaObjects on them. images, first a cover image, then a set of images for the album and then a set of images for each track.  The Write will write them all out to the folder as part of the publish. Songs on the Tracks, again takes first found.
+  - Adds ItExportedOnWrite property to the ComfyMediaObject, story and album to control when they are ready and can be published layer.
+  - Note: New properties should appear if you duplicate an item and delete the old.
+  - Fix bug in url prop editor so now it runs shell on the command which opens a browser.
+  - Lifted requirement on the ComfyOpFolder so they can reside anywhere instead of just on the gateway. 
+  - Added AddComfyOpFolder to the theLoomApp is still candidate for the tools.
+  - Added comfy props when duplicating a comfy todos.
+  - Adds RealmPublishing Ext with templates for the exported realm website. click Write button on a folder holding realms to publish it to the file system at the folder location.
+
+-- - 
+
 - Db 160 9/27/2026 
   - Adds Comfy Gateway.  See [AboutComfy](AboutComfy.md) 
 - ver 1.154.4 (9/14/2026)
@@ -23,7 +46,7 @@ Process:
 7. After call completeTodo with newly created file as reference item to mark todo complete.
 ```
 
-
+-- -
 - ver 1.154.3 9/7/2026
   - Reworks Start Chess Game and Make Move to pass the details of the game into the todo so players do not need to use getChessGame to get the game but can respond in 1 call make move.
   - Minor cleanup in the constants. 
@@ -37,7 +60,9 @@ Process:
   - Rework Drag Drop and Duplicate methods to make node build out faster.
   - Session creation bug on 2nd machine failed to find human user.  
   - Chess is for fun and exploration purposes. 
-    
+
+-- -    
+
 - Db 153 8/25/2026
   - rework storytime and completeTodo handlers to reduce trips to sql server with new getItemsByIds to grab multiple items at one time. 
   - Adds to Write button for on Realm to write a Index.json and all the children StoryRollup type items.  if on a StoryRollup it makes the Story.json file at location of last folder before the realm.
@@ -58,7 +83,9 @@ Process:
       - this enables additions done by the app to register in the attribution.  
       - The credits are all new the AddedBy properites.
   - Adds new ResolveAttributionQueryHandler. 
-  
+
+-- -
+
 - Db Version 149 - 152, 8/13/2026
   - Adds Storytime types and tools to the guild.
   - Adds MoveUp menu command to sort the tree.

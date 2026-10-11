@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
@@ -49,6 +48,36 @@ namespace Weavers.Core.Handlers.Items {
           await _mediator.Send(new AddUpdateItemPropertyCommand(
               itemProp?.Id ?? 0, newItem.Id, prop.Name, prop.Value, prop.ValueDataTypeId, prop.EditorTypeId, prop.ReferenceItemTypeId, prop.Rank));
 
+        }
+      }
+
+      if (item.ItemTypeId == (int)WeItemType.ComfyOpTodoModel) { 
+        var itemPropIds = item.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.ComfyOpParamModel).Select(r => r.RelatedItemId).ToList();               
+        List<int> ids = itemPropIds.Where(i => i.HasValue).Select(i => i!.Value).ToList();
+        var items = await _mediator.Send(new GetItemsByIdsQuery(ids), cancellationToken);
+        foreach (var itemPropId in itemPropIds) {
+          int id = itemPropId ?? 0;
+          if (id != 0) {
+            var itemProp = items.FirstOrDefault(i => i.Id == id);
+
+            if (itemProp != null) {
+              var newItemProp = await _mediator.Send(
+                new CreateRelatedItemCommand(newItem!.Id,
+                  (int)WeRelationTypes.Contains,
+                  itemProp.ItemTypeId,
+                  itemProp.Name,
+                  itemProp.Description,
+                  itemProp.Data));
+              if (newItemProp != null) {
+                foreach (var prop in itemProp.Properties) {
+                  var itemProp2 = newItemProp.Properties.FirstOrDefault(p => p.Name == prop.Name);
+                  await _mediator.Send(new AddUpdateItemPropertyCommand(
+                      itemProp2?.Id ?? 0, newItemProp.Id, prop.Name, prop.Value, prop.ValueDataTypeId, prop.EditorTypeId, prop.ReferenceItemTypeId, prop.Rank));
+                }
+              }
+            }
+
+          }
         }
       }
 

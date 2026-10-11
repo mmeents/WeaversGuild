@@ -237,6 +237,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.ActorPerformanceModel => (int)WeItemType.ActorPerformanceModel,
         WeItemType.ObservationModel => (int)WeItemType.ObservationModel,
         WeItemType.StoryRollupModel => (int)WeItemType.StoryRollupModel,
+        WeItemType.MusicAlbumModel => (int)WeItemType.MusicAlbumModel,
+        WeItemType.AlbumTrackModel => (int)WeItemType.AlbumTrackModel,
+        WeItemType.LinkedOnModel => (int)WeItemType.LinkedOnModel,
 
         WeItemType.SolutionModel => (int)WeItemType.SolutionModel,
         WeItemType.SolutionDocs => (int)WeItemType.SolutionDocs,

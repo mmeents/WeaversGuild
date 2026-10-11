@@ -257,7 +257,7 @@ namespace Weavers.Core.Enums {
           ComfyOpTodoAttemptModel = 1157,
             ComfyMediaFileModel = 1158,
 
-    RealmModel = 1160,  // universe of the story.
+    RealmModel = 1160,  // universe of the story or published is a list of stories or albums.
        StoryModel = 1163, //ItStoryStatus ItTargetSceneCount ItPovDefault  
         SceneModel = 1166, //itEntryState itExitState ItPOV ItSceneStatus                 
          CharacterModel = 1168,
@@ -267,8 +267,11 @@ namespace Weavers.Core.Enums {
            ActorPerformanceModel = 1178,  // json maintains the performance of the scene. (dialog, narration, action, etc.)
            ObservationModel = 1179, // description holds final prose 
        StoryRollupModel = 1180, // rollup of all a story from the Scene Observations
+       MusicAlbumModel = 1185, // collection of tracks, item name is Album name. independent of the story, but published if it exists on a writeable realm.
+         AlbumTrackModel = 1186, // information node about the child ComfyMediaFileModel that is a track in the album.
+       LinkedOnModel = 1187,
 
-      SolutionModel = 1190, 
+    SolutionModel = 1190, 
         SolutionDocs = 1191,
         SolutionImportModel = 1192, // import Libraries, apps, apis, mcps into a solution.
 

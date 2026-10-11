@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Weavers.Core.Extensions {
   public static class PathExts {
     public static PathValidity GetPathValidity(this string? path) {
-      if (string.IsNullOrWhiteSpace(path))
+      if (string.IsNullOrWhiteSpace(path)|| path == "0")
         return PathValidity.Invalid;
 
       try {

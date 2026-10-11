@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
 using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;

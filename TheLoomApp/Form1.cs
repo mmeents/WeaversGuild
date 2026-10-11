@@ -1,12 +1,9 @@
-using AngleSharp.Dom;
+// May of 2026, WeaversGuild formed and the Loom App become the following:
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
 using System.Text;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
@@ -16,14 +13,12 @@ using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Comfy;
-using Weavers.Core.Handlers.ItemTypes;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 using Weavers.Core.Tools;
-
 
 namespace TheLoomApp {
   public partial class Form1 : Form {
@@ -437,12 +432,11 @@ namespace TheLoomApp {
         try {
           node.Collapse();
 
-          var itemDto = await _appDataService.GetItemById(itemId);
+          var itemDto = await _appDataService.GetItemById(itemId, true);
           if (itemDto != null && node.Relation != null) {
             var newNode = node.Relation.ToItemNode(itemDto);
             node.Item = itemDto;
             _itemCache[itemId] = node;
-
           }
           node.Expand();
           node.ExpandAll();
@@ -584,6 +578,94 @@ namespace TheLoomApp {
       box.SelectedIndex = restoreIndex;
     }
     #endregion
+    
+    #region Tree View Drag Drop
+    private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+      // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
+      try {
+        var claudePath = WeaverExt.ClaudeExecutablePath;
+
+        if (claudePath != null) {
+          System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo() {
+            FileName = claudePath,
+            UseShellExecute = true,
+            Verb = "open"
+          });
+        } else {
+          MessageBox.Show("Could not determine the folder path for the Claude executable to start.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage(ex.Message + " Error opening Claude executable folder.");
+        MessageBox.Show("An error occurred while trying to open the Claude executable folder. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
+
+    private void tvKb_ItemDrag(object sender, ItemDragEventArgs e) {
+      if (e.Button == MouseButtons.Left && e.Item != null) {
+        var item = e.Item as ItemNode;
+        var itemType = (WeItemType?)item?.Item?.ItemTypeId;
+        if (itemType != null && itemType.Value.IsDragable()) {
+          DoDragDrop(e.Item, DragDropEffects.Move);
+        }
+      }
+    }
+
+    private async void tvKb_DragDrop(object sender, DragEventArgs e) {
+      try {
+        Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
+        ItemNode? targetItem = (ItemNode?)tvKb.GetNodeAt(targetPt);
+
+        if (targetItem != null && e.Data != null) {
+          ItemNode? dragNode = (ItemNode?)e.Data.GetData(typeof(ItemNode));
+          if (dragNode != null && dragNode.Item != null && targetItem.Item != null) {
+            var fnn = await _appDataService.MoveItemTo(dragNode.Item.Id, targetItem.Item.Id);
+            _appDataService.ClearCache();
+            tvKb.SelectedNode = targetItem;
+            await LoadRootProjects(targetItem.Item.Id);
+            foreach (ItemNode node in tvKb.SelectedNode.Nodes) {
+              if (node != null && string.Compare(node.Text, dragNode.Text, StringComparison.OrdinalIgnoreCase) == 0) {
+                tvKb.SelectedNode = node;
+                break;
+              }
+            }
+
+          }
+        }
+
+      } catch (Exception edd) {
+        DoLogMessage(edd.Message);
+      } finally {
+      }
+    }
+
+    private void tvKb_DragEnter(object sender, DragEventArgs e) {
+      e.Effect = DragDropEffects.Move;
+    }
+
+    private void tvKb_DragOver(object sender, DragEventArgs e) {
+      if (e.Data != null) {
+        ItemNode? selectedItem = (ItemNode?)e.Data.GetData(typeof(ItemNode));
+        if (selectedItem != null) {
+          var selItemtype = (WeItemType?)selectedItem?.Item?.ItemTypeId;
+          if (selItemtype == null || !selItemtype.Value.IsDragable()) {
+            e.Effect = DragDropEffects.None;
+            return;
+          }
+          var validTargetTypes = selItemtype.Value.GetValidParentTypesByItem();
+          Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
+          ItemNode? targetNode = (ItemNode?)tvKb.GetNodeAt(targetPt);
+          var targetItemType = (WeItemType?)targetNode?.Item?.ItemTypeId;
+          if (targetItemType == null || !validTargetTypes.Contains(targetItemType.Value)) {
+            e.Effect = DragDropEffects.None;
+            return;
+          }
+          e.Effect = DragDropEffects.Move;
+
+        }
+      }
+    }
+    #endregion
 
     #region Editing Items and Relations
 
@@ -595,7 +677,7 @@ namespace TheLoomApp {
           _itemPropertiesTab.ItemProps = _selectedNode.Item.Properties.ToList();
           _itemPropertiesTab.SetEditingMode(false);
           _itemPropertiesTab.SetLabelRight(Cx.intPropertyLabelLeft);
-
+          var localItem = _selectedNode.Item;
           var selectedItemTypeId = _selectedNode.Item.ItemTypeId;
 
           btnAttemptTodo.Visible = selectedItemTypeId == (int)WeItemType.TodoModel || selectedItemTypeId == (int)WeItemType.ComfyOpTodoModel;
@@ -605,26 +687,26 @@ namespace TheLoomApp {
           }
 
           if (selectedItemTypeId.IsOnPostPathUpdate()) {
-            var folderProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
+            var folderProp = _selectedNode.Item?.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
               || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
-            if (folderProp != null) {
-              string basePath = folderProp.Value ?? "";
+            if (folderProp != null && _selectedNode.Item != null) {
+              string basePath = folderProp.Value ?? "";             
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
           } else if (selectedItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
-            var hasLmStudio = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
-            var hasClaude = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
-            var hasComfy = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItHasComfyPresence)?.Value.AsBoolean();
-            await _appDataService.SyncHarnessPresence(_selectedNode.Item.Id, hasLmStudio, hasClaude, hasComfy);
+            var hasLmStudio = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasLmStudioPresence)?.Value.AsBoolean();
+            var hasClaude = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasClaudePresence)?.Value.AsBoolean();
+            var hasComfy = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItHasComfyPresence)?.Value.AsBoolean();
+            await _appDataService.SyncHarnessPresence(localItem.Id, hasLmStudio, hasClaude, hasComfy);
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
           } else if (selectedItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
-            var item = _selectedNode.Item;
-            var resyncProp = item.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
+            
+            var resyncProp = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
             if (resyncProp != null) {
               bool shouldResync = resyncProp.Value.AsBoolean();
               if (shouldResync) {
-                var updatedGateway = await _appDataService.SyncLmStudioModels(item.Id);
+                var updatedGateway = await _appDataService.SyncLmStudioModels(localItem.Id);
                 if (updatedGateway != null) {
                   _selectedNode.Item = updatedGateway;
                 }
@@ -633,41 +715,41 @@ namespace TheLoomApp {
               }
             }
           } else if (selectedItemTypeId == (int)WeItemType.RssChannelModel) {
-            var resyncProp = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResyncChannel);
+            var resyncProp = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResyncChannel);
             if (resyncProp != null) {
               bool shouldResync = resyncProp.Value.AsBoolean();
               if (shouldResync) {
-                var updatedChannel = await _appGraphOrgService.RssResyncChannel(_selectedNode.Item);
+                var updatedChannel = await _appGraphOrgService.RssResyncChannel(localItem);
                 if (updatedChannel != null) {
                   _selectedNode.Item = updatedChannel;
                 }
                 var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
                 TvKb_BeforeExpand(ee, ee);
-                SetupPropertiesTabForItem(_selectedNode.Item);
+                SetupPropertiesTabForItem(localItem);
               }
             }
           } else if (selectedItemTypeId == (int)WeItemType.RssItemModel
             || selectedItemTypeId == (int)WeItemType.RssLinkedHtmlModel) {
-            var isCheckedResolveLink = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink)?.Value.AsBoolean();
-            var isCheckedExtractLinks = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItExtractLink)?.Value.AsBoolean();
+            var isCheckedResolveLink = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItResolveLink)?.Value.AsBoolean();
+            var isCheckedExtractLinks = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItExtractLink)?.Value.AsBoolean();
             if (isCheckedResolveLink == true) {
-              var updatedItem = await _appGraphOrgService.RssResolveLink(_selectedNode.Item);
+              var updatedItem = await _appGraphOrgService.RssResolveLink(localItem);
               if (updatedItem != null) {
                 _selectedNode.Item = updatedItem;
               }
             }
             if (isCheckedExtractLinks == true) {
-              var updatedItem = await _appGraphOrgService.RssExtractLinks(_selectedNode.Item);
+              var updatedItem = await _appGraphOrgService.RssExtractLinks(localItem);
               if (updatedItem != null) {
                 _selectedNode.Item = updatedItem;
               }
             }
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
-            SetupPropertiesTabForItem(_selectedNode.Item);
+            SetupPropertiesTabForItem(localItem);
           } else if (selectedItemTypeId == (int)WeItemType.DependencyInjectionModel) {
-            var hasDbContext = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
-            await _appDataService.AddRemoveDbContextToLibDi(_selectedNode.Item.Id, hasDbContext);
+            var hasDbContext = localItem.Properties.Any(p => p.Name == Cx.ItHasDbContext && p.Value.AsBoolean());
+            await _appDataService.AddRemoveDbContextToLibDi(localItem.Id, hasDbContext);
 
             if (!hasDbContext && _selectedNode.Nodes.Count > 0) {
               foreach (ItemNode node in _selectedNode.Nodes) {
@@ -679,34 +761,34 @@ namespace TheLoomApp {
               var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
               TvKb_BeforeExpand(ee, ee);
             }
-            var hasMediatR = _selectedNode.Item.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
-            var itemId = _selectedNode.Item.Id;
+            var hasMediatR = localItem.Properties.Any(p => p.Name == Cx.ItHasMediator && p.Value.AsBoolean());
+            var itemId = localItem.Id;
             if (itemId != 0 && _itemTemplateService != null) {
               string? newDescription = await _itemTemplateService.GetDependencyInjectionTemplate(itemId);
               if (newDescription != null) {
-                _selectedNode.Item.Description = newDescription;
-                await _appDataService.UpdateItemAsync(_selectedNode.Item);
+                localItem.Description = newDescription;
+                await _appDataService.UpdateItemAsync(localItem);
               }
             }
           } else if (selectedItemTypeId == (int)WeItemType.ClassModel) {
-            var itemId = _selectedNode.Item.Id;
-            var propGenerateInterface = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
+            var itemId = localItem.Id;
+            var propGenerateInterface = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItGenerateInterface);
             bool generateInterface = false;
             if (propGenerateInterface != null) {
               generateInterface = propGenerateInterface.Value.AsBoolean();
             }
 
-            var propRegisterDi = _selectedNode.Item.Properties.FirstOrDefault(p => p.Name == Cx.ItRegisterDi);
+            var propRegisterDi = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRegisterDi);
             if (propRegisterDi != null) {
               var registerDi = propRegisterDi.Value.AsBoolean();
-              await _appDataService.AddRemoveClassToLibDi(_selectedNode.Item.Id, registerDi, generateInterface);
+              await _appDataService.AddRemoveClassToLibDi(localItem.Id, registerDi, generateInterface);
             }
 
             if (itemId != 0 && _itemTemplateService != null) {
               string? newDesc = await _itemTemplateService.GetClassTemplate(itemId);
               if (newDesc != null) {
-                _selectedNode.Item.Description = newDesc;
-                await _appDataService.UpdateItemAsync(_selectedNode.Item);
+                localItem.Description = newDesc;
+                await _appDataService.UpdateItemAsync(localItem);
               }
             }
 
@@ -719,8 +801,8 @@ namespace TheLoomApp {
                 prevParent = parent;
                 parent = parent.Parent as ItemNode;
               }
-              if (parent != null) {
-                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item);
+              if (parent != null && parent.Item != null) {
+                await _appDataService.ProcessPropertyUpdate(parent.Item!, prevParent.Item!);
               }
             }
           }
@@ -852,6 +934,7 @@ namespace TheLoomApp {
         miAddPatDimOption.Visible = false;
         miGetNextDraw.Visible = false;
 
+        miAddComfyOpFolder.Visible = false;
         miAddComfyWorkflow.Visible = false;
         miAddComfyWfParam.Visible = false;
         miAddComfyTodo.Visible = false;
@@ -864,6 +947,9 @@ namespace TheLoomApp {
         miAddCharacter.Visible = false;
         miAddPerformance.Visible = false;
         miAddObserved.Visible = false;
+        miAddMusicAlbum.Visible = false;
+        miAddMusicTrack.Visible = false;
+        miAddLinkedOn.Visible = false;
 
         miAddSolution.Visible = false;
         miAddSolutionImport.Visible = false;
@@ -939,6 +1025,7 @@ namespace TheLoomApp {
         miAddPatDimOption.Visible = itemType == WeItemType.PatternDimensionModel;
         miGetNextDraw.Visible = itemType == WeItemType.PatternModel;
 
+        miAddComfyOpFolder.Visible = ((int)itemType).IsFolderType();
         miAddComfyWorkflow.Visible = itemType == WeItemType.ComfyWorkflowFolderModel;
         miAddComfyWfParam.Visible = itemType == WeItemType.ComfyWorkflowTemplate;
         miAddComfyTodo.Visible = itemType == WeItemType.ComfyOperationsModel;
@@ -958,6 +1045,9 @@ namespace TheLoomApp {
         miAddCharacter.Visible = itemType == WeItemType.SceneModel || itemType == WeItemType.CallSheetModel || itemType == WeItemType.PerformanceModel;
         miAddPerformance.Visible = itemType == WeItemType.SceneModel;
         miAddObserved.Visible = itemType == WeItemType.PerformanceModel;
+        miAddMusicAlbum.Visible = itemType == WeItemType.RealmModel;
+        miAddMusicTrack.Visible = itemType == WeItemType.MusicAlbumModel;
+        miAddLinkedOn.Visible = ((int)itemType).IsLinkedOnParent();
 
         miAddSolution.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSolutionImport.Visible = itemType == WeItemType.SolutionModel;
@@ -1467,6 +1557,23 @@ namespace TheLoomApp {
       }
     }
 
+    private async void miAddComfyOpFolder_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ComfyOperationsModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddComfyOpFolder(mediator, newItemName);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add comfy operations folder - error:" + ex.Message);
+        MessageBox.Show($"Error adding comfy operations folder: {ex.Message}", "Add Comfy Operations Folder Failed");
+      }
+    }
+
     private async void miAddComfyTodo_Click(object sender, EventArgs e) {
       try {
 
@@ -1695,6 +1802,65 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding observed: {ex.Message}", "Add Observed failed");
       }
     }
+
+    private async void miAddMusicAlbum_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.MusicAlbumModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddMusicAlbum(mediator, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add music album - error: " + ex.Message);
+        MessageBox.Show($"Error adding music album: {ex.Message}", "Add Music Album failed");
+      }
+    }
+
+    private async void miAddMusicTrack_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.AlbumTrackModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddAlbumTrack(mediator, newItemName, newItemDesc);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add music track - error: " + ex.Message);
+        MessageBox.Show($"Error adding music track: {ex.Message}", "Add Music Track failed");
+      }
+    }
+
+    private async void miAddLinkedOn_Click(object sender, EventArgs e) {
+      try {
+
+        using var dlg = new GetNewStorytimeItemDetailsDialog(_serviceScopeFactory, WeItemType.LinkedOnModel, tvKb);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          var newItemDesc = dlg.Description;
+          var newItemLinkUrl = dlg.LinkUrl;
+          var newItemLinkIconUrl = dlg.LinkIconUrl;
+          var newItemLinkEmbed = dlg.LinkEmbed;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddLinkedOn(mediator, newItemName, newItemLinkUrl, newItemLinkEmbed, newItemLinkIconUrl);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add linked on - error: " + ex.Message);
+        MessageBox.Show($"Error adding linked on: {ex.Message}", "Add Linked On failed");
+      }
+    }
+
+
     #endregion
 
     #region Solution handlers
@@ -2137,7 +2303,7 @@ namespace TheLoomApp {
 
     #endregion
 
-    #region On Generate Context Menu and btn clicks
+    #region Details Tab Btn Clicks 
     private async void miGenerate_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
         MessageBox.Show("Please select an item to generate.", "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -2279,7 +2445,7 @@ namespace TheLoomApp {
         DoLogMessage($"Skipped: {result.FilesSkipped}");
         DoLogMessage($"Removed: {result.FilesRemoved}");
       }
-      if (_selectedNode.Item.ItemTypeId.IsContentType()) {
+      if (_selectedNode.Item.ItemTypeId.IsWriteFileType()) {
         try {
           var result = await _appDataService.WriteDocument(_selectedNode.Item.Id);
           DoLogMessage($"Success: {result.Success} {result.Message}");
@@ -2288,7 +2454,6 @@ namespace TheLoomApp {
         }
       }
     }
-
 
     private async void btnAttemptTodo_Click(object sender, EventArgs e) {
       var item = _selectedNode?.Item;
@@ -2345,11 +2510,9 @@ namespace TheLoomApp {
       }
     }
 
-
     #endregion
+
     #region Ready tab
-
-
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new();
 
     private async void ReloadReadyTab() {
@@ -2459,6 +2622,7 @@ namespace TheLoomApp {
     }
 
     #endregion
+
     #region Schedule Tab
 
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _readyDict = new();
@@ -2729,8 +2893,8 @@ namespace TheLoomApp {
 
     }
 
-
     #endregion
+
     #region Results tab
     private async void ReloadResultsTab() {
       await ReloadResultsTabAsync();
@@ -2889,6 +3053,7 @@ namespace TheLoomApp {
     }
 
     #endregion
+
     #region Search Tab
     private async void btnSearchText_Click(object sender, EventArgs e) {
       if (!string.IsNullOrWhiteSpace(tbSearchText.Text)) {
@@ -2906,93 +3071,7 @@ namespace TheLoomApp {
       }
     }
     #endregion
-    #region Drag Drop on Tree
-    private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-      // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
-      try {
-        var claudePath = WeaverExt.ClaudeExecutablePath;
 
-        if (claudePath != null) {
-          System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo() {
-            FileName = claudePath,
-            UseShellExecute = true,
-            Verb = "open"
-          });
-        } else {
-          MessageBox.Show("Could not determine the folder path for the Claude executable to start.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-      } catch (Exception ex) {
-        DoLogMessage(ex.Message + " Error opening Claude executable folder.");
-        MessageBox.Show("An error occurred while trying to open the Claude executable folder. Please check the logs for details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-      }
-    }
-
-    private void tvKb_ItemDrag(object sender, ItemDragEventArgs e) {
-      if (e.Button == MouseButtons.Left && e.Item != null) {
-        var item = e.Item as ItemNode;
-        var itemType = (WeItemType?)item?.Item?.ItemTypeId;
-        if (itemType != null && itemType.Value.IsDragable()) {
-          DoDragDrop(e.Item, DragDropEffects.Move);
-        }
-      }
-    }
-
-    private async void tvKb_DragDrop(object sender, DragEventArgs e) {
-      try {
-        Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
-        ItemNode? targetItem = (ItemNode?)tvKb.GetNodeAt(targetPt);
-
-        if (targetItem != null && e.Data != null) {
-          ItemNode? dragNode = (ItemNode?)e.Data.GetData(typeof(ItemNode));
-          if (dragNode != null && dragNode.Item != null && targetItem.Item != null) {
-            var fnn = await _appDataService.MoveItemTo(dragNode.Item.Id, targetItem.Item.Id);
-            _appDataService.ClearCache();
-            tvKb.SelectedNode = targetItem;
-            await LoadRootProjects(targetItem.Item.Id);
-            foreach (ItemNode node in tvKb.SelectedNode.Nodes) {
-              if (node != null && string.Compare(node.Text, dragNode.Text, StringComparison.OrdinalIgnoreCase) == 0) {
-                tvKb.SelectedNode = node;
-                break;
-              }
-            }
-
-          }
-        }
-
-      } catch (Exception edd) {
-        DoLogMessage(edd.Message);
-      } finally {
-      }
-    }
-
-    private void tvKb_DragEnter(object sender, DragEventArgs e) {
-      e.Effect = DragDropEffects.Move;
-    }
-
-    private void tvKb_DragOver(object sender, DragEventArgs e) {
-      if (e.Data != null) {
-        ItemNode? selectedItem = (ItemNode?)e.Data.GetData(typeof(ItemNode));
-        if (selectedItem != null) {
-          var selItemtype = (WeItemType?)selectedItem?.Item?.ItemTypeId;
-          if (selItemtype == null || !selItemtype.Value.IsDragable()) {
-            e.Effect = DragDropEffects.None;
-            return;
-          }
-          var validTargetTypes = selItemtype.Value.GetValidParentTypesByItem();
-          Point targetPt = tvKb.PointToClient(new Point(e.X, e.Y));
-          ItemNode? targetNode = (ItemNode?)tvKb.GetNodeAt(targetPt);
-          var targetItemType = (WeItemType?)targetNode?.Item?.ItemTypeId;
-          if (targetItemType == null || !validTargetTypes.Contains(targetItemType.Value)) {
-            e.Effect = DragDropEffects.None;
-            return;
-          }
-          e.Effect = DragDropEffects.Move;
-
-        }
-      }
-    }
-    #endregion
     #region Comfy Tabs
 
     private async void tcComfyScheduleSwitch_SelectedIndexChanged(object sender, EventArgs e) {
@@ -3003,7 +3082,7 @@ namespace TheLoomApp {
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _scheduleComfyDict = new();
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _resultComfyDict = new();
 
-    public async Task ReloadComfyTabAsync(TabPage? selectedTab) { 
+    public async Task ReloadComfyTabAsync(TabPage? selectedTab) {
 
       ListBox? list = null;
       IReadOnlyList<ReadyTodoRow> schedules = new List<ReadyTodoRow>();
@@ -3262,7 +3341,7 @@ namespace TheLoomApp {
           } else {
             lbComfyWorkingStatus.Text = "Status: Pipeline Stopped";
             btnAttemptComfyTodo.Text = "Start";
-            btnAttemptComfyTodo.Enabled = true;            
+            btnAttemptComfyTodo.Enabled = true;
             _isComfyStopping = false;
           }
         }
@@ -3315,9 +3394,9 @@ namespace TheLoomApp {
       }
       _isComfyEngineRunning = true;
       bool shouldContinue = false;
-      try {   
+      try {
         // reload the schedule
-        await ReloadComfyTabAsync(tpComfySchedule);          
+        await ReloadComfyTabAsync(tpComfySchedule);
         if (_scheduleComfyDict.Count == 0) {
           return false;
         }
@@ -3362,7 +3441,14 @@ namespace TheLoomApp {
     }
 
 
+
+
+
+
+
+
     #endregion
+   
     //  -- end of form and namespace below, no need to edit. 
   }
 }

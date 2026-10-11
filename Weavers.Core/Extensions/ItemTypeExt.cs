@@ -1,9 +1,6 @@
-﻿using System.Data.SqlTypes;
-using System.Drawing;
-using Weavers.Core.Constants;
-using Weavers.Core.Entities;
+﻿using Weavers.Core.Constants;
 using Weavers.Core.Enums;
-using Weavers.Core.Models;
+using System.Collections.Generic;
 
 namespace Weavers.Core.Extensions {
 
@@ -50,10 +47,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.GameRoomModel => 17,
         WeItemType.ChessGameModel => 18,
 
-        WeItemType.PatternModel => 1,   // needs icons.
-        WeItemType.PatternDimensionModel => 2,
-        WeItemType.PatternOptionModel => 3,
-        WeItemType.PatternDrawModel => 4,
+        WeItemType.PatternModel => 34,   // needs icons.
+        WeItemType.PatternDimensionModel => 35,
+        WeItemType.PatternOptionModel => 14,
+        WeItemType.PatternDrawModel => 8,
 
         WeItemType.ProjectFolderModel => 1,
         WeItemType.RelativeFolderModel => 1,
@@ -76,7 +73,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.ComfyOpTodoModel => 22,
         WeItemType.ComfyOpParamModel => 14,
         WeItemType.ComfyOpTodoAttemptModel => 24,
-        WeItemType.ComfyMediaFileModel => 17,
+        WeItemType.ComfyMediaFileModel => 31,
 
         WeItemType.RealmModel => 1,
         WeItemType.StoryModel => 13,
@@ -88,6 +85,9 @@ namespace Weavers.Core.Extensions {
         WeItemType.ActorPerformanceModel => 27,
         WeItemType.ObservationModel => 12,
         WeItemType.StoryRollupModel => 12,
+        WeItemType.MusicAlbumModel => 33,
+        WeItemType.AlbumTrackModel => 30,
+        WeItemType.LinkedOnModel => 32,
 
         WeItemType.SolutionModel => 13,
         WeItemType.SolutionImportModel => 15,
@@ -257,7 +257,7 @@ namespace Weavers.Core.Extensions {
       };
     }
 
-    public static bool IsFolderType(this int itemTypeId) {
+    public static bool IsFolderType(this int itemTypeId) {      
       return itemTypeId switch {
         (int)WeItemType.OrganizationModel => true,
         (int)WeItemType.OrgDeskRolesModel => true,
@@ -290,6 +290,16 @@ namespace Weavers.Core.Extensions {
       };
     }
 
+    public static bool IsLinkedOnParent(this int itemTypeId) {
+      return itemTypeId switch {
+        (int)WeItemType.RealmModel => true,
+        (int)WeItemType.StoryRollupModel => true,
+        (int)WeItemType.MusicAlbumModel => true,
+        (int)WeItemType.AlbumTrackModel => true,        
+        _ => false
+      };
+    }
+
     public static bool IsClassType(this int itemTypeId) {
       return itemTypeId switch {
         (int)WeItemType.ClassModel => true,
@@ -316,22 +326,29 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.CharacterModel => true,
         (int)WeItemType.ObservationModel => true,
         (int)WeItemType.StoryRollupModel => true,
+        (int)WeItemType.MusicAlbumModel => true,
+        (int)WeItemType.AlbumTrackModel => true,
         _ => false
       };
     }
 
     public static bool IsWriteFileType(this int itemTypeId) {
+      if (itemTypeId.IsFolderType()) { 
+        return true;
+      }
       return itemTypeId switch {
+        (int)WeItemType.OrgFileModel => true,
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.SolutionModel => true,
         (int)WeItemType.OrganizationModel => true,
-        (int)WeItemType.OrgFileModel => true,
+        (int)WeItemType.ProjectFolderModel => true,
+        (int)WeItemType.RelativeFolderModel => true,
         (int)WeItemType.RssItemModel => true,
         (int)WeItemType.RssLinkedHtmlModel => true,
         (int)WeItemType.GitFileModel => true,
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
-        (int)WeItemType.FileConfigModel => true,                
+        (int)WeItemType.FileConfigModel => true,
         _ => false
       };
     }
@@ -649,6 +666,10 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.PerformanceModel => true,
         (int)WeItemType.ObservationModel => true,
         (int)WeItemType.StoryRollupModel => true,
+        (int)WeItemType.MusicAlbumModel => true,
+        (int)WeItemType.AlbumTrackModel => true,
+        (int)WeItemType.LinkedOnModel => true,
+
         (int)WeItemType.LibraryModel => true,
         (int)WeItemType.DependencyInjectionModel => true,
         (int)WeItemType.DbContextModel => true,

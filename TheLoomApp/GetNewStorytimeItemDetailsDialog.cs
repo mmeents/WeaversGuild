@@ -26,6 +26,9 @@ namespace TheLoomApp {
     public string EntryState => edEntryState.Text;
     public string ExitState => edExitState.Text;
     public string Tone => edEntryState.Text;
+    public string LinkUrl => edEntryState.Text;
+    public string LinkIconUrl => edExitState.Text;
+    public string LinkEmbed => edDescription.Text;
 
     public GetNewStorytimeItemDetailsDialog(
       IServiceScopeFactory serviceScopeFactory, 
@@ -88,6 +91,32 @@ namespace TheLoomApp {
         var top = edExitState.Top + edExitState.Height + 20;
         edDescription.Top = top;
         lbDescription.Top = top;
+      } else if (_targetTypeToCreate == WeItemType.LinkedOnModel) {
+        lbNewItemName.Text = "Link Name:";
+        lbEntry.Text = "Link URL:";
+        lbExit.Text = "Link Icon URL:";
+        lbDescription.Text = "Link Embed:";
+
+        lbNewItemName.Left = edName.Left - lbNewItemName.Width - 10;
+        lbEntry.Left = edEntryState.Left - lbEntry.Width - 10;
+        lbExit.Left = edExitState.Left - lbExit.Width - 10;
+        lbDescription.Left = edDescription.Left - lbDescription.Width - 10;
+
+        lbEntry.Visible = true;
+        edEntryState.Visible = true;
+        lbExit.Visible = true;
+        edExitState.Visible = true;
+
+        var top = edName.Top + edName.Height + 20;
+        lbEntry.Top = top;
+        edEntryState.Top = top;
+        top = edEntryState.Top + edEntryState.Height + 20;
+        lbExit.Top = top;
+        edExitState.Top = top;
+        top = edExitState.Top + edExitState.Height + 20;
+        lbDescription.Top = top;
+        edDescription.Top = top;
+
       } else {
         var top = edName.Top + edName.Height + 20;
         edDescription.Top = top;

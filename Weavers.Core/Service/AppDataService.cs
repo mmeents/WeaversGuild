@@ -21,7 +21,7 @@ namespace Weavers.Core.Service {
     Task<AppSessionResponse?> GetAppSession();
     Task<bool> EnforceDataRetentionOrgPolicy();
     Task <List<ItemDto>> GetRootProjectsAsync();
-    Task<ItemDto?> GetItemById(int itemId);
+    Task<ItemDto?> GetItemById(int itemId, bool? skipCache = false);
     Task<ItemDto?> CreateItemAsync(ItemDto itemDto);
     Task<ItemDto?> CreateRelatedItemAsync(int parentItemId, int relationTypeId, int ItemTypeId, string itemName, string itemDescription, string itemData);
     Task<bool> DeleteItemAsync(int itemId);
@@ -91,10 +91,10 @@ namespace Weavers.Core.Service {
       return result;
     }
 
-    public async Task<ItemDto?> GetItemById(int itemId) {
+    public async Task<ItemDto?> GetItemById(int itemId, bool? skipCache = false) {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-      var query = new GetItemByIdQuery(itemId);
+      var query = new GetItemByIdQuery(itemId, skipCache);
       var result = await mediator.Send(query);
       return result;
     }

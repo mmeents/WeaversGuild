@@ -123,5 +123,43 @@ namespace TheLoomApp.Extensions {
       await _tv.AddNewItem(newSubItem);
     }
 
+    public static async Task AddMusicAlbum(this TreeView _tv, IMediator _mediator, string name, string description) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null
+        || (item.ItemTypeId != (int)WeItemType.RealmModel)
+      ) {
+        throw new InvalidOperationException("Invalid node selected for adding Realms Music Album");
+      }
+      var newSubItem = await _mediator.Send(new AddMusicAlbumCommand(item.Id, name, description));
+      if (newSubItem == null) { return; }
+      await _tv.AddNewItem(newSubItem);
+    }
+
+    public static async Task AddAlbumTrack(this TreeView _tv, IMediator _mediator, string name, string description) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null
+        || (item.ItemTypeId != (int)WeItemType.MusicAlbumModel)
+      ) {
+        throw new InvalidOperationException("Invalid node selected for adding Realms Album Track");
+      }
+      var newSubItem = await _mediator.Send(new AddAlbumTrackCommand(item.Id, name, description));
+      if (newSubItem == null) { return; }
+      await _tv.AddNewItem(newSubItem);
+    }
+
+    public static async Task AddLinkedOn(this TreeView _tv, IMediator _mediator, string linkName, string linkUrl, string linkEmbed, string linkIconUrl) {
+      ItemNode? _selectedNode = _tv.SelectedNode as ItemNode;
+      var item = _selectedNode?.Item;
+      if (_selectedNode == null || item == null || (!item.ItemTypeId.IsLinkedOnParent()) ) {
+        throw new InvalidOperationException("Invalid node selected for adding Realms Linked On");
+      }
+      var newSubItem = await _mediator.Send(new AddLinkedOnCommand(item.Id, linkName, linkUrl, linkEmbed, linkIconUrl));
+      if (newSubItem == null) { return; }
+      await _tv.AddNewItem(newSubItem);
+    }
+
+
   }
 }

@@ -22,14 +22,14 @@ Update-Database -context FabricDbContext
 ```
 This should create the database.
 
-The database is named `FabricCoreV{version}` (currently `FabricCoreV153`). When adding a migration, increment the DB version in the README and connection strings `appSettings.json` there are 3 at root of TheLoomApp, TheLoomMcp, and api.
+The database is named `FabricCoreV{version}` (currently `FabricCoreV160`). When adding a migration, increment the DB version in the README and connection strings `appSettings.json` there are 3 at root of TheLoomApp, TheLoomMcp, and api.
 
-**Run TheLoomApp**: Set as startup project in Visual Studio, press F5. It is a WinForms app (`net9.0-windows`).
+**Run TheLoomApp**: Set as startup project in Visual Studio, press F5. It is a WinForms app (`net9.0-windows`). On first run you might need to Reload the tree as it keeps adding after it starts and lacks auto refresh.
 
 **Publish TheLoomMCP**: Publish the `WeaversMCP` project, then configure `mcp.json` for LM Studio / Claude with `--provider` arg (e.g., `"args": ["--provider", "LmStudio"]`). All providers have a mcp config, change the name to match.
 Note: once installed theLoomMcp lives with it's host. So to update it you need to bring down the host before publish. (hosts being claude desktop, claude code, or LM Studio)
 
-Also: After loading up for first time, there is a import feature.  Make sure to set the default root to WeaversGuild Repo for the Organization folder location then use, on settings tab, the Import Org Docs to load existing documentation.
+Also: After loading up for first time, there is a import feature.  Make sure to set the default root to WeaversGuild Repo for the Organization folder location then use, on settings tab, the Import Org Docs to load existing documentation. To that, the Write button when the organization is selected, will write it off to disc so that import can read it. (if db version 153, 154 versions as is no upgrade path.)
 
 ## Desks Todo Prompt Preview    
 ![previewtodoattempt](https://mmeents.github.io/files/PreviewTodoAttempt.png)    
@@ -44,3 +44,4 @@ see [ChangeLog.md](ChangeLog.md)
 ## My multi machine config
 ![TheLoomLooksLike](https://mmeents.github.io/files/TheLoomLooksLike.png)
 ![TheLoomLooksLike](https://mmeents.github.io/files/TheLoomAppMedia.png)
+

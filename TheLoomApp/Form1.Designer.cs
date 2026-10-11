@@ -54,6 +54,7 @@
       miGetNextDraw = new ToolStripMenuItem();
       miAddComfyWorkflow = new ToolStripMenuItem();
       miAddComfyWfParam = new ToolStripMenuItem();
+      miAddComfyOpFolder = new ToolStripMenuItem();
       miAddComfyTodo = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
@@ -69,6 +70,9 @@
       miAddCharacter = new ToolStripMenuItem();
       miAddPerformance = new ToolStripMenuItem();
       miAddObserved = new ToolStripMenuItem();
+      miAddMusicAlbum = new ToolStripMenuItem();
+      miAddMusicTrack = new ToolStripMenuItem();
+      miAddLinkedOn = new ToolStripMenuItem();
       miAddSolution = new ToolStripMenuItem();
       miAddSolutionImport = new ToolStripMenuItem();
       miAddFile = new ToolStripMenuItem();
@@ -290,9 +294,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyTodo, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1298);
+      cmsTreeMenus.Size = new Size(209, 1386);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -468,6 +472,13 @@
       miAddComfyWfParam.Text = "Add Workflow Param";
       miAddComfyWfParam.Click += miAddComfyWfParam_Click;
       // 
+      // miAddComfyOpFolder
+      // 
+      miAddComfyOpFolder.Name = "miAddComfyOpFolder";
+      miAddComfyOpFolder.Size = new Size(208, 22);
+      miAddComfyOpFolder.Text = "Add Comfy Op Folder";
+      miAddComfyOpFolder.Click += miAddComfyOpFolder_Click;
+      // 
       // miAddComfyTodo
       // 
       miAddComfyTodo.Name = "miAddComfyTodo";
@@ -572,6 +583,27 @@
       miAddObserved.Size = new Size(208, 22);
       miAddObserved.Text = "Add Observed";
       miAddObserved.Click += miAddObserved_Click;
+      // 
+      // miAddMusicAlbum
+      // 
+      miAddMusicAlbum.Name = "miAddMusicAlbum";
+      miAddMusicAlbum.Size = new Size(208, 22);
+      miAddMusicAlbum.Text = "Add Music Album";
+      miAddMusicAlbum.Click += miAddMusicAlbum_Click;
+      // 
+      // miAddMusicTrack
+      // 
+      miAddMusicTrack.Name = "miAddMusicTrack";
+      miAddMusicTrack.Size = new Size(208, 22);
+      miAddMusicTrack.Text = "Add Music Track";
+      miAddMusicTrack.Click += miAddMusicTrack_Click;
+      // 
+      // miAddLinkedOn
+      // 
+      miAddLinkedOn.Name = "miAddLinkedOn";
+      miAddLinkedOn.Size = new Size(208, 22);
+      miAddLinkedOn.Text = "Add Realms Linked On";
+      miAddLinkedOn.Click += miAddLinkedOn_Click;
       // 
       // miAddSolution
       // 
@@ -751,6 +783,12 @@
       ilTreeImages.Images.SetKeyName(27, "performance.png");
       ilTreeImages.Images.SetKeyName(28, "icons8-castle-16.png");
       ilTreeImages.Images.SetKeyName(29, "icons8-locked-16.png");
+      ilTreeImages.Images.SetKeyName(30, "icons8-music-16.png");
+      ilTreeImages.Images.SetKeyName(31, "icons8-bank-16.png");
+      ilTreeImages.Images.SetKeyName(32, "icons8-at-sign-16.png");
+      ilTreeImages.Images.SetKeyName(33, "icons8-picture-16.png");
+      ilTreeImages.Images.SetKeyName(34, "icons8-color-wheel-16.png");
+      ilTreeImages.Images.SetKeyName(35, "icons8-slider-16.png");
       // 
       // splitContainer3
       // 
@@ -1061,7 +1099,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -2237,5 +2274,9 @@
     private TextBox edComfyResultPreview;
     private Label lbComfyWorkingStatus;
     private System.Windows.Forms.Timer tRunComfy;
+    private ToolStripMenuItem miAddComfyOpFolder;
+    private ToolStripMenuItem miAddMusicAlbum;
+    private ToolStripMenuItem miAddMusicTrack;
+    private ToolStripMenuItem miAddLinkedOn;
   }
 }
