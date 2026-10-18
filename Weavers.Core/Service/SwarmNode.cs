@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Weavers.Core.Constants;
@@ -16,7 +18,7 @@ namespace Weavers.Core.Service {
 
   public sealed record LineState(
     int HarnessAppSessionId,
-    int FootholdId,
+    string MachineName,
     string Line,
     bool Running,
     long Seq
@@ -30,8 +32,17 @@ namespace Weavers.Core.Service {
   }
 
   public sealed class SwarmHub(SwarmNode node) : Hub {
-    public void PushLineState(LineState s) => node.OnRemoteLineState(s);
+    PeerInfo Peer => (PeerInfo)Context.GetHttpContext()!.Items["swarm.peer"]!;
+
+    public void PushLineState(LineState s) =>
+      node.OnRemoteLineState(s with { HarnessAppSessionId = Peer.HarnessAppSessionId, MachineName = Peer.MachineName });
+
     public IReadOnlyCollection<LineState> Snapshot() => node.MyLines;
+
+    public override Task OnDisconnectedAsync(Exception? ex) {
+      return base.OnDisconnectedAsync(ex);
+    }
+
   }
 
   public sealed class SwarmNode : IAsyncDisposable {
@@ -43,19 +54,21 @@ namespace Weavers.Core.Service {
     readonly ConcurrentDictionary<int, HubConnection> _peers = new();
     readonly object _gate = new();
     readonly Dictionary<string, LineState> _myLines = new();                          // this instance, all supported lines
-    readonly Dictionary<(int SessionId, string Line), LineState> _view = new();       // self + every peer
+    readonly Dictionary<(string MachineName, int SessionId, string Line), LineState> _view = new();       // self + every peer
     readonly CancellationTokenSource _cts = new();
     WebApplication? _app;
-    PeerInfo? _me;
+    PeerInfo? _me;    
+    readonly string _token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+    internal static byte[] HashToken(string t) => SHA256.HashData(Encoding.UTF8.GetBytes(t));
 
     public SwarmNode(ISwarmRegistry registry, AppSessionResponse mySession, string advertiseAddress, IEnumerable<string> lines) {
       this.registry = registry;
       this.mySession = mySession;
       this.advertiseAddress = advertiseAddress;
       foreach (var l in lines) {
-        var s = new LineState(mySession.SessionId, mySession.HarnessId, l, Running: false, Seq: 0);
+        var s = new LineState(mySession.SessionId, Environment.MachineName, l, Running: false, Seq: 0);
         _myLines[l] = s;
-        _view[(mySession.SessionId, l)] = s;
+        _view[(Environment.MachineName, mySession.SessionId, l)] = s;
       }
     }
 
@@ -72,6 +85,12 @@ namespace Weavers.Core.Service {
     public IReadOnlyCollection<LineState> MyLines { get { lock (_gate) return _myLines.Values.ToArray(); } }
     public IReadOnlyList<LineState> View { get { lock (_gate) return _view.Values.ToArray(); } }
     public bool IsRunningAnywhere(string line) { lock (_gate) return _view.Values.Any(v => v.Line == line && v.Running); }
+    
+    public LineState? MachineHolder() {
+      lock (_gate) return _view.Values.FirstOrDefault(v => v.Running && v.MachineName == Environment.MachineName);
+    }
+    public bool IsMachineFree() => MachineHolder() is null;
+
     public bool IsRunningHere(string line) { lock (_gate) return _myLines.TryGetValue(line, out var s) && s.Running; }
 
     public async Task StartAsync() {
@@ -80,25 +99,44 @@ namespace Weavers.Core.Service {
       b.Services.AddSignalR();
       b.Services.AddSingleton(this);               // hub gets the node via DI
       _app = b.Build();
+      _app.Use(async (ctx, next) => {
+        if (ctx.Request.Path.StartsWithSegments("/swarm")) {
+          var auth = ctx.Request.Headers.Authorization.ToString();
+          if (!int.TryParse(ctx.Request.Headers["X-Swarm-Session"], out var sid)
+              || !auth.StartsWith("Bearer ")
+              || await registry.ValidateAsync(sid, HashToken(auth["Bearer ".Length..]), ctx.RequestAborted) is not { } peer) {
+            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+          }
+          ctx.Items["swarm.peer"] = peer;
+        }
+        await next();
+      });
       _app.MapHub<SwarmHub>("/swarm");
       await _app.StartAsync(_cts.Token);           // bind failures throw HERE
       var port = new Uri(_app.Urls.First()).Port;
       _me = new(Environment.MachineName, GatewaySessionId, Environment.ProcessId, advertiseAddress, port);
-      await registry.RegisterAsync(_me, _cts.Token);
+      await registry.RegisterAsync(_me, HashToken(_token), _cts.Token);
       _ = LoopAsync(_cts.Token);                   // heartbeat + discover new peers
     }
 
-    public Task SetLineAsync(string line, bool running) {
+    public async Task<bool> SetLineAsync(string line, bool running) {
+      if (running && !await registry.TryAcquireLineAsync(Environment.MachineName, GatewaySessionId, line, Cx.HearbeatLookback, _cts.Token))
+        return false;                                          // caller doesn't start the schedule
+      if (!running)
+        await registry.ReleaseLineAsync(Environment.MachineName, GatewaySessionId, line, _cts.Token);
+
       LineState s;
       lock (_gate) {
         if (!_myLines.TryGetValue(line, out var cur)) throw new ArgumentException($"Unknown line '{line}'");
-        if (cur.Running == running) return Task.CompletedTask;
+        if (cur.Running == running) return false;             // currently running so block. 
         s = cur with { Running = running, Seq = cur.Seq + 1 };
         _myLines[line] = s;
       }
       Apply(s);                                    // self goes through the same path as peers
-      return Task.WhenAll(_peers.Values.Select(c =>
+      await  Task.WhenAll(_peers.Values.Select(c =>
         Safe(() => c.InvokeAsync("PushLineState", s), "push line state")));
+      return true;
     }
 
     public Task TouchLineAsync(string line) {
@@ -132,14 +170,17 @@ namespace Weavers.Core.Service {
     }
 
     async Task ConnectAsync(PeerInfo p) {
-      var c = new HubConnectionBuilder().WithUrl($"http://{p.Address}:{p.Port}/swarm").Build();
+      var c = new HubConnectionBuilder().WithUrl($"http://{p.Address}:{p.Port}/swarm", o => {
+        o.Headers["X-Swarm-Session"] = GatewaySessionId.ToString();
+        o.Headers["Authorization"] = $"Bearer {_token}";
+      }).Build();
       c.Closed += _ => {
         _peers.TryRemove(p.HarnessAppSessionId, out var _);
         PurgePeer(p.HarnessAppSessionId);
         return Task.CompletedTask;
       };
-      await c.StartAsync(_cts.Token);
       _peers[p.HarnessAppSessionId] = c;
+      await c.StartAsync(_cts.Token);      
       Raise(() => PeerJoined?.Invoke(p));
       foreach (var s in await c.InvokeAsync<LineState[]>("Snapshot")) Apply(s);
     }
@@ -148,14 +189,14 @@ namespace Weavers.Core.Service {
 
     void Apply(LineState s) {
       lock (_gate) {
-        var key = (s.HarnessAppSessionId, s.Line);
+        var key = (s.MachineName, s.HarnessAppSessionId, s.Line);
         if (_view.TryGetValue(key, out var old) && s.Seq <= old.Seq) return;   // stale or duplicate
         _view[key] = s;
       }
       Raise(() => { LineStateChanged?.Invoke(s); ViewChanged?.Invoke(); });
     }
 
-    void PurgePeer(int sessionId) {
+    internal void PurgePeer(int sessionId) {
       lock (_gate)
         foreach (var k in _view.Keys.Where(k => k.SessionId == sessionId).ToList()) _view.Remove(k);
       Raise(() => { PeerLeft?.Invoke(sessionId); ViewChanged?.Invoke(); });

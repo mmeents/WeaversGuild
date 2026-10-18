@@ -2339,7 +2339,7 @@ namespace TheLoomApp {
     private async void btnTestLine_Click(object sender, EventArgs e) {
       if (_swarmNode is null) return;
       var running = _swarmNode.IsRunningHere(SwarmLines.MainTest);
-      await _swarmNode.SetLineAsync(SwarmLines.MainTest, !running);   // ViewChanged → RefreshStartButtons
+      var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.MainTest, !running);   // ViewChanged → RefreshStartButtons
     }
 
     #endregion
@@ -2403,7 +2403,7 @@ namespace TheLoomApp {
 
     private void OnSwarmLineState(LineState s) {
       var who = s.HarnessAppSessionId == _swarmNode?.GatewaySessionId ? "self" : $"session {s.HarnessAppSessionId}";
-      DoLogMessage($"Line {s.Line} {(s.Running ? "On" : "Off")} ({who}, foothold {s.FootholdId})");
+      DoLogMessage($"Line {s.Line} {(s.Running ? "On" : "Off")} ({who}, machine {s.MachineName})");
     }
 
     private void RefreshStartButtons() {
@@ -2412,17 +2412,19 @@ namespace TheLoomApp {
         btnTestLine.Text = "Test Line";
         return;
       }
-      // Test line as a toggle: whoever started it can stop it; everyone else is greyed out.
-      var queueLineTest = _swarmNode.IsRunningHere(SwarmLines.MainTest);
-      btnTestLine.Enabled = queueLineTest || !_swarmNode.IsRunningAnywhere(SwarmLines.MainTest);
-      btnTestLine.Text = queueLineTest ? "Stop Test" : "Test Line";
-      
-      var mainLine = _swarmNode.IsRunningHere(SwarmLines.Main);
-      btnStartStop.Enabled = mainLine || !_swarmNode.IsRunningAnywhere(SwarmLines.Main);
+      var free = _swarmNode.IsMachineFree();
+      bool Can(string line) => _swarmNode.IsRunningHere(line) || free;
 
-      var comfyLine = _swarmNode.IsRunningHere(SwarmLines.Comfy);
-      btnAttemptComfyTodo.Enabled = comfyLine || !_swarmNode.IsRunningAnywhere(SwarmLines.Comfy);
-      
+      var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
+      btnTestLine.Enabled = Can(SwarmLines.MainTest);
+      btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
+      btnStartStop.Enabled = Can(SwarmLines.Main);
+      btnAttemptComfyTodo.Enabled = Can(SwarmLines.Comfy);
+
+      var h = _swarmNode.MachineHolder();
+      lbSwarmConStatus.Text = h is null ? $"Swarm: port {_swarmNode.Port} · idle"
+        : $"Swarm: port {_swarmNode.Port} · {h.Line} on session {h.HarnessAppSessionId}";
+
     }
 
     #endregion
@@ -2842,6 +2844,9 @@ namespace TheLoomApp {
             }
           }
           if (EngineRunning) {
+            if (_swarmNode != null ) {
+              await _swarmNode.TouchLineAsync(SwarmLines.Main);
+            }
             tRun.Enabled = true;
           }
         }
@@ -2920,11 +2925,14 @@ namespace TheLoomApp {
 
     private async void btnStartStop_Click(object sender, EventArgs e) {
       if (btnStartStop.Text == "Start") {
+        if (_swarmNode != null) {
+          var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Main, true);
+          MessageBox.Show("Swarm line set to Main. If another machine is running the pipeline, this machine will wait until it is free.", "Swarm Line Set", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          return;
+        }
         EngineRunning = true;
         tRun.Enabled = true;
-        if (_swarmNode != null) {
-          await _swarmNode.SetLineAsync(SwarmLines.Main, true);
-        }        
+        
       } else {
         tRun.Enabled = false;
         EngineRunning = false;
@@ -3479,11 +3487,15 @@ namespace TheLoomApp {
     }
     private async void btnAttemptComfyTodo_Click(object sender, EventArgs e) {
       if (btnAttemptComfyTodo.Text == "Start") {
+        if (_swarmNode != null) {
+          var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Comfy, true);
+          if (!shouldContinue) {
+            MessageBox.Show("Machine is currently busy running another line.", "Machine Line Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+          }
+        }
         ComfyEngineRunning = true;
         tRunComfy.Enabled = true;
-        if (_swarmNode != null) {
-          await _swarmNode.SetLineAsync(SwarmLines.Comfy, true);
-        }
       } else {
         tRunComfy.Enabled = false;
         ComfyEngineRunning = false;

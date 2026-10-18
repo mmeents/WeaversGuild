@@ -25,6 +25,8 @@ namespace Weavers.Core {
     public DbSet<BuildFile> BuildFiles => Set<BuildFile>();
     public DbSet<MediatorLog> McpLogEntries => Set<MediatorLog>();
 
+    public DbSet<LineLease> LineLeases => Set<LineLease>();
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {

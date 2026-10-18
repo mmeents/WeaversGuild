@@ -17,10 +17,10 @@ namespace Weavers.Core.Entities {
     public int Port { get; set; } = 0;     
     public DateTime StartedAt { get; set; }
     public DateTime HeartBeat { get; set; }
+    public byte[]? TokenHash { get; set; }
 
     // Nav
     public Item HarnessAppSession { get; set; } = null!;
-
 
   }
 
@@ -32,7 +32,9 @@ namespace Weavers.Core.Entities {
       builder.Property(ap => ap.Address).HasMaxLength(255);
       builder.Property(ap => ap.StartedAt).HasDefaultValueSql("SYSUTCDATETIME()");
       builder.Property(ap => ap.HeartBeat).HasDefaultValueSql("SYSUTCDATETIME()");
+      builder.Property(ap => ap.TokenHash).HasColumnType("varbinary(32)").IsRequired(false); 
       builder.HasOne(ap => ap.HarnessAppSession).WithMany().HasForeignKey(ap => ap.HarnessAppSessionId);
+      builder.HasIndex(ap => ap.HarnessAppSessionId).IsUnique();
     }
   }
 

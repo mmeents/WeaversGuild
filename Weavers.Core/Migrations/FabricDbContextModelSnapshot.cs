@@ -59,9 +59,13 @@ namespace Weavers.Core.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("SYSUTCDATETIME()");
 
+                    b.Property<byte[]>("TokenHash")
+                        .HasColumnType("varbinary(32)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("HarnessAppSessionId");
+                    b.HasIndex("HarnessAppSessionId")
+                        .IsUnique();
 
                     b.ToTable("AppPeers", (string)null);
                 });
@@ -9176,6 +9180,30 @@ namespace Weavers.Core.Migrations
                             ParentTypeId = 1840,
                             Rank = 1841
                         });
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.LineLease", b =>
+                {
+                    b.Property<string>("Machine")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("AcquiredAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<int>("HarnessAppSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Line")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Machine");
+
+                    b.ToTable("LineLeases", (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.MediatorLog", b =>
