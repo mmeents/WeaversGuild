@@ -2372,6 +2372,8 @@ namespace TheLoomApp {
       node.ViewChanged += RefreshStartButtons;
       node.Log += DoLogMessage;
       _swarmNode = node;                            // assign before start so Leave can dispose a partial start
+      await node.SetLineAsync(SwarmLines.Main, _engineRunning || _isRunning);
+      await node.SetLineAsync(SwarmLines.Comfy, _comfyEngineRunning || _isComfyEngineRunning);
       await node.StartAsync();
       lbSwarmConStatus.Text = $"Swarm: port {node.Port}";
       DoLogMessage("Join swarm completes.");
@@ -2410,6 +2412,8 @@ namespace TheLoomApp {
       if (_swarmNode is null) {
         btnTestLine.Enabled = false;
         btnTestLine.Text = "Test Line";
+        btnStartStop.Enabled = !_isStopping;
+        btnAttemptComfyTodo.Enabled = !_isComfyStopping;
         return;
       }
       var free = _swarmNode.IsMachineFree();
@@ -2418,8 +2422,8 @@ namespace TheLoomApp {
       var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
       btnTestLine.Enabled = Can(SwarmLines.MainTest);
       btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
-      btnStartStop.Enabled = Can(SwarmLines.Main);
-      btnAttemptComfyTodo.Enabled = Can(SwarmLines.Comfy);
+      btnStartStop.Enabled = !_isStopping && Can(SwarmLines.Main);
+      btnAttemptComfyTodo.Enabled = !_isComfyStopping && Can(SwarmLines.Comfy);
 
       var h = _swarmNode.MachineHolder();
       lbSwarmConStatus.Text = h is null ? $"Swarm: port {_swarmNode.Port} · idle"
@@ -3526,6 +3530,9 @@ namespace TheLoomApp {
             }
           }
           if (ComfyEngineRunning) {
+            if (_swarmNode != null) {
+              await _swarmNode.TouchLineAsync(SwarmLines.Comfy);
+            }
             tRunComfy.Enabled = true;
           }
         }

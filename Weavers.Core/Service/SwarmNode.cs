@@ -181,8 +181,9 @@ namespace Weavers.Core.Service {
       };
       _peers[p.HarnessAppSessionId] = c;
       await c.StartAsync(_cts.Token);      
-      Raise(() => PeerJoined?.Invoke(p));
-      foreach (var s in await c.InvokeAsync<LineState[]>("Snapshot")) Apply(s);
+      Raise(() => PeerJoined?.Invoke(p));      
+      foreach (var s in MyLines) await c.InvokeAsync("PushLineState", s, _cts.Token);
+      foreach (var s in await c.InvokeAsync<LineState[]>("Snapshot", _cts.Token)) Apply(s);
     }
 
     internal void OnRemoteLineState(LineState s) => Apply(s);
