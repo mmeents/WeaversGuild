@@ -191,25 +191,6 @@ namespace TheLoomApp.Components {
 
     }
 
-        
-    /// <summary>
-    /// Gets editor height based on field and schema configuration
-    /// </summary>
-    //private int GetEditorHeight(FieldModel field, TableUISchema? schema) {
-    //  if (schema != null) {
-    //    var column = field.OwnerRow?.Owner?.Columns.Values.FirstOrDefault(c => c.Id == field.ColumnId);
-    //    if (column != null) {
-    //      var config = schema.GetConfig(column.ColumnName);
-    //      if (config.WeEditorType.HasValue) {
-    //        return PropertyEditorFactory.GetRecommendedHeight(config.WeEditorType.Value);
-    //      }
-    //    }
-    //  }
-
-      // Default height
-    //  return 30;
-    //}
-
     private void PropertyEditor_ValueChanged(object? sender, EventArgs e) {
       if (!_isEditing) {
         SetEditingMode(true); // Enable editing mode if a property changes

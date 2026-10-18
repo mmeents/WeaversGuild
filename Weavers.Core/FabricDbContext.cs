@@ -9,6 +9,7 @@ namespace Weavers.Core {
     protected FabricDbContext(DbContextOptions options) : base(options) {}
     public FabricDbContext(DbContextOptions<FabricDbContext> options) : base(options) { }
 
+    public DbSet<AppPeer> AppPeers => Set<AppPeer>();
     public DbSet<AppSetting> AppSettings => Set<AppSetting>();
     public DbSet<CommandDef> CommandDefs => Set<CommandDef>();
     public DbSet<DataType> DataTypes => Set<DataType>();
@@ -33,9 +34,15 @@ namespace Weavers.Core {
       modelBuilder.Entity<IdOnlyRow>().HasNoKey().ToView(null);
       modelBuilder.Entity<DbGitEntryItem>().HasNoKey().ToView(null);
       modelBuilder.Entity<ItemSummaryDto>().HasNoKey().ToView(null);
-    }
+      modelBuilder.HasDbFunction(typeof(SqlFns)
+        .GetMethod(nameof(SqlFns.SysUtcDateTime))!).HasName("SYSUTCDATETIME").IsBuiltIn();
+      }
     protected override void OnConfiguring(DbContextOptionsBuilder options) {
       options.UseSqlServer(o => o.UseCompatibilityLevel(120));
-    }
+    }    
+  }
+
+  public static class SqlFns {
+    public static DateTime SysUtcDateTime() => throw new NotSupportedException();
   }
 }

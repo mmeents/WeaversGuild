@@ -12,7 +12,10 @@
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
+    <PackageReference Include="MessagePack" Version="3.1.12" />
     <PackageReference Include="Scriban" Version="7.2.3" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.21" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.21" />
   </ItemGroup>
 
   <ItemGroup>

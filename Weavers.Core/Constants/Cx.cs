@@ -16,7 +16,11 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.2.160";    // version of the: 1. app. database.    
+    public static string AppVersion => "1.160.2";    // version of the: 1. app. database.    
+
+    public static readonly TimeSpan HearbeatFrequency = TimeSpan.FromSeconds(5);
+    public static readonly TimeSpan HearbeatLookback = TimeSpan.FromSeconds(15);
+
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
       "and data together in a structured agentic manner.";    
     public static string OrgCharter => "WeaversGuild is dedicated to creating tools that seamlessly integrate code, "+
@@ -45,7 +49,7 @@ namespace Weavers.Core.Constants {
     // MCP startup in mcp.json, use provider key to name the service connection provider.
     // Used in session creation to identify the which app is requesting from params set in startup.
     public static string McpStartupParamProviderKey => "provider";
-    public static List<string> availableToolsList = new List<string> { 
+    public static readonly List<string> availableToolsList = new List<string> { 
       //DaemonsMcpToolName, // optional, remove if configured. 
       WeaversMcpToolName 
     };

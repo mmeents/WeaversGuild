@@ -12,7 +12,6 @@ using Weavers.Core.Extensions;
 using Weavers.Core.Handlers.Chess;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Weavers.Core.Tools {
   interface IChessToolsHandler {
@@ -23,22 +22,15 @@ namespace Weavers.Core.Tools {
     Task<string> ChessMakeMove(int chessGameId, string move, int todoId);
   }
 
-  public class ChessToolsHandler : IChessToolsHandler {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ChessToolsHandler(IServiceScopeFactory serviceScopeFactory) {
-      _serviceScopeFactory = serviceScopeFactory;
-    }
+  public class ChessToolsHandler(IServiceScopeFactory serviceScopeFactory) : IChessToolsHandler {
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public async Task<string> AddGameRoom(int parentId, string name) {
       try {
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var context = scope.ServiceProvider.GetRequiredService<FabricDbContext>();
-        var results = await mediator.Send(new AddGameRoomCommand(parentId, name));
-        if (results == null) {
-          throw new Exception($"Failed to add game room with name '{name}' under parent ID {parentId}.");
-        }
+        var results = await mediator.Send(new AddGameRoomCommand(parentId, name)) ?? throw new Exception($"Failed to add game room with name '{name}' under parent ID {parentId}.");
         var opResult = McpOpResult.CreateSuccess(Cx.CmdAddGameRoomModel, context.ToSummary(results, false, CancellationToken.None));
         return JsonSerializer.Serialize(opResult);
       } catch (Exception ex) {

@@ -22,6 +22,50 @@ namespace Weavers.Core.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Weavers.Core.Entities.AppPeer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("HarnessAppSessionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("HeartBeat")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<string>("Machine")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Port")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProcessNum")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HarnessAppSessionId");
+
+                    b.ToTable("AppPeers", (string)null);
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.AppSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -9370,6 +9414,17 @@ namespace Weavers.Core.Migrations
                     b.ToTable((string)null);
 
                     b.ToView(null, (string)null);
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.AppPeer", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.Item", "HarnessAppSession")
+                        .WithMany()
+                        .HasForeignKey("HarnessAppSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HarnessAppSession");
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>

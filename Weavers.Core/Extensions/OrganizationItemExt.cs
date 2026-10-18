@@ -8,7 +8,6 @@ using Weavers.Core.Constants;
 using Weavers.Core.Enums;
 using Weavers.Core.Exceptions;
 using Weavers.Core.Models;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Weavers.Core.Extensions {
   public static class OrganizationItemExt {

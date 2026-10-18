@@ -98,12 +98,17 @@
       splitContainer3 = new SplitContainer();
       tabControl1 = new TabControl();
       tpSettings = new TabPage();
+      btnTestLine = new Button();
+      lbSwarmConStatus = new Label();
+      cbJoinSwarm = new CheckBox();
+      cbSwarmOnStartup = new CheckBox();
+      label6 = new Label();
+      label5 = new Label();
       edCoolDownMs = new NumericUpDown();
       cbCoolDown = new CheckBox();
       lbClaudeLaunch = new LinkLabel();
       btnImportOrgDocs = new Button();
       cbShowSessions = new CheckBox();
-      button1 = new Button();
       cbShowPkgInLib = new CheckBox();
       btnShowErrors = new Button();
       btnCancelAppDefaultF = new Button();
@@ -832,12 +837,17 @@
       // 
       // tpSettings
       // 
+      tpSettings.Controls.Add(btnTestLine);
+      tpSettings.Controls.Add(lbSwarmConStatus);
+      tpSettings.Controls.Add(cbJoinSwarm);
+      tpSettings.Controls.Add(cbSwarmOnStartup);
+      tpSettings.Controls.Add(label6);
+      tpSettings.Controls.Add(label5);
       tpSettings.Controls.Add(edCoolDownMs);
       tpSettings.Controls.Add(cbCoolDown);
       tpSettings.Controls.Add(lbClaudeLaunch);
       tpSettings.Controls.Add(btnImportOrgDocs);
       tpSettings.Controls.Add(cbShowSessions);
-      tpSettings.Controls.Add(button1);
       tpSettings.Controls.Add(cbShowPkgInLib);
       tpSettings.Controls.Add(btnShowErrors);
       tpSettings.Controls.Add(btnCancelAppDefaultF);
@@ -854,10 +864,70 @@
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
       // 
+      // btnTestLine
+      // 
+      btnTestLine.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnTestLine.Location = new Point(478, 118);
+      btnTestLine.Name = "btnTestLine";
+      btnTestLine.Size = new Size(94, 29);
+      btnTestLine.TabIndex = 19;
+      btnTestLine.Text = "Test Line";
+      btnTestLine.UseVisualStyleBackColor = true;
+      btnTestLine.Click += btnTestLine_Click;
+      // 
+      // lbSwarmConStatus
+      // 
+      lbSwarmConStatus.AutoSize = true;
+      lbSwarmConStatus.Location = new Point(131, 125);
+      lbSwarmConStatus.Name = "lbSwarmConStatus";
+      lbSwarmConStatus.Size = new Size(129, 15);
+      lbSwarmConStatus.TabIndex = 18;
+      lbSwarmConStatus.Text = "Status: Not Connected.";
+      // 
+      // cbJoinSwarm
+      // 
+      cbJoinSwarm.AutoSize = true;
+      cbJoinSwarm.Location = new Point(40, 124);
+      cbJoinSwarm.Name = "cbJoinSwarm";
+      cbJoinSwarm.Size = new Size(85, 19);
+      cbJoinSwarm.TabIndex = 17;
+      cbJoinSwarm.Text = "Join swarm";
+      cbJoinSwarm.UseVisualStyleBackColor = true;
+      cbJoinSwarm.CheckedChanged += cbJoinSwarm_CheckedChanged;
+      // 
+      // cbSwarmOnStartup
+      // 
+      cbSwarmOnStartup.AutoSize = true;
+      cbSwarmOnStartup.Location = new Point(41, 101);
+      cbSwarmOnStartup.Name = "cbSwarmOnStartup";
+      cbSwarmOnStartup.Size = new Size(170, 19);
+      cbSwarmOnStartup.TabIndex = 16;
+      cbSwarmOnStartup.Text = "Auto join swarm on startup";
+      cbSwarmOnStartup.UseVisualStyleBackColor = true;
+      cbSwarmOnStartup.CheckedChanged += cbSwarmOnStartup_CheckedChanged;
+      // 
+      // label6
+      // 
+      label6.AutoSize = true;
+      label6.Location = new Point(28, 152);
+      label6.Name = "label6";
+      label6.Size = new Size(181, 15);
+      label6.TabIndex = 15;
+      label6.Text = "Filter from the tree the following:";
+      // 
+      // label5
+      // 
+      label5.AutoSize = true;
+      label5.Location = new Point(24, 228);
+      label5.Name = "label5";
+      label5.Size = new Size(359, 15);
+      label5.TabIndex = 14;
+      label5.Text = "The Claude Code Gateway launches Claude in the following folder:";
+      // 
       // edCoolDownMs
       // 
       edCoolDownMs.Increment = new decimal(new int[] { 15, 0, 0, 0 });
-      edCoolDownMs.Location = new Point(304, 210);
+      edCoolDownMs.Location = new Point(304, 294);
       edCoolDownMs.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
       edCoolDownMs.Minimum = new decimal(new int[] { 15, 0, 0, 0 });
       edCoolDownMs.Name = "edCoolDownMs";
@@ -868,7 +938,7 @@
       // cbCoolDown
       // 
       cbCoolDown.AutoSize = true;
-      cbCoolDown.Location = new Point(22, 211);
+      cbCoolDown.Location = new Point(28, 294);
       cbCoolDown.Name = "cbCoolDown";
       cbCoolDown.Size = new Size(260, 19);
       cbCoolDown.TabIndex = 12;
@@ -878,7 +948,7 @@
       // lbClaudeLaunch
       // 
       lbClaudeLaunch.AutoSize = true;
-      lbClaudeLaunch.Location = new Point(35, 159);
+      lbClaudeLaunch.Location = new Point(41, 253);
       lbClaudeLaunch.Name = "lbClaudeLaunch";
       lbClaudeLaunch.Size = new Size(93, 15);
       lbClaudeLaunch.TabIndex = 10;
@@ -888,7 +958,7 @@
       // 
       // btnImportOrgDocs
       // 
-      btnImportOrgDocs.Location = new Point(22, 117);
+      btnImportOrgDocs.Location = new Point(22, 55);
       btnImportOrgDocs.Name = "btnImportOrgDocs";
       btnImportOrgDocs.Size = new Size(112, 23);
       btnImportOrgDocs.TabIndex = 9;
@@ -899,7 +969,7 @@
       // cbShowSessions
       // 
       cbShowSessions.AutoSize = true;
-      cbShowSessions.Location = new Point(22, 83);
+      cbShowSessions.Location = new Point(41, 196);
       cbShowSessions.Name = "cbShowSessions";
       cbShowSessions.Size = new Size(102, 19);
       cbShowSessions.TabIndex = 8;
@@ -907,21 +977,10 @@
       cbShowSessions.UseVisualStyleBackColor = true;
       cbShowSessions.CheckedChanged += cbShowSessions_CheckedChanged;
       // 
-      // button1
-      // 
-      button1.Location = new Point(438, 84);
-      button1.Name = "button1";
-      button1.Size = new Size(125, 23);
-      button1.TabIndex = 7;
-      button1.Text = "Test Create dialog";
-      button1.UseVisualStyleBackColor = true;
-      button1.Visible = false;
-      button1.Click += button1_Click;
-      // 
       // cbShowPkgInLib
       // 
       cbShowPkgInLib.AutoSize = true;
-      cbShowPkgInLib.Location = new Point(22, 58);
+      cbShowPkgInLib.Location = new Point(41, 174);
       cbShowPkgInLib.Name = "cbShowPkgInLib";
       cbShowPkgInLib.Size = new Size(182, 19);
       cbShowPkgInLib.TabIndex = 6;
@@ -932,7 +991,7 @@
       // btnShowErrors
       // 
       btnShowErrors.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnShowErrors.Location = new Point(483, 55);
+      btnShowErrors.Location = new Point(143, 55);
       btnShowErrors.Name = "btnShowErrors";
       btnShowErrors.Size = new Size(80, 23);
       btnShowErrors.TabIndex = 5;
@@ -1099,6 +1158,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -2050,6 +2110,7 @@
       Margin = new Padding(3, 2, 3, 2);
       Name = "Form1";
       Text = "TheLoom on WeaversGuild";
+      FormClosing += Form1_FormClosing;
       Shown += Form1_Shown;
       Resize += Form1_Resize;
       splitContainer1.Panel1.ResumeLayout(false);
@@ -2160,7 +2221,6 @@
     private ToolStripMenuItem miAddEntityProperty;
     private CheckBox cbShowPkgInLib;
     private Button btnWriteFile;
-    private Button button1;
     private TabPage tpHtml;
     private Microsoft.Web.WebView2.WinForms.WebView2 wvDescription;
     private CheckBox cbShowSessions;
@@ -2278,5 +2338,11 @@
     private ToolStripMenuItem miAddMusicAlbum;
     private ToolStripMenuItem miAddMusicTrack;
     private ToolStripMenuItem miAddLinkedOn;
+    private Label label5;
+    private Label label6;
+    private CheckBox cbJoinSwarm;
+    private CheckBox cbSwarmOnStartup;
+    private Label lbSwarmConStatus;
+    private Button btnTestLine;
   }
 }
