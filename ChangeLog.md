@@ -1,5 +1,9 @@
 
 ## Update History
+- Db 160.2 10/18/2026
+  - Adds interprocess communication across the instances via each carrying a SignalR SwarmHub.
+  - Makes a Mesh with each instance connecting to each other.  Currently used to drive synchronization of the enabled lines.
+  - Adds AppPeers and LineLeases tables to track the instances and LineLeases maintains a set of active leases for the lines by machine.
 
 - Db 160.1 10/11/2026
   - Warning, Removes 2 properties (Cx.ItCoverImgUrl from Realm and Story types.), so users need to delete them before migrating their databases or else referencial links will fail the migration. so far looks like possibly the following 2 id so delete looks like:

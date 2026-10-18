@@ -2,60 +2,75 @@
 
 ## Overview
 
-Thinking a desk is the primary part of the organization. They consist of the following:
-- Desk has a DeskRole that needs setup and are located under the Org Desk Roles node.
-- Has a on Digital Operator(Weaver) as a property of the desk.  this is the LLM used to service infrence for the desk. 
-- Maintain a todo list. Maintain a catagory of documentation centered around the desks purpose. 
-- OrgChartModel the Desks Parent Drives the infrence progress. 
-- Maintain Success and Failed continuation operations.  (Create a new todo on the destinations todo list. Catch log Errors)
-- Maintains SystemPromptTemplate and SystemPrompt fields. 
+A desk is the primary working unit of the organization. Desks live under a **Work Group** (`WorkGroupModel`) and each one:
+- Has a **Desk Role** (`DeskRoleModel`, kept under the Org Desk Roles node). The role holds the list of MCP commands the desk may use, plus optional pre-assert checks.
+- Has a **Digital Operator** (a Weaver, `DigitalOperatorModel`, kept under the team / Digital Operator Pool node). The operator's `Presence` property points at a model on a gateway (LM Studio or Claude Code), and that model does the inference for the desk.
+- Holds a queue of **todos** as child nodes (`TodoModel`). Each run of a todo is recorded as a child `TodoAttemptModel`.
+- Routes finished work to other desks with `OnSuccessSendTo`, `OnFailSendTo` and `OnPushbackSendTo`. Closing a todo creates a new todo on the destination desk.
+- Carries a `SystemPromptTemplate` (Scriban) that is rendered into the system prompt for each attempt.
 
-Thinking to bring the desk into being is a right click property on a OrgChart node, AddOrgDesk context menu, dialog pops up.
-The dialog or mcp interface would asking for Name, Role, SuccessTo and FailTo desks pickers and it create the desk in the graph or tree.(not enabled)  
+To create one in TheLoomApp, right-click a Work Group and choose **Add Desk**, then fill in the properties in the properties tab. Use **Add Desk Todo** on a desk to queue work by hand.
 
-## Desk is Responsible for System Prompt.
+## Desk properties
 
-Invoking a weaver requires a System Prompt and a User Prompt.  
-- The System Prompt is where we name what tools are available, how to use them. This comes from SystemPromptTemplate or SystemPrompt, if template is null or not. 
-- The User Prompt is where direct them on what todo from the next todo item on the pile.
+| Property | Purpose |
+|---|---|
+| `DeskRole` | The role (allowed commands, pre-asserts) |
+| `Enabled` | Desk on/off flag |
+| `Operator` | The Digital Operator that services this desk |
+| `SystemPromptTemplate` | Scriban template for the system prompt |
+| `OnSuccessSendTo` / `OnFailSendTo` / `OnPushbackSendTo` | Next desks in the chain |
+| `MaxAttempts` | Attempts allowed per todo before it is failed forward (default 3) |
+| `CurrentTodo` | The todo the desk is working on |
+| `FilePath` | Optional file location for the desk's documentation |
 
-Propose a next prompt preview method that would run the templates and report back what the two prompts would be given the next todo and desk, to verify.
+The parent Work Group has a `FloorStatus` (Disabled / Operational), a `RelativeFolder` and `Notes`.
 
-## Desk Prompt is a sciban transformation 
+## The system prompt and the user prompt
 
-when rendering the desk prompt the following model tree is available to reference using double bracket escapes.  (ex {{model.desk}} )
-- model  - root object
-  - desk  - string desk name
-  - operator  -string name of agent wired to desk.
-  - role  - string name of the desk role 
-  - role_commands  - list of RoleCommand items.
- 
-RoleCommand is
-- command_type  - enum
-- command  - string
+Invoking a Weaver takes a system prompt and a user prompt.
+- **System prompt.** This is the operator's own `SystemPrompt` followed by the desk's rendered `SystemPromptTemplate`. It names the tools that are available and explains how to use them.
+- **User prompt.** This is rendered from the todo's `UserPromptTemplate`. It tells the Weaver what to do with the todo's reference item.
 
+To check both prompts before running anything, select a todo in the schedule's Ready list. That shows a preview of the rendered prompts without calling the model (`RunTodoAttemptCommand` with `IsPreview`).
 
-## Desk carries a nullable string RequestTemplate
+## Desk prompt is a Scriban transformation
 
-When not null it uses scriban template to generate the SystemPrompt from it. 
-- The model it runs with is set from the Role.
-if The RequestTemplate is null then will look to static RequestText to fill in the System Prompt. 
+The desk template is rendered with a `RoleModel`. Names are snake_case in Scriban (for example `{{model.desk}}`).
+- model - root object
+  - desk - string, the desk name
+  - operator - string, the name of the agent wired to the desk
+  - role - string, the name of the desk role
+  - role_commands - list of RoleCommand items
 
-## The TodoItem Pile
+A RoleCommand has:
+- command_type - the `WeCmdType` enum value
+- command - string, the MCP command name
 
-Desk nodes have child nodes(TodoItemModel Type), which together are a rank orderd list of todo items.
+The full reference, including the todo model, is [Scriban Template Models](../Skills/ScribanTemplateModels.md).
 
-## Weavers do their work via MCP Calls.
+## Weavers do their work via MCP calls
 
-MCP calls to read, write or update details within the graph database.
+Weavers use TheLoomMCP tools to read, write and update items in the graph database. The desk role decides which tools are listed in the prompt.
 
-## Desks take next todo and uses it to create the userPrompt.
+## Running a todo
 
-When weaver is invoked, their todo item has been marked InProgress and they are requested to end their session to mark either complete or push it back.  either will clear the todo and allow for the next to happen else it should keep getting the current inprogess until it completes.  (maybe have a max attemp counter.) 
+The Main Schedule in TheLoomApp picks up todos that meet all of these conditions:
+- The status is `TodoNotStarted`.
+- `Ready` is set.
+- The desk's operator has a presence on a gateway that belongs to the running harness (this machine).
 
-## Resource Sharing 
+For each attempt:
+1. The todo is marked `TodoInProgress` and becomes the desk's `CurrentTodo`.
+2. The Weaver is invoked and is expected to close the todo with one of the MCP calls: `completeTodo`, `rejectTodo`, `reviewPass` or `reviewFail`.
+3. Closing the todo forwards it along the matching `On…SendTo` desk as a new todo.
+4. If the Weaver does not close the todo, it stays `InProgress` and the next pass retries it. Once `MaxAttempts` is reached, it is failed forward.
 
-When Active and Todo count is greater than 0 then it's ready, OrgChartModel will invode the desk.   
+## Resource sharing
 
-## See also 
+A schedule runs one todo at a time per harness, and `GatewayRunRegistry` guards each gateway. When TheLoomApp instances join the **swarm**, `LineLeases` also lets each machine run only one line (Main, Comfy) at a time. That matters because most local GPU inference apps can't run two inferences at once. See the README for swarm setup.
+
+## See also
 - [Todo Item](TodoItemModel.md)
+- [Todo Attempt](TodoAttemptModel.md)
+- [Storytime Described](../Storytime/StorytimeDescribed.md) for a working nine-desk chain
