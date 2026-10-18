@@ -7,11 +7,9 @@ using Weavers.Core.Handlers.Items;
 using Weavers.Core.Handlers.Pipeline;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
-
 
 namespace Weavers.Core.Handlers.Storytime {
-  public record AddStoryRollupCommand(int storyId, string realm, int todoId) : IMcpRequest, IRequest<ItemDto?>;
+  public record AddStoryRollupCommand(int StoryId, string Realm, int TodoId) : IMcpRequest, IRequest<ItemDto?>;
   public class AddStoryRollupCommandHandler : IRequestHandler<AddStoryRollupCommand, ItemDto?> {
     private readonly FabricDbContext _context;
     private readonly IMediator _mediator;
@@ -21,8 +19,8 @@ namespace Weavers.Core.Handlers.Storytime {
     }
     public async Task<ItemDto?> Handle(AddStoryRollupCommand request, CancellationToken cancellationToken) {
 
-      var storyItem = await _context.GetItemDtoById(request.storyId);
-      if (storyItem == null) { throw new Exception($"Story with id {request.storyId} not found"); }
+      var storyItem = await _context.GetItemDtoById(request.StoryId);
+      if (storyItem == null) { throw new Exception($"Story with id {request.StoryId} not found"); }
       if (storyItem.ItemTypeId != (int)WeItemType.StoryModel) {
         throw new Exception($"Invalid item type {(WeItemType)storyItem.ItemTypeId}; requires a {WeItemType.StoryModel} type {(int)WeItemType.StoryModel}.");
       }
@@ -34,8 +32,8 @@ namespace Weavers.Core.Handlers.Storytime {
       }
 
       ResolveAttributionQueryResult? attribution = null;
-      if (request.todoId > 0) {
-        attribution = await _mediator.Send(new ResolveAttributionQuery(request.todoId));
+      if (request.TodoId > 0) {
+        attribution = await _mediator.Send(new ResolveAttributionQuery(request.TodoId));
       }
 
       var nextRollupCount = realmItem.Relations.Count(r => r.RelatedItemTypeId == (int)WeItemType.StoryRollupModel && r.RelatedItemId.HasValue) + 1;
@@ -85,7 +83,7 @@ namespace Weavers.Core.Handlers.Storytime {
         var beats = scene.Relations.Where(r => r.RelatedItemTypeId == (int)WeItemType.BeatModel).OrderBy(r => r.Rank);
         var beatIds = beats.Where(r => r.RelatedItemId.HasValue).Select(r => r.RelatedItemId!.Value).ToList();
         var allBeats = await _mediator.Send(new GetItemsByIdsQuery(beatIds));
-        List<int> callSheets = new List<int>(); 
+        List<int> callSheets = new(); 
         foreach (var beatRel in beats) {
           var beat = allBeats.FirstOrDefault(b => b.Id == beatRel.RelatedItemId!.Value);
           if (beat == null) continue;
@@ -103,7 +101,7 @@ namespace Weavers.Core.Handlers.Storytime {
           }
         }
 
-        var allCallSheets = await _mediator.Send(new GetItemsByIdsQuery(callSheets));
+        var allCallSheets = await _mediator.Send(new GetItemsByIdsQuery(callSheets), cancellationToken);
         foreach(var callSheet in allCallSheets) {
           var dirAddedBy = callSheet.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy);
           if (dirAddedBy != null) {
@@ -122,7 +120,7 @@ namespace Weavers.Core.Handlers.Storytime {
           .FirstOrDefault();
         if (perfRel == null) continue;
 
-        var perf = await _context.GetItemDtoById(perfRel.RelatedItemId!.Value);
+        var perf = await _context.GetItemDtoById(perfRel.RelatedItemId!.Value, cancellationToken);
         var obsRel = perf?.Relations
           .Where(r => r.RelatedItemTypeId == (int)WeItemType.ObservationModel && r.RelatedItemId.HasValue)
           .OrderByDescending(r => r.RelatedItemId!.Value)
@@ -132,7 +130,7 @@ namespace Weavers.Core.Handlers.Storytime {
           .Where(r => r.RelatedItemTypeId == (int)WeItemType.ActorPerformanceModel && r.RelatedItemId.HasValue)
           .OrderByDescending(r => r.RelatedItemId!.Value);
         var actorPerformancesIds = actorPerformancesRelations.Select(r => r.RelatedItemId!.Value).ToList();
-        var allActorPerformances = await _mediator.Send(new GetItemsByIdsQuery(actorPerformancesIds));
+        var allActorPerformances = await _mediator.Send(new GetItemsByIdsQuery(actorPerformancesIds), cancellationToken);
 
         foreach (var actorPerfRel in actorPerformancesRelations) {
           var actorPerf = allActorPerformances.FirstOrDefault(b => b.Id == actorPerfRel.RelatedItemId!.Value);
@@ -141,7 +139,7 @@ namespace Weavers.Core.Handlers.Storytime {
           var actorModel = actorPerf.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy)?.Value ?? "";
           if (!string.IsNullOrEmpty(actorCharId) && !string.IsNullOrEmpty(actorModel) && !actorCredits.ContainsKey(actorCharId)) {
             var id = actorCharId.AsInt();
-            var charName = characterNames.ContainsKey(id) ? characterNames[id] : "";
+            var charName = characterNames.TryGetValue(id, out string? value) ? value : "";
             if (charName != "") {
               actorCredits[charName] = actorModel;
             }
@@ -150,7 +148,7 @@ namespace Weavers.Core.Handlers.Storytime {
 
         if (obsRel == null) continue;
 
-        var obs = await _context.GetItemDtoById(obsRel.RelatedItemId!.Value);
+        var obs = await _context.GetItemDtoById(obsRel.RelatedItemId!.Value, cancellationToken);
         if (obs == null) continue;
 
         var obsWriter = obs.Properties.FirstOrDefault(p => p.Name == Cx.ItAddedBy)?.Value ?? "";
@@ -201,7 +199,7 @@ namespace Weavers.Core.Handlers.Storytime {
 
       var newItem = await _mediator.Send(
         new CreateRelatedItemCommand(realmItem.Id, (int)WeRelationTypes.Contains,
-          (int)WeItemType.StoryRollupModel, rollupName, sceneRollup, "{}"));
+          (int)WeItemType.StoryRollupModel, rollupName, sceneRollup, "{}"), cancellationToken);
 
       if (newItem != null) {
         var creditsProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItCredits);
@@ -212,7 +210,7 @@ namespace Weavers.Core.Handlers.Storytime {
 
         var realmProp = newItem.Properties.FirstOrDefault(p => p.Name == Cx.ItRealm);
         if (realmProp != null) {
-          realmProp.Value = request.realm;
+          realmProp.Value = request.Realm;
           await realmProp.SaveProp(newItem, _mediator);
         }
 
@@ -222,7 +220,7 @@ namespace Weavers.Core.Handlers.Storytime {
           await addedByProp.SaveProp(newItem, _mediator);
         }
 
-        newItem = await _context.GetItemDtoById(newItem.Id);
+        newItem = await _context.GetItemDtoById(newItem.Id, cancellationToken);
       }
 
       return newItem;

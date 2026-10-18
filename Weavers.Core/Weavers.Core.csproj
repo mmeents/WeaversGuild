@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+	<PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" Version="9.0.21" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.21" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.21" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.21" />
     <PackageReference Include="AngleSharp" Version="1.7.2" />
     <PackageReference Include="AngleSharp.Css" Version="1.0.2" />
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
@@ -14,7 +19,7 @@
     <PackageReference Include="LibGit2Sharp" Version="0.32.0" />
     <PackageReference Include="MCPSharpMM" Version="1.0.14" />
     <PackageReference Include="MediatR" Version="12.5.0" />
-    <PackageReference Include="MessagePack" Version="3.1.7" />
+    <PackageReference Include="MessagePack" Version="3.1.12" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="9.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Core" Version="2.3.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
@@ -34,6 +39,8 @@
     <PackageReference Include="Rudzoft.ChessLib" Version="0.0.3" />
     <PackageReference Include="Scriban" Version="7.2.3" />
     <PackageReference Include="SmartReader" Version="0.11.1" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.21" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.21" />
   </ItemGroup>
 
   <ItemGroup>

@@ -21,9 +21,14 @@ using Weavers.Core.Tools;
 namespace Weavers.Core {
   public static class DependencyInjection {
     public static IServiceCollection AddWeaversCore<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext {
-      services.AddDbContext<TContext>(options =>
+
+      services.AddDbContextFactory<FabricDbContext>(options => 
         options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-          o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+        o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));      
+
+      //services.AddDbContext<TContext>(options =>
+      //  options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+      //    o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
       services.AddMediatR(cfg => {
         cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
@@ -66,6 +71,7 @@ namespace Weavers.Core {
       services.AddSingleton<IChessToolsHandler, ChessToolsHandler>();
       services.AddSingleton<IPatternToolsHandler, PatternToolsHandler>();
       services.AddSingleton<IComfyToolsHandler, ComfyToolsHandler>();
+      services.AddSingleton<ISwarmRegistry, SwarmRegistryService>();
 
       services.AddHttpClient("RssResolver", c => {
         c.Timeout = TimeSpan.FromSeconds(30);        

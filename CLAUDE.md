@@ -23,7 +23,7 @@ dotnet test Weavers.Core/Weavers.Core.sln --filter "FullyQualifiedName~TestTempl
 
 **Publish TheLoomMCP**: Publish the `WeaversMCP` project (csproj is `TheLoomMCP.csproj`), then configure the host's `mcp.json` with a `--provider` arg (e.g. `"args": ["--provider", "LmStudio"]`). The provider name becomes the session name used for attribution. The published exe is locked while its host (Claude Desktop, Claude Code, LM Studio) is running — shut the host down before republishing.
 
-**First run**: after the database is created, set the default root to this repo in TheLoomApp's settings tab and use **Import Org Docs** to load `OrgChart/`, `DigitalOperators/`, `OrgDeskRoles/`.
+**First run**: after the database is created, set the default root to this repo in TheLoomApp's settings tab and use **Import Org Docs** to load `Team/` (digital operators), `DeskRoles/` and `WorkGroups/` (desks). The folder names are `Cx.AppTeamFolder`, `AppDeskRolesFolder` and `AppWorkGroupFolder`. `TheOrgExport.md` (`Cx.AppOrgExport`) marks the org root.
 
 ### Database & migrations
 
@@ -34,9 +34,9 @@ Add-Migration <Name> -context FabricDbContext
 Update-Database -context FabricDbContext
 ```
 
-The database name carries the schema version: `FabricCoreV{version}` (currently `FabricCoreV160`). When bumping the version, update all of:
-- the connection string in the three `appsettings.json` files (`TheLoomApp/`, `WeaversMCP/`, `Weavers.Api/`)
-- `Cx.AppVersion` (`1.2.{dbVersion}`)
+The database name carries the major schema version: `FabricCoreV{version}` (currently `FabricCoreV160`). Point releases (160.1, 160.2) add migrations but keep the database name. When bumping the version, update all of:
+- the connection string in the three `appsettings.json` files (`TheLoomApp/`, `WeaversMCP/`, `Weavers.Api/`), for a major bump only
+- `Cx.AppVersion` (`1.{dbVersion}.{point}`, currently `1.160.2`)
 - `README.md` and a `ChangeLog.md` entry (note any manual SQL users must run before migrating)
 
 **Lookup tables are seeded from enums via `HasData`**, so changing an enum or its mapping extension changes the EF model and needs a migration. This applies to `ItemType` (from `WeItemType`), `CommandDef` (from `WeCmdType`), `ItemPropertyDefault`, `DataType`, `EditorType`, and `RelationType`.
@@ -49,13 +49,13 @@ WeaversGuild models a "virtual decentralized organization": humans and AI agents
 
 | Project | Type | Purpose |
 |---|---|---|
-| `Weavers.Core` | Class library (net9.0) | All data access, MediatR handlers, MCP tools, EF Core entities/migrations |
+| `Weavers.Core` | Class library (net9.0, references `Microsoft.AspNetCore.App`) | All data access, MediatR handlers, MCP tools, EF Core entities/migrations, swarm node (Kestrel + SignalR) |
 | `TheLoomApp` | WinForms (net9.0-windows) | Desktop UI — tree view of the graph, property editors, schedules |
 | `WeaversMCP` (`TheLoomMCP.csproj`) | WinExe (net9.0-windows) | MCP server hosted service |
 | `Weavers.Api` | ASP.NET Core (net9.0) | Minimal-API REST layer (endpoints in `Extensions/`) |
 | `ResearchSpaceTests` | MSTest.Sdk (net9.0) | Research/scratch tests |
 
-All runtime projects reference `Weavers.Core`. DI is wired in `Weavers.Core/DependencyInjection.cs`: `AddWeaversCore<TContext>()` registers everything shared; `AddWeaversMCPCore()` adds `WeaversMcpHostedService` on top.
+All runtime projects reference `Weavers.Core`. DI is wired in `Weavers.Core/DependencyInjection.cs`: `AddWeaversCore<TContext>()` registers everything shared; `AddWeaversMCPCore()` adds `WeaversMcpHostedService` on top. The context is registered with `AddDbContextFactory<FabricDbContext>` (`TContext` is currently unused). Handlers still inject a scoped `FabricDbContext`, and singletons such as `SwarmRegistryService` create short-lived contexts from `IDbContextFactory<FabricDbContext>`.
 
 ### The Graph Model
 
@@ -126,18 +126,31 @@ A **gateway** is how work enters or leaves the app (`AboutTheGateways.md`):
 
 | Gateway | Service | Runs |
 |---|---|---|
-| LM Studio | `LmStudioService` — OpenAI-compatible HTTP; URL/token from item properties, token decrypted by `CryptoService` | desk todos via MCP tools |
+| LM Studio | `LMStudioService` — OpenAI-compatible HTTP; URL/token from item properties, token decrypted by `CryptoService` | desk todos via MCP tools |
 | Claude Code | `ClaudeCodeService` — spawns `claude -p` from PATH | desk todos via MCP tools |
 | Comfy | `Handlers/Comfy/RunComfyTodoAttemptCommandHandler` — ComfyUI HTTP API | workflow todos, no MCP/system prompt |
 | Human | TheLoomApp itself | review, approval, starting schedules |
 
-There are two schedules, both started from TheLoomApp and both limited to todos local to the running harness: the Main Schedule (LLM gateways, `Handlers/Presence/RunTodoAttemptCommandHandler`) and the Comfy Schedule. `GatewayRunRegistry` gates runs per harness. A Comfy todo clones a `ComfyWorkflowTemplate` (API-format JSON in the item's Data field) and writes each param's value at `SectionKey/ObjectKey/PropKey`; output is saved as a `ComfyMediaFileModel` (`AboutComfy.md`).
+There are two schedules, both started from TheLoomApp and both limited to todos local to the running harness: the Main Schedule (LLM gateways, `Handlers/Presence/RunTodoAttemptCommandHandler`) and the Comfy Schedule. `GatewayRunRegistry` gates runs per harness, and when the app is in the swarm, a `LineLease` gates them per machine (below). A Comfy todo clones a `ComfyWorkflowTemplate` (API-format JSON in the item's Data field) and writes each param's value at `SectionKey/ObjectKey/PropKey`; output is saved as a `ComfyMediaFileModel` (`AboutComfy.md`).
+
+### Swarm (multi-instance mesh)
+
+TheLoomApp instances on the LAN form a full mesh (`Service/SwarmNode.cs`, `Service/SwarmRegistryService.cs`). Each node:
+- Hosts a SignalR `SwarmHub` at `/swarm` on Kestrel, bound to all interfaces on a random port. Windows Firewall prompts on the first join, and the user must allow it.
+- Registers itself in the `AppPeers` table (machine, session, address, port, SHA-256 of a per-run bearer token).
+- Heartbeats every `Cx.HearbeatFrequency` (5s). A peer counts as live while its heartbeat is newer than `Cx.HearbeatLookback` (15s).
+- Finds peers by polling `AppPeers`, so all instances must share one SQL Server.
+- Exchanges `LineState` for each line in `SwarmLines` (`Main`, `Comfy`, `MainTest`, where `MainTest` backs the "Test Line" button). `Seq` drops stale or duplicate updates.
+
+`LineLeases` (primary key `Machine`) lets a machine run only one line at a time across all its instances, because most local GPU inference servers can't serve two runs at once. `SetLineAsync(line, true)` must acquire the lease before the schedule starts. `TryAcquireLineAsync` takes over a lease whose holder session is no longer live.
+
+Joining is opt-in: the "Join swarm" checkbox, or the `{HarnessId}-AutoJoinSwarm` setting behind "Auto join swarm on startup". `SwarmNode` must be constructed on the UI thread because it captures the `SynchronizationContext` and raises its events there. Today the swarm only drives enabling the start buttons. Remote line starts are the planned next step.
 
 ### Code Generation & Publishing
 
 `Weavers.Core/Handlers/Builds/` walks the graph and writes files; this is what the **Write** button in the app invokes:
 - `WriteLibraryCommandHandler` / `WriteSolutionCommandHandler` — `.csproj`, class files, `.sln` from a `LibraryModel` / `SolutionModel` subtree (templates in `Handlers/Templates/`)
-- `WriteOrganizationCommandHandler` — exports org JSON to `OrgChart/`, `DigitalOperators/`, `OrgDeskRoles/`; `ImportOrgDocCommandHandler` reads them back
+- `WriteOrganizationCommandHandler` — exports org JSON into each pool/roles/work-group node's `RelativeFolder`, plus `TheOrgExport.md` at the org root. Session setup defaults those folders to `Team/`, `DeskRoles/` and `WorkGroups/`, and `ImportOrgDocCommandHandler` recognizes files by those folder names when reading them back. The folder names differ from the tree node type names (`DigitalOperatorPoolModel` → `Team`, `OrgDeskRolesModel` → `DeskRoles`, `WorkGroupModel` → `WorkGroups`).
 - `WriteDocumentCommandHandler` — writes content-type items (md/html/config/org files) to disk; for a folder-type item it delegates to the realm export below
 - `ExportRealmCommandHandler` (request is `ExportItemCommand`) — publishes a folder of Realms (stories, albums, media flagged `ExportOnWrite`) as a static site, using the HTML/CSS/JS emitted by `RealmPublishingExt.cs`
 
@@ -151,7 +164,7 @@ App data root is `%ProgramData%\WeaversGuild\` (`WeaverExt.CommonAppPath`): `pro
 
 - `Documents/CommandHelps/*.md` — one file per MCP command, generated by the documentation desk workflow; don't hand-edit.
 - `Documents/Desks/`, `Documents/Storytime/` — desk model and the Storytime production chain write-up.
-- `OrgChart/*.json`, `DigitalOperators/*.json`, `OrgDeskRoles/*.json` — exported organization state, round-tripped by the Write/Import handlers above.
+- `Team/*.json`, `DeskRoles/*.json`, `WorkGroups/*.json` — a curated subset of exported organization state, round-tripped by the Write/Import handlers above. The maintainer's full export lives outside the repo, and selected files are copied in.
 
 ## Code Style
 

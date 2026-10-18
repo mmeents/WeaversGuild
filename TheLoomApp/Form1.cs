@@ -1,9 +1,12 @@
 // May of 2026, WeaversGuild formed and the Loom App become the following:
+using AngleSharp.Css.Dom;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
@@ -32,11 +35,12 @@ namespace TheLoomApp {
     private readonly IAppItemTemplateService _itemTemplateService;
     private readonly IGraphItemUpdateService _graphItemUpdateService;
     private readonly ISummaryToolsHandler _summaryToolsHandler;
+    private readonly ISwarmRegistry _registry;
 
     private ItemNode? _selectedNode = null;
     private ItemDto? _CurrentItemBackup = null;
-    private readonly Dictionary<int, ItemNode> _itemCache = new();
-    private readonly Dictionary<int, ItemTypeDto> _itemTypeCache = new();
+    private readonly Dictionary<int, ItemNode> _itemCache = [];
+    private readonly Dictionary<int, ItemTypeDto> _itemTypeCache = [];
     private readonly HashSet<WeItemType> _generatableTypes = WeItemTypeExtensions.GetGenerativeTypes();
     private readonly PropertiesTab _itemPropertiesTab;
     private readonly ChessGameTab _chessBoardTab;
@@ -72,7 +76,7 @@ namespace TheLoomApp {
 
     public Form1(IServiceScopeFactory serviceScopeFactory) {
       InitializeComponent();
-
+      this.Text = Cx.AppName + " - v" + Cx.AppVersion + $" on {Environment.MachineName} PId: {Environment.ProcessId}";
       _serviceScopeFactory = serviceScopeFactory;
       using var scope = _serviceScopeFactory.CreateScope();
       _appDataService = scope.ServiceProvider.GetRequiredService<IAppDataService>();
@@ -82,6 +86,7 @@ namespace TheLoomApp {
       _itemTemplateService = scope.ServiceProvider.GetRequiredService<IAppItemTemplateService>();
       _graphItemUpdateService = scope.ServiceProvider.GetRequiredService<IGraphItemUpdateService>();
       _summaryToolsHandler = scope.ServiceProvider.GetRequiredService<ISummaryToolsHandler>();
+      _registry = scope.ServiceProvider.GetRequiredService<ISwarmRegistry>();
       DiBridgeService2.Initialize(scope.ServiceProvider);
 
       _graphItemUpdateService.OnItemAdded += itemId => {
@@ -117,6 +122,7 @@ namespace TheLoomApp {
         edAppDefaultFolder.Text = WeaverExt.AppProjectsPath;
       }
       SettingDefaultFolderDirty = false;
+      btnTestLine.Enabled = false;
 
     }
 
@@ -151,6 +157,18 @@ namespace TheLoomApp {
 
     private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e) {
       Form1_Resize(sender, e);
+    }
+    private async void Form1_FormClosing(object sender, FormClosingEventArgs e) {
+      if (_engineRunning || _comfyEngineRunning) { 
+        e.Cancel = true;
+        MessageBox.Show("Please stop the engine before closing the application.", "Engine Running", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      if (_closeReady || _swarmNode is null) return;
+      e.Cancel = true;
+      await LeaveSwarmAsync();
+      _closeReady = true;
+      Close();
     }
 
     #endregion
@@ -192,10 +210,21 @@ namespace TheLoomApp {
     #region Tree View Loading and Events
     private async void Form1_Shown(object sender, EventArgs e) {
       _sessionDetails = await _appDataService.GetAppSession(); // create session.
+      this.Text = Cx.AppName + " - v" + Cx.AppVersion + $" on {Environment.MachineName} SId: {_sessionDetails?.SessionId ?? 0} PId: {Environment.ProcessId}";
       var key = $"{_sessionDetails!.HarnessId}-HumanUserTodo";
       var defTodoSetting = _settings[key];
       if (defTodoSetting != null) {
         _defaultAppTodoId = defTodoSetting.Value.AsInt();
+      }
+
+      key = $"{_sessionDetails!.HarnessId}-AutoJoinSwarm";
+      var autoJoinSwarmSetting = _settings[key];
+      if (autoJoinSwarmSetting != null) {
+        cbSwarmOnStartup.Checked = autoJoinSwarmSetting.Value.AsBoolean();
+        if (cbSwarmOnStartup.Checked) {
+          cbJoinSwarm.Checked = true;
+          cbJoinSwarm.Enabled = false;
+        }
       }
 
       await wvDescription.EnsureCoreWebView2Async();
@@ -578,7 +607,7 @@ namespace TheLoomApp {
       box.SelectedIndex = restoreIndex;
     }
     #endregion
-    
+
     #region Tree View Drag Drop
     private void lbClaudeLaunch_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
       // Open the folder containing the Claude executable settings.  Claude should be configured in your path. 
@@ -690,7 +719,7 @@ namespace TheLoomApp {
             var folderProp = _selectedNode.Item?.Properties.FirstOrDefault(p => p.Name == Cx.ItRootFolder
               || p.Name == Cx.ItRelativeFolder || p.Name == Cx.ItFilePath);
             if (folderProp != null && _selectedNode.Item != null) {
-              string basePath = folderProp.Value ?? "";             
+              string basePath = folderProp.Value ?? "";
               await UpdateFolderPathIfNeededAsync(_selectedNode.Item, basePath);
             }
           } else if (selectedItemTypeId == (int)WeItemType.HarnessGatewaysModel) {
@@ -701,7 +730,7 @@ namespace TheLoomApp {
             var ee = new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand);
             TvKb_BeforeExpand(ee, ee);
           } else if (selectedItemTypeId == (int)WeItemType.PresenceLmStudioGatewayModel) {
-            
+
             var resyncProp = localItem.Properties.FirstOrDefault(p => p.Name == Cx.ItReSync);
             if (resyncProp != null) {
               bool shouldResync = resyncProp.Value.AsBoolean();
@@ -2238,7 +2267,6 @@ namespace TheLoomApp {
       _showSessions = cbShowSessions.Checked;
     }
 
-
     private async void btnImportOrgDocs_Click(object sender, EventArgs e) {
       using (var fbd = new ImportOrgDocsDialog()) {
         var orgItemId = _sessionDetails?.OrganizationId ?? 0;
@@ -2288,17 +2316,119 @@ namespace TheLoomApp {
       }
     }
 
-
-    private void button1_Click(object sender, EventArgs e) { // temp button to test dialog.
-      var itemType = _selectedNode?.Item?.ItemTypeId ?? 0;
-      if (itemType != 0) {
-
-        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, (WeItemType)itemType);
-        if (dlg.ShowDialog() == DialogResult.OK) {
-          var newItemName = dlg.ItemName;
-          MessageBox.Show("You entered: " + newItemName, "Item Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    private void cbSwarmOnStartup_CheckedChanged(object sender, EventArgs e) {
+      var key = $"{_sessionDetails!.HarnessId}-AutoJoinSwarm";
+      var autoJoinSwarmSetting = _settings[key];
+      if (autoJoinSwarmSetting == null) {
+        autoJoinSwarmSetting = new AppSetting { Key = key, Value = (cbSwarmOnStartup.Checked ? "1" : "0") };
+        _settings[key] = autoJoinSwarmSetting;
+      } else {
+        autoJoinSwarmSetting.Value = (cbSwarmOnStartup.Checked ? "1" : "0");
+        _settings[key] = autoJoinSwarmSetting;
+      }
+      if (autoJoinSwarmSetting != null) {
+        if (cbSwarmOnStartup.Checked) {
+          cbJoinSwarm.Checked = true;
+          cbJoinSwarm.Enabled = false;          
+        } else {
+          cbJoinSwarm.Enabled = true;
         }
       }
+    }
+
+    private async void btnTestLine_Click(object sender, EventArgs e) {
+      if (_swarmNode is null) return;
+      var running = _swarmNode.IsRunningHere(SwarmLines.MainTest);
+      var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.MainTest, !running);   // ViewChanged → RefreshStartButtons
+    }
+
+    #endregion
+    #region Application Swarm
+    private SwarmNode? _swarmNode;
+    private bool _swarmBusy;
+    private bool _closeReady;
+    private async void cbJoinSwarm_CheckedChanged(object sender, EventArgs e) {
+      if (_swarmBusy) return;                       // guards the revert below from re-entering
+      _swarmBusy = true;
+      cbJoinSwarm.Enabled = false;
+      try {
+        if (cbJoinSwarm.Checked) await JoinSwarmAsync();
+        else await LeaveSwarmAsync();
+      } catch (Exception ex) {
+        DoLogMessage($"Swarm failed: {ex.Message}");
+        await LeaveSwarmAsync();                    // clean up a half-started node
+        cbJoinSwarm.Checked = false;
+      } finally {
+        cbJoinSwarm.Enabled = true; _swarmBusy = false;
+      }
+    }
+
+    private async Task JoinSwarmAsync() {
+      if (_sessionDetails == null) throw new InvalidOperationException("App gateway session not created yet.");
+      var node = new SwarmNode(_registry, _sessionDetails, Dns.GetHostName(), SwarmLines.All); // UI thread → captures SyncContext
+      node.LineStateChanged += OnSwarmLineState;
+      node.PeerJoined += OnSwarmPeerJoined;
+      node.PeerLeft += OnSwarmPeerLeft;
+      node.ViewChanged += RefreshStartButtons;
+      node.Log += DoLogMessage;
+      _swarmNode = node;                            // assign before start so Leave can dispose a partial start
+      await node.SetLineAsync(SwarmLines.Main, _engineRunning || _isRunning);
+      await node.SetLineAsync(SwarmLines.Comfy, _comfyEngineRunning || _isComfyEngineRunning);
+      await node.StartAsync();
+      lbSwarmConStatus.Text = $"Swarm: port {node.Port}";
+      DoLogMessage("Join swarm completes.");
+      RefreshStartButtons();
+    }
+
+    private async Task LeaveSwarmAsync() {
+      var node = _swarmNode;
+      _swarmNode = null;
+      if (node is null) return;
+      node.LineStateChanged -= OnSwarmLineState;
+      node.PeerJoined -= OnSwarmPeerJoined;
+      node.PeerLeft -= OnSwarmPeerLeft;
+      node.ViewChanged -= RefreshStartButtons;
+      node.Log -= DoLogMessage;
+      await node.DisposeAsync();                    // RemoveAsync + close peers + stop Kestrel
+      lbSwarmConStatus.Text = "Swarm: off";
+      DoLogMessage("Leave swarm completes.");
+      RefreshStartButtons();
+    }
+
+    private void OnSwarmPeerJoined(PeerInfo info) {
+      DoLogMessage($"Peer joined: session {info.HarnessAppSessionId} at {info.Address}:{info.Port}");
+    }
+
+    private void OnSwarmPeerLeft(int sessionId) {
+      DoLogMessage($"Peer left: session {sessionId}");
+    }
+
+    private void OnSwarmLineState(LineState s) {
+      var who = s.HarnessAppSessionId == _swarmNode?.GatewaySessionId ? "self" : $"session {s.HarnessAppSessionId}";
+      DoLogMessage($"Line {s.Line} {(s.Running ? "On" : "Off")} ({who}, machine {s.MachineName})");
+    }
+
+    private void RefreshStartButtons() {
+      if (_swarmNode is null) {
+        btnTestLine.Enabled = false;
+        btnTestLine.Text = "Test Line";
+        btnStartStop.Enabled = !_isStopping;
+        btnAttemptComfyTodo.Enabled = !_isComfyStopping;
+        return;
+      }
+      var free = _swarmNode.IsMachineFree();
+      bool Can(string line) => _swarmNode.IsRunningHere(line) || free;
+
+      var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
+      btnTestLine.Enabled = Can(SwarmLines.MainTest);
+      btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
+      btnStartStop.Enabled = !_isStopping && Can(SwarmLines.Main);
+      btnAttemptComfyTodo.Enabled = !_isComfyStopping && Can(SwarmLines.Comfy);
+
+      var h = _swarmNode.MachineHolder();
+      lbSwarmConStatus.Text = h is null ? $"Swarm: port {_swarmNode.Port} · idle"
+        : $"Swarm: port {_swarmNode.Port} · {h.Line} on session {h.HarnessAppSessionId}";
+
     }
 
     #endregion
@@ -2718,8 +2848,14 @@ namespace TheLoomApp {
             }
           }
           if (EngineRunning) {
+            if (_swarmNode != null ) {
+              await _swarmNode.TouchLineAsync(SwarmLines.Main);
+            }
             tRun.Enabled = true;
           }
+        }
+        if (_swarmNode != null && !EngineRunning) {
+          await _swarmNode.SetLineAsync(SwarmLines.Main, false);
         }
 
       }
@@ -2791,10 +2927,16 @@ namespace TheLoomApp {
     private bool _engineRunning = false;
     private bool _isStopping = false;
 
-    private void btnStartStop_Click(object sender, EventArgs e) {
+    private async void btnStartStop_Click(object sender, EventArgs e) {
       if (btnStartStop.Text == "Start") {
+        if (_swarmNode != null) {
+          var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Main, true);
+          MessageBox.Show("Swarm line set to Main. If another machine is running the pipeline, this machine will wait until it is free.", "Swarm Line Set", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          return;
+        }
         EngineRunning = true;
         tRun.Enabled = true;
+        
       } else {
         tRun.Enabled = false;
         EngineRunning = false;
@@ -3349,6 +3491,13 @@ namespace TheLoomApp {
     }
     private async void btnAttemptComfyTodo_Click(object sender, EventArgs e) {
       if (btnAttemptComfyTodo.Text == "Start") {
+        if (_swarmNode != null) {
+          var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Comfy, true);
+          if (!shouldContinue) {
+            MessageBox.Show("Machine is currently busy running another line.", "Machine Line Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+          }
+        }
         ComfyEngineRunning = true;
         tRunComfy.Enabled = true;
       } else {
@@ -3381,10 +3530,15 @@ namespace TheLoomApp {
             }
           }
           if (ComfyEngineRunning) {
+            if (_swarmNode != null) {
+              await _swarmNode.TouchLineAsync(SwarmLines.Comfy);
+            }
             tRunComfy.Enabled = true;
           }
         }
-
+        if (!_comfyEngineRunning && _swarmNode != null) { 
+          await _swarmNode.SetLineAsync(SwarmLines.Comfy, false);
+        }
       }
     }
 
@@ -3447,8 +3601,15 @@ namespace TheLoomApp {
 
 
 
+
+
+
+
+
+
+
     #endregion
-   
+
     //  -- end of form and namespace below, no need to edit. 
   }
 }
