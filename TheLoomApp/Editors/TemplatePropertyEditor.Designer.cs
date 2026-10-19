@@ -31,6 +31,9 @@
       textBox1 = new FastColoredTextBoxNS.FastColoredTextBox();
       tabPreview = new TabPage();
       txtPreview = new FastColoredTextBoxNS.FastColoredTextBox();
+      button1 = new Button();
+      button2 = new Button();
+      button3 = new Button();
       tabControl1.SuspendLayout();
       tabTemplate.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)textBox1).BeginInit();
@@ -104,7 +107,7 @@
       textBox1.Name = "textBox1";
       textBox1.Paddings = new Padding(0);
       textBox1.ReplaceForm = null;
-      textBox1.SelectionColor = Color.FromArgb(60, 0, 0, 255);
+      textBox1.SelectionColor = Color.FromArgb(60, 192, 255, 255);
       textBox1.ServiceColors = (FastColoredTextBoxNS.ServiceColors)resources.GetObject("textBox1.ServiceColors");
       textBox1.Size = new Size(301, 97);
       textBox1.TabIndex = 0;
@@ -156,7 +159,7 @@
       txtPreview.Paddings = new Padding(0);
       txtPreview.ReadOnly = true;
       txtPreview.ReplaceForm = null;
-      txtPreview.SelectionColor = Color.FromArgb(60, 0, 0, 255);
+      txtPreview.SelectionColor = Color.FromArgb(60, 192, 255, 255);
       txtPreview.ServiceColors = (FastColoredTextBoxNS.ServiceColors)resources.GetObject("txtPreview.ServiceColors");
       txtPreview.Size = new Size(301, 97);
       txtPreview.TabIndex = 0;
@@ -164,10 +167,49 @@
       txtPreview.WordWrap = true;
       txtPreview.Zoom = 100;
       // 
+      // button1
+      // 
+      button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button1.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button1.Location = new Point(3, 107);
+      button1.Name = "button1";
+      button1.Size = new Size(43, 21);
+      button1.TabIndex = 2;
+      button1.Text = "more";
+      button1.UseVisualStyleBackColor = true;
+      button1.Click += button1_Click;
+      // 
+      // button2
+      // 
+      button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button2.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button2.Location = new Point(3, 50);
+      button2.Name = "button2";
+      button2.Size = new Size(43, 21);
+      button2.TabIndex = 3;
+      button2.Text = "copy";
+      button2.UseVisualStyleBackColor = true;
+      button2.Click += button2_Click;
+      // 
+      // button3
+      // 
+      button3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button3.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button3.Location = new Point(3, 78);
+      button3.Name = "button3";
+      button3.Size = new Size(43, 21);
+      button3.TabIndex = 4;
+      button3.Text = "paste";
+      button3.UseVisualStyleBackColor = true;
+      button3.Click += button3_Click;
+      // 
       // TemplatePropertyEditor
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
+      Controls.Add(button3);
+      Controls.Add(button2);
+      Controls.Add(button1);
       Controls.Add(tabControl1);
       Controls.Add(lbName);
       Name = "TemplatePropertyEditor";
@@ -190,5 +232,8 @@
     private TabPage tabPreview;
     private FastColoredTextBoxNS.FastColoredTextBox textBox1;
     private FastColoredTextBoxNS.FastColoredTextBox txtPreview;
+    private Button button1;
+    private Button button2;
+    private Button button3;
   }
 }

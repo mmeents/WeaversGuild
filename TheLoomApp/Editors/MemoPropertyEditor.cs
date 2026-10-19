@@ -50,7 +50,7 @@ namespace TheLoomApp.Editors {
       set => lbName.Text = value;
     }
 
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string PropertyValue {
       get => textBox1.Text;
       set => textBox1.Text = value;
@@ -99,7 +99,7 @@ namespace TheLoomApp.Editors {
         if (!nameSet) {
           PropertyName = Field?.Name ?? "";
         }
-        textBox1.Text = Field?.Value;     
+        textBox1.Text = Field?.Value;
         Modified = false;
       } else {
         textBox1.Text = string.Empty;
@@ -108,7 +108,7 @@ namespace TheLoomApp.Editors {
 
     public void CommitValue() {
       if (Field != null && textBox1 != null) {
-        Field.Value = textBox1.Text;        
+        Field.Value = textBox1.Text;
       }
     }
 
@@ -125,5 +125,31 @@ namespace TheLoomApp.Editors {
       }
     }
 
+    private void button1_Click(object sender, EventArgs e) {
+      this.Height = this.Height + (button1.Height * 3);
+    }
+
+    private void button2_Click(object sender, EventArgs e) {
+      if (!string.IsNullOrEmpty(textBox1.Text)) {
+        if (textBox1.SelectedText.Length > 0) {
+          Clipboard.SetText(textBox1.SelectedText);
+        } else {
+          textBox1.SelectAll();
+          Clipboard.SetText(textBox1.Text);
+        }        
+      }
+    }
+
+    private void button3_Click(object sender, EventArgs e) {
+      //paste from clipboard
+      if (Clipboard.ContainsText()) {
+        if (textBox1.SelectedText.Length > 0) {
+          textBox1.Paste();
+        } else {
+          textBox1.SelectAll();
+          textBox1.Paste();
+        }
+      }
+    }
   }
 }

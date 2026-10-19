@@ -25,6 +25,7 @@ namespace Weavers.Core.Service {
     Task<ItemDto?> CreateItemAsync(ItemDto itemDto);
     Task<ItemDto?> CreateRelatedItemAsync(int parentItemId, int relationTypeId, int ItemTypeId, string itemName, string itemDescription, string itemData);
     Task<bool> DeleteItemAsync(int itemId);
+    Task<bool> ArchiveItemAsync(int itemId, bool isArchive);
     Task<ItemDto?> UpdateItemAsync(ItemDto request);
     Task<RelationDto?> UpdateRelationAsync(RelationDto relation);
     Task<List<RelationTypeDto>> GetRelationTypesAsync();
@@ -119,6 +120,14 @@ namespace Weavers.Core.Service {
       using var scope = _scopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var command = new DeleteItemCommand(itemId);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
+    public async Task<bool> ArchiveItemAsync(int itemId, bool isArchive) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var command = new ArchiveItemCommand(itemId, isArchive);
       var result = await mediator.Send(command);
       return result;
     }

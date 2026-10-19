@@ -25,6 +25,9 @@
     private void InitializeComponent() {
       lbName = new Label();
       textBox1 = new TextBox();
+      button1 = new Button();
+      button3 = new Button();
+      button2 = new Button();
       SuspendLayout();
       // 
       // lbName
@@ -49,10 +52,49 @@
       textBox1.TabIndex = 1;
       textBox1.TextChanged += TextBox1_TextChanged;
       // 
+      // button1
+      // 
+      button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button1.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button1.Location = new Point(5, 75);
+      button1.Name = "button1";
+      button1.Size = new Size(41, 21);
+      button1.TabIndex = 3;
+      button1.Text = "more";
+      button1.UseVisualStyleBackColor = true;
+      button1.Click += button1_Click;
+      // 
+      // button3
+      // 
+      button3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button3.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button3.Location = new Point(6, 52);
+      button3.Name = "button3";
+      button3.Size = new Size(43, 21);
+      button3.TabIndex = 6;
+      button3.Text = "paste";
+      button3.UseVisualStyleBackColor = true;
+      button3.Click += button3_Click;
+      // 
+      // button2
+      // 
+      button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      button2.Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      button2.Location = new Point(6, 28);
+      button2.Name = "button2";
+      button2.Size = new Size(43, 21);
+      button2.TabIndex = 5;
+      button2.Text = "copy";
+      button2.UseVisualStyleBackColor = true;
+      button2.Click += button2_Click;
+      // 
       // MemoPropertyEditor
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
+      Controls.Add(button3);
+      Controls.Add(button2);
+      Controls.Add(button1);
       Controls.Add(textBox1);
       Controls.Add(lbName);
       Name = "MemoPropertyEditor";
@@ -65,5 +107,8 @@
 
     private Label lbName;
     private TextBox textBox1;
+    private Button button1;
+    private Button button3;
+    private Button button2;
   }
 }

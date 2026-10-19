@@ -159,7 +159,7 @@ namespace TheLoomApp {
       Form1_Resize(sender, e);
     }
     private async void Form1_FormClosing(object sender, FormClosingEventArgs e) {
-      if (_engineRunning || _comfyEngineRunning) { 
+      if (_engineRunning || _comfyEngineRunning) {
         e.Cancel = true;
         MessageBox.Show("Please stop the engine before closing the application.", "Engine Running", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
@@ -2148,7 +2148,7 @@ namespace TheLoomApp {
             if (statusProp != null) {
               int completeStatusId = (int)WeItemType.TodoCompleteForward;
               if (statusProp.Value.AsInt() == completeStatusId) {
-                await _appDataService.DeleteItemAsync(todoItem.Id);
+                await _appDataService.ArchiveItemAsync(todoItem.Id, true);
                 needsRefresh = true;
               }
             }
@@ -2181,7 +2181,7 @@ namespace TheLoomApp {
         if (relation.RelatedItemTypeId == (int)WeItemType.TodoModel && relation.RelatedItemId.HasValue && skipTodo != relation.RelatedItemId.Value) {
           var todoItem = await _appDataService.GetItemById(relation.RelatedItemId.Value);
           if (todoItem != null) {
-            await _appDataService.DeleteItemAsync(todoItem.Id);
+            await _appDataService.ArchiveItemAsync(todoItem.Id, true);
             needsRefresh = true;
           }
         }
@@ -2329,7 +2329,7 @@ namespace TheLoomApp {
       if (autoJoinSwarmSetting != null) {
         if (cbSwarmOnStartup.Checked) {
           cbJoinSwarm.Checked = true;
-          cbJoinSwarm.Enabled = false;          
+          cbJoinSwarm.Enabled = false;
         } else {
           cbJoinSwarm.Enabled = true;
         }
@@ -2848,7 +2848,7 @@ namespace TheLoomApp {
             }
           }
           if (EngineRunning) {
-            if (_swarmNode != null ) {
+            if (_swarmNode != null) {
               await _swarmNode.TouchLineAsync(SwarmLines.Main);
             }
             tRun.Enabled = true;
@@ -2936,7 +2936,7 @@ namespace TheLoomApp {
         }
         EngineRunning = true;
         tRun.Enabled = true;
-        
+
       } else {
         tRun.Enabled = false;
         EngineRunning = false;
@@ -3536,7 +3536,7 @@ namespace TheLoomApp {
             tRunComfy.Enabled = true;
           }
         }
-        if (!_comfyEngineRunning && _swarmNode != null) { 
+        if (!_comfyEngineRunning && _swarmNode != null) {
           await _swarmNode.SetLineAsync(SwarmLines.Comfy, false);
         }
       }
@@ -3594,18 +3594,30 @@ namespace TheLoomApp {
       return shouldContinue;
     }
 
+    private void miDescSelectAll_Click(object sender, EventArgs e) {
+      edItemDesc.SelectAll();
+    }
 
+    private void miDescCopy_Click(object sender, EventArgs e) {
+      if (!string.IsNullOrEmpty(edItemDesc.Text)) {
+        if (edItemDesc.SelectedText.Length > 0) {
+          Clipboard.SetText(edItemDesc.SelectedText);
+        } else {          
+          Clipboard.SetText(edItemDesc.Text);
+        }          
+      }
+    }
 
-
-
-
-
-
-
-
-
-
-
+    private void miDescPaste_Click(object sender, EventArgs e) {
+      if (Clipboard.ContainsText()) {
+        if (edItemDesc.SelectedText.Length > 0) {
+          edItemDesc.Paste();
+        } else {
+          edItemDesc.SelectAll();
+          edItemDesc.Paste();
+        }
+      }
+    }
 
 
     #endregion

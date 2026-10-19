@@ -98,12 +98,12 @@ namespace TheLoomApp.Editors {
     }
 
     public void ResetToField() {
-      if (Field == null) { 
-        textBox1.Text = string.Empty; 
-        return; 
+      if (Field == null) {
+        textBox1.Text = string.Empty;
+        return;
       }
       _suppressEvents = true;
-      try { 
+      try {
         var nameSet = false;
         if (ColumnConfig != null) {
           if (ColumnConfig.LabelText != null) {
@@ -174,13 +174,61 @@ namespace TheLoomApp.Editors {
             string result = await _dataProvider.RenderTemplate(tmpField, CancellationToken.None);
             txtPreview.Text = result;
           } else {
-            txtPreview.Text = "No data provider configured for rendering.";          }
+            txtPreview.Text = "No data provider configured for rendering.";
+          }
         } catch (Exception ex) {
           txtPreview.Text = $"Render error: {ex.Message}";
         } finally {
           tabControl1.SelectedTab = tabPreview; // the button's job: show the result
         }
 
+      }
+    }
+
+    private void button1_Click(object sender, EventArgs e) {
+      this.Height = this.Height + (button1.Height * 3);
+    }
+
+    private void button2_Click(object sender, EventArgs e) {
+      if (tabControl1.SelectedTab == tabTemplate) {
+        if (!string.IsNullOrEmpty(textBox1.Text)) {
+          if (textBox1.SelectedText.Length > 0) {
+            Clipboard.SetText(textBox1.SelectedText);
+          } else {            
+            Clipboard.SetText(textBox1.Text);
+          }
+        }
+      } else {
+        if (!string.IsNullOrEmpty(txtPreview.Text)) {
+          if (txtPreview.SelectedText.Length > 0) {
+            Clipboard.SetText(txtPreview.SelectedText);
+          } else {
+            Clipboard.SetText(txtPreview.Text);
+          }          
+        }
+      }
+    }
+
+    private void button3_Click(object sender, EventArgs e) {
+      // Paste from clipboard into the currently selected tab's text box
+      if (tabControl1.SelectedTab == tabTemplate) {
+        if (Clipboard.ContainsText()) {
+          if (textBox1.SelectedText.Length > 0) {
+            textBox1.Paste();
+          } else {
+            textBox1.SelectAll();
+            textBox1.Paste();
+          }          
+        }
+      } else {
+        if (Clipboard.ContainsText()) {
+          if (txtPreview.SelectedText.Length > 0) {
+            txtPreview.Paste();
+          } else {
+            txtPreview.SelectAll();
+            txtPreview.Paste();
+          }
+        }
       }
     }
   }

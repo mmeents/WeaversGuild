@@ -123,6 +123,10 @@
       tabControl2 = new TabControl();
       tpItemDesc = new TabPage();
       edItemDesc = new FastColoredTextBoxNS.FastColoredTextBox();
+      cmsEditor = new ContextMenuStrip(components);
+      miDescSelectAll = new ToolStripMenuItem();
+      miDescCopy = new ToolStripMenuItem();
+      miDescPaste = new ToolStripMenuItem();
       tpData = new TabPage();
       edItemData = new TextBox();
       tpHtml = new TabPage();
@@ -225,6 +229,7 @@
       tabControl2.SuspendLayout();
       tpItemDesc.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)edItemDesc).BeginInit();
+      cmsEditor.SuspendLayout();
       tpData.SuspendLayout();
       tpHtml.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)wvDescription).BeginInit();
@@ -301,455 +306,455 @@
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(209, 1386);
+      cmsTreeMenus.Size = new Size(212, 1408);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
       // 
       miReloadTree.Name = "miReloadTree";
-      miReloadTree.Size = new Size(208, 22);
+      miReloadTree.Size = new Size(211, 22);
       miReloadTree.Text = "Reload Projects";
       miReloadTree.Click += miReloadTree_Click;
       // 
       // miMoveItemUp
       // 
       miMoveItemUp.Name = "miMoveItemUp";
-      miMoveItemUp.Size = new Size(208, 22);
+      miMoveItemUp.Size = new Size(211, 22);
       miMoveItemUp.Text = "Move Item Up";
       miMoveItemUp.Click += miMoveItemUp_Click;
       // 
       // miDuplicateItem
       // 
       miDuplicateItem.Name = "miDuplicateItem";
-      miDuplicateItem.Size = new Size(208, 22);
+      miDuplicateItem.Size = new Size(211, 22);
       miDuplicateItem.Text = "Duplicate Item";
       miDuplicateItem.Click += miDuplicateItem_Click;
       // 
       // miSepRefreshBottom
       // 
       miSepRefreshBottom.Name = "miSepRefreshBottom";
-      miSepRefreshBottom.Size = new Size(205, 6);
+      miSepRefreshBottom.Size = new Size(208, 6);
       // 
       // miAddGithubToken
       // 
       miAddGithubToken.Name = "miAddGithubToken";
-      miAddGithubToken.Size = new Size(208, 22);
+      miAddGithubToken.Size = new Size(211, 22);
       miAddGithubToken.Text = "Add GitHub Token";
       miAddGithubToken.Click += miAddGithubToken_Click;
       // 
       // miAddDigitalOperator
       // 
       miAddDigitalOperator.Name = "miAddDigitalOperator";
-      miAddDigitalOperator.Size = new Size(208, 22);
+      miAddDigitalOperator.Size = new Size(211, 22);
       miAddDigitalOperator.Text = "Add Digital Operator";
       miAddDigitalOperator.Click += miAddDigitalOperator_Click;
       // 
       // miAddOrgRole
       // 
       miAddOrgRole.Name = "miAddOrgRole";
-      miAddOrgRole.Size = new Size(208, 22);
+      miAddOrgRole.Size = new Size(211, 22);
       miAddOrgRole.Text = "Add Org DeskRole";
       miAddOrgRole.Click += miAddOrgRole_Click;
       // 
       // miAddWorkGroup
       // 
       miAddWorkGroup.Name = "miAddWorkGroup";
-      miAddWorkGroup.Size = new Size(208, 22);
+      miAddWorkGroup.Size = new Size(211, 22);
       miAddWorkGroup.Text = "Add Work Group";
       miAddWorkGroup.Click += miAddWorkGroup_Click;
       // 
       // miAddOrgDesk
       // 
       miAddOrgDesk.Name = "miAddOrgDesk";
-      miAddOrgDesk.Size = new Size(208, 22);
+      miAddOrgDesk.Size = new Size(211, 22);
       miAddOrgDesk.Text = "Add Desk";
       miAddOrgDesk.Click += miAddOrgDesk_Click;
       // 
       // miAddDeskTodo
       // 
       miAddDeskTodo.Name = "miAddDeskTodo";
-      miAddDeskTodo.Size = new Size(208, 22);
+      miAddDeskTodo.Size = new Size(211, 22);
       miAddDeskTodo.Text = "Add Desk Todo";
       miAddDeskTodo.Click += miAddDeskTodo_Click;
       // 
       // miAddForeachTodo
       // 
       miAddForeachTodo.Name = "miAddForeachTodo";
-      miAddForeachTodo.Size = new Size(208, 22);
+      miAddForeachTodo.Size = new Size(211, 22);
       miAddForeachTodo.Text = "Add Foreach Todo";
       miAddForeachTodo.Click += miAddForeachTodo_Click;
       // 
       // miAddOrgFolder
       // 
       miAddOrgFolder.Name = "miAddOrgFolder";
-      miAddOrgFolder.Size = new Size(208, 22);
+      miAddOrgFolder.Size = new Size(211, 22);
       miAddOrgFolder.Text = "Add Org Folder";
       miAddOrgFolder.Click += miAddOrgFolder_Click;
       // 
       // miAddOrgFile
       // 
       miAddOrgFile.Name = "miAddOrgFile";
-      miAddOrgFile.Size = new Size(208, 22);
+      miAddOrgFile.Size = new Size(211, 22);
       miAddOrgFile.Text = "Add Org File";
       miAddOrgFile.Click += miAddOrgFile_Click;
       // 
       // miAddOrgRssFolder
       // 
       miAddOrgRssFolder.Name = "miAddOrgRssFolder";
-      miAddOrgRssFolder.Size = new Size(208, 22);
+      miAddOrgRssFolder.Size = new Size(211, 22);
       miAddOrgRssFolder.Text = "Add Org Rss Folder";
       miAddOrgRssFolder.Click += miAddOrgRssFolder_Click;
       // 
       // miAddRssChannel
       // 
       miAddRssChannel.Name = "miAddRssChannel";
-      miAddRssChannel.Size = new Size(208, 22);
+      miAddRssChannel.Size = new Size(211, 22);
       miAddRssChannel.Text = "Add Rss Channel";
       miAddRssChannel.Click += miAddRssChannel_Click;
       // 
       // miResyncChannel
       // 
       miResyncChannel.Name = "miResyncChannel";
-      miResyncChannel.Size = new Size(208, 22);
+      miResyncChannel.Size = new Size(211, 22);
       miResyncChannel.Text = "Resync Channel";
       miResyncChannel.Click += miResyncChannel_Click;
       // 
       // miAddRssLinkedHtml
       // 
       miAddRssLinkedHtml.Name = "miAddRssLinkedHtml";
-      miAddRssLinkedHtml.Size = new Size(208, 22);
+      miAddRssLinkedHtml.Size = new Size(211, 22);
       miAddRssLinkedHtml.Text = "Add Web Link";
       miAddRssLinkedHtml.Click += miAddRssLinkedHtml_Click;
       // 
       // miResolveLink
       // 
       miResolveLink.Name = "miResolveLink";
-      miResolveLink.Size = new Size(208, 22);
+      miResolveLink.Size = new Size(211, 22);
       miResolveLink.Text = "Resolve Link";
       miResolveLink.Click += miResolveLink_Click;
       // 
       // miExtractLinks
       // 
       miExtractLinks.Name = "miExtractLinks";
-      miExtractLinks.Size = new Size(208, 22);
+      miExtractLinks.Size = new Size(211, 22);
       miExtractLinks.Text = "Extract Links";
       miExtractLinks.Click += miExtractLinks_Click;
       // 
       // miAddPattern
       // 
       miAddPattern.Name = "miAddPattern";
-      miAddPattern.Size = new Size(208, 22);
+      miAddPattern.Size = new Size(211, 22);
       miAddPattern.Text = "Add Pattern";
       miAddPattern.Click += miAddPattern_Click;
       // 
       // miAddPatDimension
       // 
       miAddPatDimension.Name = "miAddPatDimension";
-      miAddPatDimension.Size = new Size(208, 22);
+      miAddPatDimension.Size = new Size(211, 22);
       miAddPatDimension.Text = "Add Dimension";
       miAddPatDimension.Click += miAddPatDimension_Click;
       // 
       // miAddPatDimOption
       // 
       miAddPatDimOption.Name = "miAddPatDimOption";
-      miAddPatDimOption.Size = new Size(208, 22);
+      miAddPatDimOption.Size = new Size(211, 22);
       miAddPatDimOption.Text = "Add Option";
       miAddPatDimOption.Click += miAddPatDimOption_Click;
       // 
       // miGetNextDraw
       // 
       miGetNextDraw.Name = "miGetNextDraw";
-      miGetNextDraw.Size = new Size(208, 22);
+      miGetNextDraw.Size = new Size(211, 22);
       miGetNextDraw.Text = "Get Next Draw";
       miGetNextDraw.Click += miGetNextDraw_Click;
       // 
       // miAddComfyWorkflow
       // 
       miAddComfyWorkflow.Name = "miAddComfyWorkflow";
-      miAddComfyWorkflow.Size = new Size(208, 22);
+      miAddComfyWorkflow.Size = new Size(211, 22);
       miAddComfyWorkflow.Text = "Add Comfy Workflow";
       miAddComfyWorkflow.Click += miAddComfyWorkflow_Click;
       // 
       // miAddComfyWfParam
       // 
       miAddComfyWfParam.Name = "miAddComfyWfParam";
-      miAddComfyWfParam.Size = new Size(208, 22);
+      miAddComfyWfParam.Size = new Size(211, 22);
       miAddComfyWfParam.Text = "Add Workflow Param";
       miAddComfyWfParam.Click += miAddComfyWfParam_Click;
       // 
       // miAddComfyOpFolder
       // 
       miAddComfyOpFolder.Name = "miAddComfyOpFolder";
-      miAddComfyOpFolder.Size = new Size(208, 22);
+      miAddComfyOpFolder.Size = new Size(211, 22);
       miAddComfyOpFolder.Text = "Add Comfy Op Folder";
       miAddComfyOpFolder.Click += miAddComfyOpFolder_Click;
       // 
       // miAddComfyTodo
       // 
       miAddComfyTodo.Name = "miAddComfyTodo";
-      miAddComfyTodo.Size = new Size(208, 22);
+      miAddComfyTodo.Size = new Size(211, 22);
       miAddComfyTodo.Text = "Add Comfy Todo";
       miAddComfyTodo.Click += miAddComfyTodo_Click;
       // 
       // miAddProjectRoot
       // 
       miAddProjectRoot.Name = "miAddProjectRoot";
-      miAddProjectRoot.Size = new Size(208, 22);
+      miAddProjectRoot.Size = new Size(211, 22);
       miAddProjectRoot.Text = "Add Project Root";
       miAddProjectRoot.Click += miAddProjectRoot_Click;
       // 
       // miAddSubProject
       // 
       miAddSubProject.Name = "miAddSubProject";
-      miAddSubProject.Size = new Size(208, 22);
+      miAddSubProject.Size = new Size(211, 22);
       miAddSubProject.Text = "Add Folder";
       miAddSubProject.Click += miAddSubProject_Click;
       // 
       // miAddGitHubRepo
       // 
       miAddGitHubRepo.Name = "miAddGitHubRepo";
-      miAddGitHubRepo.Size = new Size(208, 22);
+      miAddGitHubRepo.Size = new Size(211, 22);
       miAddGitHubRepo.Text = "Add GitHub Repo";
       miAddGitHubRepo.Click += miAddGitHubRepo_Click;
       // 
       // miDoGitClone
       // 
       miDoGitClone.Name = "miDoGitClone";
-      miDoGitClone.Size = new Size(208, 22);
+      miDoGitClone.Size = new Size(211, 22);
       miDoGitClone.Text = "Do Git Clone Repo";
       miDoGitClone.Click += miDoGitClone_Click;
       // 
       // miDoGitRefStatus
       // 
       miDoGitRefStatus.Name = "miDoGitRefStatus";
-      miDoGitRefStatus.Size = new Size(208, 22);
+      miDoGitRefStatus.Size = new Size(211, 22);
       miDoGitRefStatus.Text = "Do Git Status Refresh";
       miDoGitRefStatus.Click += miDoGitRefStatus_Click;
       // 
       // miDoCheckout
       // 
       miDoCheckout.Name = "miDoCheckout";
-      miDoCheckout.Size = new Size(208, 22);
+      miDoCheckout.Size = new Size(211, 22);
       miDoCheckout.Text = "Do Git Checkout";
       miDoCheckout.Click += miDoCheckout_Click;
       // 
       // miAddRealm
       // 
       miAddRealm.Name = "miAddRealm";
-      miAddRealm.Size = new Size(208, 22);
+      miAddRealm.Size = new Size(211, 22);
       miAddRealm.Text = "Add Story Realm";
       miAddRealm.Click += miAddRealm_Click;
       // 
       // miAddStory
       // 
       miAddStory.Name = "miAddStory";
-      miAddStory.Size = new Size(208, 22);
+      miAddStory.Size = new Size(211, 22);
       miAddStory.Text = "Add Story";
       miAddStory.Click += miAddStory_Click;
       // 
       // miAddScene
       // 
       miAddScene.Name = "miAddScene";
-      miAddScene.Size = new Size(208, 22);
+      miAddScene.Size = new Size(211, 22);
       miAddScene.Text = "Add Scene";
       miAddScene.Click += miAddScene_Click;
       // 
       // miAddBeat
       // 
       miAddBeat.Name = "miAddBeat";
-      miAddBeat.Size = new Size(208, 22);
+      miAddBeat.Size = new Size(211, 22);
       miAddBeat.Text = "Add Beat";
       miAddBeat.Click += miAddBeat_Click;
       // 
       // miAddCallSheet
       // 
       miAddCallSheet.Name = "miAddCallSheet";
-      miAddCallSheet.Size = new Size(208, 22);
+      miAddCallSheet.Size = new Size(211, 22);
       miAddCallSheet.Text = "Add Call Sheet";
       miAddCallSheet.Click += miAddCallSheet_Click;
       // 
       // miAddCharacter
       // 
       miAddCharacter.Name = "miAddCharacter";
-      miAddCharacter.Size = new Size(208, 22);
+      miAddCharacter.Size = new Size(211, 22);
       miAddCharacter.Text = "Add Character";
       miAddCharacter.Click += miAddCharacter_Click;
       // 
       // miAddPerformance
       // 
       miAddPerformance.Name = "miAddPerformance";
-      miAddPerformance.Size = new Size(208, 22);
+      miAddPerformance.Size = new Size(211, 22);
       miAddPerformance.Text = "Add Performance";
       miAddPerformance.Click += miAddPerformance_Click;
       // 
       // miAddObserved
       // 
       miAddObserved.Name = "miAddObserved";
-      miAddObserved.Size = new Size(208, 22);
+      miAddObserved.Size = new Size(211, 22);
       miAddObserved.Text = "Add Observed";
       miAddObserved.Click += miAddObserved_Click;
       // 
       // miAddMusicAlbum
       // 
       miAddMusicAlbum.Name = "miAddMusicAlbum";
-      miAddMusicAlbum.Size = new Size(208, 22);
+      miAddMusicAlbum.Size = new Size(211, 22);
       miAddMusicAlbum.Text = "Add Music Album";
       miAddMusicAlbum.Click += miAddMusicAlbum_Click;
       // 
       // miAddMusicTrack
       // 
       miAddMusicTrack.Name = "miAddMusicTrack";
-      miAddMusicTrack.Size = new Size(208, 22);
+      miAddMusicTrack.Size = new Size(211, 22);
       miAddMusicTrack.Text = "Add Music Track";
       miAddMusicTrack.Click += miAddMusicTrack_Click;
       // 
       // miAddLinkedOn
       // 
       miAddLinkedOn.Name = "miAddLinkedOn";
-      miAddLinkedOn.Size = new Size(208, 22);
+      miAddLinkedOn.Size = new Size(211, 22);
       miAddLinkedOn.Text = "Add Realms Linked On";
       miAddLinkedOn.Click += miAddLinkedOn_Click;
       // 
       // miAddSolution
       // 
       miAddSolution.Name = "miAddSolution";
-      miAddSolution.Size = new Size(208, 22);
+      miAddSolution.Size = new Size(211, 22);
       miAddSolution.Text = "Add Solution";
       miAddSolution.Click += miAddSolution_Click;
       // 
       // miAddSolutionImport
       // 
       miAddSolutionImport.Name = "miAddSolutionImport";
-      miAddSolutionImport.Size = new Size(208, 22);
+      miAddSolutionImport.Size = new Size(211, 22);
       miAddSolutionImport.Text = "Add Solution Import";
       miAddSolutionImport.Click += miAddSolutionImport_Click;
       // 
       // miAddFile
       // 
       miAddFile.Name = "miAddFile";
-      miAddFile.Size = new Size(208, 22);
+      miAddFile.Size = new Size(211, 22);
       miAddFile.Text = "Add File";
       miAddFile.Click += miAddFile_Click;
       // 
       // miAddLibrary
       // 
       miAddLibrary.Name = "miAddLibrary";
-      miAddLibrary.Size = new Size(208, 22);
+      miAddLibrary.Size = new Size(211, 22);
       miAddLibrary.Text = "Add Library";
       miAddLibrary.Click += miAddLibrary_Click;
       // 
       // miAddDiModel
       // 
       miAddDiModel.Name = "miAddDiModel";
-      miAddDiModel.Size = new Size(208, 22);
+      miAddDiModel.Size = new Size(211, 22);
       miAddDiModel.Text = "Add DI Model";
       miAddDiModel.Click += miAddDiModel_Click;
       // 
       // miAddNamespace
       // 
       miAddNamespace.Name = "miAddNamespace";
-      miAddNamespace.Size = new Size(208, 22);
+      miAddNamespace.Size = new Size(211, 22);
       miAddNamespace.Text = "Add Namespace";
       miAddNamespace.Click += miAddNamespace_Click;
       // 
       // miAddClass
       // 
       miAddClass.Name = "miAddClass";
-      miAddClass.Size = new Size(208, 22);
+      miAddClass.Size = new Size(211, 22);
       miAddClass.Text = "Add Class";
       miAddClass.Click += miAddClass_Click;
       // 
       // miAddClassImport
       // 
       miAddClassImport.Name = "miAddClassImport";
-      miAddClassImport.Size = new Size(208, 22);
+      miAddClassImport.Size = new Size(211, 22);
       miAddClassImport.Text = "Add Class Import";
       miAddClassImport.Click += miAddClassImport_Click;
       // 
       // miAddClassProp
       // 
       miAddClassProp.Name = "miAddClassProp";
-      miAddClassProp.Size = new Size(208, 22);
+      miAddClassProp.Size = new Size(211, 22);
       miAddClassProp.Text = "Add Class Property";
       miAddClassProp.Click += miAddClassProp_Click;
       // 
       // miAddClassMethod
       // 
       miAddClassMethod.Name = "miAddClassMethod";
-      miAddClassMethod.Size = new Size(208, 22);
+      miAddClassMethod.Size = new Size(211, 22);
       miAddClassMethod.Text = "Add Class Method";
       miAddClassMethod.Click += miAddClassMethod_Click;
       // 
       // miAddClassMethodParam
       // 
       miAddClassMethodParam.Name = "miAddClassMethodParam";
-      miAddClassMethodParam.Size = new Size(208, 22);
+      miAddClassMethodParam.Size = new Size(211, 22);
       miAddClassMethodParam.Text = "Add Class Method Param";
       miAddClassMethodParam.Click += miAddClassMethodParam_Click;
       // 
       // miAddEntity
       // 
       miAddEntity.Name = "miAddEntity";
-      miAddEntity.Size = new Size(208, 22);
+      miAddEntity.Size = new Size(211, 22);
       miAddEntity.Text = "Add Entity";
       miAddEntity.Click += miAddEntity_Click;
       // 
       // miAddEntityProperty
       // 
       miAddEntityProperty.Name = "miAddEntityProperty";
-      miAddEntityProperty.Size = new Size(208, 22);
+      miAddEntityProperty.Size = new Size(211, 22);
       miAddEntityProperty.Text = "Add Entity Property";
       miAddEntityProperty.Click += miAddEntityProperty_Click;
       // 
       // miAddGameRoom
       // 
       miAddGameRoom.Name = "miAddGameRoom";
-      miAddGameRoom.Size = new Size(208, 22);
+      miAddGameRoom.Size = new Size(211, 22);
       miAddGameRoom.Text = "Add Game Room";
       miAddGameRoom.Click += miAddGameRoom_Click;
       // 
       // miAddChessGame
       // 
       miAddChessGame.Name = "miAddChessGame";
-      miAddChessGame.Size = new Size(208, 22);
+      miAddChessGame.Size = new Size(211, 22);
       miAddChessGame.Text = "Add Chess Game";
       miAddChessGame.Click += miAddChessGame_Click;
       // 
       // miSepAddBottom
       // 
       miSepAddBottom.Name = "miSepAddBottom";
-      miSepAddBottom.Size = new Size(205, 6);
+      miSepAddBottom.Size = new Size(208, 6);
       // 
       // miGenerate
       // 
       miGenerate.Name = "miGenerate";
-      miGenerate.Size = new Size(208, 22);
+      miGenerate.Size = new Size(211, 22);
       miGenerate.Text = "Generate";
       miGenerate.Click += miGenerate_Click;
       // 
       // miSepGenBottom
       // 
       miSepGenBottom.Name = "miSepGenBottom";
-      miSepGenBottom.Size = new Size(205, 6);
+      miSepGenBottom.Size = new Size(208, 6);
       // 
       // miEmptyDesk
       // 
       miEmptyDesk.Name = "miEmptyDesk";
-      miEmptyDesk.Size = new Size(208, 22);
-      miEmptyDesk.Text = "Empy Desk";
+      miEmptyDesk.Size = new Size(211, 22);
+      miEmptyDesk.Text = "Empy Desk Archive";
       miEmptyDesk.Click += miEmptyDesk_Click;
       // 
       // miRemoveCompletedTodo
       // 
       miRemoveCompletedTodo.Name = "miRemoveCompletedTodo";
-      miRemoveCompletedTodo.Size = new Size(208, 22);
-      miRemoveCompletedTodo.Text = "Delete Completed Todos";
+      miRemoveCompletedTodo.Size = new Size(211, 22);
+      miRemoveCompletedTodo.Text = "Archive Completed Todos";
       miRemoveCompletedTodo.Click += miRemoveCompletedTodo_Click;
       // 
       // miDeleteItem
       // 
       miDeleteItem.Name = "miDeleteItem";
-      miDeleteItem.Size = new Size(208, 22);
+      miDeleteItem.Size = new Size(211, 22);
       miDeleteItem.Text = "Delete Selected";
       miDeleteItem.Click += miDeleteItem_Click;
       // 
@@ -1154,6 +1159,7 @@
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
+      edItemDesc.ContextMenuStrip = cmsEditor;
       edItemDesc.DefaultMarkerSize = 8;
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
@@ -1175,6 +1181,34 @@
       edItemDesc.WordWrapMode = FastColoredTextBoxNS.WordWrapMode.CharWrapPreferredWidth;
       edItemDesc.Zoom = 100;
       edItemDesc.TextChanged += edItemDesc2_TextChanged;
+      // 
+      // cmsEditor
+      // 
+      cmsEditor.Items.AddRange(new ToolStripItem[] { miDescSelectAll, miDescCopy, miDescPaste });
+      cmsEditor.Name = "cmsEditor";
+      cmsEditor.Size = new Size(123, 70);
+      // 
+      // miDescSelectAll
+      // 
+      miDescSelectAll.Name = "miDescSelectAll";
+      miDescSelectAll.Size = new Size(122, 22);
+      miDescSelectAll.Text = "Select All";
+      miDescSelectAll.Click += miDescSelectAll_Click;
+      // 
+      // miDescCopy
+      // 
+      miDescCopy.Name = "miDescCopy";
+      miDescCopy.Size = new Size(122, 22);
+      miDescCopy.Text = "Copy";
+      miDescCopy.Click += miDescCopy_Click;
+      // 
+      // miDescPaste
+      // 
+      miDescPaste.Name = "miDescPaste";
+      miDescPaste.Size = new Size(122, 22);
+      miDescPaste.Text = "Paste";
+      miDescPaste.TextAlign = ContentAlignment.TopLeft;
+      miDescPaste.Click += miDescPaste_Click;
       // 
       // tpData
       // 
@@ -2135,6 +2169,7 @@
       tabControl2.ResumeLayout(false);
       tpItemDesc.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)edItemDesc).EndInit();
+      cmsEditor.ResumeLayout(false);
       tpData.ResumeLayout(false);
       tpData.PerformLayout();
       tpHtml.ResumeLayout(false);
@@ -2344,5 +2379,9 @@
     private CheckBox cbSwarmOnStartup;
     private Label lbSwarmConStatus;
     private Button btnTestLine;
+    private ContextMenuStrip cmsEditor;
+    private ToolStripMenuItem miDescSelectAll;
+    private ToolStripMenuItem miDescCopy;
+    private ToolStripMenuItem miDescPaste;
   }
 }
