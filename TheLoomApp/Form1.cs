@@ -208,7 +208,8 @@ namespace TheLoomApp {
     #endregion
 
     #region Tree View Loading and Events
-    private async void Form1_Shown(object sender, EventArgs e) {
+    private async void Form1_Shown(object sender, EventArgs e) {      
+      btnChangeDetected.Visible = false;      
       _sessionDetails = await _appDataService.GetAppSession(); // create session.
       this.Text = Cx.AppName + " - v" + Cx.AppVersion + $" on {Environment.MachineName} SId: {_sessionDetails?.SessionId ?? 0} PId: {Environment.ProcessId}";
       var key = $"{_sessionDetails!.HarnessId}-HumanUserTodo";
@@ -580,16 +581,17 @@ namespace TheLoomApp {
         splitContainer1.Panel1Collapsed = false;
       }
 
-      if (tabControl1.SelectedTab == tpSchedule) {
-        ReloadSchedules();
-      } else if (tabControl1.SelectedTab == tpReview) {
-        ReloadReadyTab();
-      } else if (tabControl1.SelectedTab == tpResults) {
-        ReloadResultsTab();
-      } else if (tabControl1.SelectedTab == tpComfy) {
+      if (tabControl1.SelectedTab == tpMain) {
+        var selectedTab = tcMainSchedule.SelectedTab;
+        await RelaodMainTabAsync(selectedTab);
+      }
+
+      if (tabControl1.SelectedTab == tpComfy) {
         var selectedTab = tcComfyScheduleSwitch.SelectedTab;
         await ReloadComfyTabAsync(selectedTab);
       }
+
+
     }
 
     private void FillCombo(ComboBox box, IEnumerable<ItemLookup> items, string? restoreId) {
@@ -1104,6 +1106,11 @@ namespace TheLoomApp {
         miDeleteItem.Enabled = true;
 
       }
+    }
+
+    private async void btnChangeDetected_Click(object sender, EventArgs e) {
+      btnChangeDetected.Visible = false;
+      miReloadTree_Click(sender, e);
     }
 
     private async void miReloadTree_Click(object sender, EventArgs e) {
@@ -2193,6 +2200,108 @@ namespace TheLoomApp {
     }
     #endregion
     #endregion
+    #region Application Swarm
+    private SwarmNode? _swarmNode;
+    private bool _swarmBusy;
+    private bool _closeReady;
+    private async void cbJoinSwarm_CheckedChanged(object sender, EventArgs e) {
+      if (_swarmBusy) return;                       // guards the revert below from re-entering
+      _swarmBusy = true;
+      cbJoinSwarm.Enabled = false;
+      try {
+        if (cbJoinSwarm.Checked) await JoinSwarmAsync();
+        else await LeaveSwarmAsync();
+      } catch (Exception ex) {
+        DoLogMessage($"Swarm failed: {ex.Message}");
+        await LeaveSwarmAsync();                    // clean up a half-started node
+        cbJoinSwarm.Checked = false;
+      } finally {
+        cbJoinSwarm.Enabled = true; _swarmBusy = false;
+      }
+    }
+
+    private async Task JoinSwarmAsync() {
+      if (_sessionDetails == null) throw new InvalidOperationException("App gateway session not created yet.");
+      var node = new SwarmNode(_registry, _sessionDetails, Dns.GetHostName(), SwarmLines.All); // UI thread → captures SyncContext
+      node.LineStateChanged += OnSwarmLineState;
+      node.PeerJoined += OnSwarmPeerJoined;
+      node.PeerLeft += OnSwarmPeerLeft;
+      node.ViewChanged += RefreshStartButtons;
+      node.Log += DoLogMessage;
+      node.ViewChanged += MarkSwarmDirty;
+      node.PeerJoined += _ => MarkSwarmDirty();
+      _swarmNode = node;                            // assign before start so Leave can dispose a partial start
+      await node.SetLineAsync(SwarmLines.Main, _engineRunning || _isRunning);
+      await node.SetLineAsync(SwarmLines.Comfy, _comfyEngineRunning || _isComfyEngineRunning);
+      await node.StartAsync();
+      lbSwarmConStatus.Text = $"Swarm: port {node.Port}";
+      DoLogMessage("Join swarm completes.");
+      RefreshStartButtons();
+      tSwarm.Enabled = true;
+    }
+
+    private async Task LeaveSwarmAsync() {
+      tSwarm.Enabled = false;
+      var node = _swarmNode;
+      _swarmNode = null;
+      if (node is null) return;
+      node.LineStateChanged -= OnSwarmLineState;
+      node.PeerJoined -= OnSwarmPeerJoined;
+      node.PeerLeft -= OnSwarmPeerLeft;
+      node.ViewChanged -= RefreshStartButtons;
+      node.Log -= DoLogMessage;
+      node.ViewChanged -= MarkSwarmDirty;
+      node.PeerJoined -= _ => MarkSwarmDirty();
+      await node.DisposeAsync();                    // RemoveAsync + close peers + stop Kestrel
+      lbSwarmConStatus.Text = "Swarm: off";
+      DoLogMessage("Leave swarm completes.");
+      RefreshStartButtons();
+      lvActiveSwarm.Items.Clear();
+      lvActiveSwarm.Groups.Clear();
+    }
+
+    private void OnSwarmPeerJoined(PeerInfo info) {
+      DoLogMessage($"Peer joined: session {info.HarnessAppSessionId} at {info.Address}:{info.Port}");
+    }
+
+    private void OnSwarmPeerLeft(int sessionId) {
+      DoLogMessage($"Peer left: session {sessionId}");
+    }
+
+    private void OnSwarmLineState(LineState s) {
+      var who = s.HarnessAppSessionId == _swarmNode?.GatewaySessionId ? "self" : $"session {s.HarnessAppSessionId}";
+      if (!btnChangeDetected.Visible) {
+        btnChangeDetected.Visible = true;
+      }
+      DoLogMessage($"Line {s.Line} {(s.Running ? "On" : "Off")} ({who}, machine {s.MachineName})");
+    }
+
+    private void RefreshStartButtons() {
+      if (_swarmNode is null) {
+        btnTestLine.Enabled = false;
+        btnTestLine.Text = "Test Line";
+        btnStartStop.Enabled = !_isStopping;
+        btnAttemptComfyTodo.Enabled = !_isComfyStopping;
+        return;
+      }
+      var free = _swarmNode.IsMachineFree();
+      bool Can(string line) => _swarmNode.IsRunningHere(line) || free;
+
+      var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
+      btnTestLine.Enabled = Can(SwarmLines.MainTest);
+      btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
+      btnStartStop.Enabled = !_isStopping && Can(SwarmLines.Main);
+      btnAttemptComfyTodo.Enabled = !_isComfyStopping && Can(SwarmLines.Comfy);
+
+      var h = _swarmNode.MachineHolder();
+      lbSwarmConStatus.Text = h is null ? $"Swarm: port {_swarmNode.Port} · idle"
+        : $"Swarm: port {_swarmNode.Port} · {h.Line} on session {h.HarnessAppSessionId}";
+      if (!btnChangeDetected.Visible) {
+        btnChangeDetected.Visible = true;
+      }
+    }
+
+    #endregion
 
     #region Settings Tab
 
@@ -2254,7 +2363,6 @@ namespace TheLoomApp {
         }
       }
     }
-
 
     private bool _showPkgInLib = false;
     private void cbShowPkgInLib_CheckedChanged(object sender, EventArgs e) {
@@ -2343,94 +2451,73 @@ namespace TheLoomApp {
     }
 
     #endregion
-    #region Application Swarm
-    private SwarmNode? _swarmNode;
-    private bool _swarmBusy;
-    private bool _closeReady;
-    private async void cbJoinSwarm_CheckedChanged(object sender, EventArgs e) {
-      if (_swarmBusy) return;                       // guards the revert below from re-entering
-      _swarmBusy = true;
-      cbJoinSwarm.Enabled = false;
+    #region ViewSwarm 
+    private readonly Dictionary<int, ListViewItem> _memberRows = new();
+    private readonly Dictionary<string, ListViewGroup> _machineGroups = new();
+    private readonly System.Windows.Forms.Timer _swarmTimer = new() { Interval = 250 };
+    private bool _swarmDirty;
+
+    private void tSwarm_Tick(object sender, EventArgs e) {
+      if (_swarmDirty || AnyRunning()) {
+        _swarmDirty = false;
+        RenderSwarm();
+      }
+    }
+
+    // init:
+    //   _swarmTimer.Tick += (_, _) => { if (_swarmDirty || AnyRunning()) { _swarmDirty = false; RenderSwarm(); } };
+    //   _swarmTimer.Start(); -> tSwarm.Start();
+    // JoinSwarmAsync:  node.ViewChanged += MarkSwarmDirty;  node.PeerJoined += _ => MarkSwarmDirty();
+    // LeaveSwarmAsync: unhook, then clear rows/groups and render once.
+    private void MarkSwarmDirty() => _swarmDirty = true;
+    private bool AnyRunning() => _swarmNode?.View.Any(v => v.Running) ?? false;
+
+    private void RenderSwarm() {
+      var members = _swarmNode?.Members() ?? [];
+      lvActiveSwarm.BeginUpdate();
       try {
-        if (cbJoinSwarm.Checked) await JoinSwarmAsync();
-        else await LeaveSwarmAsync();
-      } catch (Exception ex) {
-        DoLogMessage($"Swarm failed: {ex.Message}");
-        await LeaveSwarmAsync();                    // clean up a half-started node
-        cbJoinSwarm.Checked = false;
-      } finally {
-        cbJoinSwarm.Enabled = true; _swarmBusy = false;
+        var seen = new HashSet<int>();
+        foreach (var m in members.OrderBy(m => m.Peer.MachineName).ThenBy(m => m.Peer.HarnessAppSessionId)) {
+          var sid = m.Peer.HarnessAppSessionId;
+          seen.Add(sid);
+          if (!_memberRows.TryGetValue(sid, out var row)) {
+            row = new ListViewItem(["", "", "", ""]) { Tag = m.Peer };
+            lvActiveSwarm.Items.Add(row);
+            _memberRows[sid] = row;
+          }
+          row.Group = GroupFor(m.Peer.MachineName);
+          var run = m.Lines.FirstOrDefault(l => l.Running);
+          SetCell(row, 0, m.IsSelf ? $"{sid} (self)" : sid.ToString());
+          SetCell(row, 1, $"{m.Peer.Address}:{m.Peer.Port}");
+          SetCell(row, 2, run?.Line ?? "idle");
+          SetCell(row, 3, run is null ? "" : Elapsed(run.ChangedUtc));
+        }
+        foreach (var gone in _memberRows.Keys.Except(seen).ToList()) {
+          lvActiveSwarm.Items.Remove(_memberRows[gone]);
+          _memberRows.Remove(gone);
+        }
+        foreach (var (machine, g) in _machineGroups.ToList()) {
+          if (g.Items.Count == 0) { lvActiveSwarm.Groups.Remove(g); _machineGroups.Remove(machine); continue; }
+          var holder = members.SelectMany(x => x.Lines).FirstOrDefault(l => l.Running && l.MachineName == machine);
+          g.Header = holder is null ? $"{machine} — idle" : $"{machine} — {holder.Line} running (session {holder.HarnessAppSessionId})";
+        }
+      } finally { lvActiveSwarm.EndUpdate(); }
+    }
+
+    private ListViewGroup GroupFor(string machine) {
+      if (!_machineGroups.TryGetValue(machine, out var g)) {
+        g = new ListViewGroup(machine, machine);
+        lvActiveSwarm.Groups.Add(g);
+        _machineGroups[machine] = g;
       }
+      return g;
     }
 
-    private async Task JoinSwarmAsync() {
-      if (_sessionDetails == null) throw new InvalidOperationException("App gateway session not created yet.");
-      var node = new SwarmNode(_registry, _sessionDetails, Dns.GetHostName(), SwarmLines.All); // UI thread → captures SyncContext
-      node.LineStateChanged += OnSwarmLineState;
-      node.PeerJoined += OnSwarmPeerJoined;
-      node.PeerLeft += OnSwarmPeerLeft;
-      node.ViewChanged += RefreshStartButtons;
-      node.Log += DoLogMessage;
-      _swarmNode = node;                            // assign before start so Leave can dispose a partial start
-      await node.SetLineAsync(SwarmLines.Main, _engineRunning || _isRunning);
-      await node.SetLineAsync(SwarmLines.Comfy, _comfyEngineRunning || _isComfyEngineRunning);
-      await node.StartAsync();
-      lbSwarmConStatus.Text = $"Swarm: port {node.Port}";
-      DoLogMessage("Join swarm completes.");
-      RefreshStartButtons();
+    private static void SetCell(ListViewItem r, int i, string v) { if (r.SubItems[i].Text != v) r.SubItems[i].Text = v; }
+    private static string Elapsed(DateTime utc) {
+      var t = DateTime.UtcNow - utc;
+      return t.TotalHours >= 1 ? $"{(int)t.TotalHours}h {t.Minutes}m" : $"{t.Minutes}m {t.Seconds:00}s";
     }
-
-    private async Task LeaveSwarmAsync() {
-      var node = _swarmNode;
-      _swarmNode = null;
-      if (node is null) return;
-      node.LineStateChanged -= OnSwarmLineState;
-      node.PeerJoined -= OnSwarmPeerJoined;
-      node.PeerLeft -= OnSwarmPeerLeft;
-      node.ViewChanged -= RefreshStartButtons;
-      node.Log -= DoLogMessage;
-      await node.DisposeAsync();                    // RemoveAsync + close peers + stop Kestrel
-      lbSwarmConStatus.Text = "Swarm: off";
-      DoLogMessage("Leave swarm completes.");
-      RefreshStartButtons();
-    }
-
-    private void OnSwarmPeerJoined(PeerInfo info) {
-      DoLogMessage($"Peer joined: session {info.HarnessAppSessionId} at {info.Address}:{info.Port}");
-    }
-
-    private void OnSwarmPeerLeft(int sessionId) {
-      DoLogMessage($"Peer left: session {sessionId}");
-    }
-
-    private void OnSwarmLineState(LineState s) {
-      var who = s.HarnessAppSessionId == _swarmNode?.GatewaySessionId ? "self" : $"session {s.HarnessAppSessionId}";
-      DoLogMessage($"Line {s.Line} {(s.Running ? "On" : "Off")} ({who}, machine {s.MachineName})");
-    }
-
-    private void RefreshStartButtons() {
-      if (_swarmNode is null) {
-        btnTestLine.Enabled = false;
-        btnTestLine.Text = "Test Line";
-        btnStartStop.Enabled = !_isStopping;
-        btnAttemptComfyTodo.Enabled = !_isComfyStopping;
-        return;
-      }
-      var free = _swarmNode.IsMachineFree();
-      bool Can(string line) => _swarmNode.IsRunningHere(line) || free;
-
-      var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
-      btnTestLine.Enabled = Can(SwarmLines.MainTest);
-      btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
-      btnStartStop.Enabled = !_isStopping && Can(SwarmLines.Main);
-      btnAttemptComfyTodo.Enabled = !_isComfyStopping && Can(SwarmLines.Comfy);
-
-      var h = _swarmNode.MachineHolder();
-      lbSwarmConStatus.Text = h is null ? $"Swarm: port {_swarmNode.Port} · idle"
-        : $"Swarm: port {_swarmNode.Port} · {h.Line} on session {h.HarnessAppSessionId}";
-
-    }
-
     #endregion
 
     #region Details Tab Btn Clicks 
@@ -2643,6 +2730,20 @@ namespace TheLoomApp {
     #endregion
 
     #region Ready tab
+    public async Task RelaodMainTabAsync(TabPage? selectedTab) {
+      if (selectedTab == tpSchedule) {
+        ReloadSchedules();
+      } else if (selectedTab == tpReview) {
+        ReloadReadyTab();
+      } else if (selectedTab == tpResults) {
+        ReloadResultsTab();
+      }
+    }
+
+    private async void tcMainSchedule_SelectedIndexChanged(object sender, EventArgs e) {
+      await RelaodMainTabAsync(tcMainSchedule.SelectedTab);
+    }
+
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _notReadyDict = new();
 
     private async void ReloadReadyTab() {
@@ -2931,8 +3032,10 @@ namespace TheLoomApp {
       if (btnStartStop.Text == "Start") {
         if (_swarmNode != null) {
           var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Main, true);
-          MessageBox.Show("Swarm line set to Main. If another machine is running the pipeline, this machine will wait until it is free.", "Swarm Line Set", MessageBoxButtons.OK, MessageBoxIcon.Information);
-          return;
+          if (!shouldContinue) {
+            MessageBox.Show("Another machine is running the pipeline. This machine will wait until it is free.", "Swarm Line Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+          }                    
         }
         EngineRunning = true;
         tRun.Enabled = true;
@@ -3223,6 +3326,8 @@ namespace TheLoomApp {
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _notReadyComfyDict = new();
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _scheduleComfyDict = new();
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _resultComfyDict = new();
+
+
 
     public async Task ReloadComfyTabAsync(TabPage? selectedTab) {
 
@@ -3602,9 +3707,9 @@ namespace TheLoomApp {
       if (!string.IsNullOrEmpty(edItemDesc.Text)) {
         if (edItemDesc.SelectedText.Length > 0) {
           Clipboard.SetText(edItemDesc.SelectedText);
-        } else {          
+        } else {
           Clipboard.SetText(edItemDesc.Text);
-        }          
+        }
       }
     }
 
@@ -3618,6 +3723,12 @@ namespace TheLoomApp {
         }
       }
     }
+
+
+
+
+
+
 
 
     #endregion

@@ -16,7 +16,7 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.160.2";    // version of the: 1. app. database.    
+    public static string AppVersion => "1.160.3";    // version of the: 1. app. database.    
 
     public static readonly TimeSpan HearbeatFrequency = TimeSpan.FromSeconds(5);
     public static readonly TimeSpan HearbeatLookback = TimeSpan.FromSeconds(15);

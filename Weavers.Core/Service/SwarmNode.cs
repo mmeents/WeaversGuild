@@ -21,8 +21,11 @@ namespace Weavers.Core.Service {
     string MachineName,
     string Line,
     bool Running,
-    long Seq
+    long Seq,
+    DateTime ChangedUtc = default
   );
+
+  public sealed record SwarmMember(PeerInfo Peer, bool IsSelf, IReadOnlyList<LineState> Lines);
 
   public static class SwarmLines {
     public const string Main = "Main";
@@ -52,6 +55,7 @@ namespace Weavers.Core.Service {
 
     readonly SynchronizationContext? _ui = SynchronizationContext.Current; // construct on UI thread
     readonly ConcurrentDictionary<int, HubConnection> _peers = new();
+    readonly ConcurrentDictionary<int, PeerInfo> _peerInfo = new();
     readonly object _gate = new();
     readonly Dictionary<string, LineState> _myLines = new();                          // this instance, all supported lines
     readonly Dictionary<(string MachineName, int SessionId, string Line), LineState> _view = new();       // self + every peer
@@ -85,7 +89,18 @@ namespace Weavers.Core.Service {
     public IReadOnlyCollection<LineState> MyLines { get { lock (_gate) return _myLines.Values.ToArray(); } }
     public IReadOnlyList<LineState> View { get { lock (_gate) return _view.Values.ToArray(); } }
     public bool IsRunningAnywhere(string line) { lock (_gate) return _view.Values.Any(v => v.Line == line && v.Running); }
-    
+    public IReadOnlyList<SwarmMember> Members() {
+      lock (_gate) {
+        var bySession = _view.Values.GroupBy(v => v.HarnessAppSessionId)
+          .ToDictionary(g => g.Key, g => (IReadOnlyList<LineState>)g.ToList());
+        var list = new List<SwarmMember>();
+        if (_me is not null) list.Add(new(_me, true, bySession.GetValueOrDefault(GatewaySessionId, [])));
+        foreach (var p in _peerInfo.Values)
+          list.Add(new(p, false, bySession.GetValueOrDefault(p.HarnessAppSessionId, [])));
+        return list;
+      }
+    }
+
     public LineState? MachineHolder() {
       lock (_gate) return _view.Values.FirstOrDefault(v => v.Running && v.MachineName == Environment.MachineName);
     }
@@ -130,7 +145,7 @@ namespace Weavers.Core.Service {
       lock (_gate) {
         if (!_myLines.TryGetValue(line, out var cur)) throw new ArgumentException($"Unknown line '{line}'");
         if (cur.Running == running) return false;             // currently running so block. 
-        s = cur with { Running = running, Seq = cur.Seq + 1 };
+        s = cur with { Running = running, Seq = cur.Seq + 1, ChangedUtc = DateTime.UtcNow };
         _myLines[line] = s;
       }
       Apply(s);                                    // self goes through the same path as peers
@@ -176,10 +191,12 @@ namespace Weavers.Core.Service {
       }).Build();
       c.Closed += _ => {
         _peers.TryRemove(p.HarnessAppSessionId, out var _);
+        _peerInfo.TryRemove(p.HarnessAppSessionId, out var _);
         PurgePeer(p.HarnessAppSessionId);
         return Task.CompletedTask;
       };
       _peers[p.HarnessAppSessionId] = c;
+      _peerInfo[p.HarnessAppSessionId] = p;
       await c.StartAsync(_cts.Token);      
       Raise(() => PeerJoined?.Invoke(p));      
       foreach (var s in MyLines) await c.InvokeAsync("PushLineState", s, _cts.Token);

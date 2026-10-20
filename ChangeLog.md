@@ -1,5 +1,11 @@
 
 ## Update History
+- Db 160.3 10/20/2026
+  - Reorganizes the tabs to group the 3 main ones under a Main Line tab with 3 inner tabs, review run and results. 
+  - Reorganizes the Settings Tab, adds ListView with active peers and lines.
+  - Adds a Reload button that hides until it detects db change and the reveals its self to show db needs refreshed.
+  - Corrects possible bug added that rejects due to bad logic when starting mainline. 
+  
 - Db 160.2 10/18/2026
   - Adds interprocess communication across the instances via each carrying a SignalR SwarmHub.
   - Makes a Mesh with each instance connecting to each other.  Currently used to drive synchronization of the enabled lines.
