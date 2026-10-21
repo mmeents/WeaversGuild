@@ -2485,7 +2485,8 @@ namespace TheLoomApp {
             lvActiveSwarm.Items.Add(row);
             _memberRows[sid] = row;
           }
-          row.Group = GroupFor(m.Peer.MachineName);
+          var g = GroupFor(m.Peer.MachineName);
+          if (row.Group != g) row.Group = g;
           var run = m.Lines.FirstOrDefault(l => l.Running);
           SetCell(row, 0, m.IsSelf ? $"{sid} (self)" : sid.ToString());
           SetCell(row, 1, $"{m.Peer.Address}:{m.Peer.Port}");
@@ -2499,7 +2500,8 @@ namespace TheLoomApp {
         foreach (var (machine, g) in _machineGroups.ToList()) {
           if (g.Items.Count == 0) { lvActiveSwarm.Groups.Remove(g); _machineGroups.Remove(machine); continue; }
           var holder = members.SelectMany(x => x.Lines).FirstOrDefault(l => l.Running && l.MachineName == machine);
-          g.Header = holder is null ? $"{machine} — idle" : $"{machine} — {holder.Line} running (session {holder.HarnessAppSessionId})";
+          var header = holder is null ? $"{machine} — idle" : $"{machine} — {holder.Line} running (session {holder.HarnessAppSessionId})";
+          if (g.Header != header) g.Header = header;
         }
       } finally { lvActiveSwarm.EndUpdate(); }
     }

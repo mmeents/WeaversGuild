@@ -27,6 +27,7 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       splitContainer1 = new SplitContainer();
       splitContainer2 = new SplitContainer();
+      btnChangeDetected = new Button();
       tvKb = new TreeView();
       cmsTreeMenus = new ContextMenuStrip(components);
       miReloadTree = new ToolStripMenuItem();
@@ -219,7 +220,6 @@
       tRun = new System.Windows.Forms.Timer(components);
       tRunComfy = new System.Windows.Forms.Timer(components);
       tSwarm = new System.Windows.Forms.Timer(components);
-      btnChangeDetected = new Button();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -297,6 +297,18 @@
       splitContainer2.SplitterDistance = 60;
       splitContainer2.SplitterWidth = 3;
       splitContainer2.TabIndex = 0;
+      // 
+      // btnChangeDetected
+      // 
+      btnChangeDetected.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      btnChangeDetected.BackColor = Color.Lavender;
+      btnChangeDetected.Location = new Point(25, 9);
+      btnChangeDetected.Name = "btnChangeDetected";
+      btnChangeDetected.Size = new Size(201, 40);
+      btnChangeDetected.TabIndex = 0;
+      btnChangeDetected.Text = "Reload Tree";
+      btnChangeDetected.UseVisualStyleBackColor = false;
+      btnChangeDetected.Click += btnChangeDetected_Click;
       // 
       // tvKb
       // 
@@ -1222,7 +1234,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -2217,19 +2228,8 @@
       // 
       // tSwarm
       // 
-      tSwarm.Interval = 250;
+      tSwarm.Interval = 1000;
       tSwarm.Tick += tSwarm_Tick;
-      // 
-      // btnChangeDetected
-      // 
-      btnChangeDetected.BackColor = Color.Lavender;
-      btnChangeDetected.Location = new Point(25, 9);
-      btnChangeDetected.Name = "btnChangeDetected";
-      btnChangeDetected.Size = new Size(201, 40);
-      btnChangeDetected.TabIndex = 0;
-      btnChangeDetected.Text = "Reload Tree";
-      btnChangeDetected.UseVisualStyleBackColor = false;
-      btnChangeDetected.Click += btnChangeDetected_Click;
       // 
       // Form1
       // 
