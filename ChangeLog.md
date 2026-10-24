@@ -1,5 +1,9 @@
 
 ## Update History
+- Db 160.4 10/23/2026 
+  - Adds CtOverrideBool type as a ComfyTargetOverrideTypes option to support boolean typed values.
+  - Adds code to check if input file is outside the input folder and to copy and rename override on it's way in if it's different so now workflows can support files as input better.
+  
 - Db 160.3 10/20/2026
   - Reorganizes the tabs to group the 3 main ones under a Main Line tab with 3 inner tabs, review run and results. 
   - Reorganizes the Settings Tab, adds ListView with active peers and lines.

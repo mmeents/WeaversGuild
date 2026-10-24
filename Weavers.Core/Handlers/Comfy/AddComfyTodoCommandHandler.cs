@@ -146,6 +146,10 @@ namespace Weavers.Core.Handlers.Comfy {
             if (!string.IsNullOrEmpty(overridePropValue)) {
               targetSection[overridePropKey] = decimal.Parse(overridePropValue);
             }
+          } else if (overrideTypeInt == (int)WeItemType.CtOverrideBool) {
+            if (!string.IsNullOrEmpty(overridePropValue)) {
+              targetSection[overridePropKey] = bool.Parse(overridePropValue);
+            }
           } else {
             if (!string.IsNullOrEmpty(overridePropValue)) {
               targetSection[overridePropKey] = overridePropValue;

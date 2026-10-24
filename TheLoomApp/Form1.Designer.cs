@@ -302,9 +302,9 @@
       // 
       btnChangeDetected.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
       btnChangeDetected.BackColor = Color.Lavender;
-      btnChangeDetected.Location = new Point(25, 9);
+      btnChangeDetected.Location = new Point(12, 12);
       btnChangeDetected.Name = "btnChangeDetected";
-      btnChangeDetected.Size = new Size(201, 40);
+      btnChangeDetected.Size = new Size(224, 40);
       btnChangeDetected.TabIndex = 0;
       btnChangeDetected.Text = "Reload Tree";
       btnChangeDetected.UseVisualStyleBackColor = false;
@@ -1225,7 +1225,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(154, 14);
+      edItemDesc.AutoScrollMinSize = new Size(179, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -1234,6 +1234,7 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
+      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;
@@ -1293,9 +1294,12 @@
       // 
       // edItemData
       // 
+      edItemData.AcceptsReturn = true;
+      edItemData.AcceptsTab = true;
       edItemData.Dock = DockStyle.Fill;
       edItemData.Location = new Point(3, 2);
       edItemData.Margin = new Padding(3, 2, 3, 2);
+      edItemData.MaxLength = 0;
       edItemData.Multiline = true;
       edItemData.Name = "edItemData";
       edItemData.ScrollBars = ScrollBars.Both;

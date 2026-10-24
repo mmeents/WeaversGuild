@@ -169,6 +169,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CtOverrideFilePath => WeItemType.ComfyTargetOverrideTypes,
         WeItemType.CtOverrideInt => WeItemType.ComfyTargetOverrideTypes,
         WeItemType.CtOverrideDecimal => WeItemType.ComfyTargetOverrideTypes,
+        WeItemType.CtOverrideBool => WeItemType.ComfyTargetOverrideTypes,
 
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 

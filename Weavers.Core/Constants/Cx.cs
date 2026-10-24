@@ -16,10 +16,7 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.160.3";    // version of the: 1. app. database.    
-
-    public static readonly TimeSpan HearbeatFrequency = TimeSpan.FromSeconds(5);
-    public static readonly TimeSpan HearbeatLookback = TimeSpan.FromSeconds(15);
+    public static string AppVersion => "1.160.4";    // version of the: era.database.commit 
 
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
       "and data together in a structured agentic manner.";    
@@ -29,7 +26,7 @@ namespace Weavers.Core.Constants {
       "a vibrant community where knowledge sharing and continuous learning are at the core of everything we do.";
     
 
-    // Org folder names                                                    
+    // Org folder names  App details                                                    
     public const string ApsDefaultFolder = "AppDefaultFolder";
     public static string AppHarnessAppName => "TheLoom";  // partial name of the harness app, used to find the harness folder in the org.
     public static string AppSessionsFolder => "Sessions";  // harness app folder for sessions.
@@ -41,6 +38,10 @@ namespace Weavers.Core.Constants {
     public static string AppWorkGroupFolder => "WorkGroups";  // org work groups folder name for the org.
     public const string OrgDocsFolder = "Documents";
 
+    // SignalR heartbeat frequency and lookback for the app server to detect disconnected clients. (other instances of the app.)
+    public static readonly TimeSpan HearbeatFrequency = TimeSpan.FromSeconds(5);
+    public static readonly TimeSpan HearbeatLookback = TimeSpan.FromSeconds(15);
+
 
     // Mcp App details.
     public static string McpAppName => "TheLoomMCP";
@@ -49,6 +50,8 @@ namespace Weavers.Core.Constants {
     // MCP startup in mcp.json, use provider key to name the service connection provider.
     // Used in session creation to identify the which app is requesting from params set in startup.
     public static string McpStartupParamProviderKey => "provider";
+
+    // LM Studio agents require tools to be named in the request, to be enable for the agents.
     public static readonly List<string> availableToolsList = new List<string> { 
       //DaemonsMcpToolName, // optional, remove if configured. 
       WeaversMcpToolName 
@@ -58,20 +61,29 @@ namespace Weavers.Core.Constants {
     public const string ApiVersion = "v1";
     public const string ApiLocalPort = "44344";
     public const string ApiLocalhostUrl = $"https://localhost:{ApiLocalPort}";  // via iis express 
+
+    // Data protection details
     public const string CredentialProtectorName = "WeaversGuild.YouGotThis";  // don't change unless starting over with a new org, otherwise existing secrets will be lost.
+    // secrets being protected are the ItemProperty of type Password are encrypted in the database.  to decrypt and view them the data protector must be able to access the
+    // key used to encrypt them. if the key is lost, the secrets are lost.  the key is stored in the org vault, and is rotated every 90 days.
+    // ItemProperties are like apiToken and githubPAT, they are encrypted in the database and decrypted on demand by the data protector.
+    // The key is rotated every 90 days, but old keys are still valid for decryption.
     public const int KeyLifetimeDays = 90;  // days before a new key is generated for the data protector, old keys are still valid for decryption.
 
 
     // int defaults.
     public const double DefaultTemperature = 0.76;  // todo: need to make this configurable per model, maybe per request.
-    public const int DefaultLmStudioContextLength = 60000;  // this is default that sets the model contextLength property.
+    public const int DefaultLmStudioContextLength = 60000;  // this is default that sets the model contextLength property. 60k is target for my hardware, adjust accordingly.
     public const int DefaultSummaryMaxLength = 20000;  // cut off guard on the SummaryDto content results to tool calls. anything larger than this and content is not returned.
+    // protects llms from being slammed with a huge file larger than their context.
     public const int intPropertyLabelLeft = 116; // left margin for the left edge of the property editors in the PropertiesTabs control. 
     public const int NameFieldMaxLength = 500;  // Item Name column width and guard.
     public const long MaxImportFileSize = 512 * 1024; // 512 KB limit for the git file sync import, to avoid large files being imported into the org graph.
 
+    // ends list of commands when they were members of the WeItemType enum. range of legacy command ids: 120-210 
+    public const int LastCommandItemTypeId = 210;
 
-
+    // constant for the write method when org is selected for export.
     public static string AppOrgExport => "TheOrgExport.md"; 
 
     // legacy Cmd from BaseToolsHandler, they are unavailable in the mcp server.
@@ -84,7 +96,7 @@ namespace Weavers.Core.Constants {
     public const string CmdAddRelation = "create-relation";
     public const string CmdUpdateRelation = "update-relation";
 
-    // Groups
+    // Command Groups names
     public const string CmdGroupQuery = "query";
     public const string CmdGroupModify = "modify";
     public const string CmdGroupOrgTools = "org";
@@ -105,7 +117,6 @@ namespace Weavers.Core.Constants {
     public const string CmdHelpDesc = "Displays helpful documentation describing how to use the available commands.";
     public const string CmdListProjects = "listProjects";
     public const string CmdListProjectsDesc = "Lists all root level projects.";
-
     public const string CmdSearch = "search";
     public const string CmdSearchDesc = "Searches for items based on the provided search criteria.";
     public const string CmdGetSummaryById = "getSummaryById";
@@ -237,7 +248,7 @@ namespace Weavers.Core.Constants {
     public const string CmdAddStoryRollupDesc = "Adds a new story rollup item to the story.";
 
   
-    // TodoTools commands 
+    // TodoTools commands // Main Todo Line.
     public const string CmdSetTodoReady = "setTodoReady";
     public const string CmdSetTodoReadyDesc = "Marks a todo item as ready for execution. Adds it to the execution queue if desk is enabled.";
     public const string CmdCompleteTodo = "completeTodo";
@@ -307,14 +318,15 @@ namespace Weavers.Core.Constants {
     public const string CmdAcceptDraw = "acceptDraw";
     public const string CmdAcceptDrawDesc = "Accept a draw for a pattern. Sets draw status to DrawAccepted id 314. Assigns the reference item.";
 
-    // ends list of commands when they were members of the WeItemType enum.
-    public const int LastCommandItemTypeId = 210;
 
-    // ComfyTools.cs commands
+
+    // ComfyTools.cs commands // Comfy todo line.
     public const string CmdListComfyWorkflows = "listComfyWorkflows";
     public const string CmdListComfyWorkflowsDesc = "Lists all Comfy workflow templates installed.";
     public const string CmdAddComfyTodo = "addComfyTodo";
     public const string CmdAddComfyTodoDesc = "Adds a new Comfy Todo. Clones the workflow template.";
+
+
 
     // Tool property descriptions
     public const string ValidRelationTypes = "Relation type ";
@@ -323,7 +335,6 @@ namespace Weavers.Core.Constants {
     // code gen defaults
     public const string DefaultSDK = "Microsoft.NET.Sdk";
     public const string DefaultTestSDK = "MSTest.Sdk/3.6.4";
-
 
 
     // json CharacterPrompt list types

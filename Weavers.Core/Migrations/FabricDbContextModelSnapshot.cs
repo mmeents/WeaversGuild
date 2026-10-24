@@ -7671,6 +7671,18 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 326,
+                            Description = "Override Bool Type",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "CtOverrideBool",
+                            ParentTypeId = 320,
+                            Rank = 6
+                        },
+                        new
+                        {
                             Id = 1000,
                             Description = "Organization",
                             EditorTypeId = -1,

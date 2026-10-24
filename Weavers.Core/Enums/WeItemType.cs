@@ -169,6 +169,7 @@ namespace Weavers.Core.Enums {
       CtOverrideFilePath = 323,
       CtOverrideInt = 324,
       CtOverrideDecimal = 325,
+      CtOverrideBool = 326,
 
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 

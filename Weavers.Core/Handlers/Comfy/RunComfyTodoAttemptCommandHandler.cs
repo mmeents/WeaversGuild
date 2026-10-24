@@ -107,6 +107,7 @@ namespace Weavers.Core.Handlers.Comfy {
         var serviceItem = await _context.GetItemDtoById(serviceId.Value, cancellationToken);
         var baseUrl = serviceItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItUrlBase)?.Value;
         var outputFolder = serviceItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItServiceOutput)?.Value ?? "";
+        var comfyInputFolder = serviceItem?.Properties.FirstOrDefault(p => p.Name == Cx.ItServiceInput)?.Value ?? "";
 
         var harnessGatewayId = serviceItem!.IncomingRelations.FirstOrDefault(r => r.ItemTypeId == (int)WeItemType.HarnessGatewaysModel)?.ItemId;
         var harnessGatewayItem = harnessGatewayId == null ? null : await _context.GetItemDtoById(harnessGatewayId.Value, cancellationToken);
@@ -127,6 +128,7 @@ namespace Weavers.Core.Handlers.Comfy {
 
         // Get the workflow template from the Todo's data field.
         var workflow = JsonNode.Parse(todoItem.Data)!.AsObject();
+        List<string> cleanUpList = new List<string>();
 
         // Apply overrides from the todo's op params to the workflow template.
         foreach (var paramItem in opParams) {
@@ -150,6 +152,14 @@ namespace Weavers.Core.Handlers.Comfy {
           if (overrideType == (int)WeItemType.CtOverrideSeed) {
             targetSection[propKey] = Random.Shared.NextInt64(0, long.MaxValue);
           } else if (overrideType == (int)WeItemType.CtOverrideFilePath && File.Exists(propValue)) {
+            // items existing outside comfyInputFolder need to be copied into the input folder so ComfyUI can access them.
+            // The override value is the source path, and we copy it to the input folder with the same file name.
+            if (!string.IsNullOrEmpty(comfyInputFolder) && !propValue.StartsWith(comfyInputFolder)) {
+              var destPath = Path.Combine(comfyInputFolder, Path.GetFileName(propValue));
+              File.Copy(propValue, destPath, overwrite: true);
+              propValue = destPath;
+              cleanUpList.Add(destPath);
+            }
             targetSection[propKey] = propValue;
           } else if (overrideType == (int)WeItemType.CtOverrideInt) {
             if (!string.IsNullOrEmpty(propValue)) {
@@ -158,6 +168,10 @@ namespace Weavers.Core.Handlers.Comfy {
           } else if (overrideType == (int)WeItemType.CtOverrideDecimal) {
             if (!string.IsNullOrEmpty(propValue)) {
               targetSection[propKey] = decimal.Parse(propValue);
+            }
+          } else if (overrideType == (int)WeItemType.CtOverrideBool) {
+            if (!string.IsNullOrEmpty(propValue)) {
+              targetSection[propKey] = bool.Parse(propValue);
             }
           } else {
             if (!string.IsNullOrEmpty(propValue)) {
@@ -279,7 +293,14 @@ namespace Weavers.Core.Handlers.Comfy {
         // Mark the todo as completed.
         statusProp.Value = ((int)WeItemType.TodoCompleteForward).ToString();
         await statusProp.SaveProp(todoItem, _mediator);
-        
+
+        foreach(var filePath in cleanUpList) {
+          try {
+            File.Delete(filePath);
+          } catch (Exception ex) {
+            _logger.LogWarning(ex, "Failed to delete temporary file {FilePath}", filePath);
+          }
+        }
 
         // Single-try policy: no chaining, no retry scheduling here
         result.Status = RunComfyTodoAttemptOutcome.SuccessWithResponse;

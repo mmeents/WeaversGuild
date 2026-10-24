@@ -161,6 +161,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.CtOverrideFilePath => "Override File Path Type",
         WeItemType.CtOverrideInt => "Override Int Type",
         WeItemType.CtOverrideDecimal => "Override Decimal Type",
+        WeItemType.CtOverrideBool => "Override Bool Type",
 
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",
