@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -47,6 +51,27 @@ namespace Weavers.Core.Service {
     }
 
   }
+
+  public sealed class SwarmLogFilter(ILogger<SwarmLogFilter> log) : IHubFilter {
+    public async ValueTask<object?> InvokeMethodAsync(
+        HubInvocationContext ctx, Func<HubInvocationContext, ValueTask<object?>> next) {
+      var peer = ctx.Context.GetHttpContext()?.Items["swarm.peer"];
+      var sw = Stopwatch.StartNew();
+      try {
+        var result = await next(ctx);
+        log.LogInformation("{Peer} -> {Method} ({Ms}ms)", peer, ctx.HubMethodName, sw.ElapsedMilliseconds);
+        return result;
+      } catch (Exception ex) {
+        log.LogWarning(ex, "{Peer} -> {Method} failed", peer, ctx.HubMethodName);
+        throw;
+      }
+    }
+    public Task OnConnectedAsync(HubLifetimeContext ctx, Func<HubLifetimeContext, Task> next) {
+      log.LogInformation("connected {Conn}", ctx.Context.ConnectionId);
+      return next(ctx);
+    }
+  }
+
 
   public sealed class SwarmNode : IAsyncDisposable {
     private readonly ISwarmRegistry registry;
@@ -111,7 +136,8 @@ namespace Weavers.Core.Service {
     public async Task StartAsync() {
       var b = WebApplication.CreateSlimBuilder();
       b.WebHost.ConfigureKestrel(o => o.ListenAnyIP(0));
-      b.Services.AddSignalR();
+      b.Host.UseSerilog();
+      b.Services.AddSignalR(o => o.AddFilter<SwarmLogFilter>());
       b.Services.AddSingleton(this);               // hub gets the node via DI
       _app = b.Build();
       _app.Use(async (ctx, next) => {
