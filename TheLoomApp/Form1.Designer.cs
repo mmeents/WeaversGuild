@@ -220,6 +220,8 @@
       tRun = new System.Windows.Forms.Timer(components);
       tRunComfy = new System.Windows.Forms.Timer(components);
       tSwarm = new System.Windows.Forms.Timer(components);
+      tLog = new System.Windows.Forms.Timer(components);
+      miRelocateMedia = new ToolStripMenuItem();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -302,7 +304,7 @@
       // 
       btnChangeDetected.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
       btnChangeDetected.BackColor = Color.Lavender;
-      btnChangeDetected.Location = new Point(12, 12);
+      btnChangeDetected.Location = new Point(10, 10);
       btnChangeDetected.Name = "btnChangeDetected";
       btnChangeDetected.Size = new Size(224, 40);
       btnChangeDetected.TabIndex = 0;
@@ -333,9 +335,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miRelocateMedia, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(212, 1386);
+      cmsTreeMenus.Size = new Size(212, 1430);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -1225,7 +1227,7 @@
     '\''
   };
       edItemDesc.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;=]+);\r\n^\\s*(case|default)\\s*[^:]*(?<range>:)\\s*(?<range>[^;]+);";
-      edItemDesc.AutoScrollMinSize = new Size(179, 14);
+      edItemDesc.AutoScrollMinSize = new Size(274, 14);
       edItemDesc.BackBrush = null;
       edItemDesc.CharHeight = 14;
       edItemDesc.CharWidth = 8;
@@ -1246,7 +1248,7 @@
       edItemDesc.ServiceColors = (FastColoredTextBoxNS.ServiceColors)resources.GetObject("edItemDesc.ServiceColors");
       edItemDesc.Size = new Size(560, 204);
       edItemDesc.TabIndex = 0;
-      edItemDesc.Text = "fastColoredTextBox1";
+      edItemDesc.Text = "Select item in tree to get started";
       edItemDesc.WordWrapAutoIndent = false;
       edItemDesc.WordWrapMode = FastColoredTextBoxNS.WordWrapMode.CharWrapPreferredWidth;
       edItemDesc.Zoom = 100;
@@ -2235,6 +2237,18 @@
       tSwarm.Interval = 1000;
       tSwarm.Tick += tSwarm_Tick;
       // 
+      // tLog
+      // 
+      tLog.Interval = 500;
+      tLog.Tick += tLog_Tick;
+      // 
+      // miRelocateMedia
+      // 
+      miRelocateMedia.Name = "miRelocateMedia";
+      miRelocateMedia.Size = new Size(211, 22);
+      miRelocateMedia.Text = "Relocate Media";
+      miRelocateMedia.Click += miRelocateMedia_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2497,5 +2511,7 @@
     private ColumnHeader columnHeader3;
     private ColumnHeader columnHeader4;
     private Button btnChangeDetected;
+    private System.Windows.Forms.Timer tLog;
+    private ToolStripMenuItem miRelocateMedia;
   }
 }

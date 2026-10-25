@@ -16,7 +16,7 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.160.4";    // version of the: era.database.commit 
+    public static string AppVersion => "1.160.5";    // version of the: era.database.commit 
 
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
       "and data together in a structured agentic manner.";    
@@ -72,6 +72,7 @@ namespace Weavers.Core.Constants {
 
 
     // int defaults.
+    public const int MaxLogChars = 10_000;
     public const double DefaultTemperature = 0.76;  // todo: need to make this configurable per model, maybe per request.
     public const int DefaultLmStudioContextLength = 60000;  // this is default that sets the model contextLength property. 60k is target for my hardware, adjust accordingly.
     public const int DefaultSummaryMaxLength = 20000;  // cut off guard on the SummaryDto content results to tool calls. anything larger than this and content is not returned.

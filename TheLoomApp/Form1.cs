@@ -145,6 +145,10 @@ namespace TheLoomApp {
         rightEdge = btnWriteFile.Left - btnAttemptTodo.Width - 4;
         btnAttemptTodo.Left = rightEdge;
       }
+      btnChangeDetected.Top = 10;
+      btnChangeDetected.Left = 10;
+      btnChangeDetected.Height = splitContainer2.Panel1.ClientSize.Height - 20;
+      btnChangeDetected.Width = splitContainer2.Panel1.ClientSize.Width - 20;
 
       btnAbortItem.Left = horizonalSpace - btnAbortItem.Width - 10;
       btnUpdateItem.Left = btnAbortItem.Left - btnUpdateItem.Width - 4;
@@ -174,6 +178,9 @@ namespace TheLoomApp {
     #endregion
 
     #region Error Display
+
+    private readonly ConcurrentQueue<string> _logQueue = new();
+
     private void tsBtnDismiss_Click(object sender, EventArgs e) {
       splitContainer3.Panel2Collapsed = true;
       btnShowErrors.Visible = true;
@@ -186,30 +193,33 @@ namespace TheLoomApp {
       Form1_Resize(sender, e);
     }
     private void DoLogMessage(string message) {
-      if (this.InvokeRequired) {
-        this.Invoke(new LogMessageDelegate(DoLogMessage), new object[] { message });
-      } else {
-        if (splitContainer3.Panel2Collapsed) {
-          splitContainer3.Panel2Collapsed = false;
-          Form1_Resize(this, EventArgs.Empty);
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"[{DateTime.Now:HH:mm:ss}] {message}");
-        sb.Append(tbErrorOut.Text);
-        string finalMessage = sb.ToString();
-        if (finalMessage.Length > 10000) {
-          finalMessage = finalMessage.Substring(0, 10000); // Keep only the last 10,000 characters
-        }
-        tbErrorOut.Text = finalMessage;
+      _logQueue.Enqueue($"[{DateTime.Now:HH:mm:ss}] {message}");
+    }
 
+    private void tLog_Tick(object sender, EventArgs e) {
+      if (_logQueue.IsEmpty) return;
+
+      var batch = new List<string>();
+      while (_logQueue.TryDequeue(out var l)) batch.Add(l);
+
+      if (splitContainer3.Panel2Collapsed) {
+        splitContainer3.Panel2Collapsed = false;
+        Form1_Resize(this, EventArgs.Empty);
       }
+
+      var sb = new StringBuilder(Cx.MaxLogChars + 256);
+      for (int i = batch.Count - 1; i >= 0; i--) sb.AppendLine(batch[i]);  // newest first
+      sb.Append(tbErrorOut.Text);
+      if (sb.Length > Cx.MaxLogChars) sb.Length = Cx.MaxLogChars;
+      tbErrorOut.Text = sb.ToString();
     }
 
     #endregion
 
     #region Tree View Loading and Events
-    private async void Form1_Shown(object sender, EventArgs e) {      
-      btnChangeDetected.Visible = false;      
+    private async void Form1_Shown(object sender, EventArgs e) {
+      tLog.Enabled = true;
+      btnChangeDetected.Visible = false;
       _sessionDetails = await _appDataService.GetAppSession(); // create session.
       this.Text = Cx.AppName + " - v" + Cx.AppVersion + $" on {Environment.MachineName} SId: {_sessionDetails?.SessionId ?? 0} PId: {Environment.ProcessId}";
       var key = $"{_sessionDetails!.HarnessId}-HumanUserTodo";
@@ -969,6 +979,7 @@ namespace TheLoomApp {
         miAddComfyWorkflow.Visible = false;
         miAddComfyWfParam.Visible = false;
         miAddComfyTodo.Visible = false;
+        miRelocateMedia.Visible = false;
 
         miAddRealm.Visible = false;
         miAddStory.Visible = false;
@@ -1060,6 +1071,7 @@ namespace TheLoomApp {
         miAddComfyWorkflow.Visible = itemType == WeItemType.ComfyWorkflowFolderModel;
         miAddComfyWfParam.Visible = itemType == WeItemType.ComfyWorkflowTemplate;
         miAddComfyTodo.Visible = itemType == WeItemType.ComfyOperationsModel;
+        miRelocateMedia.Visible = itemType == WeItemType.ComfyMediaFileModel;
 
         miAddProjectRoot.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddSubProject.Visible = itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
@@ -1628,6 +1640,24 @@ namespace TheLoomApp {
       } catch (Exception ex) {
         DoLogMessage("Failed to add comfy todo - error:" + ex.Message);
         MessageBox.Show($"Error adding comfy todo: {ex.Message}", "Add Comfy Todo Failed");
+      }
+    }
+
+    private async void miRelocateMedia_Click(object sender, EventArgs e) {      
+      using var scope = _serviceScopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var selectedNode = tvKb.SelectedNode as ItemNode;
+      if (selectedNode == null || selectedNode.Item == null) {
+        MessageBox.Show("Please select a media file node to relocate.", "Relocate Media", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      try {
+        await mediator.Send(new RelocateMediaToParentsPathCommand(selectedNode.Item.Id));
+        _appDataService.RemoveCacheItem(selectedNode.Item.Id);
+        await LoadRootProjects(selectedNode.Item.Id);
+        //MessageBox.Show("Media file relocated successfully.", "Relocate Media", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      } catch (Exception ex) {
+        MessageBox.Show($"Error relocating media file: {ex.Message}", "Relocate Media Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -2200,7 +2230,8 @@ namespace TheLoomApp {
     }
     #endregion
     #endregion
-    #region Application Swarm
+
+    #region Application Swarm Configure
     private SwarmNode? _swarmNode;
     private bool _swarmBusy;
     private bool _closeReady;
@@ -2290,7 +2321,14 @@ namespace TheLoomApp {
       var testHere = _swarmNode.IsRunningHere(SwarmLines.MainTest);
       btnTestLine.Enabled = Can(SwarmLines.MainTest);
       btnTestLine.Text = testHere ? "Stop Test" : "Test Line";
+
       btnStartStop.Enabled = !_isStopping && Can(SwarmLines.Main);
+      if (tabControl1.SelectedTab == tpMain && tcMainSchedule.SelectedTab == tpSchedule) {
+        ReloadSchedules();
+      } else if (tabControl1.SelectedTab == tpComfy) {
+        tcComfyScheduleSwitch_SelectedIndexChanged(this, new EventArgs());
+      }
+
       btnAttemptComfyTodo.Enabled = !_isComfyStopping && Can(SwarmLines.Comfy);
 
       var h = _swarmNode.MachineHolder();
@@ -2451,6 +2489,7 @@ namespace TheLoomApp {
     }
 
     #endregion
+
     #region ViewSwarm 
     private readonly Dictionary<int, ListViewItem> _memberRows = new();
     private readonly Dictionary<string, ListViewGroup> _machineGroups = new();
@@ -2464,11 +2503,6 @@ namespace TheLoomApp {
       }
     }
 
-    // init:
-    //   _swarmTimer.Tick += (_, _) => { if (_swarmDirty || AnyRunning()) { _swarmDirty = false; RenderSwarm(); } };
-    //   _swarmTimer.Start(); -> tSwarm.Start();
-    // JoinSwarmAsync:  node.ViewChanged += MarkSwarmDirty;  node.PeerJoined += _ => MarkSwarmDirty();
-    // LeaveSwarmAsync: unhook, then clear rows/groups and render once.
     private void MarkSwarmDirty() => _swarmDirty = true;
     private bool AnyRunning() => _swarmNode?.View.Any(v => v.Running) ?? false;
 
@@ -3037,7 +3071,7 @@ namespace TheLoomApp {
           if (!shouldContinue) {
             MessageBox.Show("Another machine is running the pipeline. This machine will wait until it is free.", "Swarm Line Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
-          }                    
+          }
         }
         EngineRunning = true;
         tRun.Enabled = true;
@@ -3725,6 +3759,10 @@ namespace TheLoomApp {
         }
       }
     }
+
+
+
+
 
 
 

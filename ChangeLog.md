@@ -1,5 +1,10 @@
 
 ## Update History
+- Db 160.5 10/25/2026
+  - No Db updates, 
+  - Adds RelocateMedia handler and right click on a comfy media to let the asset move to it's parents location after a drag and renamed to the name of the item. To move the keepers out of the comfy output folder.
+  - Updates Locate Parent's path to recurse up till it finds it instead of looking at just the parent. 
+  
 - Db 160.4 10/23/2026 
   - Adds CtOverrideBool type as a ComfyTargetOverrideTypes option to support boolean typed values.
   - Adds code to check if input file is outside the input folder and to copy and rename override on it's way in if it's different so now workflows can support files as input better.
