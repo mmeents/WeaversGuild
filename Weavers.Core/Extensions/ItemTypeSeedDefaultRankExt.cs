@@ -165,6 +165,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.CtOverrideDecimal => 5,
         WeItemType.CtOverrideBool => 6,
 
+        WeItemType.ArchiveKinds => 23,
+        WeItemType.AkICloudSync => 1,
+        WeItemType.AkArchive => 2,
+        WeItemType.AkReplica => 3,
+        WeItemType.AkRemovable => 4,
+
+        WeItemType.ArchiveStorageModels => 24,
+        WeItemType.AsmMirror => 1,
+        WeItemType.AsmByDate => 2,
+
         WeItemType.OrganizationModel => (int)WeItemType.OrganizationModel, // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => (int)WeItemType.HarnessAppModel,
         WeItemType.HarnessSessionsModel => (int)WeItemType.HarnessSessionsModel,
@@ -215,7 +225,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileHtmlDocs => (int)WeItemType.FileHtmlDocs,
         WeItemType.FileConfigModel => (int)WeItemType.FileConfigModel,
         WeItemType.FileConfigDocs => (int)WeItemType.FileConfigDocs,
-                
+
+        WeItemType.AssetArchiveModel => (int)WeItemType.AssetArchiveModel,
+        WeItemType.OffloadPolicyModel => (int)WeItemType.OffloadPolicyModel,
+        WeItemType.ReplicaPolicyModel => (int)WeItemType.ReplicaPolicyModel,
+
         WeItemType.ComfyServiceModel => (int)WeItemType.ComfyServiceModel,
         WeItemType.ComfyWorkflowFolderModel => (int)WeItemType.ComfyWorkflowFolderModel,  // gets added on service creation.
         WeItemType.ComfyWorkflowTemplate => (int)WeItemType.ComfyWorkflowTemplate, // takes export json when adding populates data field on item with it.

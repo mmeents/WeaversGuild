@@ -1,5 +1,14 @@
 
 ## Update History
+- Db 160.6 11/15/2026 
+  - Adds AssetArchiveModel with two child Policy types OffloadPolicyModel and ReplicaPolicyModel(have yet to write the OffloadPolicyModel Resync).
+    - Adds a AssetKind lookup with AkICloudSync, AkArchive, AkReplica, akRemovable as the different kinds of AssetArchiveModels.
+    - OffloadPolicyModel has a target property that points to a target archive and moves files off the parent AssetArchive to the target on sync by age and to the bit budget.
+    - ReplicaPolicyModel has a target property that points to a target archive and replicates all the files in the parent into the destination AssetArchiveModel typed item.
+    - Adds 4 new Migrations to existing 160.6 database
+    - Identify a folder and Resync will log them all in the AssetArchive table.  The ReplicaPolicyModel when BuildPlan is run against it will produce a plan for the Archive Ops line. 
+    - Adds Archive Ops line where plans can be reviewed played and result reviewed. 
+  
 - Db 160.5 10/25/2026
   - No Db updates, 
   - Adds RelocateMedia handler and right click on a comfy media to let the asset move to it's parents location after a drag and renamed to the name of the item. To move the keepers out of the comfy output folder.

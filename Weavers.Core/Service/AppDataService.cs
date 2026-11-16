@@ -13,6 +13,7 @@ using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Import;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Handlers.Repos;
+using Weavers.Core.Handlers.AssetArchive;
 
 
 namespace Weavers.Core.Service {
@@ -63,6 +64,11 @@ namespace Weavers.Core.Service {
 
     Task<bool> CheckHasRepoInHeirarcy(int repoId);
 
+    Task<ArchiveReport> GetArchiveReport(int archiveId, ArchiveReportOrderBy orderBy, int pageNo, int pageSize);
+    Task<BuildPlanResult> BuildPlanReplica(int PolicyItemId);
+
+    Task<PlanBoard> GetPlanBoard(byte[] statusFilter, int pageSize);
+    Task<PlanActionResult> ChangePlanStatus(int planId, PlanAction action, bool force);
   }
   public class AppDataService(IServiceScopeFactory scopeFactory, ISessionItemCacheService sessionCache) : IAppDataService {
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;    
@@ -355,5 +361,37 @@ namespace Weavers.Core.Service {
       var result = await mediator.Send(command);
       return result;
     }
+
+    public async Task<ArchiveReport> GetArchiveReport(int archiveId, ArchiveReportOrderBy orderBy, int pageNo, int pageSize) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var query = new GetReportQuery(archiveId, orderBy, pageNo, pageSize);
+      var result = await mediator.Send(query);
+      return result;
+    }
+
+    public async Task<BuildPlanResult> BuildPlanReplica(int PolicyItemId) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var result = await mediator.Send(new BuildPlanReplicaCommand(PolicyItemId));
+      return result;
+    }
+
+    public async Task<PlanBoard> GetPlanBoard(byte[] statusFilter, int pageSize) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var query = new GetPlanBoardQuery(statusFilter, pageSize);
+      var result = await mediator.Send(query);
+      return result;
+    }
+
+    public async Task<PlanActionResult> ChangePlanStatus(int planId, PlanAction action, bool force) {
+      using var scope = _scopeFactory.CreateScope();
+      var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+      var command = new ChangePlanStatusCommand(planId, action, force);
+      var result = await mediator.Send(command);
+      return result;
+    }
+
   }
 }

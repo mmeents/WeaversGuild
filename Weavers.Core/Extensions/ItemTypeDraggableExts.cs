@@ -35,7 +35,11 @@ namespace Weavers.Core.Extensions {
         WeItemType.PatternDimensionModel => true,
         WeItemType.PatternOptionModel => true,
         WeItemType.PatternDrawModel => true,
-                
+
+        WeItemType.AssetArchiveModel => false,
+        WeItemType.OffloadPolicyModel => false,
+        WeItemType.ReplicaPolicyModel => false,
+
         WeItemType.ComfyServiceModel => false,
         WeItemType.ComfyWorkflowFolderModel => false,
         WeItemType.ComfyWorkflowTemplate => true,

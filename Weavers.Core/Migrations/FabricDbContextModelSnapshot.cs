@@ -108,6 +108,229 @@ namespace Weavers.Core.Migrations
                     b.ToTable("AppSettings");
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.ArchiveAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArchiveId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FileMtimeUtc")
+                        .HasColumnType("datetime2(7)");
+
+                    b.Property<DateTime>("LastSeenUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(0)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<DateTime?>("LastVerifiedUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("MediaAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RelPath")
+                        .IsRequired()
+                        .HasMaxLength(800)
+                        .HasColumnType("nvarchar(800)");
+
+                    b.Property<byte>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaAssetId")
+                        .HasDatabaseName("IX_ArchiveAssets_MediaAsset");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("MediaAssetId"), new[] { "ArchiveId", "Status" });
+
+                    b.HasIndex("ArchiveId", "RelPath")
+                        .IsUnique()
+                        .HasDatabaseName("UX_ArchiveAssets_Archive_RelPath");
+
+                    b.HasIndex("ArchiveId", "Status")
+                        .HasDatabaseName("IX_ArchiveAssets_Archive_Status");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("ArchiveId", "Status"), new[] { "MediaAssetId", "LastVerifiedUtc" });
+
+                    b.ToTable("ArchiveAssets", (string)null);
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.AssetCommand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Attempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<long>("Bytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ClaimedBy")
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(0)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<DateTime?>("DoneUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<byte>("Kind")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("LeaseUntilUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("MediaAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("NotBeforeUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<int>("SourceArchiveAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourceArchiveId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SourceHarnessId")
+                        .HasColumnType("int");
+
+                    b.Property<byte>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.Property<byte>("Step")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.Property<int?>("TargetArchiveAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetArchiveId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetHarnessId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TargetRelPath")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaAssetId");
+
+                    b.HasIndex("SourceArchiveAssetId");
+
+                    b.HasIndex("SourceArchiveId");
+
+                    b.HasIndex("SourceHarnessId");
+
+                    b.HasIndex("TargetArchiveAssetId");
+
+                    b.HasIndex("TargetArchiveId");
+
+                    b.HasIndex("AssetPlanId", "MediaAssetId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_AssetCommands_Plan_MediaAsset");
+
+                    b.HasIndex("AssetPlanId", "Status")
+                        .HasDatabaseName("IX_AssetCommands_Plan_Status");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("AssetPlanId", "Status"), new[] { "Bytes" });
+
+                    b.HasIndex("TargetHarnessId", "Status", "NotBeforeUtc")
+                        .HasDatabaseName("IX_AssetCommands_Claim");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("TargetHarnessId", "Status", "NotBeforeUtc"), new[] { "LeaseUntilUtc", "Attempts" });
+
+                    b.ToTable("AssetCommands", (string)null);
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.AssetPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ApprovedUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<long>("Bytes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L);
+
+                    b.Property<int>("CommandCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(0)")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
+
+                    b.Property<DateTime?>("DoneUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<byte>("Kind")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("PlanSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PolicyItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultSummary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartedUtc")
+                        .HasColumnType("datetime2(0)");
+
+                    b.Property<byte>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PolicyItemId", "Status")
+                        .HasDatabaseName("IX_AssetPlans_Policy_Status");
+
+                    b.ToTable("AssetPlans", (string)null);
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
                 {
                     b.Property<int>("Id")
@@ -3324,6 +3547,141 @@ namespace Weavers.Core.Migrations
                             Key = "Results",
                             Rank = 1,
                             ReferenceItemTypeId = 100,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 391742229L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "ServiceHost",
+                            Rank = 6,
+                            ReferenceItemTypeId = 1010,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1794673994L,
+                            DefaultValue = "",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "VolumeName",
+                            Rank = 8,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 420463839L,
+                            DefaultValue = "",
+                            EditorTypeId = 13,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "RootFolder",
+                            Rank = 10,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 337964304L,
+                            DefaultValue = "332",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "ArchiveKind",
+                            Rank = 12,
+                            ReferenceItemTypeId = 330,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1235587993L,
+                            DefaultValue = "0",
+                            EditorTypeId = 2,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "Available",
+                            Rank = 14,
+                            ValueDataTypeId = 55
+                        },
+                        new
+                        {
+                            Id = 1202696988L,
+                            DefaultValue = "341",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1145,
+                            Key = "ArchivePlan",
+                            Rank = 16,
+                            ReferenceItemTypeId = 340,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1371214361L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1146,
+                            Key = "TargetArchive",
+                            Rank = 8,
+                            ReferenceItemTypeId = 1145,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 1686085612L,
+                            DefaultValue = "90",
+                            EditorTypeId = 3,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1146,
+                            Key = "MinAgeDays",
+                            Rank = 10,
+                            ValueDataTypeId = 57
+                        },
+                        new
+                        {
+                            Id = 269364213L,
+                            DefaultValue = "100GB",
+                            EditorTypeId = 4,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1146,
+                            Key = "BitBudget",
+                            Rank = 12,
+                            ValueDataTypeId = 54
+                        },
+                        new
+                        {
+                            Id = 1836933056L,
+                            DefaultValue = "",
+                            EditorTypeId = 10,
+                            IsReadOnly = false,
+                            IsRequired = false,
+                            IsVisible = true,
+                            ItemTypeId = 1147,
+                            Key = "ReplicaArchive",
+                            Rank = 8,
+                            ReferenceItemTypeId = 1145,
                             ValueDataTypeId = 57
                         },
                         new
@@ -7683,6 +8041,100 @@ namespace Weavers.Core.Migrations
                         },
                         new
                         {
+                            Id = 330,
+                            Description = "Archive Kinds",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ArchiveKinds",
+                            Rank = 23
+                        },
+                        new
+                        {
+                            Id = 331,
+                            Description = "iCloud Sync Folder",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AkICloudSync",
+                            ParentTypeId = 330,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 332,
+                            Description = "Archive",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AkArchive",
+                            ParentTypeId = 330,
+                            Rank = 2
+                        },
+                        new
+                        {
+                            Id = 333,
+                            Description = "Replica",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AkReplica",
+                            ParentTypeId = 330,
+                            Rank = 3
+                        },
+                        new
+                        {
+                            Id = 334,
+                            Description = "Removable",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AkRemovable",
+                            ParentTypeId = 330,
+                            Rank = 4
+                        },
+                        new
+                        {
+                            Id = 340,
+                            Description = "Archive Storage Models",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ArchiveStorageModels",
+                            Rank = 24
+                        },
+                        new
+                        {
+                            Id = 341,
+                            Description = "Mirror Inputs Storage Model",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AsmMirror",
+                            ParentTypeId = 340,
+                            Rank = 1
+                        },
+                        new
+                        {
+                            Id = 342,
+                            Description = "By Date Storage Models YYYY\\MM\\DD\\ folders",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AsmByDate",
+                            ParentTypeId = 340,
+                            Rank = 2
+                        },
+                        new
+                        {
                             Id = 1000,
                             Description = "Organization",
                             EditorTypeId = -1,
@@ -8267,6 +8719,42 @@ namespace Weavers.Core.Migrations
                             Name = "FileConfigDocs",
                             ParentTypeId = 1140,
                             Rank = 1141
+                        },
+                        new
+                        {
+                            Id = 1145,
+                            Description = "AssetArchiveModel",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "AssetArchiveModel",
+                            ParentTypeId = 1145,
+                            Rank = 1145
+                        },
+                        new
+                        {
+                            Id = 1146,
+                            Description = "OffloadPolicyModel",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "OffloadPolicyModel",
+                            ParentTypeId = 1146,
+                            Rank = 1146
+                        },
+                        new
+                        {
+                            Id = 1147,
+                            Description = "ReplicaPolicyModel",
+                            EditorTypeId = -1,
+                            IconName = "",
+                            IsReadOnly = false,
+                            IsVisible = true,
+                            Name = "ReplicaPolicyModel",
+                            ParentTypeId = 1147,
+                            Rank = 1147
                         },
                         new
                         {
@@ -9218,6 +9706,94 @@ namespace Weavers.Core.Migrations
                     b.ToTable("LineLeases", (string)null);
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.MediaAsset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CameraModel")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("CapturedLocal")
+                        .HasColumnType("datetime2(3)");
+
+                    b.Property<short?>("CapturedOffsetMin")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte>("CapturedSource")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.Property<int?>("DurationMs")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("FileHash")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("binary(32)")
+                        .IsFixedLength();
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GroupKey")
+                        .HasMaxLength(128)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int?>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Lat")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("Lon")
+                        .HasColumnType("float");
+
+                    b.Property<string>("MediaTags")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)")
+                        .UseCollation("Latin1_General_100_CI_AS_SC_UTF8");
+
+                    b.Property<string>("MediaType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<byte>("Orientation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)1);
+
+                    b.Property<long?>("PHash")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("Width")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CapturedLocal")
+                        .HasDatabaseName("IX_MediaAssets_CapturedLocal");
+
+                    b.HasIndex("FileHash")
+                        .IsUnique()
+                        .HasDatabaseName("UX_MediaAssets_FileHash");
+
+                    b.HasIndex("GroupKey")
+                        .HasDatabaseName("IX_MediaAssets_GroupKey")
+                        .HasFilter("[GroupKey] IS NOT NULL");
+
+                    b.ToTable("MediaAssets", (string)null);
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.MediatorLog", b =>
                 {
                     b.Property<int>("Id")
@@ -9339,6 +9915,51 @@ namespace Weavers.Core.Migrations
                             Description = "Item has associated documentation",
                             Name = "HasDocs"
                         });
+                });
+
+            modelBuilder.Entity("Weavers.Core.Handlers.AssetArchive.ArchiveAssetRef", b =>
+                {
+                    b.Property<int>("ArchiveId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ArchivesHolding")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CapturedLocal")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte>("CapturedSource")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("CopiesHere")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CopiesTotal")
+                        .HasColumnType("int");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediaAssetId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MediaType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RelPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
+
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Weavers.Core.Handlers.Rss.IdOnlyRow", b =>
@@ -9465,6 +10086,88 @@ namespace Weavers.Core.Migrations
                         .IsRequired();
 
                     b.Navigation("HarnessAppSession");
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.ArchiveAsset", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.Item", "AssetArchive")
+                        .WithMany("ArchiveAssets")
+                        .HasForeignKey("ArchiveId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.MediaAsset", "Asset")
+                        .WithMany("Copies")
+                        .HasForeignKey("MediaAssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("AssetArchive");
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.AssetCommand", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.AssetPlan", "AssetPlan")
+                        .WithMany("Commands")
+                        .HasForeignKey("AssetPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.MediaAsset", null)
+                        .WithMany()
+                        .HasForeignKey("MediaAssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.ArchiveAsset", null)
+                        .WithMany()
+                        .HasForeignKey("SourceArchiveAssetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.Item", null)
+                        .WithMany()
+                        .HasForeignKey("SourceArchiveId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.Item", null)
+                        .WithMany()
+                        .HasForeignKey("SourceHarnessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.ArchiveAsset", null)
+                        .WithMany()
+                        .HasForeignKey("TargetArchiveAssetId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Weavers.Core.Entities.Item", null)
+                        .WithMany()
+                        .HasForeignKey("TargetArchiveId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Weavers.Core.Entities.Item", null)
+                        .WithMany()
+                        .HasForeignKey("TargetHarnessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssetPlan");
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.AssetPlan", b =>
+                {
+                    b.HasOne("Weavers.Core.Entities.Item", "PolicyItem")
+                        .WithMany()
+                        .HasForeignKey("PolicyItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PolicyItem");
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
@@ -9622,6 +10325,11 @@ namespace Weavers.Core.Migrations
                     b.Navigation("RelationType");
                 });
 
+            modelBuilder.Entity("Weavers.Core.Entities.AssetPlan", b =>
+                {
+                    b.Navigation("Commands");
+                });
+
             modelBuilder.Entity("Weavers.Core.Entities.Build", b =>
                 {
                     b.Navigation("BuildFiles");
@@ -9629,6 +10337,8 @@ namespace Weavers.Core.Migrations
 
             modelBuilder.Entity("Weavers.Core.Entities.Item", b =>
                 {
+                    b.Navigation("ArchiveAssets");
+
                     b.Navigation("BuildFiles");
 
                     b.Navigation("Builds");
@@ -9647,6 +10357,11 @@ namespace Weavers.Core.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("PropertyDefaults");
+                });
+
+            modelBuilder.Entity("Weavers.Core.Entities.MediaAsset", b =>
+                {
+                    b.Navigation("Copies");
                 });
 
             modelBuilder.Entity("Weavers.Core.Entities.RelationType", b =>

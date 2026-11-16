@@ -16,7 +16,7 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.160.5";    // version of the: era.database.commit 
+    public static string AppVersion => "1.160.6";    // version of the: era.database.commit 
 
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
       "and data together in a structured agentic manner.";    
@@ -348,11 +348,15 @@ namespace Weavers.Core.Constants {
     // itemProperty names constants 
     public const string ItAccessModifier = "AccessModifier";    
     public const string ItAcceptedCount = "AcceptedCount";
+    public const string ItArchiveKind = "ArchiveKind";
+    public const string ItArchivePlan = "ArchivePlan";
+    public const string ItAvailable = "Available";
     public const string ItApiToken = "ApiToken";
     public const string ItAddedBy = "AddedBy";
     public const string ItBaseType = "BaseType";
     public const string ItBranchName = "BranchName";    
     public const string ItBeatsRequested = "BeatsRequested";
+    public const string ItBitBudget = "BitBudget";
     public const string ItCallSheetRequested = "CallSheetRequested";
     public const string ItFromCallSheet = "FromCallSheet";
     public const string ItCharter = "Charter";
@@ -390,7 +394,7 @@ namespace Weavers.Core.Constants {
     public const string ItFilePath = "FilePath";
     public const string ItFileExt = "FileExt";
     public const string ItFileSize = "FileSize";
-    public const string ItFloorStatus = "FloorStatus";
+    public const string ItFloorStatus = "FloorStatus";    
     public const string ItForeignKey = "ForeignKey";
     public const string ItFromAttempt = "FromAttempt";
     public const string ItFromTodo = "FromTodo";
@@ -448,6 +452,7 @@ namespace Weavers.Core.Constants {
     public const string ItMaxLinks = "MaxLinks";
     public const string ItMachineName = "MachineName";
     public const string ItMediaType = "MediaType";
+    public const string ItMinAgeDays = "MinAgeDays";
     public const string ItModelName = "ModelName";
     public const string ItModelKey = "ModelKey";
     public const string ItModelDetails = "ModelDetails";
@@ -510,14 +515,17 @@ namespace Weavers.Core.Constants {
     public const string ItRootFolder = "RootFolder";
     public const string ItRemoteName = "RemoteName";
     public const string ItRepoUrl = "RepoUrl";
+    public const string ItReplicaArchive = "ReplicaArchive";
     public const string ItSceneStatus = "SceneStatus";
     public const string ItSectionKey = "SectionKey";    
+    public const string ItServiceHost = "ServiceHost";
     public const string ItSkipPermissions = "SkipPerms";
     public const string ItSolutionGuid = "SlnGuid";
     public const string ItStatus = "Status";
     public const string ItStoryStatus = "StoryStatus";
     public const string ItSystemPrompt = "SysPrompt";
     public const string ItSystemPromptTemplate = "SysPrompt";    
+    public const string ItTargetArchive = "TargetArchive";
     public const string ItUserPrompt = "UserPrompt";
     public const string ItUserPromptTemplate = "UserPrompt";
     public const string ItTargetSceneCount = "TargetSceneCount";
@@ -536,6 +544,7 @@ namespace Weavers.Core.Constants {
     public const string ItUntrackedFiles = "UntrackedFiles";
     public const string ItVote = "Votes";
     public const string ItValidate = "Validate";
+    public const string ItVolumeName = "VolumeName";
     public const string ItWfTemplate = "WfTemplate";
 
 

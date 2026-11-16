@@ -64,7 +64,10 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileHtmlModel => 16,
         WeItemType.FileConfigModel => 17,
 
-        
+        WeItemType.AssetArchiveModel => 15,
+        WeItemType.OffloadPolicyModel => 14,
+        WeItemType.ReplicaPolicyModel => 14,
+
         WeItemType.ComfyServiceModel => 25,
         WeItemType.ComfyWorkflowFolderModel => 19, 
         WeItemType.ComfyWorkflowTemplate => 23, 
@@ -149,6 +152,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.FileMdModel,
         WeItemType.FileHtmlModel,
         WeItemType.FileConfigModel,
+        WeItemType.AssetArchiveModel,      
         WeItemType.SolutionModel,
         WeItemType.LibraryModel,
         WeItemType.DependencyInjectionModel,
@@ -217,6 +221,8 @@ namespace Weavers.Core.Extensions {
           WeItemType.GameTwoPlayerToggle,
           WeItemType.DrawStatus,
           WeItemType.ComfyTargetOverrideTypes,
+          WeItemType.ArchiveKinds,
+          WeItemType.ArchiveStorageModels
       };
       return lookupTypes;
     }
@@ -650,7 +656,11 @@ namespace Weavers.Core.Extensions {
         (int)WeItemType.FileMdModel => true,
         (int)WeItemType.FileHtmlModel => true,
         (int)WeItemType.FileConfigModel => true,
-            
+
+        (int)WeItemType.AssetArchiveModel => false,
+        (int)WeItemType.OffloadPolicyModel => false,
+        (int)WeItemType.ReplicaPolicyModel => false,
+
         (int)WeItemType.ComfyWorkflowTemplate => true,
         (int)WeItemType.ComfyWfParamModel => true,
         (int)WeItemType.ComfyOpTodoModel => true,

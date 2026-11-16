@@ -53,19 +53,15 @@ namespace Weavers.Core.Handlers.Comfy {
 
       var newPath = GetAvailablePath(desiredPath);
 
-      // ---- Side effects: move, then persist, compensate on failure ----
+      // Do the copy.
       await Task.Run(() => {
         Directory.CreateDirectory(parentPath);
-        File.Move(existingPath, newPath);          // no overwrite
+        File.Copy(existingPath, newPath);         
       }, ct);
 
-      try {
-        filePathProp.Value = newPath;
-        await filePathProp.SaveProp(mediaItem, mediator);
-      } catch {
-        try { File.Move(newPath, existingPath); } catch { /* log: file stranded at newPath */ }
-        throw;
-      }
+      // Update the filepath property and save.
+      filePathProp.Value = newPath;
+      await filePathProp.SaveProp(mediaItem, mediator);
 
       return newPath;
     }
