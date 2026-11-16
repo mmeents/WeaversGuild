@@ -12,11 +12,13 @@ using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
 using Weavers.Core.Models;
+using Weavers.Core.Service;
+using Weavers.Core.Handlers.AssetArchive;
 
 namespace TheLoomApp.Extensions {
   public static class WebView2Exts {
 
-    public static void SetupHtmlViewForItem(this WebView2 webView, ItemDto item) {
+    public static void SetupHtmlViewForItem(this WebView2 webView, ItemDto item, IAppDataService appDataService) {
       if (item.ItemTypeId == (int)WeItemType.FileHtmlModel) {
         if (!string.IsNullOrEmpty(item.Description)) {
           webView.NavigateToHtmlString(item.Description);
@@ -56,6 +58,8 @@ namespace TheLoomApp.Extensions {
         } else {
           webView.NavigateToMdString(item.Description);
         }
+      } else if (item.ItemTypeId == (int)WeItemType.AssetArchiveModel) {
+        webView.NavigateToArchiveReport(item.Id, ArchiveReportOrderBy.CapturedLocalDesc, 1, 20, appDataService);
       } else {
         webView.NavigateToMdString(item.ToMdString());
       }
@@ -229,6 +233,23 @@ namespace TheLoomApp.Extensions {
 
 
       return sb.ToString();
+    }
+
+    public async static void NavigateToArchiveReport(this WebView2 webView, int archiveId, ArchiveReportOrderBy orderBy, int pageNo, int pageSize, IAppDataService appDataService) {
+
+      var report = await appDataService.GetArchiveReport(archiveId, orderBy, pageNo, pageSize);
+      StringBuilder sb = new StringBuilder();
+      sb.AppendLine($"# Archive Report for {report.ArchiveName}");
+      sb.AppendLine($"Root Path: {report.RootPath}");
+      sb.AppendLine($"Total Assets: {report.AssetCount}");
+      sb.AppendLine($"Page: {pageNo}, Page Size: {pageSize}");
+      sb.AppendLine("## Assets");
+      foreach (var asset in report.Batch) {
+        sb.AppendLine($"- Asset ID: {asset.Id}, Media Asset ID: {asset.MediaAssetId}, Rel Path: {asset.RelPath}, Captured Local: {asset.CapturedLocal}, Media Type: {asset.MediaType}, Copies Here: {asset.CopiesHere}, Copies Total: {asset.CopiesTotal}, Archives Holding: {asset.ArchivesHolding}");
+      }
+      webView.NavigateToMdString(sb.ToString());
+
+      
     }
 
   }

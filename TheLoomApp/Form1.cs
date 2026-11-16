@@ -1,6 +1,7 @@
 // May of 2026, WeaversGuild formed and the Loom App become the following:
 using AngleSharp.Css.Dom;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
+using System.Windows.Documents;
 using TheLoomApp.Components;
 using TheLoomApp.Extensions;
 using TheLoomApp.Models;
@@ -15,6 +17,7 @@ using Weavers.Core.Constants;
 using Weavers.Core.Entities;
 using Weavers.Core.Enums;
 using Weavers.Core.Extensions;
+using Weavers.Core.Handlers.AssetArchive;
 using Weavers.Core.Handlers.Comfy;
 using Weavers.Core.Handlers.Presence;
 using Weavers.Core.Handlers.Sessions;
@@ -22,6 +25,8 @@ using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
 using Weavers.Core.Service;
 using Weavers.Core.Tools;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace TheLoomApp {
   public partial class Form1 : Form {
@@ -123,7 +128,20 @@ namespace TheLoomApp {
       }
       SettingDefaultFolderDirty = false;
       btnTestLine.Enabled = false;
-
+      btnCancelArcReview.Visible = false;
+      btnUpdateArcReview.Visible = false;
+      lbArcReviewMain.Text = "";
+      cbArcOpsCancelPlan.Checked = false;
+      if (btnUpdateArcOps.Visible) {
+        btnUpdateArcOps.Visible = false;
+        btnAbortArcOps.Visible = false;
+      }
+      cbArcResultRestore.Checked = false;
+      cbArcResultDeletePlan.Checked = false;
+      if (btnUpdateArcResult.Visible) {
+        btnUpdateArcResult.Visible = false;
+        btnAbortArcResult.Visible = false;
+      }
     }
 
     private void Form1_Resize(object sender, EventArgs e) {
@@ -157,6 +175,10 @@ namespace TheLoomApp {
 
       tabControl2.Height = verticalSpace - (edItemType.Top + (edItemType.Height * 4));
       _inResize = false;
+    }
+
+    private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e) {
+      Form1_Resize(sender, e);
     }
 
     private void splitContainer3_SplitterMoved(object sender, SplitterEventArgs e) {
@@ -217,6 +239,8 @@ namespace TheLoomApp {
     #endregion
 
     #region Tree View Loading and Events
+    private int _harnessId => _sessionDetails?.HarnessId ?? 0;
+    private int _instanceId => _sessionDetails?.SessionId ?? 0;
     private async void Form1_Shown(object sender, EventArgs e) {
       tLog.Enabled = true;
       btnChangeDetected.Visible = false;
@@ -251,6 +275,13 @@ namespace TheLoomApp {
         Process.Start(new ProcessStartInfo(ev.Uri) { UseShellExecute = true });
       };
       //wvDescription.CoreWebView2.Settings.IsScriptEnabled = false;
+
+      //lvArchiveReview.SetupPlanListView();
+      //lvArchiveReview.SelectedIndexChanged += (_, _) => tbReviewSummary.Text = lvArchiveReview.DescribeSelection();
+      lvArchiveCommands.SetupPlanListView();
+      lvArchiveCommands.SelectedIndexChanged += (_, _) => tbArchiveOpSummary.Text = lvArchiveCommands.DescribeSelection();
+      lvArchiveResults.SetupPlanListView();
+      lvArchiveResults.SelectedIndexChanged += (_, _) => tbArchiveResultsSummary.Text = lvArchiveResults.DescribeSelection();
 
       await _appDataService.EnforceDataRetentionOrgPolicy();
       await LoadRootProjects();
@@ -548,7 +579,7 @@ namespace TheLoomApp {
         }
         _CurrentItemBackup = _selectedNode.Item.Clone();
 
-        wvDescription.SetupHtmlViewForItem(item!);
+        wvDescription.SetupHtmlViewForItem(item!, _appDataService);
 
         lbItemId.Text = "ItemId: " + _selectedNode.Item.Id.ToString();
         edItemType.DataBindings.Clear();
@@ -599,6 +630,11 @@ namespace TheLoomApp {
       if (tabControl1.SelectedTab == tpComfy) {
         var selectedTab = tcComfyScheduleSwitch.SelectedTab;
         await ReloadComfyTabAsync(selectedTab);
+      }
+
+      if (tabControl1.SelectedTab == tpArchiveOps) {
+        var selectedTab = tcArchiveOps.SelectedTab;
+        await ReloadArchiveOpsTabAsync(selectedTab);
       }
 
 
@@ -943,7 +979,7 @@ namespace TheLoomApp {
 
     #endregion
 
-    #region Context Menu Events
+    #region Context Menu Event Handlers
     private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
       if (_selectedNode == null || _selectedNode.Item == null) {
         miSepRefreshBottom.Visible = false;
@@ -1008,6 +1044,12 @@ namespace TheLoomApp {
         miAddEntityProperty.Visible = false;
         miAddGameRoom.Visible = false;
         miAddChessGame.Visible = false;
+        miAddArchive.Visible = false;
+        miReSyncArchive.Visible = false;
+        miAddReplicaPolicy.Visible = false;
+        miAddOffloadPolicy.Visible = false;
+        miBuildPlan.Visible = false;
+
         miSepAddBottom.Visible = false;
 
         miMoveItemUp.Visible = false;
@@ -1108,6 +1150,12 @@ namespace TheLoomApp {
 
         miAddGameRoom.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddChessGame.Visible = itemType == WeItemType.GameRoomModel;
+        miAddArchive.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miReSyncArchive.Visible = itemType == WeItemType.AssetArchiveModel;
+
+        miAddReplicaPolicy.Visible = itemType == WeItemType.AssetArchiveModel;
+        miAddOffloadPolicy.Visible = itemType == WeItemType.AssetArchiveModel;
+        miBuildPlan.Visible = itemType == WeItemType.ReplicaPolicyModel || itemType == WeItemType.OffloadPolicyModel;
 
         miSepAddBottom.Visible = true;
 
@@ -1128,23 +1176,6 @@ namespace TheLoomApp {
     private async void miReloadTree_Click(object sender, EventArgs e) {
       _appDataService.ClearCache();
       await LoadRootProjects();
-    }
-
-
-    private async void miDuplicateItem_Click(object sender, EventArgs e) {
-      try {
-        var itemName = _selectedNode?.Item?.Name ?? "";
-        if (MessageBox.Show($"Are you sure you want to duplicate the item '{itemName}'?", "Confirm Duplicate", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-
-          using var scope = _serviceScopeFactory.CreateScope();
-          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-          await tvKb.DuplicateItem(mediator);
-
-        }
-      } catch (Exception ex) {
-        DoLogMessage("Failed to duplicate item - error:" + ex.Message);
-        MessageBox.Show($"Error duplicating item: {ex.Message}", "Duplicate Item Failed");
-      }
     }
 
     #region Github handlers 
@@ -1259,6 +1290,7 @@ namespace TheLoomApp {
 
 
     #endregion
+    #region Main to do line handlers
     private async void miAddWorkGroup_Click(object sender, EventArgs e) {
       try {
 
@@ -1397,7 +1429,7 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
       }
     }
-
+    #endregion
     #region RSS handlers
     private async void miAddOrgRssFolder_Click(object sender, EventArgs e) {
       try {
@@ -1570,6 +1602,7 @@ namespace TheLoomApp {
 
     #endregion
 
+    #region Comfy handlers
     private async void miAddComfyWorkflow_Click(object sender, EventArgs e) {
       try {
 
@@ -1643,7 +1676,7 @@ namespace TheLoomApp {
       }
     }
 
-    private async void miRelocateMedia_Click(object sender, EventArgs e) {      
+    private async void miRelocateMedia_Click(object sender, EventArgs e) {
       using var scope = _serviceScopeFactory.CreateScope();
       var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
       var selectedNode = tvKb.SelectedNode as ItemNode;
@@ -1660,7 +1693,8 @@ namespace TheLoomApp {
         MessageBox.Show($"Error relocating media file: {ex.Message}", "Relocate Media Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
-
+    #endregion
+    #region project handlers
     private async void miAddProjectRoot_Click(object sender, EventArgs e) {
       try {
 
@@ -1718,7 +1752,7 @@ namespace TheLoomApp {
         MessageBox.Show($"Error adding file: {ex.Message}", "Add File Failed");
       }
     }
-
+    #endregion    
     #region Storytime handlers
     private async void miAddRealm_Click(object sender, EventArgs e) {
       try {
@@ -2122,7 +2156,134 @@ namespace TheLoomApp {
       }
     }
     #endregion
+    #region Archive handlers
+    private async void miAddArchive_Click(object sender, EventArgs e) {
+      try {
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.AssetArchiveModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddAssetArchiveModel(mediator, newItemName);
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add asset archive model - error:" + ex.Message);
+        MessageBox.Show($"Error adding asset archive model: {ex.Message}", "Add Asset Archive Model Failed");
+      }
+    }
+
+    private void miReSyncArchive_Click(object sender, EventArgs e) {
+      var selectedNode = tvKb.SelectedNode as ItemNode;
+      var selectedItem = selectedNode?.Item;
+      if (selectedItem == null || selectedItem.ItemTypeId != (int)WeItemType.AssetArchiveModel) {
+        MessageBox.Show("Please select an Asset Archive node to re-sync.", "Re-Sync Asset Archive Model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      try {
+
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        using var dlg = new ArchiveProgressDlg(mediator, selectedItem, CancellationToken.None);
+        dlg.ShowDialog(this);
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to re-sync asset archive model - error:" + ex.Message);
+        MessageBox.Show($"Error re-syncing asset archive model: {ex.Message}", "Re-Sync Asset Archive Model Failed");
+      }
+
+      DoLogMessage("Re-synced asset archive model finished.");
+
+    }
+
+    private async void miAddReplicaPolicy_Click(object sender, EventArgs e) {
+      try {
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.ReplicaPolicyModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddReplicaPolicyModel(mediator, newItemName);
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add replica policy model - error:" + ex.Message);
+        MessageBox.Show($"Error adding replica policy model: {ex.Message}", "Add Replica Policy Model Failed");
+      }
+    }
+
+    private async void miAddOffloadPolicy_Click(object sender, EventArgs e) {
+      try {
+        using var dlg = new GetNewItemDetailsDialog(_serviceScopeFactory, WeItemType.OffloadPolicyModel);
+        if (dlg.ShowDialog() == DialogResult.OK) {
+          var newItemName = dlg.ItemName;
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.AddOffloadPolicyModel(mediator, newItemName);
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to add offload policy model - error:" + ex.Message);
+        MessageBox.Show($"Error adding offload policy model: {ex.Message}", "Add Offload Policy Model Failed");
+      }
+    }
+
+    private async void miBuildPlan_Click(object sender, EventArgs e) {
+      var selectedNode = tvKb.SelectedNode as ItemNode;
+      var selectedItem = selectedNode?.Item;
+      if (selectedItem == null || (
+        selectedItem.ItemTypeId != (int)WeItemType.ReplicaPolicyModel
+        && selectedItem.ItemTypeId != (int)WeItemType.OffloadPolicyModel
+      )) {
+        MessageBox.Show("Please select a Replica Policy or Offload Policy node to re-sync.", "Re-Sync Asset Archive Model", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        if (selectedItem.ItemTypeId == (int)WeItemType.ReplicaPolicyModel) {
+          var plan = await mediator.Send(new BuildPlanReplicaCommand(selectedItem.Id));
+          if (plan == null) {
+            MessageBox.Show($"BuildPlan returned null item '{selectedItem.Name}'.", "Build Replica Plan Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+          }
+          if (!plan.Success) {
+            MessageBox.Show($"Failed to build Replica Plan for item '{selectedItem.Name}': {plan.Message}", "Build Replica Plan Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+          }
+          var lineCount = plan.PlanSummary.Count();
+          while (lineCount > 0) {
+            lineCount--;
+            DoLogMessage(plan.PlanSummary[lineCount]);
+          }
+          MessageBox.Show($"Replica Plan built successfully:\n{plan}", "Build Replica Plan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          //} else if (selectedItem.ItemTypeId == (int)WeItemType.OffloadPolicyModel) {
+          //  var plan = await mediator.Send(new BuildOffloadPlanCommand(selectedItem.Id));
+          //  MessageBox.Show($"Offload Plan built successfully:\n{plan}", "Build Offload Plan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+      } catch (Exception ex) {
+        DoLogMessage("Failed to build plan - error:" + ex.Message);
+        MessageBox.Show($"Error building plan: {ex.Message}", "Build Plan Failed");
+      }
+
+    }
+
+    #endregion
     #region Item handlers
+
+    private async void miDuplicateItem_Click(object sender, EventArgs e) {
+      try {
+        var itemName = _selectedNode?.Item?.Name ?? "";
+        if (MessageBox.Show($"Are you sure you want to duplicate the item '{itemName}'?", "Confirm Duplicate", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+
+          using var scope = _serviceScopeFactory.CreateScope();
+          var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+          await tvKb.DuplicateItem(mediator);
+
+        }
+      } catch (Exception ex) {
+        DoLogMessage("Failed to duplicate item - error:" + ex.Message);
+        MessageBox.Show($"Error duplicating item: {ex.Message}", "Duplicate Item Failed");
+      }
+    }
     private void miMoveItemUp_Click(object sender, EventArgs e) {
       if (_selectedNode == null || _selectedNode.Parent == null) { return; }
       var parentNode = _selectedNode.Parent as ItemNode;
@@ -2228,6 +2389,7 @@ namespace TheLoomApp {
         TvKb_BeforeExpand(sender, new TreeViewCancelEventArgs(_selectedNode, false, TreeViewAction.Expand));
       }
     }
+
     #endregion
     #endregion
 
@@ -2759,6 +2921,31 @@ namespace TheLoomApp {
           } else {
             DoLogMessage($"TodoId {item.Id} Attempt Failed, Status: {attemptResult.Status}, Error: {attemptResult.ErrorMessage}");
           }
+        }
+      }
+    }
+
+    private void miDescSelectAll_Click(object sender, EventArgs e) {
+      edItemDesc.SelectAll();
+    }
+
+    private void miDescCopy_Click(object sender, EventArgs e) {
+      if (!string.IsNullOrEmpty(edItemDesc.Text)) {
+        if (edItemDesc.SelectedText.Length > 0) {
+          Clipboard.SetText(edItemDesc.SelectedText);
+        } else {
+          Clipboard.SetText(edItemDesc.Text);
+        }
+      }
+    }
+
+    private void miDescPaste_Click(object sender, EventArgs e) {
+      if (Clipboard.ContainsText()) {
+        if (edItemDesc.SelectedText.Length > 0) {
+          edItemDesc.Paste();
+        } else {
+          edItemDesc.SelectAll();
+          edItemDesc.Paste();
         }
       }
     }
@@ -3363,8 +3550,6 @@ namespace TheLoomApp {
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _scheduleComfyDict = new();
     private readonly ConcurrentDictionary<int, ReadyTodoRow> _resultComfyDict = new();
 
-
-
     public async Task ReloadComfyTabAsync(TabPage? selectedTab) {
 
       ListBox? list = null;
@@ -3498,7 +3683,6 @@ namespace TheLoomApp {
       btnUpdateComfyResultTodo.Visible = cbComfyResultSetReady.Checked || cbDeleteNotReady.Checked;
       btnAbortComfyResultTodoUpdate.Visible = cbComfyResultSetReady.Checked || cbDeleteNotReady.Checked;
     }
-
 
     private async void btnUpdateComfyReadyTodo_Click(object sender, EventArgs e) {
       btnUpdateComfyReadyTodo.Visible = false;
@@ -3735,35 +3919,384 @@ namespace TheLoomApp {
       return shouldContinue;
     }
 
-    private void miDescSelectAll_Click(object sender, EventArgs e) {
-      edItemDesc.SelectAll();
+
+
+
+
+    #endregion
+    #region Archive Ops Tab handlers
+
+    bool _inReloadArchiveOps = false;
+    private async Task ReloadArchiveOpsTabAsync(TabPage selectedTab) {
+      if (_inReloadArchiveOps) return;
+      _inReloadArchiveOps = true;
+      try {
+        TextBox? tbSummaryReview = null;
+        ListView? lvReview = null;
+        PlanBoard? board = null;
+        if (selectedTab == tpArchiveReview) {
+          lvReview = lvArchiveReview;
+          board = await _appDataService.GetPlanBoard(new[] { (byte)AssetPlanStatus.Draft }, 200);
+          tbSummaryReview = tbReviewSummary;
+          cbArcReviewSetReady.Checked = false;
+          cbArcReviewDeletePlan.Checked = false;
+          if (btnUpdateArcReview.Visible) {
+            btnUpdateArcReview.Visible = false;
+            btnCancelArcReview.Visible = false;
+          }
+        } else if (selectedTab == tpArchiveCommands) {
+          lvReview = lvArchiveCommands;
+          board = await _appDataService.GetPlanBoard(new[] { (byte)AssetPlanStatus.Approved, (byte)AssetPlanStatus.Running, (byte)AssetPlanStatus.Paused }, 200);
+          tbSummaryReview = tbArchiveOpSummary;
+          cbArcOpsCancelPlan.Checked = false;
+          if (btnUpdateArcOps.Visible) {
+            btnUpdateArcOps.Visible = false;
+            btnAbortArcOps.Visible = false;
+          }
+        } else if (selectedTab == tpArchiveCompletes) {
+          lvReview = lvArchiveResults;
+          board = await _appDataService.GetPlanBoard(new[] { (byte)AssetPlanStatus.Done, (byte)AssetPlanStatus.Failed, (byte)AssetPlanStatus.Cancelled }, 200);
+          tbSummaryReview = tbArchiveResultsSummary;
+          cbArcResultRestore.Checked = false;
+          cbArcResultDeletePlan.Checked = false;
+          if (btnUpdateArcResult.Visible) {
+            btnUpdateArcResult.Visible = false;
+            btnAbortArcResult.Visible = false;
+          }
+        }
+        if (board == null) {
+          throw new InvalidOperationException("No plan board found for the selected tab.");
+        }
+        if (lvReview == null) {
+          throw new InvalidOperationException("No ListView found for the selected tab.");
+        }
+        if (tbSummaryReview == null) {
+          throw new InvalidOperationException("No TextBox found for the selected tab.");
+        }
+
+        lvReview.RenderPlanBoard(board, 200);
+        tbSummaryReview.Text = lvReview.DescribeSelection();
+      } finally {
+        _inReloadArchiveOps = false;
+      }
     }
 
-    private void miDescCopy_Click(object sender, EventArgs e) {
-      if (!string.IsNullOrEmpty(edItemDesc.Text)) {
-        if (edItemDesc.SelectedText.Length > 0) {
-          Clipboard.SetText(edItemDesc.SelectedText);
+    private async void tcArchiveOps_SelectedIndexChanged(object sender, EventArgs e) {
+      var selectedTab = tcArchiveOps.SelectedTab;
+      if (selectedTab == null) return;
+      await ReloadArchiveOpsTabAsync(selectedTab);
+    }
+
+
+    private void lvArchiveReview_SelectedIndexChanged(object sender, EventArgs e) {
+      var selected = lvArchiveReview.SelectedItems;
+      if (selected.Count > 0) {
+        CommandRow? planRow = selected[0].Tag as CommandRow;
+        string? header = selected[0].Group?.Header ?? "No Header";
+        if (planRow == null) {
+          tbReviewSummary.Text = "No plan selected.";
+          return;
         } else {
-          Clipboard.SetText(edItemDesc.Text);
+          lbArcReviewMain.Text = $"Selected Plan: {header} ";
+          tbReviewSummary.Text = lvArchiveReview.DescribeSelection();
+        }
+        cbArcReviewSetReady.Checked = false;
+        cbArcReviewDeletePlan.Checked = false;
+        btnUpdateArcReview.Visible = false;
+        btnCancelArcReview.Visible = false;
+      }
+    }
+
+    private void lvArchiveCommands_SelectedIndexChanged(object sender, EventArgs e) {
+      var selected = lvArchiveCommands.SelectedItems;
+      if (selected.Count > 0) {
+        CommandRow? planRow = selected[0].Tag as CommandRow;
+        string? header = selected[0].Group?.Header ?? "No Header";
+        if (planRow == null) {
+          lbArcOpsCurrent.Text = "No plan selected.";
+          return;
+        } else {
+          lbArcOpsCurrent.Text = $"Selected Plan: {header} ";
+          tbArchiveOpSummary.Text = lvArchiveCommands.DescribeSelection();
+        }
+        cbArcOpsCancelPlan.Checked = false;
+        btnUpdateArcOps.Visible = false;
+        btnAbortArcOps.Visible = false;
+      }
+    }
+
+    private void lvArchiveResults_SelectedIndexChanged(object sender, EventArgs e) {
+      var selected = lvArchiveResults.SelectedItems;
+      if (selected.Count > 0) {
+        CommandRow? planRow = selected[0].Tag as CommandRow;
+        string? header = selected[0].Group?.Header ?? "No Header";
+        if (planRow == null) {
+          tbArchiveResultsSummary.Text = "No plan selected.";
+          lvArchiveResults.Text = "";
+          return;
+        } else {
+          lbArcResultPlan.Text = $"Selected Plan: {header} ";
+          tbArchiveResultsSummary.Text = lvArchiveResults.DescribeSelection();
+        }
+        cbArcResultRestore.Checked = false;
+        cbArcResultDeletePlan.Checked = false;
+        btnUpdateArcResult.Visible = false;
+        btnAbortArcResult.Visible = false;
+      }
+    }
+
+
+    private void cbArcReviewSetReady_CheckedChanged(object sender, EventArgs e) {
+      bool updated = cbArcReviewSetReady.Checked || cbArcReviewDeletePlan.Checked;
+      btnUpdateArcReview.Visible = updated;
+      btnCancelArcReview.Visible = updated;
+    }
+
+    private void btnCancelArcReview_Click(object sender, EventArgs e) {
+      cbArcReviewSetReady.Checked = false;
+      cbArcReviewDeletePlan.Checked = false;
+      btnUpdateArcReview.Visible = false;
+      btnCancelArcReview.Visible = false;
+    }
+
+    private async void btnUpdateArcReview_Click(object sender, EventArgs e) {
+      var selected = lvArchiveReview.SelectedItems;
+      if (selected.Count == 0) {
+        MessageBox.Show("No plan selected. Please select a plan to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      CommandRow? planRow = selected[0].Tag as CommandRow;
+      if (planRow == null) {
+        MessageBox.Show("Selected item is not a valid plan. Please select a valid plan to update.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      DoLogMessage($"do set planRow id: {planRow.AssetPlanId}");
+      bool isSetReady = cbArcReviewSetReady.Checked;
+      bool isDelete = cbArcReviewDeletePlan.Checked;
+      cbArcReviewSetReady.Checked = false;
+      cbArcReviewDeletePlan.Checked = false;
+      btnUpdateArcReview.Visible = false;
+      btnCancelArcReview.Visible = false;
+
+      if (isDelete) {
+        var r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Delete, true);
+        lbArcReviewMain.Text = "";
+        await ReloadArchiveOpsTabAsync(tpArchiveReview);
+      } else if (isSetReady) {
+        var r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Approve, false);
+        if (r.IsStale) {
+          var choice = MessageBox.Show(this, r.Message + "\n\nYes = Rebuild   No = Approve anyway",
+            "Plan is stale", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+          if (choice == DialogResult.Yes) {
+            var br = await _appDataService.BuildPlanReplica(r.PolicyItemId);
+          } else if (choice == DialogResult.No)
+            r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Approve, true);
+          else return;
+        }
+        lbArcReviewMain.Text = "";
+        await ReloadArchiveOpsTabAsync(tpArchiveReview);
+      }
+    }
+
+
+    private void cbArcOpsCancelPlan_CheckedChanged(object sender, EventArgs e) {
+      bool isCancel = cbArcOpsCancelPlan.Checked;
+      btnUpdateArcOps.Visible = isCancel;
+      btnAbortArcOps.Visible = isCancel;
+    }
+
+    private void btnAbortArcOps_Click(object sender, EventArgs e) {
+      btnUpdateArcOps.Visible = false;
+      btnAbortArcOps.Visible = false;
+    }
+
+    private async void btnUpdateArcOps_Click(object sender, EventArgs e) {
+      bool isCancel = cbArcOpsCancelPlan.Checked;
+      cbArcOpsCancelPlan.Checked = false;
+      btnUpdateArcOps.Visible = false;
+      btnAbortArcOps.Visible = false;
+
+      if (isCancel) {
+        var selected = lvArchiveCommands.SelectedItems;
+        if (selected.Count == 0) {
+          MessageBox.Show("No plan selected. Please select a plan to cancel.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        CommandRow? planRow = selected[0].Tag as CommandRow;
+        if (planRow == null) {
+          MessageBox.Show("Selected item is not a valid plan. Please select a valid plan to cancel.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          return;
+        }
+        var r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Cancel, true);
+        DoLogMessage($"Canceled AssetPlan Id: {planRow.AssetPlanId}");
+        lbArcOpsCurrent.Text = "";
+        await ReloadArchiveOpsTabAsync(tpArchiveCommands);
+      }
+    }
+
+
+    private void cbArcResultRestore_CheckedChanged(object sender, EventArgs e) {
+      bool isRestore = cbArcResultRestore.Checked || cbArcResultDeletePlan.Checked;
+      btnUpdateArcResult.Visible = isRestore;
+      btnAbortArcResult.Visible = isRestore;
+    }
+
+    private void btnAbortArcResult_Click(object sender, EventArgs e) {
+      btnUpdateArcResult.Visible = false;
+      btnAbortArcResult.Visible = false;
+    }
+
+    private async void btnUpdateArcResult_Click(object sender, EventArgs e) {
+      var selected = lvArchiveResults.SelectedItems;
+      if (selected.Count == 0) {
+        MessageBox.Show("No plan selected. Please select a plan to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      CommandRow? planRow = selected[0].Tag as CommandRow;
+      if (planRow == null) {
+        MessageBox.Show("Selected item is not a valid plan. Please select a valid plan to update.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        return;
+      }
+      bool isSetReady = cbArcResultRestore.Checked;
+      bool isDelete = cbArcResultDeletePlan.Checked;
+
+      if (isDelete) {
+        var r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Delete, true);
+        lbArcResultPlan.Text = "";
+        await ReloadArchiveOpsTabAsync(tpArchiveCompletes);
+      } else if (isSetReady) {
+        var r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Approve, false);
+        if (r.IsStale) {
+          var choice = MessageBox.Show(this, r.Message + "\n\nYes = Rebuild   No = Approve anyway",
+            "Plan is stale", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+          if (choice == DialogResult.Yes) {
+            var br = await _appDataService.BuildPlanReplica(r.PolicyItemId);
+          } else if (choice == DialogResult.No)
+            r = await _appDataService.ChangePlanStatus(planRow.AssetPlanId, PlanAction.Approve, true);
+          else return;
+        }
+        lbArcResultPlan.Text = "";
+        await ReloadArchiveOpsTabAsync(tpArchiveCompletes);
+      }
+
+
+    }
+
+    #endregion
+    #region Archive Ops Tab Run handlers
+    bool _archiveEngineRunning = false;
+    bool _isArchiveEngineRunning = false;
+    bool _isArchiveStopping = false;
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ArchiveEngineRunning {
+      get { return _archiveEngineRunning; }
+      set {
+        _archiveEngineRunning = value;
+        if (_archiveEngineRunning) {
+          lbArcOpsCurrent.Text = "Status: Pipeline Running";
+          btnArchiveOpsStartStop.Text = "Stop";
+          _isArchiveStopping = false;
+        } else {
+          if (!_isArchiveStopping) {
+            lbArcOpsCurrent.Text = "Status: Pipeline Stopping";
+            btnArchiveOpsStartStop.Text = "Waiting";
+            btnArchiveOpsStartStop.Enabled = false;
+            _isArchiveStopping = true;
+          } else {
+            lbArcOpsCurrent.Text = "Status: Pipeline Stopped";
+            btnArchiveOpsStartStop.Text = "Start";
+            btnArchiveOpsStartStop.Enabled = true;
+            _isArchiveStopping = false;
+          }
         }
       }
     }
 
-    private void miDescPaste_Click(object sender, EventArgs e) {
-      if (Clipboard.ContainsText()) {
-        if (edItemDesc.SelectedText.Length > 0) {
-          edItemDesc.Paste();
-        } else {
-          edItemDesc.SelectAll();
-          edItemDesc.Paste();
+
+    CancellationTokenSource? _archiveCts;
+    bool _archiveTickInFlight;
+
+    private async void btnArchiveOpsStartStop_Click(object sender, EventArgs e) {      
+      if (btnArchiveOpsStartStop.Text == "Start") {
+        if (_swarmNode != null) {
+          var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Archive, true);
+          if (!shouldContinue) {
+            MessageBox.Show("Machine is currently busy running another line.", "Machine Line Busy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+          }
         }
+        _archiveCts?.Dispose(); 
+        _archiveCts = new CancellationTokenSource();
+        ArchiveEngineRunning = true;
+        tRunArchiveLine.Enabled = true;
+      } else {
+        _archiveCts?.Cancel();
+        ArchiveEngineRunning = false;
+        if (!_archiveTickInFlight) {          
+          tRunArchiveLine.Enabled = false;
+          ArchiveEngineRunning = false;
+        }        
       }
     }
 
+    delegate void SetMsgCallback(string msg);
+    public void SetProgress(string msg) {
+      if (this.lbArcOpsCurrent.InvokeRequired) {
+        SetMsgCallback d = new(SetProgress);
+        this.BeginInvoke(d, new object[] { msg });
+      } else {
+        lbArcOpsCurrent.Text = msg;
+      }
+    }
 
+    private async void tRunArchiveLine_Tick(object sender, EventArgs e) {
+      tRunArchiveLine.Enabled = false;
+      _archiveTickInFlight = true;
+      try {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var r = await Task.Run(() => mediator.Send(
+          new ExecuteNextArchiveOpsCommand(_harnessId, _instanceId.ToString(), 10) {
+            Progress = new Progress<string>(s => SetProgress(s))   
+          }, _archiveCts!.Token));
 
+        DoLogMessage(r.Message);
 
+        if (r.Outcome == ArchiveOpOutcome.Idle) {
+          _isArchiveStopping = true;
+        } else {        
+          if (cbCoolDown.Checked) { 
+            var delay = TimeSpan.FromSeconds(edCoolDownMs.Value.AsInt());
+            DoLogMessage($"Cooling down for {delay.TotalSeconds} seconds before next archive operation.");
+            await Task.Delay(delay, _archiveCts!.Token);
+          }
+        }
+        
+      } catch (OperationCanceledException) {
+        // Stop pressed mid-batch; the handler already released its claims
+        DoLogMessage($"ArchiveOps canceled.");
+        _isArchiveStopping = true;
+      } catch (Exception ex) {
+        DoLogMessage($"ArchiveOps error: {ex.Message}");
+        _isArchiveStopping = true;
+      } finally {
+        _archiveTickInFlight = false;
+      }
 
+      if (_isArchiveStopping || !_archiveEngineRunning) {
+        if (_swarmNode != null) {
+          await _swarmNode.SetLineAsync(SwarmLines.Archive, false);
+        }
+        _isArchiveStopping = true;
+        ArchiveEngineRunning = false;            // -> "Stopped"
+        await ReloadArchiveOpsTabAsync(tpArchiveCommands);
+        return;
+      }      
+      tRunArchiveLine.Enabled = true;
+    }
 
 
 
@@ -3772,6 +4305,12 @@ namespace TheLoomApp {
 
 
     #endregion
+
+
+
+
+
+
 
     //  -- end of form and namespace below, no need to edit. 
   }

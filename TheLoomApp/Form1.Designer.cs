@@ -57,6 +57,7 @@
       miAddComfyWfParam = new ToolStripMenuItem();
       miAddComfyOpFolder = new ToolStripMenuItem();
       miAddComfyTodo = new ToolStripMenuItem();
+      miRelocateMedia = new ToolStripMenuItem();
       miAddProjectRoot = new ToolStripMenuItem();
       miAddSubProject = new ToolStripMenuItem();
       miAddGitHubRepo = new ToolStripMenuItem();
@@ -89,6 +90,11 @@
       miAddEntityProperty = new ToolStripMenuItem();
       miAddGameRoom = new ToolStripMenuItem();
       miAddChessGame = new ToolStripMenuItem();
+      miAddArchive = new ToolStripMenuItem();
+      miAddReplicaPolicy = new ToolStripMenuItem();
+      miAddOffloadPolicy = new ToolStripMenuItem();
+      miReSyncArchive = new ToolStripMenuItem();
+      miBuildPlan = new ToolStripMenuItem();
       miSepAddBottom = new ToolStripSeparator();
       miGenerate = new ToolStripMenuItem();
       miSepGenBottom = new ToolStripSeparator();
@@ -212,6 +218,47 @@
       cbComfyResultSetReady = new CheckBox();
       edComfyResultPreview = new TextBox();
       lbComfyResult = new ListBox();
+      tpArchiveOps = new TabPage();
+      tcArchiveOps = new TabControl();
+      tpArchiveReview = new TabPage();
+      cbArcReviewDeletePlan = new CheckBox();
+      btnCancelArcReview = new Button();
+      btnUpdateArcReview = new Button();
+      cbArcReviewSetReady = new CheckBox();
+      lbArcReviewMain = new Label();
+      tbReviewSummary = new TextBox();
+      lvArchiveReview = new ListView();
+      lvcArcReviewSelect = new ColumnHeader();
+      lvcArcReviewSize = new ColumnHeader();
+      lvcArcReviewSource = new ColumnHeader();
+      lvcArcReviewTarget = new ColumnHeader();
+      lvcArcReviewInfo = new ColumnHeader();
+      tpArchiveCommands = new TabPage();
+      btnAbortArcOps = new Button();
+      btnUpdateArcOps = new Button();
+      cbArcOpsCancelPlan = new CheckBox();
+      lbArcOpsCurrent = new Label();
+      btnArchiveOpsStartStop = new Button();
+      tbArchiveOpSummary = new TextBox();
+      lvArchiveCommands = new ListView();
+      lvcArcCmdSelect = new ColumnHeader();
+      lvcArcCmdSize = new ColumnHeader();
+      lvcArcCmdSource = new ColumnHeader();
+      lvcArcCmdTarget = new ColumnHeader();
+      lvcArcCmdInfo = new ColumnHeader();
+      tpArchiveCompletes = new TabPage();
+      cbArcResultDeletePlan = new CheckBox();
+      btnAbortArcResult = new Button();
+      btnUpdateArcResult = new Button();
+      cbArcResultRestore = new CheckBox();
+      lbArcResultPlan = new Label();
+      tbArchiveResultsSummary = new TextBox();
+      lvArchiveResults = new ListView();
+      lvcArcResultSelect = new ColumnHeader();
+      lvcArcResultSize = new ColumnHeader();
+      lvcArcResultSource = new ColumnHeader();
+      lvcArcResultTarget = new ColumnHeader();
+      lvcArcResultInfo = new ColumnHeader();
       tbErrorOut = new TextBox();
       tsErrorPopup = new ToolStrip();
       toolStripLabel1 = new ToolStripLabel();
@@ -221,7 +268,7 @@
       tRunComfy = new System.Windows.Forms.Timer(components);
       tSwarm = new System.Windows.Forms.Timer(components);
       tLog = new System.Windows.Forms.Timer(components);
-      miRelocateMedia = new ToolStripMenuItem();
+      tRunArchiveLine = new System.Windows.Forms.Timer(components);
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -258,6 +305,11 @@
       tpComfyReadyReview.SuspendLayout();
       tpComfySchedule.SuspendLayout();
       tpComfyResultReview.SuspendLayout();
+      tpArchiveOps.SuspendLayout();
+      tcArchiveOps.SuspendLayout();
+      tpArchiveReview.SuspendLayout();
+      tpArchiveCommands.SuspendLayout();
+      tpArchiveCompletes.SuspendLayout();
       tsErrorPopup.SuspendLayout();
       SuspendLayout();
       // 
@@ -276,9 +328,10 @@
       // 
       splitContainer1.Panel2.Controls.Add(splitContainer3);
       splitContainer1.Panel2.Controls.Add(splitter1);
-      splitContainer1.Size = new Size(845, 632);
+      splitContainer1.Size = new Size(845, 646);
       splitContainer1.SplitterDistance = 249;
       splitContainer1.TabIndex = 0;
+      splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
       // 
       // splitContainer2
       // 
@@ -295,8 +348,8 @@
       // splitContainer2.Panel2
       // 
       splitContainer2.Panel2.Controls.Add(tvKb);
-      splitContainer2.Size = new Size(249, 632);
-      splitContainer2.SplitterDistance = 60;
+      splitContainer2.Size = new Size(249, 646);
+      splitContainer2.SplitterDistance = 61;
       splitContainer2.SplitterWidth = 3;
       splitContainer2.TabIndex = 0;
       // 
@@ -306,7 +359,7 @@
       btnChangeDetected.BackColor = Color.Lavender;
       btnChangeDetected.Location = new Point(10, 10);
       btnChangeDetected.Name = "btnChangeDetected";
-      btnChangeDetected.Size = new Size(224, 40);
+      btnChangeDetected.Size = new Size(224, 41);
       btnChangeDetected.TabIndex = 0;
       btnChangeDetected.Text = "Reload Tree";
       btnChangeDetected.UseVisualStyleBackColor = false;
@@ -323,7 +376,7 @@
       tvKb.Margin = new Padding(3, 2, 3, 2);
       tvKb.Name = "tvKb";
       tvKb.SelectedImageIndex = 0;
-      tvKb.Size = new Size(249, 569);
+      tvKb.Size = new Size(249, 582);
       tvKb.TabIndex = 0;
       tvKb.BeforeExpand += TvKb_BeforeExpand;
       tvKb.ItemDrag += tvKb_ItemDrag;
@@ -335,9 +388,9 @@
       // cmsTreeMenus
       // 
       cmsTreeMenus.ImageScalingSize = new Size(20, 20);
-      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miRelocateMedia, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
+      cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miRelocateMedia, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miAddArchive, miAddReplicaPolicy, miAddOffloadPolicy, miReSyncArchive, miBuildPlan, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
-      cmsTreeMenus.Size = new Size(212, 1430);
+      cmsTreeMenus.Size = new Size(212, 1518);
       cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
@@ -526,6 +579,13 @@
       miAddComfyTodo.Size = new Size(211, 22);
       miAddComfyTodo.Text = "Add Comfy Todo";
       miAddComfyTodo.Click += miAddComfyTodo_Click;
+      // 
+      // miRelocateMedia
+      // 
+      miRelocateMedia.Name = "miRelocateMedia";
+      miRelocateMedia.Size = new Size(211, 22);
+      miRelocateMedia.Text = "Relocate Media";
+      miRelocateMedia.Click += miRelocateMedia_Click;
       // 
       // miAddProjectRoot
       // 
@@ -751,6 +811,41 @@
       miAddChessGame.Text = "Add Chess Game";
       miAddChessGame.Click += miAddChessGame_Click;
       // 
+      // miAddArchive
+      // 
+      miAddArchive.Name = "miAddArchive";
+      miAddArchive.Size = new Size(211, 22);
+      miAddArchive.Text = "Add Archive";
+      miAddArchive.Click += miAddArchive_Click;
+      // 
+      // miAddReplicaPolicy
+      // 
+      miAddReplicaPolicy.Name = "miAddReplicaPolicy";
+      miAddReplicaPolicy.Size = new Size(211, 22);
+      miAddReplicaPolicy.Text = "Add Replication Policy";
+      miAddReplicaPolicy.Click += miAddReplicaPolicy_Click;
+      // 
+      // miAddOffloadPolicy
+      // 
+      miAddOffloadPolicy.Name = "miAddOffloadPolicy";
+      miAddOffloadPolicy.Size = new Size(211, 22);
+      miAddOffloadPolicy.Text = "Add Offload Policy";
+      miAddOffloadPolicy.Click += miAddOffloadPolicy_Click;
+      // 
+      // miReSyncArchive
+      // 
+      miReSyncArchive.Name = "miReSyncArchive";
+      miReSyncArchive.Size = new Size(211, 22);
+      miReSyncArchive.Text = "Resync Archive";
+      miReSyncArchive.Click += miReSyncArchive_Click;
+      // 
+      // miBuildPlan
+      // 
+      miBuildPlan.Name = "miBuildPlan";
+      miBuildPlan.Size = new Size(211, 22);
+      miBuildPlan.Text = "Build Plan";
+      miBuildPlan.Click += miBuildPlan_Click;
+      // 
       // miSepAddBottom
       // 
       miSepAddBottom.Name = "miSepAddBottom";
@@ -847,8 +942,8 @@
       // 
       splitContainer3.Panel2.Controls.Add(tbErrorOut);
       splitContainer3.Panel2.Controls.Add(tsErrorPopup);
-      splitContainer3.Size = new Size(588, 632);
-      splitContainer3.SplitterDistance = 513;
+      splitContainer3.Size = new Size(588, 646);
+      splitContainer3.SplitterDistance = 524;
       splitContainer3.SplitterWidth = 3;
       splitContainer3.TabIndex = 1;
       splitContainer3.SplitterMoved += splitContainer3_SplitterMoved;
@@ -860,12 +955,13 @@
       tabControl1.Controls.Add(tpSearch);
       tabControl1.Controls.Add(tpMain);
       tabControl1.Controls.Add(tpComfy);
+      tabControl1.Controls.Add(tpArchiveOps);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Margin = new Padding(3, 2, 3, 2);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
-      tabControl1.Size = new Size(588, 513);
+      tabControl1.Size = new Size(588, 524);
       tabControl1.TabIndex = 0;
       tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
       // 
@@ -895,7 +991,7 @@
       tpSettings.Margin = new Padding(3, 2, 3, 2);
       tpSettings.Name = "tpSettings";
       tpSettings.Padding = new Padding(3, 2, 3, 2);
-      tpSettings.Size = new Size(580, 485);
+      tpSettings.Size = new Size(580, 496);
       tpSettings.TabIndex = 0;
       tpSettings.Text = "Settings";
       tpSettings.UseVisualStyleBackColor = true;
@@ -916,7 +1012,7 @@
       lvActiveSwarm.FullRowSelect = true;
       lvActiveSwarm.Location = new Point(41, 350);
       lvActiveSwarm.Name = "lvActiveSwarm";
-      lvActiveSwarm.Size = new Size(527, 119);
+      lvActiveSwarm.Size = new Size(527, 130);
       lvActiveSwarm.TabIndex = 20;
       lvActiveSwarm.UseCompatibleStateImageBehavior = false;
       lvActiveSwarm.View = View.Details;
@@ -1147,7 +1243,7 @@
       tpItem.Margin = new Padding(3, 2, 3, 2);
       tpItem.Name = "tpItem";
       tpItem.Padding = new Padding(3, 2, 3, 2);
-      tpItem.Size = new Size(580, 485);
+      tpItem.Size = new Size(580, 496);
       tpItem.TabIndex = 1;
       tpItem.Text = "Details";
       tpItem.UseVisualStyleBackColor = true;
@@ -1192,7 +1288,7 @@
       tabControl2.Controls.Add(tpData);
       tabControl2.Controls.Add(tpHtml);
       tabControl2.Dock = DockStyle.Bottom;
-      tabControl2.Location = new Point(3, 247);
+      tabControl2.Location = new Point(3, 258);
       tabControl2.Margin = new Padding(3, 2, 3, 2);
       tabControl2.Name = "tabControl2";
       tabControl2.SelectedIndex = 0;
@@ -1442,7 +1538,7 @@
       tpSearch.Location = new Point(4, 24);
       tpSearch.Name = "tpSearch";
       tpSearch.Padding = new Padding(3);
-      tpSearch.Size = new Size(580, 485);
+      tpSearch.Size = new Size(580, 496);
       tpSearch.TabIndex = 5;
       tpSearch.Text = "Search";
       tpSearch.UseVisualStyleBackColor = true;
@@ -1490,7 +1586,7 @@
       tbSearchResults.Multiline = true;
       tbSearchResults.Name = "tbSearchResults";
       tbSearchResults.ScrollBars = ScrollBars.Vertical;
-      tbSearchResults.Size = new Size(541, 355);
+      tbSearchResults.Size = new Size(541, 366);
       tbSearchResults.TabIndex = 21;
       // 
       // btnSearchText
@@ -1526,7 +1622,7 @@
       tpMain.Controls.Add(tcMainSchedule);
       tpMain.Location = new Point(4, 24);
       tpMain.Name = "tpMain";
-      tpMain.Size = new Size(580, 485);
+      tpMain.Size = new Size(580, 496);
       tpMain.TabIndex = 7;
       tpMain.Text = "Main Schedule";
       tpMain.UseVisualStyleBackColor = true;
@@ -1540,7 +1636,7 @@
       tcMainSchedule.Location = new Point(0, 0);
       tcMainSchedule.Name = "tcMainSchedule";
       tcMainSchedule.SelectedIndex = 0;
-      tcMainSchedule.Size = new Size(580, 485);
+      tcMainSchedule.Size = new Size(580, 496);
       tcMainSchedule.TabIndex = 0;
       tcMainSchedule.SelectedIndexChanged += tcMainSchedule_SelectedIndexChanged;
       // 
@@ -1557,7 +1653,7 @@
       tpReview.Controls.Add(lbNotReady);
       tpReview.Location = new Point(4, 24);
       tpReview.Name = "tpReview";
-      tpReview.Size = new Size(572, 457);
+      tpReview.Size = new Size(572, 468);
       tpReview.TabIndex = 3;
       tpReview.Text = "Todo Ready Review";
       tpReview.UseVisualStyleBackColor = true;
@@ -1566,7 +1662,7 @@
       // 
       cbDeleteNotReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbDeleteNotReady.AutoSize = true;
-      cbDeleteNotReady.Location = new Point(104, 429);
+      cbDeleteNotReady.Location = new Point(104, 440);
       cbDeleteNotReady.Name = "cbDeleteNotReady";
       cbDeleteNotReady.Size = new Size(59, 19);
       cbDeleteNotReady.TabIndex = 43;
@@ -1577,7 +1673,7 @@
       // btnAbortReadUpdate
       // 
       btnAbortReadUpdate.Anchor = AnchorStyles.Bottom;
-      btnAbortReadUpdate.Location = new Point(244, 427);
+      btnAbortReadUpdate.Location = new Point(244, 438);
       btnAbortReadUpdate.Margin = new Padding(3, 2, 3, 2);
       btnAbortReadUpdate.Name = "btnAbortReadUpdate";
       btnAbortReadUpdate.Size = new Size(66, 21);
@@ -1589,7 +1685,7 @@
       // btnUpdateReady
       // 
       btnUpdateReady.Anchor = AnchorStyles.Bottom;
-      btnUpdateReady.Location = new Point(174, 427);
+      btnUpdateReady.Location = new Point(174, 438);
       btnUpdateReady.Margin = new Padding(3, 2, 3, 2);
       btnUpdateReady.Name = "btnUpdateReady";
       btnUpdateReady.Size = new Size(66, 21);
@@ -1602,7 +1698,7 @@
       // 
       cbSetReadyfromReview.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbSetReadyfromReview.AutoSize = true;
-      cbSetReadyfromReview.Location = new Point(21, 429);
+      cbSetReadyfromReview.Location = new Point(21, 440);
       cbSetReadyfromReview.Name = "cbSetReadyfromReview";
       cbSetReadyfromReview.Size = new Size(77, 19);
       cbSetReadyfromReview.TabIndex = 7;
@@ -1627,7 +1723,7 @@
       edReadyPrompt.Multiline = true;
       edReadyPrompt.Name = "edReadyPrompt";
       edReadyPrompt.ScrollBars = ScrollBars.Vertical;
-      edReadyPrompt.Size = new Size(528, 162);
+      edReadyPrompt.Size = new Size(528, 173);
       edReadyPrompt.TabIndex = 5;
       // 
       // edReadyTodoName
@@ -1673,7 +1769,7 @@
       tpSchedule.Location = new Point(4, 24);
       tpSchedule.Name = "tpSchedule";
       tpSchedule.Padding = new Padding(3);
-      tpSchedule.Size = new Size(572, 457);
+      tpSchedule.Size = new Size(572, 468);
       tpSchedule.TabIndex = 2;
       tpSchedule.Text = "Main Line Schedule";
       tpSchedule.UseVisualStyleBackColor = true;
@@ -1692,7 +1788,7 @@
       // btnAbortWorking
       // 
       btnAbortWorking.Anchor = AnchorStyles.Bottom;
-      btnAbortWorking.Location = new Point(192, 425);
+      btnAbortWorking.Location = new Point(192, 436);
       btnAbortWorking.Margin = new Padding(3, 2, 3, 2);
       btnAbortWorking.Name = "btnAbortWorking";
       btnAbortWorking.Size = new Size(66, 21);
@@ -1704,7 +1800,7 @@
       // btnUpdateWorking
       // 
       btnUpdateWorking.Anchor = AnchorStyles.Bottom;
-      btnUpdateWorking.Location = new Point(122, 425);
+      btnUpdateWorking.Location = new Point(122, 436);
       btnUpdateWorking.Margin = new Padding(3, 2, 3, 2);
       btnUpdateWorking.Name = "btnUpdateWorking";
       btnUpdateWorking.Size = new Size(66, 21);
@@ -1717,7 +1813,7 @@
       // 
       cbReadyWorking.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbReadyWorking.AutoSize = true;
-      cbReadyWorking.Location = new Point(27, 427);
+      cbReadyWorking.Location = new Point(27, 438);
       cbReadyWorking.Name = "cbReadyWorking";
       cbReadyWorking.Size = new Size(77, 19);
       cbReadyWorking.TabIndex = 36;
@@ -1739,7 +1835,7 @@
       edWorkingPrompt.Multiline = true;
       edWorkingPrompt.Name = "edWorkingPrompt";
       edWorkingPrompt.ScrollBars = ScrollBars.Vertical;
-      edWorkingPrompt.Size = new Size(526, 162);
+      edWorkingPrompt.Size = new Size(526, 173);
       edWorkingPrompt.TabIndex = 20;
       // 
       // edWorkingName
@@ -1792,7 +1888,7 @@
       tpResults.Controls.Add(lbTodoResults);
       tpResults.Location = new Point(4, 24);
       tpResults.Name = "tpResults";
-      tpResults.Size = new Size(572, 457);
+      tpResults.Size = new Size(572, 468);
       tpResults.TabIndex = 4;
       tpResults.Text = "Operation Results";
       tpResults.UseVisualStyleBackColor = true;
@@ -1801,7 +1897,7 @@
       // 
       cbDeleteResult.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbDeleteResult.AutoSize = true;
-      cbDeleteResult.Location = new Point(99, 423);
+      cbDeleteResult.Location = new Point(99, 434);
       cbDeleteResult.Name = "cbDeleteResult";
       cbDeleteResult.Size = new Size(59, 19);
       cbDeleteResult.TabIndex = 42;
@@ -1812,7 +1908,7 @@
       // btnCancelUpdateResultStatus
       // 
       btnCancelUpdateResultStatus.Anchor = AnchorStyles.Bottom;
-      btnCancelUpdateResultStatus.Location = new Point(255, 421);
+      btnCancelUpdateResultStatus.Location = new Point(255, 432);
       btnCancelUpdateResultStatus.Margin = new Padding(3, 2, 3, 2);
       btnCancelUpdateResultStatus.Name = "btnCancelUpdateResultStatus";
       btnCancelUpdateResultStatus.Size = new Size(66, 21);
@@ -1824,7 +1920,7 @@
       // btnUpdateResultStatus
       // 
       btnUpdateResultStatus.Anchor = AnchorStyles.Bottom;
-      btnUpdateResultStatus.Location = new Point(185, 421);
+      btnUpdateResultStatus.Location = new Point(185, 432);
       btnUpdateResultStatus.Margin = new Padding(3, 2, 3, 2);
       btnUpdateResultStatus.Name = "btnUpdateResultStatus";
       btnUpdateResultStatus.Size = new Size(66, 21);
@@ -1837,7 +1933,7 @@
       // 
       cbArchiveResult.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbArchiveResult.AutoSize = true;
-      cbArchiveResult.Location = new Point(27, 423);
+      cbArchiveResult.Location = new Point(27, 434);
       cbArchiveResult.Name = "cbArchiveResult";
       cbArchiveResult.Size = new Size(66, 19);
       cbArchiveResult.TabIndex = 39;
@@ -1852,7 +1948,7 @@
       edResultTodoDetails.Multiline = true;
       edResultTodoDetails.Name = "edResultTodoDetails";
       edResultTodoDetails.ScrollBars = ScrollBars.Vertical;
-      edResultTodoDetails.Size = new Size(526, 194);
+      edResultTodoDetails.Size = new Size(526, 205);
       edResultTodoDetails.TabIndex = 21;
       // 
       // cbTodoResultType
@@ -1892,7 +1988,7 @@
       tpComfy.Location = new Point(4, 24);
       tpComfy.Name = "tpComfy";
       tpComfy.Padding = new Padding(3);
-      tpComfy.Size = new Size(580, 485);
+      tpComfy.Size = new Size(580, 496);
       tpComfy.TabIndex = 6;
       tpComfy.Text = "Comfy Schedule";
       tpComfy.UseVisualStyleBackColor = true;
@@ -1906,7 +2002,7 @@
       tcComfyScheduleSwitch.Location = new Point(3, 3);
       tcComfyScheduleSwitch.Name = "tcComfyScheduleSwitch";
       tcComfyScheduleSwitch.SelectedIndex = 0;
-      tcComfyScheduleSwitch.Size = new Size(574, 479);
+      tcComfyScheduleSwitch.Size = new Size(574, 490);
       tcComfyScheduleSwitch.TabIndex = 0;
       tcComfyScheduleSwitch.SelectedIndexChanged += tcComfyScheduleSwitch_SelectedIndexChanged;
       // 
@@ -1921,7 +2017,7 @@
       tpComfyReadyReview.Location = new Point(4, 24);
       tpComfyReadyReview.Name = "tpComfyReadyReview";
       tpComfyReadyReview.Padding = new Padding(3);
-      tpComfyReadyReview.Size = new Size(566, 451);
+      tpComfyReadyReview.Size = new Size(566, 462);
       tpComfyReadyReview.TabIndex = 0;
       tpComfyReadyReview.Text = "Comfy Todo Ready Review";
       tpComfyReadyReview.UseVisualStyleBackColor = true;
@@ -1930,7 +2026,7 @@
       // 
       cbComfyReadyDoDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbComfyReadyDoDelete.AutoSize = true;
-      cbComfyReadyDoDelete.Location = new Point(97, 417);
+      cbComfyReadyDoDelete.Location = new Point(97, 428);
       cbComfyReadyDoDelete.Name = "cbComfyReadyDoDelete";
       cbComfyReadyDoDelete.Size = new Size(59, 19);
       cbComfyReadyDoDelete.TabIndex = 47;
@@ -1941,7 +2037,7 @@
       // btnAbortComfyReadyTodoUpdate
       // 
       btnAbortComfyReadyTodoUpdate.Anchor = AnchorStyles.Bottom;
-      btnAbortComfyReadyTodoUpdate.Location = new Point(241, 415);
+      btnAbortComfyReadyTodoUpdate.Location = new Point(241, 426);
       btnAbortComfyReadyTodoUpdate.Margin = new Padding(3, 2, 3, 2);
       btnAbortComfyReadyTodoUpdate.Name = "btnAbortComfyReadyTodoUpdate";
       btnAbortComfyReadyTodoUpdate.Size = new Size(66, 21);
@@ -1953,7 +2049,7 @@
       // btnUpdateComfyReadyTodo
       // 
       btnUpdateComfyReadyTodo.Anchor = AnchorStyles.Bottom;
-      btnUpdateComfyReadyTodo.Location = new Point(171, 415);
+      btnUpdateComfyReadyTodo.Location = new Point(171, 426);
       btnUpdateComfyReadyTodo.Margin = new Padding(3, 2, 3, 2);
       btnUpdateComfyReadyTodo.Name = "btnUpdateComfyReadyTodo";
       btnUpdateComfyReadyTodo.Size = new Size(66, 21);
@@ -1966,7 +2062,7 @@
       // 
       cbComfyReadySetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbComfyReadySetReady.AutoSize = true;
-      cbComfyReadySetReady.Location = new Point(14, 417);
+      cbComfyReadySetReady.Location = new Point(14, 428);
       cbComfyReadySetReady.Name = "cbComfyReadySetReady";
       cbComfyReadySetReady.Size = new Size(77, 19);
       cbComfyReadySetReady.TabIndex = 44;
@@ -1983,7 +2079,7 @@
       edComfyReadyPreview.Multiline = true;
       edComfyReadyPreview.Name = "edComfyReadyPreview";
       edComfyReadyPreview.ScrollBars = ScrollBars.Vertical;
-      edComfyReadyPreview.Size = new Size(536, 223);
+      edComfyReadyPreview.Size = new Size(536, 234);
       edComfyReadyPreview.TabIndex = 6;
       // 
       // lbComfyNotReady
@@ -2008,7 +2104,7 @@
       tpComfySchedule.Location = new Point(4, 24);
       tpComfySchedule.Name = "tpComfySchedule";
       tpComfySchedule.Padding = new Padding(3);
-      tpComfySchedule.Size = new Size(566, 451);
+      tpComfySchedule.Size = new Size(566, 462);
       tpComfySchedule.TabIndex = 1;
       tpComfySchedule.Text = "Todo Schedule";
       tpComfySchedule.UseVisualStyleBackColor = true;
@@ -2026,7 +2122,7 @@
       // btnAbortComfyScheduleTodoUpdate
       // 
       btnAbortComfyScheduleTodoUpdate.Anchor = AnchorStyles.Bottom;
-      btnAbortComfyScheduleTodoUpdate.Location = new Point(246, 425);
+      btnAbortComfyScheduleTodoUpdate.Location = new Point(246, 436);
       btnAbortComfyScheduleTodoUpdate.Margin = new Padding(3, 2, 3, 2);
       btnAbortComfyScheduleTodoUpdate.Name = "btnAbortComfyScheduleTodoUpdate";
       btnAbortComfyScheduleTodoUpdate.Size = new Size(66, 21);
@@ -2038,7 +2134,7 @@
       // btnUpdateComfyScheduleTodo
       // 
       btnUpdateComfyScheduleTodo.Anchor = AnchorStyles.Bottom;
-      btnUpdateComfyScheduleTodo.Location = new Point(176, 425);
+      btnUpdateComfyScheduleTodo.Location = new Point(176, 436);
       btnUpdateComfyScheduleTodo.Margin = new Padding(3, 2, 3, 2);
       btnUpdateComfyScheduleTodo.Name = "btnUpdateComfyScheduleTodo";
       btnUpdateComfyScheduleTodo.Size = new Size(66, 21);
@@ -2051,7 +2147,7 @@
       // 
       cbComfyScheduleSetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbComfyScheduleSetReady.AutoSize = true;
-      cbComfyScheduleSetReady.Location = new Point(19, 427);
+      cbComfyScheduleSetReady.Location = new Point(19, 438);
       cbComfyScheduleSetReady.Name = "cbComfyScheduleSetReady";
       cbComfyScheduleSetReady.Size = new Size(77, 19);
       cbComfyScheduleSetReady.TabIndex = 49;
@@ -2068,7 +2164,7 @@
       edComfySchedulePreview.Multiline = true;
       edComfySchedulePreview.Name = "edComfySchedulePreview";
       edComfySchedulePreview.ScrollBars = ScrollBars.Vertical;
-      edComfySchedulePreview.Size = new Size(550, 255);
+      edComfySchedulePreview.Size = new Size(550, 266);
       edComfySchedulePreview.TabIndex = 48;
       // 
       // btnAttemptComfyTodo
@@ -2101,7 +2197,7 @@
       tpComfyResultReview.Controls.Add(lbComfyResult);
       tpComfyResultReview.Location = new Point(4, 24);
       tpComfyResultReview.Name = "tpComfyResultReview";
-      tpComfyResultReview.Size = new Size(566, 451);
+      tpComfyResultReview.Size = new Size(566, 462);
       tpComfyResultReview.TabIndex = 2;
       tpComfyResultReview.Text = "Operation Results";
       tpComfyResultReview.UseVisualStyleBackColor = true;
@@ -2110,7 +2206,7 @@
       // 
       cbComfyResultDoDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbComfyResultDoDelete.AutoSize = true;
-      cbComfyResultDoDelete.Location = new Point(100, 427);
+      cbComfyResultDoDelete.Location = new Point(100, 438);
       cbComfyResultDoDelete.Name = "cbComfyResultDoDelete";
       cbComfyResultDoDelete.Size = new Size(59, 19);
       cbComfyResultDoDelete.TabIndex = 52;
@@ -2121,7 +2217,7 @@
       // btnAbortComfyResultTodoUpdate
       // 
       btnAbortComfyResultTodoUpdate.Anchor = AnchorStyles.Bottom;
-      btnAbortComfyResultTodoUpdate.Location = new Point(244, 425);
+      btnAbortComfyResultTodoUpdate.Location = new Point(244, 436);
       btnAbortComfyResultTodoUpdate.Margin = new Padding(3, 2, 3, 2);
       btnAbortComfyResultTodoUpdate.Name = "btnAbortComfyResultTodoUpdate";
       btnAbortComfyResultTodoUpdate.Size = new Size(66, 21);
@@ -2133,7 +2229,7 @@
       // btnUpdateComfyResultTodo
       // 
       btnUpdateComfyResultTodo.Anchor = AnchorStyles.Bottom;
-      btnUpdateComfyResultTodo.Location = new Point(174, 425);
+      btnUpdateComfyResultTodo.Location = new Point(174, 436);
       btnUpdateComfyResultTodo.Margin = new Padding(3, 2, 3, 2);
       btnUpdateComfyResultTodo.Name = "btnUpdateComfyResultTodo";
       btnUpdateComfyResultTodo.Size = new Size(66, 21);
@@ -2146,7 +2242,7 @@
       // 
       cbComfyResultSetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
       cbComfyResultSetReady.AutoSize = true;
-      cbComfyResultSetReady.Location = new Point(17, 427);
+      cbComfyResultSetReady.Location = new Point(17, 438);
       cbComfyResultSetReady.Name = "cbComfyResultSetReady";
       cbComfyResultSetReady.Size = new Size(77, 19);
       cbComfyResultSetReady.TabIndex = 49;
@@ -2163,7 +2259,7 @@
       edComfyResultPreview.Multiline = true;
       edComfyResultPreview.Name = "edComfyResultPreview";
       edComfyResultPreview.ScrollBars = ScrollBars.Vertical;
-      edComfyResultPreview.Size = new Size(536, 223);
+      edComfyResultPreview.Size = new Size(536, 234);
       edComfyResultPreview.TabIndex = 48;
       // 
       // lbComfyResult
@@ -2176,6 +2272,413 @@
       lbComfyResult.TabIndex = 3;
       lbComfyResult.SelectedIndexChanged += lbComfyResult_SelectedIndexChanged;
       // 
+      // tpArchiveOps
+      // 
+      tpArchiveOps.Controls.Add(tcArchiveOps);
+      tpArchiveOps.Location = new Point(4, 24);
+      tpArchiveOps.Name = "tpArchiveOps";
+      tpArchiveOps.Size = new Size(580, 496);
+      tpArchiveOps.TabIndex = 8;
+      tpArchiveOps.Text = "Archive Ops";
+      tpArchiveOps.UseVisualStyleBackColor = true;
+      // 
+      // tcArchiveOps
+      // 
+      tcArchiveOps.Controls.Add(tpArchiveReview);
+      tcArchiveOps.Controls.Add(tpArchiveCommands);
+      tcArchiveOps.Controls.Add(tpArchiveCompletes);
+      tcArchiveOps.Dock = DockStyle.Fill;
+      tcArchiveOps.Location = new Point(0, 0);
+      tcArchiveOps.Name = "tcArchiveOps";
+      tcArchiveOps.SelectedIndex = 0;
+      tcArchiveOps.Size = new Size(580, 496);
+      tcArchiveOps.TabIndex = 0;
+      tcArchiveOps.SelectedIndexChanged += tcArchiveOps_SelectedIndexChanged;
+      // 
+      // tpArchiveReview
+      // 
+      tpArchiveReview.Controls.Add(cbArcReviewDeletePlan);
+      tpArchiveReview.Controls.Add(btnCancelArcReview);
+      tpArchiveReview.Controls.Add(btnUpdateArcReview);
+      tpArchiveReview.Controls.Add(cbArcReviewSetReady);
+      tpArchiveReview.Controls.Add(lbArcReviewMain);
+      tpArchiveReview.Controls.Add(tbReviewSummary);
+      tpArchiveReview.Controls.Add(lvArchiveReview);
+      tpArchiveReview.Location = new Point(4, 24);
+      tpArchiveReview.Name = "tpArchiveReview";
+      tpArchiveReview.Padding = new Padding(3);
+      tpArchiveReview.Size = new Size(572, 468);
+      tpArchiveReview.TabIndex = 0;
+      tpArchiveReview.Text = "Archive Review Plans";
+      tpArchiveReview.UseVisualStyleBackColor = true;
+      // 
+      // cbArcReviewDeletePlan
+      // 
+      cbArcReviewDeletePlan.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArcReviewDeletePlan.AutoSize = true;
+      cbArcReviewDeletePlan.Location = new Point(138, 442);
+      cbArcReviewDeletePlan.Name = "cbArcReviewDeletePlan";
+      cbArcReviewDeletePlan.Size = new Size(85, 19);
+      cbArcReviewDeletePlan.TabIndex = 51;
+      cbArcReviewDeletePlan.Text = "Delete Plan";
+      cbArcReviewDeletePlan.UseVisualStyleBackColor = true;
+      cbArcReviewDeletePlan.CheckedChanged += cbArcReviewSetReady_CheckedChanged;
+      // 
+      // btnCancelArcReview
+      // 
+      btnCancelArcReview.Anchor = AnchorStyles.Bottom;
+      btnCancelArcReview.Location = new Point(356, 440);
+      btnCancelArcReview.Margin = new Padding(3, 2, 3, 2);
+      btnCancelArcReview.Name = "btnCancelArcReview";
+      btnCancelArcReview.Size = new Size(66, 21);
+      btnCancelArcReview.TabIndex = 50;
+      btnCancelArcReview.Text = "Abort";
+      btnCancelArcReview.UseVisualStyleBackColor = true;
+      btnCancelArcReview.Click += btnCancelArcReview_Click;
+      // 
+      // btnUpdateArcReview
+      // 
+      btnUpdateArcReview.Anchor = AnchorStyles.Bottom;
+      btnUpdateArcReview.Location = new Point(286, 440);
+      btnUpdateArcReview.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateArcReview.Name = "btnUpdateArcReview";
+      btnUpdateArcReview.Size = new Size(66, 21);
+      btnUpdateArcReview.TabIndex = 49;
+      btnUpdateArcReview.Text = "Update";
+      btnUpdateArcReview.UseVisualStyleBackColor = true;
+      btnUpdateArcReview.Click += btnUpdateArcReview_Click;
+      // 
+      // cbArcReviewSetReady
+      // 
+      cbArcReviewSetReady.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArcReviewSetReady.AutoSize = true;
+      cbArcReviewSetReady.Location = new Point(17, 442);
+      cbArcReviewSetReady.Name = "cbArcReviewSetReady";
+      cbArcReviewSetReady.Size = new Size(103, 19);
+      cbArcReviewSetReady.TabIndex = 48;
+      cbArcReviewSetReady.Text = "Set Plan Ready";
+      cbArcReviewSetReady.UseVisualStyleBackColor = true;
+      cbArcReviewSetReady.CheckedChanged += cbArcReviewSetReady_CheckedChanged;
+      // 
+      // lbArcReviewMain
+      // 
+      lbArcReviewMain.AutoSize = true;
+      lbArcReviewMain.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      lbArcReviewMain.Location = new Point(14, 10);
+      lbArcReviewMain.Name = "lbArcReviewMain";
+      lbArcReviewMain.Size = new Size(52, 21);
+      lbArcReviewMain.TabIndex = 11;
+      lbArcReviewMain.Text = "label9";
+      // 
+      // tbReviewSummary
+      // 
+      tbReviewSummary.AcceptsReturn = true;
+      tbReviewSummary.AcceptsTab = true;
+      tbReviewSummary.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      tbReviewSummary.BorderStyle = BorderStyle.FixedSingle;
+      tbReviewSummary.Location = new Point(15, 43);
+      tbReviewSummary.Multiline = true;
+      tbReviewSummary.Name = "tbReviewSummary";
+      tbReviewSummary.ScrollBars = ScrollBars.Vertical;
+      tbReviewSummary.Size = new Size(544, 142);
+      tbReviewSummary.TabIndex = 7;
+      // 
+      // lvArchiveReview
+      // 
+      lvArchiveReview.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      lvArchiveReview.Columns.AddRange(new ColumnHeader[] { lvcArcReviewSelect, lvcArcReviewSize, lvcArcReviewSource, lvcArcReviewTarget, lvcArcReviewInfo });
+      lvArchiveReview.FullRowSelect = true;
+      lvArchiveReview.GridLines = true;
+      lvArchiveReview.Location = new Point(15, 202);
+      lvArchiveReview.MultiSelect = false;
+      lvArchiveReview.Name = "lvArchiveReview";
+      lvArchiveReview.Size = new Size(544, 228);
+      lvArchiveReview.TabIndex = 0;
+      lvArchiveReview.UseCompatibleStateImageBehavior = false;
+      lvArchiveReview.View = View.Details;
+      lvArchiveReview.SelectedIndexChanged += lvArchiveReview_SelectedIndexChanged;
+      // 
+      // lvcArcReviewSelect
+      // 
+      lvcArcReviewSelect.Text = "";
+      lvcArcReviewSelect.Width = 28;
+      // 
+      // lvcArcReviewSize
+      // 
+      lvcArcReviewSize.Text = "Size";
+      lvcArcReviewSize.TextAlign = HorizontalAlignment.Right;
+      lvcArcReviewSize.Width = 80;
+      // 
+      // lvcArcReviewSource
+      // 
+      lvcArcReviewSource.Text = "Source";
+      lvcArcReviewSource.Width = 320;
+      // 
+      // lvcArcReviewTarget
+      // 
+      lvcArcReviewTarget.Text = "Target";
+      // 
+      // lvcArcReviewInfo
+      // 
+      lvcArcReviewInfo.Text = "Info";
+      lvcArcReviewInfo.Width = 260;
+      // 
+      // tpArchiveCommands
+      // 
+      tpArchiveCommands.Controls.Add(btnAbortArcOps);
+      tpArchiveCommands.Controls.Add(btnUpdateArcOps);
+      tpArchiveCommands.Controls.Add(cbArcOpsCancelPlan);
+      tpArchiveCommands.Controls.Add(lbArcOpsCurrent);
+      tpArchiveCommands.Controls.Add(btnArchiveOpsStartStop);
+      tpArchiveCommands.Controls.Add(tbArchiveOpSummary);
+      tpArchiveCommands.Controls.Add(lvArchiveCommands);
+      tpArchiveCommands.Location = new Point(4, 24);
+      tpArchiveCommands.Name = "tpArchiveCommands";
+      tpArchiveCommands.Padding = new Padding(3);
+      tpArchiveCommands.Size = new Size(572, 468);
+      tpArchiveCommands.TabIndex = 1;
+      tpArchiveCommands.Text = "Archive Plans and Commands";
+      tpArchiveCommands.UseVisualStyleBackColor = true;
+      // 
+      // btnAbortArcOps
+      // 
+      btnAbortArcOps.Anchor = AnchorStyles.Bottom;
+      btnAbortArcOps.Location = new Point(357, 437);
+      btnAbortArcOps.Margin = new Padding(3, 2, 3, 2);
+      btnAbortArcOps.Name = "btnAbortArcOps";
+      btnAbortArcOps.Size = new Size(66, 21);
+      btnAbortArcOps.TabIndex = 54;
+      btnAbortArcOps.Text = "Abort";
+      btnAbortArcOps.UseVisualStyleBackColor = true;
+      btnAbortArcOps.Click += btnAbortArcOps_Click;
+      // 
+      // btnUpdateArcOps
+      // 
+      btnUpdateArcOps.Anchor = AnchorStyles.Bottom;
+      btnUpdateArcOps.Location = new Point(287, 437);
+      btnUpdateArcOps.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateArcOps.Name = "btnUpdateArcOps";
+      btnUpdateArcOps.Size = new Size(66, 21);
+      btnUpdateArcOps.TabIndex = 53;
+      btnUpdateArcOps.Text = "Update";
+      btnUpdateArcOps.UseVisualStyleBackColor = true;
+      btnUpdateArcOps.Click += btnUpdateArcOps_Click;
+      // 
+      // cbArcOpsCancelPlan
+      // 
+      cbArcOpsCancelPlan.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArcOpsCancelPlan.AutoSize = true;
+      cbArcOpsCancelPlan.Location = new Point(18, 439);
+      cbArcOpsCancelPlan.Name = "cbArcOpsCancelPlan";
+      cbArcOpsCancelPlan.Size = new Size(88, 19);
+      cbArcOpsCancelPlan.TabIndex = 52;
+      cbArcOpsCancelPlan.Text = "Cancel Plan";
+      cbArcOpsCancelPlan.UseVisualStyleBackColor = true;
+      cbArcOpsCancelPlan.CheckedChanged += cbArcOpsCancelPlan_CheckedChanged;
+      // 
+      // lbArcOpsCurrent
+      // 
+      lbArcOpsCurrent.AutoSize = true;
+      lbArcOpsCurrent.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      lbArcOpsCurrent.Location = new Point(108, 171);
+      lbArcOpsCurrent.Name = "lbArcOpsCurrent";
+      lbArcOpsCurrent.Size = new Size(19, 21);
+      lbArcOpsCurrent.TabIndex = 12;
+      lbArcOpsCurrent.Text = "...";
+      // 
+      // btnArchiveOpsStartStop
+      // 
+      btnArchiveOpsStartStop.Font = new Font("Segoe UI", 12F);
+      btnArchiveOpsStartStop.Location = new Point(18, 165);
+      btnArchiveOpsStartStop.Name = "btnArchiveOpsStartStop";
+      btnArchiveOpsStartStop.Size = new Size(75, 33);
+      btnArchiveOpsStartStop.TabIndex = 9;
+      btnArchiveOpsStartStop.Text = "Start";
+      btnArchiveOpsStartStop.UseVisualStyleBackColor = true;
+      btnArchiveOpsStartStop.Click += btnArchiveOpsStartStop_Click;
+      // 
+      // tbArchiveOpSummary
+      // 
+      tbArchiveOpSummary.AcceptsReturn = true;
+      tbArchiveOpSummary.AcceptsTab = true;
+      tbArchiveOpSummary.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      tbArchiveOpSummary.Location = new Point(15, 15);
+      tbArchiveOpSummary.Multiline = true;
+      tbArchiveOpSummary.Name = "tbArchiveOpSummary";
+      tbArchiveOpSummary.ScrollBars = ScrollBars.Vertical;
+      tbArchiveOpSummary.Size = new Size(544, 142);
+      tbArchiveOpSummary.TabIndex = 8;
+      // 
+      // lvArchiveCommands
+      // 
+      lvArchiveCommands.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      lvArchiveCommands.Columns.AddRange(new ColumnHeader[] { lvcArcCmdSelect, lvcArcCmdSize, lvcArcCmdSource, lvcArcCmdTarget, lvcArcCmdInfo });
+      lvArchiveCommands.FullRowSelect = true;
+      lvArchiveCommands.GridLines = true;
+      lvArchiveCommands.Location = new Point(15, 204);
+      lvArchiveCommands.MultiSelect = false;
+      lvArchiveCommands.Name = "lvArchiveCommands";
+      lvArchiveCommands.Size = new Size(551, 228);
+      lvArchiveCommands.TabIndex = 1;
+      lvArchiveCommands.UseCompatibleStateImageBehavior = false;
+      lvArchiveCommands.View = View.Details;
+      lvArchiveCommands.SelectedIndexChanged += lvArchiveCommands_SelectedIndexChanged;
+      // 
+      // lvcArcCmdSelect
+      // 
+      lvcArcCmdSelect.Text = "";
+      lvcArcCmdSelect.Width = 28;
+      // 
+      // lvcArcCmdSize
+      // 
+      lvcArcCmdSize.Text = "Size";
+      lvcArcCmdSize.TextAlign = HorizontalAlignment.Right;
+      lvcArcCmdSize.Width = 80;
+      // 
+      // lvcArcCmdSource
+      // 
+      lvcArcCmdSource.Text = "Source";
+      lvcArcCmdSource.Width = 320;
+      // 
+      // lvcArcCmdTarget
+      // 
+      lvcArcCmdTarget.Text = "Target";
+      lvcArcCmdTarget.Width = 320;
+      // 
+      // lvcArcCmdInfo
+      // 
+      lvcArcCmdInfo.Text = "Info";
+      lvcArcCmdInfo.Width = 260;
+      // 
+      // tpArchiveCompletes
+      // 
+      tpArchiveCompletes.Controls.Add(cbArcResultDeletePlan);
+      tpArchiveCompletes.Controls.Add(btnAbortArcResult);
+      tpArchiveCompletes.Controls.Add(btnUpdateArcResult);
+      tpArchiveCompletes.Controls.Add(cbArcResultRestore);
+      tpArchiveCompletes.Controls.Add(lbArcResultPlan);
+      tpArchiveCompletes.Controls.Add(tbArchiveResultsSummary);
+      tpArchiveCompletes.Controls.Add(lvArchiveResults);
+      tpArchiveCompletes.Location = new Point(4, 24);
+      tpArchiveCompletes.Name = "tpArchiveCompletes";
+      tpArchiveCompletes.Size = new Size(572, 468);
+      tpArchiveCompletes.TabIndex = 2;
+      tpArchiveCompletes.Text = "Operation Results";
+      tpArchiveCompletes.UseVisualStyleBackColor = true;
+      // 
+      // cbArcResultDeletePlan
+      // 
+      cbArcResultDeletePlan.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArcResultDeletePlan.AutoSize = true;
+      cbArcResultDeletePlan.Location = new Point(151, 436);
+      cbArcResultDeletePlan.Name = "cbArcResultDeletePlan";
+      cbArcResultDeletePlan.Size = new Size(85, 19);
+      cbArcResultDeletePlan.TabIndex = 55;
+      cbArcResultDeletePlan.Text = "Delete Plan";
+      cbArcResultDeletePlan.UseVisualStyleBackColor = true;
+      cbArcResultDeletePlan.CheckedChanged += cbArcResultRestore_CheckedChanged;
+      // 
+      // btnAbortArcResult
+      // 
+      btnAbortArcResult.Anchor = AnchorStyles.Bottom;
+      btnAbortArcResult.Location = new Point(369, 434);
+      btnAbortArcResult.Margin = new Padding(3, 2, 3, 2);
+      btnAbortArcResult.Name = "btnAbortArcResult";
+      btnAbortArcResult.Size = new Size(66, 21);
+      btnAbortArcResult.TabIndex = 54;
+      btnAbortArcResult.Text = "Abort";
+      btnAbortArcResult.UseVisualStyleBackColor = true;
+      btnAbortArcResult.Click += btnAbortArcResult_Click;
+      // 
+      // btnUpdateArcResult
+      // 
+      btnUpdateArcResult.Anchor = AnchorStyles.Bottom;
+      btnUpdateArcResult.Location = new Point(299, 434);
+      btnUpdateArcResult.Margin = new Padding(3, 2, 3, 2);
+      btnUpdateArcResult.Name = "btnUpdateArcResult";
+      btnUpdateArcResult.Size = new Size(66, 21);
+      btnUpdateArcResult.TabIndex = 53;
+      btnUpdateArcResult.Text = "Update";
+      btnUpdateArcResult.UseVisualStyleBackColor = true;
+      btnUpdateArcResult.Click += btnUpdateArcResult_Click;
+      // 
+      // cbArcResultRestore
+      // 
+      cbArcResultRestore.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+      cbArcResultRestore.AutoSize = true;
+      cbArcResultRestore.Location = new Point(30, 436);
+      cbArcResultRestore.Name = "cbArcResultRestore";
+      cbArcResultRestore.Size = new Size(103, 19);
+      cbArcResultRestore.TabIndex = 52;
+      cbArcResultRestore.Text = "Set Plan Ready";
+      cbArcResultRestore.UseVisualStyleBackColor = true;
+      cbArcResultRestore.CheckedChanged += cbArcResultRestore_CheckedChanged;
+      // 
+      // lbArcResultPlan
+      // 
+      lbArcResultPlan.AutoSize = true;
+      lbArcResultPlan.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+      lbArcResultPlan.Location = new Point(17, 18);
+      lbArcResultPlan.Name = "lbArcResultPlan";
+      lbArcResultPlan.Size = new Size(119, 21);
+      lbArcResultPlan.TabIndex = 10;
+      lbArcResultPlan.Text = "lbArcResultPlan";
+      // 
+      // tbArchiveResultsSummary
+      // 
+      tbArchiveResultsSummary.AcceptsReturn = true;
+      tbArchiveResultsSummary.AcceptsTab = true;
+      tbArchiveResultsSummary.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      tbArchiveResultsSummary.BorderStyle = BorderStyle.FixedSingle;
+      tbArchiveResultsSummary.Location = new Point(15, 51);
+      tbArchiveResultsSummary.Multiline = true;
+      tbArchiveResultsSummary.Name = "tbArchiveResultsSummary";
+      tbArchiveResultsSummary.ScrollBars = ScrollBars.Vertical;
+      tbArchiveResultsSummary.Size = new Size(544, 142);
+      tbArchiveResultsSummary.TabIndex = 8;
+      // 
+      // lvArchiveResults
+      // 
+      lvArchiveResults.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      lvArchiveResults.AutoArrange = false;
+      lvArchiveResults.Columns.AddRange(new ColumnHeader[] { lvcArcResultSelect, lvcArcResultSize, lvcArcResultSource, lvcArcResultTarget, lvcArcResultInfo });
+      lvArchiveResults.FullRowSelect = true;
+      lvArchiveResults.GridLines = true;
+      lvArchiveResults.Location = new Point(17, 199);
+      lvArchiveResults.MultiSelect = false;
+      lvArchiveResults.Name = "lvArchiveResults";
+      lvArchiveResults.Size = new Size(544, 226);
+      lvArchiveResults.TabIndex = 1;
+      lvArchiveResults.UseCompatibleStateImageBehavior = false;
+      lvArchiveResults.View = View.Details;
+      lvArchiveResults.SelectedIndexChanged += lvArchiveResults_SelectedIndexChanged;
+      // 
+      // lvcArcResultSelect
+      // 
+      lvcArcResultSelect.Text = "";
+      lvcArcResultSelect.Width = 28;
+      // 
+      // lvcArcResultSize
+      // 
+      lvcArcResultSize.Text = "Size";
+      lvcArcResultSize.TextAlign = HorizontalAlignment.Right;
+      lvcArcResultSize.Width = 80;
+      // 
+      // lvcArcResultSource
+      // 
+      lvcArcResultSource.Text = "Source";
+      lvcArcResultSource.Width = 320;
+      // 
+      // lvcArcResultTarget
+      // 
+      lvcArcResultTarget.Text = "Target";
+      lvcArcResultTarget.Width = 320;
+      // 
+      // lvcArcResultInfo
+      // 
+      lvcArcResultInfo.Text = "Info";
+      lvcArcResultInfo.Width = 260;
+      // 
       // tbErrorOut
       // 
       tbErrorOut.Dock = DockStyle.Fill;
@@ -2184,7 +2687,7 @@
       tbErrorOut.Multiline = true;
       tbErrorOut.Name = "tbErrorOut";
       tbErrorOut.ScrollBars = ScrollBars.Both;
-      tbErrorOut.Size = new Size(588, 91);
+      tbErrorOut.Size = new Size(588, 94);
       tbErrorOut.TabIndex = 1;
       // 
       // tsErrorPopup
@@ -2200,8 +2703,8 @@
       // toolStripLabel1
       // 
       toolStripLabel1.Name = "toolStripLabel1";
-      toolStripLabel1.Size = new Size(86, 22);
-      toolStripLabel1.Text = "Error Reported ";
+      toolStripLabel1.Size = new Size(75, 22);
+      toolStripLabel1.Text = "Notifications";
       // 
       // tsBtnDismiss
       // 
@@ -2218,7 +2721,7 @@
       splitter1.Location = new Point(0, 0);
       splitter1.Margin = new Padding(3, 2, 3, 2);
       splitter1.Name = "splitter1";
-      splitter1.Size = new Size(4, 632);
+      splitter1.Size = new Size(4, 646);
       splitter1.TabIndex = 0;
       splitter1.TabStop = false;
       // 
@@ -2242,18 +2745,15 @@
       tLog.Interval = 500;
       tLog.Tick += tLog_Tick;
       // 
-      // miRelocateMedia
+      // tRunArchiveLine
       // 
-      miRelocateMedia.Name = "miRelocateMedia";
-      miRelocateMedia.Size = new Size(211, 22);
-      miRelocateMedia.Text = "Relocate Media";
-      miRelocateMedia.Click += miRelocateMedia_Click;
+      tRunArchiveLine.Tick += tRunArchiveLine_Tick;
       // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(845, 632);
+      ClientSize = new Size(845, 646);
       Controls.Add(splitContainer1);
       Icon = (Icon)resources.GetObject("$this.Icon");
       Margin = new Padding(3, 2, 3, 2);
@@ -2309,6 +2809,14 @@
       tpComfySchedule.PerformLayout();
       tpComfyResultReview.ResumeLayout(false);
       tpComfyResultReview.PerformLayout();
+      tpArchiveOps.ResumeLayout(false);
+      tcArchiveOps.ResumeLayout(false);
+      tpArchiveReview.ResumeLayout(false);
+      tpArchiveReview.PerformLayout();
+      tpArchiveCommands.ResumeLayout(false);
+      tpArchiveCommands.PerformLayout();
+      tpArchiveCompletes.ResumeLayout(false);
+      tpArchiveCompletes.PerformLayout();
       tsErrorPopup.ResumeLayout(false);
       tsErrorPopup.PerformLayout();
       ResumeLayout(false);
@@ -2513,5 +3021,52 @@
     private Button btnChangeDetected;
     private System.Windows.Forms.Timer tLog;
     private ToolStripMenuItem miRelocateMedia;
+    private ToolStripMenuItem miAddArchive;
+    private ToolStripMenuItem miReSyncArchive;
+    private ToolStripMenuItem miAddReplicaPolicy;
+    private ToolStripMenuItem miAddOffloadPolicy;
+    private ToolStripMenuItem miBuildPlan;
+    private TabPage tpArchiveOps;
+    private TabControl tcArchiveOps;
+    private TabPage tpArchiveReview;
+    private TabPage tpArchiveCommands;
+    private TabPage tpArchiveCompletes;
+    private ListView lvArchiveReview;
+    private ListView lvArchiveCommands;
+    private ListView lvArchiveResults;
+    private TextBox tbReviewSummary;
+    private TextBox tbArchiveOpSummary;
+    private TextBox tbArchiveResultsSummary;
+    private ColumnHeader lvcArcReviewSelect;
+    private ColumnHeader lvcArcReviewSize;
+    private ColumnHeader lvcArcReviewSource;
+    private ColumnHeader lvcArcReviewTarget;
+    private ColumnHeader lvcArcReviewInfo;
+    private ColumnHeader lvcArcCmdSelect;
+    private ColumnHeader lvcArcCmdSize;
+    private ColumnHeader lvcArcCmdSource;
+    private ColumnHeader lvcArcCmdTarget;
+    private ColumnHeader lvcArcCmdInfo;
+    private ColumnHeader lvcArcResultSelect;
+    private ColumnHeader lvcArcResultSize;
+    private ColumnHeader lvcArcResultSource;
+    private ColumnHeader lvcArcResultTarget;
+    private ColumnHeader lvcArcResultInfo;
+    private Label lbArcReviewMain;
+    private Label lbArcResultPlan;
+    private CheckBox cbArcReviewDeletePlan;
+    private Button btnCancelArcReview;
+    private Button btnUpdateArcReview;
+    private CheckBox cbArcReviewSetReady;
+    private Label lbArcOpsCurrent;
+    private Button btnArchiveOpsStartStop;
+    private Button btnAbortArcOps;
+    private Button btnUpdateArcOps;
+    private CheckBox cbArcOpsCancelPlan;
+    private CheckBox cbArcResultDeletePlan;
+    private Button btnAbortArcResult;
+    private Button btnUpdateArcResult;
+    private CheckBox cbArcResultRestore;
+    private System.Windows.Forms.Timer tRunArchiveLine;
   }
 }

@@ -171,6 +171,18 @@ namespace Weavers.Core.Enums {
       CtOverrideDecimal = 325,
       CtOverrideBool = 326,
 
+    
+    ArchiveKinds = 330,
+      AkICloudSync = 331,
+      AkArchive = 332,
+      AkReplica = 333,
+      AkRemovable = 334,
+
+    ArchiveStorageModels = 340,
+      AsmMirror = 341,
+      AsmByDate = 342,
+    
+
     // below are the main tree view nodes for the app. 
     OrganizationModel = 1000, // A virtual decentralized organization app context. created at startup if it does not exist. 
     
@@ -245,9 +257,12 @@ namespace Weavers.Core.Enums {
       FileHtmlModel = 1130,
         FileHtmlDocs = 1131,
       FileConfigModel = 1140,    // appsettings.json, connection strings sill shell shocked from names with JSON in it.
-        FileConfigDocs = 1141,      
+        FileConfigDocs = 1141,
 
-   
+      AssetArchiveModel = 1145,  // model represents a database of reference images, videos, audio, and other media files.  
+        OffloadPolicyModel = 1146,  // model represents a policy for offloading media files from cloud storage or other external storage solutions.
+        ReplicaPolicyModel = 1147,  // model represents a policy for replicating media files across multiple storage locations for redundancy and availability.
+
     ComfyServiceModel = 1150,
       ComfyWorkflowFolderModel = 1151,  // gets added on service creation.
         ComfyWorkflowTemplate = 1152, // takes export json when adding populates data field on item with it.

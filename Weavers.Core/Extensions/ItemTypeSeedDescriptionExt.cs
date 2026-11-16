@@ -163,6 +163,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.CtOverrideDecimal => "Override Decimal Type",
         WeItemType.CtOverrideBool => "Override Bool Type",
 
+        WeItemType.ArchiveKinds => "Archive Kinds",
+        WeItemType.AkICloudSync => "iCloud Sync Folder",
+        WeItemType.AkArchive => "Archive",
+        WeItemType.AkReplica => "Replica",
+        WeItemType.AkRemovable => "Removable",
+
+        WeItemType.ArchiveStorageModels => "Archive Storage Models",
+        WeItemType.AsmMirror => "Mirror Inputs Storage Model",
+        WeItemType.AsmByDate => "By Date Storage Models YYYY\\MM\\DD\\ folders",
+
         WeItemType.OrganizationModel => "Organization", // A virtual decentralized organization app context. created at startup if it does not exist. 
         WeItemType.HarnessAppModel => "App Harness",
         WeItemType.HarnessSessionsModel => "Sessions",

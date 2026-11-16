@@ -340,6 +340,35 @@ namespace Weavers.Core.Extensions {
         }
       },
       #endregion
+      #region AssetArchive    
+
+      { WeItemType.AssetArchiveModel, new List<ItemPropertyDefault>() {        
+        new() { Rank = 6, Key = Cx.ItServiceHost, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.HarnessAppModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        new() { Rank = 8, Key = Cx.ItVolumeName, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        new() { Rank = 10, Key = Cx.ItRootFolder, DefaultValue = "", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.Folder },
+        new() { Rank = 12, Key = Cx.ItArchiveKind, DefaultValue = WeItemType.AkArchive.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ArchiveKinds, EditorTypeId=(int)WeEditorType.LookupTypeEditor },        
+        new() { Rank = 14, Key = Cx.ItAvailable, DefaultValue = "0", ValueDataTypeId=(int)WeDataType.Boolean, EditorTypeId=(int)WeEditorType.Boolean },
+        new() { Rank = 16, Key = Cx.ItArchivePlan, DefaultValue = WeItemType.AsmMirror.AsIntString(), ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.ArchiveStorageModels, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+        }
+      },
+
+    // policy is direction to move files off one asset archive into another identified by TargetArchive property.
+    // plan to exclude young assets till reach Min age before offload when AssetArchive Kind is ICloudSync, Host Target Size Max is target size for archive, offload when in excess of it. (offload is relocate to target AA) 
+      { WeItemType.OffloadPolicyModel, new List<ItemPropertyDefault>() {
+          new() { Rank = 8, Key = Cx.ItTargetArchive, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.AssetArchiveModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor },
+          new() { Rank = 10, Key = Cx.ItMinAgeDays, DefaultValue = "90", ValueDataTypeId=(int)WeDataType.Int, EditorTypeId=(int)WeEditorType.Integer },
+          new() { Rank = 12, Key = Cx.ItBitBudget, DefaultValue = "100GB", ValueDataTypeId=(int)WeDataType.StrAscii, EditorTypeId=(int)WeEditorType.String },
+        }
+      },
+
+    // policy is direction to replicate an archive from parent into the target archive identified by ReplicatedArchive property. 
+    // Plan to replicate assets across machines for redundancy. one policy per parent archive, target archive must be different from parent.
+      { WeItemType.ReplicaPolicyModel, new List<ItemPropertyDefault>() {
+          new() { Rank = 8, Key = Cx.ItReplicaArchive, DefaultValue = "", ValueDataTypeId=(int)WeDataType.Int, ReferenceItemTypeId=(int)WeItemType.AssetArchiveModel, EditorTypeId=(int)WeEditorType.LookupTypeEditor }
+        }
+      },    
+    
+      #endregion
       #region Comfy Service
 
       { WeItemType.ComfyServiceModel, new List<ItemPropertyDefault>() {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;  
 using Weavers.Core.Entities;
+using Weavers.Core.Handlers.AssetArchive;
 using Weavers.Core.Handlers.Rss;
 using Weavers.Core.Handlers.Todo;
 using Weavers.Core.Models;
@@ -27,7 +28,10 @@ namespace Weavers.Core {
 
     public DbSet<LineLease> LineLeases => Set<LineLease>();
 
-
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<ArchiveAsset> ArchiveAssets => Set<ArchiveAsset>();
+    public DbSet<AssetPlan> AssetPlans => Set<AssetPlan>();
+    public DbSet<AssetCommand> AssetCommands => Set<AssetCommand>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
       base.OnModelCreating(modelBuilder);
@@ -36,6 +40,7 @@ namespace Weavers.Core {
       modelBuilder.Entity<IdOnlyRow>().HasNoKey().ToView(null);
       modelBuilder.Entity<DbGitEntryItem>().HasNoKey().ToView(null);
       modelBuilder.Entity<ItemSummaryDto>().HasNoKey().ToView(null);
+      modelBuilder.Entity<ArchiveAssetRef>().HasNoKey().ToView(null);
       modelBuilder.HasDbFunction(typeof(SqlFns)
         .GetMethod(nameof(SqlFns.SysUtcDateTime))!).HasName("SYSUTCDATETIME").IsBuiltIn();
       }

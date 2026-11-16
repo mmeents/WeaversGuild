@@ -22,6 +22,7 @@ namespace Weavers.Core.Entities {
     public ICollection<ItemProperty> Properties { get; set; } = [];
     public ICollection<Build> Builds { get; set; } = [];
     public ICollection<BuildFile> BuildFiles { get; set; } = [];
+    public ICollection<ArchiveAsset> ArchiveAssets { get; set; } = [];
 
     public Item() { }
 

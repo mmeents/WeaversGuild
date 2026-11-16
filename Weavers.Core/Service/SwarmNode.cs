@@ -34,8 +34,9 @@ namespace Weavers.Core.Service {
   public static class SwarmLines {
     public const string Main = "Main";
     public const string Comfy = "Comfy";
+    public const string Archive = "Archive";
     public const string MainTest = "MainTest";
-    public static readonly string[] All = [Main, Comfy, MainTest];
+    public static readonly string[] All = [Main, Comfy, Archive, MainTest];
   }
 
   public sealed class SwarmHub(SwarmNode node) : Hub {

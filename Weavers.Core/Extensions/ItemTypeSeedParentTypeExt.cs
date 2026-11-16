@@ -171,6 +171,16 @@ namespace Weavers.Core.Extensions {
         WeItemType.CtOverrideDecimal => WeItemType.ComfyTargetOverrideTypes,
         WeItemType.CtOverrideBool => WeItemType.ComfyTargetOverrideTypes,
 
+        WeItemType.ArchiveKinds => null,
+        WeItemType.AkICloudSync => WeItemType.ArchiveKinds,
+        WeItemType.AkArchive => WeItemType.ArchiveKinds,
+        WeItemType.AkReplica => WeItemType.ArchiveKinds,
+        WeItemType.AkRemovable => WeItemType.ArchiveKinds,
+
+        WeItemType.ArchiveStorageModels => null,
+        WeItemType.AsmMirror => WeItemType.ArchiveStorageModels,
+        WeItemType.AsmByDate => WeItemType.ArchiveStorageModels,
+
         WeItemType.OrganizationModel => (WeItemType?)null, // A virtual decentralized organization app context. created at startup if it does not exist. 
 
         WeItemType.HarnessAppModel => WeItemType.OrganizationModel,   // A processor core model for the organization. A model of the pc the loom app is running on. 

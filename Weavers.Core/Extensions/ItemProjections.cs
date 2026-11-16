@@ -86,5 +86,22 @@ namespace Weavers.Core.Extensions {
       foreach (var d in dtos) d.LinkProperties();
       return dtos;
     }
+
+    public static readonly Expression<Func<ArchiveAsset, ArchiveAssetDto>> ToArchiveAssetDto = 
+      a => new ArchiveAssetDto {
+        Id = a.Id,
+        ArchiveId = a.ArchiveId,
+        MediaAssetId = a.MediaAssetId,
+        RelPath = a.RelPath,
+        FileMtimeUtc = a.FileMtimeUtc,
+        LastSeenUtc = a.LastSeenUtc,
+        LastVerifiedUtc = a.LastVerifiedUtc,
+        Status = a.Status,
+
+        AssetArchive = a.AssetArchive.ToDto(true),
+        MediaAsset = a.Asset != null ? a.Asset.ToDto() : null
+
+      };
+
   }
 }

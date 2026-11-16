@@ -28,5 +28,6 @@ namespace TheLoomApp.Extensions {
       if (newSubItem == null) { return; }
       await _tv.AddNewItem(newSubItem);
     }
+
   }
 }
