@@ -145,7 +145,7 @@ namespace Weavers.Core.Service {
         if (ctx.Request.Path.StartsWithSegments("/swarm")) {
           var auth = ctx.Request.Headers.Authorization.ToString();
           if (!int.TryParse(ctx.Request.Headers["X-Swarm-Session"], out var sid)
-              || !auth.StartsWith("Bearer ")
+              || !auth.StartsWith("Bearer ", StringComparison.Ordinal)
               || await registry.ValidateAsync(sid, HashToken(auth["Bearer ".Length..]), ctx.RequestAborted) is not { } peer) {
             ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
@@ -221,13 +221,14 @@ namespace Weavers.Core.Service {
         _peerInfo.TryRemove(p.HarnessAppSessionId, out var _);
         PurgePeer(p.HarnessAppSessionId);
         return Task.CompletedTask;
-      };
+      };      
+      await c.StartAsync(_cts.Token);
       _peers[p.HarnessAppSessionId] = c;
       _peerInfo[p.HarnessAppSessionId] = p;
-      await c.StartAsync(_cts.Token);      
       Raise(() => PeerJoined?.Invoke(p));      
       foreach (var s in MyLines) await c.InvokeAsync("PushLineState", s, _cts.Token);
-      foreach (var s in await c.InvokeAsync<LineState[]>("Snapshot", _cts.Token)) Apply(s);
+      foreach (var s in await c.InvokeAsync<LineState[]>("Snapshot", _cts.Token))
+        Apply(s with { HarnessAppSessionId = p.HarnessAppSessionId, MachineName = p.MachineName }); ;
     }
 
     internal void OnRemoteLineState(LineState s) => Apply(s);

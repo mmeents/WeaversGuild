@@ -16,7 +16,7 @@ namespace Weavers.Core.Tools {
 
     [McpTool(Cx.CmdAddOrgDesk, Cx.CmdAddOrgDeskDesc)]
     public static Task<string> AddOrgDesk(
-      [Description("The Item Id of the WorkGroupModel 1040 to add the desk to.")] int orgChartId,
+      [Description("The Item Id of type WorkGroupModel 1040 to add the desk to.")] int orgChartId,
       [Description("The name of the new desk.")] string deskName)
       => GetTools().AddOrgDesk(orgChartId, deskName);
 
@@ -33,13 +33,13 @@ namespace Weavers.Core.Tools {
 
     [McpTool(Cx.CmdAddDigitalOperator, Cx.CmdAddDigitalOperatorDesc)]
     public static Task<string> AddDigitalOperator(
-      [Description("The Item Id of the DigitalOperatorPoolModel 1030 to add the operator to.")] int parentItemId,
+      [Description("The Item Id of type DigitalOperatorPoolModel 1030 to add the operator to.")] int parentItemId,
       [Description("The name of the new digital operator.")] string operatorName)
       => GetTools().AddDigitalOperator(parentItemId, operatorName);
 
     [McpTool(Cx.CmdAddOrgFolder, Cx.CmdAddOrgFolderDesc)]
     public static Task<string> AddOrgFolder(
-      [Description("The Item Id of the parent Org folder to add the subfolder to.")] int parentItemId,
+      [Description("The Item Id of the root Org or parent Org folder to add the subfolder to.")] int parentItemId,
       [Description("The name of the new Org folder.")] string subFolderName)
       => GetTools().AddOrgFolder(parentItemId, subFolderName);
 

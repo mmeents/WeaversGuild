@@ -1,5 +1,13 @@
 
 ## Update History
+- Db 160.7 11/20/2026 - App Bug fixes no migrations (database updates.)
+  - Fixes tree view context menu location on first popup problem.
+  - Adds more drag n drop freedoms. allows for workgroups to move to org or project folders, Patterns the same.
+  - Security Review of the signalR connections corrections.
+  - Adds .mp3 type to those for the Archive Ops.
+  - Attempts to bug Create New item fails to populate util after refresh issues.
+  - Added PresModelClaudeModel to the duplication list since on that gateway the maintanence is manual and easiest way to create a presence for Fable then delete by duplicating an existing and changing the model.  
+   
 - Db 160.6 11/15/2026 
   - Adds AssetArchiveModel with two child Policy types OffloadPolicyModel and ReplicaPolicyModel(have yet to write the OffloadPolicyModel Resync).
     - Adds a AssetKind lookup with AkICloudSync, AkArchive, AkReplica, akRemovable as the different kinds of AssetArchiveModels.

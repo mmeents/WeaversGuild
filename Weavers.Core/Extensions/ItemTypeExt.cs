@@ -632,6 +632,7 @@ namespace Weavers.Core.Extensions {
      
     public static bool CanDuplicate(this int itemTypeId) {
       return itemTypeId switch {
+        (int)WeItemType.PresModelClaudeModel => true,
         (int)WeItemType.DigitalOperatorModel => true,
         (int)WeItemType.DeskRoleModel => true,
         (int)WeItemType.WorkGroupModel => true,

@@ -101,7 +101,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.OrgDeskRolesModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgDeskRolesModel },
         WeItemType.DeskRoleModel => new HashSet<WeItemType> { WeItemType.OrgDeskRolesModel },
 
-        WeItemType.WorkGroupModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.WorkGroupModel },
+        WeItemType.WorkGroupModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.OrgFolderModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.WorkGroupModel },
         WeItemType.DeskModel => new HashSet<WeItemType> { WeItemType.WorkGroupModel },
 
         WeItemType.TodoModel => new HashSet<WeItemType> { WeItemType.DeskLogModel, WeItemType.DeskModel },
@@ -117,7 +117,7 @@ namespace Weavers.Core.Extensions {
         WeItemType.GameRoomModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.GameRoomModel },
         WeItemType.ChessGameModel => new HashSet<WeItemType> { WeItemType.GameRoomModel },
 
-        WeItemType.PatternModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel },   // needs icons.
+        WeItemType.PatternModel => new HashSet<WeItemType> { WeItemType.OrganizationModel, WeItemType.ProjectFolderModel, WeItemType.RelativeFolderModel, WeItemType.OrgFolderModel },   // needs icons.
         WeItemType.PatternDimensionModel => new HashSet<WeItemType> { WeItemType.PatternModel },
         WeItemType.PatternOptionModel => new HashSet<WeItemType> { WeItemType.PatternDimensionModel },
         WeItemType.PatternDrawModel => new HashSet<WeItemType> { WeItemType.PatternModel },

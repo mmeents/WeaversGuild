@@ -30,7 +30,7 @@ namespace Weavers.Core.Service {
     static readonly HashSet<string> Extensions = new(StringComparer.OrdinalIgnoreCase) {
     ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".webp", ".heic", ".heif", ".avif",
     ".dng", ".cr2", ".cr3", ".nef", ".arw", ".raf", ".orf", ".rw2",
-    ".mov", ".mp4", ".m4v", ".3gp", ".avi", ".mkv",
+    ".mov", ".mp4", ".m4v", ".3gp", ".avi", ".mkv", ".mp3"
   };
 
     static readonly JsonSerializerOptions JsonOpts = new() {

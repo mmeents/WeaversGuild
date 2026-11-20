@@ -73,7 +73,7 @@ namespace Weavers.Core.Handlers.Items {
       }
 
       try {        
-        var result = await _sessionCache.GetItemAsync(newRelatedItem.Id, cancellationToken);        
+        var result = await _sessionCache.GetItemAsync(newRelatedItem.Id, cancellationToken, true);        
         return result;
       } catch (Exception ex) {
         _logger.LogError(ex, "Failed to retrieve newly created related item with id {ItemId}", newRelatedItem.Id);

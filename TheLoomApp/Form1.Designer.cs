@@ -384,6 +384,7 @@
       tvKb.DragDrop += tvKb_DragDrop;
       tvKb.DragEnter += tvKb_DragEnter;
       tvKb.DragOver += tvKb_DragOver;
+      tvKb.MouseDown += tvKb_MouseDown;
       // 
       // cmsTreeMenus
       // 
@@ -391,7 +392,6 @@
       cmsTreeMenus.Items.AddRange(new ToolStripItem[] { miReloadTree, miMoveItemUp, miDuplicateItem, miSepRefreshBottom, miAddGithubToken, miAddDigitalOperator, miAddOrgRole, miAddWorkGroup, miAddOrgDesk, miAddDeskTodo, miAddForeachTodo, miAddOrgFolder, miAddOrgFile, miAddOrgRssFolder, miAddRssChannel, miResyncChannel, miAddRssLinkedHtml, miResolveLink, miExtractLinks, miAddPattern, miAddPatDimension, miAddPatDimOption, miGetNextDraw, miAddComfyWorkflow, miAddComfyWfParam, miAddComfyOpFolder, miAddComfyTodo, miRelocateMedia, miAddProjectRoot, miAddSubProject, miAddGitHubRepo, miDoGitClone, miDoGitRefStatus, miDoCheckout, miAddRealm, miAddStory, miAddScene, miAddBeat, miAddCallSheet, miAddCharacter, miAddPerformance, miAddObserved, miAddMusicAlbum, miAddMusicTrack, miAddLinkedOn, miAddSolution, miAddSolutionImport, miAddFile, miAddLibrary, miAddDiModel, miAddNamespace, miAddClass, miAddClassImport, miAddClassProp, miAddClassMethod, miAddClassMethodParam, miAddEntity, miAddEntityProperty, miAddGameRoom, miAddChessGame, miAddArchive, miAddReplicaPolicy, miAddOffloadPolicy, miReSyncArchive, miBuildPlan, miSepAddBottom, miGenerate, miSepGenBottom, miEmptyDesk, miRemoveCompletedTodo, miDeleteItem });
       cmsTreeMenus.Name = "cmsTreeMenus";
       cmsTreeMenus.Size = new Size(212, 1518);
-      cmsTreeMenus.Opening += cmsTreeMenus_Opening;
       // 
       // miReloadTree
       // 
@@ -1332,7 +1332,6 @@
       edItemDesc.DisabledColor = Color.FromArgb(100, 180, 180, 180);
       edItemDesc.Dock = DockStyle.Fill;
       edItemDesc.FindForm = null;
-      edItemDesc.Font = new Font("Courier New", 9.75F);
       edItemDesc.GoToForm = null;
       edItemDesc.Hotkeys = resources.GetString("edItemDesc.Hotkeys");
       edItemDesc.IsReplaceMode = false;

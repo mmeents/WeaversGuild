@@ -16,7 +16,7 @@ namespace Weavers.Core.Constants {
 
     // The Org details.
     public static string AppName => "WeaversGuild";  // repo, root org like name.
-    public static string AppVersion => "1.160.6";    // version of the: era.database.commit 
+    public static string AppVersion => "1.160.7";    // version of the: era.database.commit 
 
     public static string AppDescription => "A agentic oriented collection of tools and services to weave code, docs, "+
       "and data together in a structured agentic manner.";    

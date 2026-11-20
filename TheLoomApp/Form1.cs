@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
+using System.Numerics;
 using System.Text;
 using System.Windows.Documents;
 using TheLoomApp.Components;
@@ -634,7 +635,9 @@ namespace TheLoomApp {
 
       if (tabControl1.SelectedTab == tpArchiveOps) {
         var selectedTab = tcArchiveOps.SelectedTab;
-        await ReloadArchiveOpsTabAsync(selectedTab);
+        if (selectedTab != null) {
+          await ReloadArchiveOpsTabAsync(selectedTab);
+        }
       }
 
 
@@ -980,7 +983,12 @@ namespace TheLoomApp {
     #endregion
 
     #region Context Menu Event Handlers
-    private void cmsTreeMenus_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+
+    private void tvKb_MouseDown(object sender, MouseEventArgs e) {
+      if (e.Button != MouseButtons.Right) return;
+      var node = tvKb.GetNodeAt(e.Location);
+      tvKb.SelectedNode = node;      // TreeView doesn't select on right-click by default
+      _selectedNode = node as ItemNode;
       if (_selectedNode == null || _selectedNode.Item == null) {
         miSepRefreshBottom.Visible = false;
         miDuplicateItem.Visible = false;
@@ -1085,7 +1093,7 @@ namespace TheLoomApp {
         miAddGithubToken.Visible = itemType == WeItemType.CredentialStoreModel;
         miDuplicateItem.Visible = ((int)itemType).CanDuplicate();
 
-        miAddWorkGroup.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.WorkGroupModel;
+        miAddWorkGroup.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel || itemType == WeItemType.WorkGroupModel ;
         miAddOrgRole.Visible = itemType == WeItemType.OrgDeskRolesModel;
         miAddOrgDesk.Visible = itemType == WeItemType.WorkGroupModel;
         miAddDeskTodo.Visible = itemType == WeItemType.DeskModel;
@@ -1097,14 +1105,14 @@ namespace TheLoomApp {
         miAddOrgFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel;
         miAddOrgFile.Visible = itemType == WeItemType.OrgFolderModel || itemType == WeItemType.OrganizationModel;
 
-        miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.RssFolderModel;
+        miAddOrgRssFolder.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel || itemType == WeItemType.RssFolderModel;
         miAddRssChannel.Visible = itemType == WeItemType.RssFolderModel;
         miResyncChannel.Visible = itemType == WeItemType.RssChannelModel;
         miAddRssLinkedHtml.Visible = itemType == WeItemType.RssFolderModel || itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miResolveLink.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
         miExtractLinks.Visible = itemType == WeItemType.RssItemModel || itemType == WeItemType.RssLinkedHtmlModel;
 
-        miAddPattern.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddPattern.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddPatDimension.Visible = itemType == WeItemType.PatternModel;
         miAddPatDimOption.Visible = itemType == WeItemType.PatternDimensionModel;
         miGetNextDraw.Visible = itemType == WeItemType.PatternModel;
@@ -1122,7 +1130,7 @@ namespace TheLoomApp {
         miDoGitRefStatus.Visible = itemType == WeItemType.GithubRepoModel && isRepoCloned;
         miDoCheckout.Visible = itemType == WeItemType.GithubRepoBranchModel && isRepoCloned && !isBranchCurrentBranch;
 
-        miAddRealm.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddRealm.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddStory.Visible = itemType == WeItemType.RealmModel;
         miAddScene.Visible = itemType == WeItemType.StoryModel;
         miAddBeat.Visible = itemType == WeItemType.SceneModel;
@@ -1148,9 +1156,9 @@ namespace TheLoomApp {
         miAddEntity.Visible = itemType == WeItemType.LibraryModel || itemType == WeItemType.NamespaceModel;
         miAddEntityProperty.Visible = itemType == WeItemType.EntityClassModel;
 
-        miAddGameRoom.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddGameRoom.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miAddChessGame.Visible = itemType == WeItemType.GameRoomModel;
-        miAddArchive.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
+        miAddArchive.Visible = itemType == WeItemType.OrganizationModel || itemType == WeItemType.OrgFolderModel || itemType == WeItemType.ProjectFolderModel || itemType == WeItemType.RelativeFolderModel;
         miReSyncArchive.Visible = itemType == WeItemType.AssetArchiveModel;
 
         miAddReplicaPolicy.Visible = itemType == WeItemType.AssetArchiveModel;
@@ -2254,7 +2262,8 @@ namespace TheLoomApp {
             DoLogMessage(plan.PlanSummary[lineCount]);
           }
           MessageBox.Show($"Replica Plan built successfully:\n{plan}", "Build Replica Plan", MessageBoxButtons.OK, MessageBoxIcon.Information);
-          //} else if (selectedItem.ItemTypeId == (int)WeItemType.OffloadPolicyModel) {
+        } else if (selectedItem.ItemTypeId == (int)WeItemType.OffloadPolicyModel) {
+          MessageBox.Show($"Feature not implemented yet", "Build Offload Plan", MessageBoxButtons.OK, MessageBoxIcon.Information);
           //  var plan = await mediator.Send(new BuildOffloadPlanCommand(selectedItem.Id));
           //  MessageBox.Show($"Offload Plan built successfully:\n{plan}", "Build Offload Plan", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -3583,6 +3592,7 @@ namespace TheLoomApp {
         lbComfySchedule.Items.Clear();
         lbComfyResult.Items.Clear();
         dict.Clear();
+        edComfySchedulePreview.Text = "";
         foreach (var schedule in schedules) {
           var todoStr = $"{schedule.Id}: on " + schedule.DeskName + " " + schedule.Name;
           var index = list.Items.Add(todoStr);
@@ -4219,7 +4229,7 @@ namespace TheLoomApp {
     CancellationTokenSource? _archiveCts;
     bool _archiveTickInFlight;
 
-    private async void btnArchiveOpsStartStop_Click(object sender, EventArgs e) {      
+    private async void btnArchiveOpsStartStop_Click(object sender, EventArgs e) {
       if (btnArchiveOpsStartStop.Text == "Start") {
         if (_swarmNode != null) {
           var shouldContinue = await _swarmNode.SetLineAsync(SwarmLines.Archive, true);
@@ -4228,17 +4238,17 @@ namespace TheLoomApp {
             return;
           }
         }
-        _archiveCts?.Dispose(); 
+        _archiveCts?.Dispose();
         _archiveCts = new CancellationTokenSource();
         ArchiveEngineRunning = true;
         tRunArchiveLine.Enabled = true;
       } else {
         _archiveCts?.Cancel();
         ArchiveEngineRunning = false;
-        if (!_archiveTickInFlight) {          
+        if (!_archiveTickInFlight) {
           tRunArchiveLine.Enabled = false;
           ArchiveEngineRunning = false;
-        }        
+        }
       }
     }
 
@@ -4260,21 +4270,21 @@ namespace TheLoomApp {
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         var r = await Task.Run(() => mediator.Send(
           new ExecuteNextArchiveOpsCommand(_harnessId, _instanceId.ToString(), 10) {
-            Progress = new Progress<string>(s => SetProgress(s))   
+            Progress = new Progress<string>(s => SetProgress(s))
           }, _archiveCts!.Token));
 
         DoLogMessage(r.Message);
 
         if (r.Outcome == ArchiveOpOutcome.Idle) {
           _isArchiveStopping = true;
-        } else {        
-          if (cbCoolDown.Checked) { 
+        } else {
+          if (cbCoolDown.Checked) {
             var delay = TimeSpan.FromSeconds(edCoolDownMs.Value.AsInt());
             DoLogMessage($"Cooling down for {delay.TotalSeconds} seconds before next archive operation.");
             await Task.Delay(delay, _archiveCts!.Token);
           }
         }
-        
+
       } catch (OperationCanceledException) {
         // Stop pressed mid-batch; the handler already released its claims
         DoLogMessage($"ArchiveOps canceled.");
@@ -4294,9 +4304,11 @@ namespace TheLoomApp {
         ArchiveEngineRunning = false;            // -> "Stopped"
         await ReloadArchiveOpsTabAsync(tpArchiveCommands);
         return;
-      }      
+      }
       tRunArchiveLine.Enabled = true;
     }
+
+
 
 
 
